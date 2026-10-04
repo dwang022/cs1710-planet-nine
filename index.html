@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Evidence for Planet Nine</title>
+<meta name="description" content="A few dozen icy worlds beyond Neptune appear to lean the same way. Explore the evidence for a ninth planet — the orbits, the odds, the search, and the alternatives — using real catalogue data." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>" />
+</head>
+<body>
+<div class="stars" aria-hidden="true"></div>
+
+<main>
+  <header class="hero wrap">
+    <div class="eyebrow">CS 1710 · Data Visualization</div>
+    <h1>The evidence for <em>Planet Nine</em></h1>
+    <p class="lede">
+      Far past Neptune, a few dozen frozen worlds appear to lean the same way.
+      Something huge may be pushing them. Or we may be seeing a face in the clouds.
+    </p>
+    <p class="lede" style="color:var(--text-muted);font-size:1rem">
+      Every chart below is built from real telescope catalogues. Nothing is made up.
+      Scroll, drag the sliders, and decide for yourself.
+    </p>
+    <div class="byline">
+      <span>Daniel Wang</span><span>Gabriel Gonzalez</span><span>Russell Rui Luo</span>
+    </div>
+  </header>
+
+  <div class="controls" id="controls">
+    <div class="wrap controls-inner">
+      <div class="ctrl">
+        <label for="aMin">How far out the orbit goes ≥ <b><span id="aMinV">150</span> AU</b></label>
+        <input type="range" id="aMin" min="100" max="400" step="10" value="150" />
+      </div>
+      <div class="ctrl">
+        <label for="qMin">Closest approach ≥ <b><span id="qMinV">30</span> AU</b></label>
+        <input type="range" id="qMin" min="30" max="60" step="1" value="30" />
+      </div>
+      <label class="toggle" for="quality">
+        <input type="checkbox" id="quality" checked /><span class="box"></span>
+        Only well-measured orbits
+      </label>
+      <label class="toggle" for="showP9">
+        <input type="checkbox" id="showP9" checked /><span class="box"></span>
+        Show Planet Nine
+      </label>
+      <button class="btn-reset" id="reset" type="button">Reset</button>
+    </div>
+  </div>
+
+  <!-- 01 ============================================================== -->
+  <section class="wrap" id="objects">
+    <div class="sec-head">
+      <div class="eyebrow">01 — The sample</div>
+      <h2>A handful of worlds, impossibly far away</h2>
+      <p class="lede">
+        One AU is the distance from the Earth to the Sun. These objects wander
+        hundreds of AU out — so far that Neptune cannot reach them.
+      </p>
+    </div>
+    <div class="grid-stats">
+      <div class="stat"><div class="k">Objects in view</div><div class="v" id="statN">—</div><div class="d" id="statNd">—</div></div>
+      <div class="stat"><div class="k">How aligned they are</div><div class="v" id="statR">—</div><div class="d">0 = pointing every which way · 1 = perfectly lined up</div></div>
+      <div class="stat" id="statPtile"><div class="k">Odds of this by luck</div><div class="v" id="statP">—</div><div class="d" id="statPd">—</div></div>
+      <div class="stat"><div class="k">Direction they lean</div><div class="v" id="statDir">—</div><div class="d">average heading, around the sky</div></div>
+    </div>
+    <div class="scale-strip" id="scaleStrip"></div>
+  </section>
+
+  <!-- 02 ============================================================== -->
+  <section class="wrap" id="picture">
+    <div class="sec-head">
+      <div class="eyebrow">02 — The claim</div>
+      <h2>They lean the same way</h2>
+      <p class="lede">
+        Each loop is one object's path around the Sun. The dot is where it comes
+        closest. If nothing were herding them, those dots would ring the Sun evenly.
+      </p>
+    </div>
+
+    <div class="legend" id="legendMain"></div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Seen from above</h3>
+        <div class="sub">White arrow = the average direction they lean. Longer arrow means more alignment. Faded loops are orbits we have measured for only a short time.</div>
+        <div id="chartOrbits"></div>
+      </div>
+      <div class="card">
+        <h3>Same objects, one angle each</h3>
+        <div class="sub">Every object placed by the direction it leans. Crowding on one side is the whole argument.</div>
+        <div id="chartRose"></div>
+      </div>
+    </div>
+
+    <details class="table-view">
+      <summary>View as a table — every object, every number</summary>
+      <div class="table-scroll">
+        <table id="dataTable">
+          <thead><tr>
+            <th>Object</th><th class="num">Reach (AU)</th><th class="num">Closest (AU)</th>
+            <th class="num">Tilt (°)</th><th class="num">Leans toward (°)</th>
+            <th>Vs. predicted planet</th><th>Orbit quality</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <!-- 03 ============================================================== -->
+  <section class="wrap" id="luck">
+    <div class="sec-head">
+      <div class="eyebrow">03 — The test</div>
+      <h2>Could this just be luck?</h2>
+      <p class="lede">
+        We built 4,000 fake solar systems with the same number of objects pointing
+        in totally random directions. Grey is what luck looks like. Blue is reality.
+      </p>
+    </div>
+    <div class="card">
+      <h3 id="nullTitle">Reality against 4,000 random universes</h3>
+      <div class="sub" id="nullSub">—</div>
+      <div id="chartNull"></div>
+    </div>
+    <div id="verdict"></div>
+    <div class="note">
+      <div class="note-k">The catch</div>
+      <p>
+        This test assumes telescopes were equally likely to spot an object pointing
+        any direction. They were not. <strong>Switch off "Only well-measured orbits"
+        above</strong> and watch the signal collapse.
+      </p>
+    </div>
+    <div class="grid-stats auto" id="cutGrid"></div>
+    <p class="caption">The same measurement under five published definitions of the sample. A real signal would not swing this much.</p>
+  </section>
+
+  <!-- 04 ============================================================== -->
+  <section class="wrap" id="sky">
+    <div class="sec-head">
+      <div class="eyebrow">04 — The search</div>
+      <h2>Where we have actually looked</h2>
+      <p class="lede">
+        Flattened map of the entire sky. Shaded patches are where big surveys have
+        hunted. The green curve is where Planet Nine would have to be.
+      </p>
+    </div>
+    <div class="legend" id="skyLegend"></div>
+    <div class="chip-row" id="surveyChips"></div>
+    <div class="card">
+      <div id="chartSky"></div>
+      <div class="sub" style="margin:14px 0 0">
+        The pale band is the Milky Way. Star fields there are so crowded that a
+        slow-moving object is very hard to pick out — and the green path crosses it
+        twice. Footprints are simplified to declination bands: good enough to see who
+        looked where, not for precise coverage. Planet Nine's path is computed from the
+        Brown &amp; Batygin (2021) orbit fit; thin lines show their uncertainty.
+      </div>
+    </div>
+    <div class="grid-stats auto" id="searchStats" style="margin-top:22px"></div>
+  </section>
+
+  <!-- 05 ============================================================== -->
+  <section class="wrap" id="build">
+    <div class="sec-head">
+      <div class="eyebrow">05 — Your turn</div>
+      <h2>Put a planet out there yourself</h2>
+      <p class="lede">
+        Drag the dials. We score your planet against what the real objects do and
+        what the real searches have already ruled out.
+      </p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Your planet, against the real orbits</h3>
+        <div class="sub">Orange is yours. Blue are the real objects currently in view.</div>
+        <div id="chartPlace"></div>
+      </div>
+      <div class="card">
+        <div class="build-controls" id="buildControls"></div>
+        <div id="scoreBox"></div>
+      </div>
+    </div>
+    <div class="grid-stats auto" id="propGrid" style="margin-top:22px"></div>
+    <p class="caption" id="propNote"></p>
+  </section>
+
+  <!-- 06 ============================================================== -->
+  <section class="wrap" id="alternatives">
+    <div class="sec-head">
+      <div class="eyebrow">06 — The competition</div>
+      <h2>A planet is not the only explanation</h2>
+      <p class="lede">
+        Four things need explaining. Eight ideas compete. Click a row to see where
+        each one holds up and where it breaks.
+      </p>
+    </div>
+    <div class="legend" id="matrixLegend"></div>
+    <div class="card"><div id="chartMatrix"></div></div>
+    <div id="altDetail"></div>
+  </section>
+
+  <!-- 07 ============================================================== -->
+  <section class="wrap" id="field">
+    <div class="sec-head">
+      <div class="eyebrow">07 — The field</div>
+      <h2>Astronomers do not agree</h2>
+      <p class="lede">
+        Every paper we read, placed by year and position. Bigger circle = cited more
+        often. Click one to read what it found.
+      </p>
+    </div>
+    <div class="card"><div id="chartTimeline"></div></div>
+    <div id="paperDetail"></div>
+    <p class="caption">
+      Stance is <strong>our</strong> reading of each abstract, not a label the authors chose.
+      25 papers we selected — not a census of the field.
+    </p>
+  </section>
+
+  <!-- 08 ============================================================== -->
+  <section class="wrap" id="sources">
+    <div class="sec-head">
+      <div class="eyebrow">08 — Provenance</div>
+      <h2>Where every number came from</h2>
+    </div>
+    <div class="src-list" id="srcList"></div>
+    <p class="caption" style="margin-top:20px">
+      Orbits: <a href="https://ssd.jpl.nasa.gov/tools/sbdb_query.html">JPL Small-Body Database</a>,
+      cross-checked against the <a href="https://www.minorplanetcenter.net/data">Minor Planet Center</a>.
+      Our coordinate maths was verified against <a href="https://ssd.jpl.nasa.gov/horizons/app.html">JPL Horizons</a>
+      and agrees to within 5 arcseconds. Citation counts from <a href="https://api.crossref.org">Crossref</a>.
+    </p>
+  </section>
+
+  <footer class="wrap">
+    <p style="margin:0">
+      Built for CS 1710 · data fetched October 2026. Planet Nine has never been
+      seen. Everything here describes an inference, not an observation.
+    </p>
+  </footer>
+</main>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

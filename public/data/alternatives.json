@@ -1,0 +1,246 @@
+{
+ "_what": "Competing explanations for the clustering of extreme trans-Neptunian orbits. Drives the 'what else could explain the evidence' section.",
+ "_caution": "The assessments below are our summary of the published arguments, not a quantitative ranking. 'status' is editorial.",
+ "_fields": {
+  "explains": "what this hypothesis accounts for well",
+  "struggles_with": "what it does not account for, per its critics",
+  "status": "mainstream | viable | fringe | largely-excluded",
+  "key_dois": "entries in papers.json"
+ },
+ "alternatives": [
+  {
+   "id": "planet_nine",
+   "name": "A ninth planet",
+   "one_liner": "An undiscovered 5-10 Earth-mass planet on a distant, eccentric, anti-aligned orbit shepherds the extreme objects.",
+   "mechanism": "Secular and resonant gravitational interaction over hundreds of millions of years confines the longitudes of perihelion of distant objects anti-aligned to the planet's own.",
+   "explains": [
+    "apsidal clustering of the extreme objects",
+    "high-inclination and retrograde TNOs",
+    "detached objects like Sedna with perihelia beyond Neptune's reach",
+    "the perpendicular (near-polar) TNO population"
+   ],
+   "struggles_with": [
+    "nobody has found it, despite a decade of targeted searching",
+    "the clustering signal weakens when only bias-characterised surveys are used"
+   ],
+   "status": "mainstream",
+   "key_dois": [
+    "10.3847/0004-6256/151/2/22",
+    "10.1016/j.physrep.2019.01.009",
+    "10.3847/1538-3881/ac2056"
+   ],
+   "sketch_cue": "orbit diagram with a planet",
+   "color_hex": "#5B8FF9",
+   "scorecard": {
+    "clustering": "yes",
+    "detached": "yes",
+    "inclined": "yes",
+    "nondetection": "no"
+   }
+  },
+  {
+   "id": "observational_bias",
+   "name": "Observational bias (no pattern at all)",
+   "one_liner": "There is no real clustering. Telescopes searched particular patches of sky at particular times of year, and that alone shapes which orbits get found.",
+   "mechanism": "Distant objects are only detectable near perihelion. Survey pointings cluster around the ecliptic, around good observing seasons and away from the galactic plane, so the discovered sample inherits that pattern.",
+   "explains": [
+    "why the apparent clustering is strongest in heterogeneously discovered samples",
+    "why OSSOS and DES, which model their own detection efficiency, see a much weaker signal"
+   ],
+   "struggles_with": [
+    "Batygin & Brown's bias-corrected analyses still find the clustering significant at roughly 1 in 500",
+    "does not obviously explain the high-inclination population"
+   ],
+   "status": "viable",
+   "key_dois": [
+    "10.3847/1538-3881/aa7aed",
+    "10.3847/PSJ/abe53e"
+   ],
+   "sketch_cue": "survey footprint overlay on the sky map",
+   "color_hex": "#F6BD16",
+   "scorecard": {
+    "clustering": "yes",
+    "detached": "no",
+    "inclined": "no",
+    "nondetection": "yes"
+   }
+  },
+  {
+   "id": "self_gravitating_disk",
+   "name": "A massive self-gravitating disk",
+   "one_liner": "A few Earth masses of small bodies spread through the distant belt can confine each other's orbits, with no single planet required.",
+   "mechanism": "Collective secular gravity of a massive disk of planetesimals drives apsidal confinement of embedded orbits.",
+   "explains": [
+    "apsidal clustering",
+    "detached perihelia"
+   ],
+   "struggles_with": [
+    "requires far more mass in the outer belt than current estimates allow",
+    "does not naturally produce the perpendicular objects"
+   ],
+   "status": "viable",
+   "key_dois": [
+    "10.3847/1538-3881/aaf0fc"
+   ],
+   "sketch_cue": "ring of many small bodies, no planet",
+   "color_hex": "#61DDAA",
+   "scorecard": {
+    "clustering": "yes",
+    "detached": "yes",
+    "inclined": "no",
+    "nondetection": "yes"
+   }
+  },
+  {
+   "id": "inclination_instability",
+   "name": "Inclination instability",
+   "one_liner": "A sufficiently massive population of eccentric distant bodies spontaneously lifts and aligns itself out of the plane.",
+   "mechanism": "A collective dynamical instability in a disk of high-eccentricity orbits raises inclinations and clusters arguments of perihelion, and later apsidal angles as well.",
+   "explains": [
+    "clustering in argument of perihelion",
+    "raised inclinations",
+    "apsidal clustering (Zderic & Madigan 2020)"
+   ],
+   "struggles_with": [
+    "needs roughly an Earth mass or more of material in the extreme population, which may not exist"
+   ],
+   "status": "viable",
+   "key_dois": [
+    "10.3847/1538-3881/aad95c",
+    "10.3847/2041-8213/ab91a0"
+   ],
+   "sketch_cue": "cone of orbits tilting together",
+   "color_hex": "#78D3F8",
+   "scorecard": {
+    "clustering": "yes",
+    "detached": "partial",
+    "inclined": "yes",
+    "nondetection": "yes"
+   }
+  },
+  {
+   "id": "stellar_flyby",
+   "name": "A passing star",
+   "one_liner": "A close stellar encounter, in the Sun's birth cluster or more recently, sculpted the distant orbits and then left.",
+   "mechanism": "A single impulsive encounter can lift perihelia and imprint a preferred orbital orientation that survives for a long time afterwards.",
+   "explains": [
+    "detached objects such as Sedna",
+    "a one-off preferred direction"
+   ],
+   "struggles_with": [
+    "the imprint should disperse over billions of years",
+    "explains the existence of detached objects better than it explains present-day clustering"
+   ],
+   "status": "viable",
+   "key_dois": [],
+   "note": "Widely discussed as an origin for Sedna-like orbits; less favoured as the sole cause of the current clustering.",
+   "sketch_cue": "star passing by, orbits dragged",
+   "color_hex": "#F6903D",
+   "scorecard": {
+    "clustering": "partial",
+    "detached": "yes",
+    "inclined": "partial",
+    "nondetection": "yes"
+   }
+  },
+  {
+   "id": "primordial_black_hole",
+   "name": "A primordial black hole",
+   "one_liner": "The perturber is real, but it is a grapefruit-sized black hole of the same mass rather than a planet.",
+   "mechanism": "Identical gravity, so identical dynamics. It would be invisible to reflected-light searches and detectable only through accretion flares, lensing, or occultations.",
+   "explains": [
+    "everything the planet explains",
+    "why optical surveys have not found it"
+   ],
+   "struggles_with": [
+    "requires capture of a primordial black hole, which is speculative",
+    "no detection in dedicated searches so far"
+   ],
+   "status": "fringe",
+   "key_dois": [
+    "10.1103/PhysRevLett.125.051103"
+   ],
+   "sketch_cue": "black dot where the planet would be",
+   "color_hex": "#9661BC",
+   "scorecard": {
+    "clustering": "yes",
+    "detached": "yes",
+    "inclined": "yes",
+    "nondetection": "yes"
+   }
+  },
+  {
+   "id": "modified_gravity",
+   "name": "Modified gravity",
+   "one_liner": "Gravity itself departs from Newton at the very low accelerations found hundreds of AU out.",
+   "mechanism": "MOND-like external field effects would alter orbital precession rates in the outer solar system without any extra mass.",
+   "explains": [
+    "clustering without an undetected body"
+   ],
+   "struggles_with": [
+    "planetary ephemerides constrain deviations from Newtonian gravity very tightly inside Saturn's orbit",
+    "no independent solar-system evidence"
+   ],
+   "status": "fringe",
+   "key_dois": [
+    "10.1051/0004-6361/202037919"
+   ],
+   "sketch_cue": "warped grid instead of a mass",
+   "color_hex": "#A0A0A0",
+   "scorecard": {
+    "clustering": "partial",
+    "detached": "no",
+    "inclined": "no",
+    "nondetection": "yes"
+   }
+  },
+  {
+   "id": "small_sample",
+   "name": "Small-number coincidence",
+   "one_liner": "With only a handful of well-determined extreme orbits, an apparent alignment can simply be luck.",
+   "mechanism": "Not a physical mechanism. The original claim rested on six objects, and the human eye finds patterns in small samples readily.",
+   "explains": [
+    "why the significance has shifted as objects were added and removed from the sample"
+   ],
+   "struggles_with": [
+    "the sample has grown and the proponents' significance estimates have not collapsed"
+   ],
+   "status": "viable",
+   "key_dois": [
+    "10.3847/1538-3881/aa7aed",
+    "10.3847/PSJ/abe53e"
+   ],
+   "sketch_cue": "the Monte Carlo null-hypothesis simulation",
+   "color_hex": "#D96E6E",
+   "scorecard": {
+    "clustering": "yes",
+    "detached": "no",
+    "inclined": "no",
+    "nondetection": "yes"
+   }
+  }
+ ],
+ "phenomena": [
+  {
+   "id": "clustering",
+   "label": "Orbits bunched in one direction",
+   "plain": "The distant objects' closest-approach points lean the same way."
+  },
+  {
+   "id": "detached",
+   "label": "Objects cut off from Neptune",
+   "plain": "Bodies like Sedna never come close enough for Neptune to have moved them."
+  },
+  {
+   "id": "inclined",
+   "label": "Steeply tilted orbits",
+   "plain": "Some distant objects orbit far out of the plane of the planets."
+  },
+  {
+   "id": "nondetection",
+   "label": "Nothing has been found",
+   "plain": "A decade of searching has turned up no planet."
+  }
+ ],
+ "_matrix_note": "`scorecard` on each alternative says whether that hypothesis accounts for each phenomenon: yes / partial / no. These are our readings of the explains and struggles_with fields, which were written from the papers' abstracts. They are a summary for navigation, not a quantitative result."
+}

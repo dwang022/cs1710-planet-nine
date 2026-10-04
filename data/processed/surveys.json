@@ -1,0 +1,294 @@
+{
+ "_what": "Sky coverage and depth of the surveys that have looked (or will look) for Planet Nine and for distant TNOs. Drives the 'where do the telescopes look' sky map and the detection-bias argument.",
+ "_caution": "Footprints are given as declination bands plus right-ascension ranges, which is an approximation of the real, ragged survey boundaries. Areas and depths are as published. Use these for a schematic all-sky map, not for photometry.",
+ "_units": {
+  "ra_deg": "degrees, 0-360",
+  "dec_deg": "degrees, -90 to +90",
+  "area_sq_deg": "square degrees",
+  "depth_mag": "approximate single-epoch limiting magnitude"
+ },
+ "surveys": [
+  {
+   "id": "ps1",
+   "name": "Pan-STARRS1 3pi",
+   "facility": "Haleakala, Hawaii",
+   "years": [
+    2010,
+    2014
+   ],
+   "band": "r",
+   "depth_mag": 22.0,
+   "stacked_depth_mag": 23.2,
+   "area_sq_deg": 30000,
+   "dec_range": [
+    -30,
+    90
+   ],
+   "ra_ranges": [
+    [
+     0,
+     360
+    ]
+   ],
+   "wavelength": "optical",
+   "p9_relevance": "Brown & Batygin (2024) searched PS1 DR2 directly and ruled out the Brown & Batygin (2021) Planet Nine to a 50% completion depth of V = 21.5. [verified: abstract, doi:10.3847/1538-3881/ad24e9]",
+   "color_hex": "#5B8FF9",
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+  },
+  {
+   "id": "css",
+   "name": "Catalina Sky Survey",
+   "facility": "Mount Lemmon / Catalina, Arizona",
+   "years": [
+    1998,
+    2026
+   ],
+   "band": "V",
+   "depth_mag": 21.5,
+   "area_sq_deg": 30000,
+   "dec_range": [
+    -30,
+    65
+   ],
+   "ra_ranges": [
+    [
+     0,
+     360
+    ]
+   ],
+   "wavelength": "optical",
+   "p9_relevance": "Wide but shallow; excludes a nearby, bright Planet Nine only.",
+   "color_hex": "#61DDAA",
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+  },
+  {
+   "id": "ztf",
+   "name": "Zwicky Transient Facility",
+   "facility": "Palomar, California",
+   "years": [
+    2018,
+    2026
+   ],
+   "band": "r",
+   "depth_mag": 20.5,
+   "area_sq_deg": 30000,
+   "dec_range": [
+    -30,
+    90
+   ],
+   "ra_ranges": [
+    [
+     0,
+     360
+    ]
+   ],
+   "wavelength": "optical",
+   "p9_relevance": "Brown et al. (2022) searched the ZTF public archive and found no candidate to V = 20.5 at 95% efficiency, excluding 56% of the predicted parameter space. Shallow, but it covers most of the northern part of the predicted orbit including the galactic plane. [verified: abstract, doi:10.3847/1538-3881/ac32dd]",
+   "color_hex": "#F6BD16",
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+  },
+  {
+   "id": "des",
+   "name": "Dark Energy Survey",
+   "facility": "Blanco 4m, Cerro Tololo, Chile",
+   "years": [
+    2013,
+    2019
+   ],
+   "band": "r",
+   "depth_mag": 23.8,
+   "stacked_depth_mag": 24.5,
+   "area_sq_deg": 5000,
+   "dec_range": [
+    -70,
+    -35
+   ],
+   "ra_ranges": [
+    [
+     300,
+     360
+    ],
+    [
+     0,
+     90
+    ]
+   ],
+   "wavelength": "optical",
+   "p9_relevance": "Deep southern coverage of a contiguous 5000 sq deg; yielded 815 TNOs (Bernardinelli et al. 2022), whose 16 extreme objects are consistent with azimuthal isotropy. Contributes to the combined 78% exclusion. [verified: abstract, doi:10.3847/1538-4365/ac3914]",
+   "color_hex": "#7262FD",
+   "area_note": "5000 sq deg contiguous, verified from the DES Y6 abstract."
+  },
+  {
+   "id": "ossos",
+   "name": "OSSOS (Outer Solar System Origins Survey)",
+   "facility": "CFHT 3.6m, Mauna Kea",
+   "years": [
+    2013,
+    2017
+   ],
+   "band": "r",
+   "depth_mag": 24.5,
+   "area_sq_deg": null,
+   "dec_range": [
+    -15,
+    15
+   ],
+   "ra_ranges": [
+    [
+     195,
+     250
+    ],
+    [
+     0,
+     40
+    ]
+   ],
+   "wavelength": "optical",
+   "pointing_note": "Eight discrete blocks near the ecliptic, not a contiguous band. Exact pointings and the characterisation model are distributed with the OSSOS Survey Simulator (github.com/OSSOS/SurveySimulator).",
+   "p9_relevance": "The key dataset for the bias counter-argument. OSSOS discovered more than 800 TNOs with a carefully characterised detection efficiency, and concluded its eight large-semimajor-axis detections are consistent with a uniform underlying distribution (Shankman et al. 2017). [verified: abstract, doi:10.3847/1538-3881/aa7aed]",
+   "color_hex": "#F6903D",
+   "area_note": "OSSOS surveyed eight discrete blocks. We did not verify a total area, so this is left null rather than guessed.",
+   "depth_note": "Depth varies by block; the single number here is indicative only."
+  },
+  {
+   "id": "hsc_ssp",
+   "name": "Subaru HSC Subaru Strategic Program",
+   "facility": "Subaru 8.2m, Mauna Kea",
+   "years": [
+    2014,
+    2022
+   ],
+   "band": "r",
+   "depth_mag": 26.0,
+   "area_sq_deg": 1400,
+   "dec_range": [
+    -7,
+    45
+   ],
+   "ra_ranges": [
+    [
+     330,
+     360
+    ],
+    [
+     0,
+     40
+    ],
+    [
+     130,
+     230
+    ]
+   ],
+   "wavelength": "optical",
+   "p9_relevance": "Deep enough to see Planet Nine anywhere on its orbit, but covers a tiny fraction of the sky.",
+   "color_hex": "#78D3F8",
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+  },
+  {
+   "id": "wise",
+   "name": "WISE / NEOWISE",
+   "facility": "space, all-sky infrared",
+   "years": [
+    2010,
+    2024
+   ],
+   "band": "W1/W2",
+   "depth_mag": 16.5,
+   "area_sq_deg": 41253,
+   "dec_range": [
+    -90,
+    90
+   ],
+   "ra_ranges": [
+    [
+     0,
+     360
+    ]
+   ],
+   "wavelength": "mid-infrared",
+   "p9_relevance": "Luhman (2014) used WISE to search for a distant companion to the Sun. A 6 Earth-mass Planet Nine is far too cold and faint for WISE, so this does not exclude it. [UNVERIFIED: the widely quoted Saturn-mass/10,000 AU and Jupiter-mass/26,000 AU limits come from this paper, but it has no arXiv preprint and we could not read the abstract. Check before quoting.]",
+   "color_hex": "#9661BC"
+  },
+  {
+   "id": "iras_akari",
+   "name": "IRAS + AKARI far-infrared",
+   "facility": "space, all-sky far-infrared",
+   "years": [
+    1983,
+    2007
+   ],
+   "band": "60-90 um",
+   "area_sq_deg": 41253,
+   "dec_range": [
+    -90,
+    90
+   ],
+   "ra_ranges": [
+    [
+     0,
+     360
+    ]
+   ],
+   "wavelength": "far-infrared",
+   "p9_relevance": "Phan et al. (2025) cross-matched these two all-sky far-IR catalogues 23 years apart and found one surviving candidate out of 13 pairs, implying 500-700 AU and 7-17 Earth masses. Two epochs cannot fix an orbit. [verified: abstract, doi:10.1017/pasa.2025.10024]",
+   "color_hex": "#008685"
+  },
+  {
+   "id": "lsst",
+   "name": "Vera C. Rubin Observatory / LSST",
+   "facility": "Cerro Pachon, Chile",
+   "years": [
+    2025,
+    2035
+   ],
+   "band": "r",
+   "depth_mag": 24.5,
+   "stacked_depth_mag": 27.0,
+   "area_sq_deg": 18000,
+   "dec_range": [
+    -75,
+    12
+   ],
+   "ra_ranges": [
+    [
+     0,
+     360
+    ]
+   ],
+   "wavelength": "optical",
+   "future": true,
+   "p9_relevance": "The decisive test. Over a decade it should either find Planet Nine or exclude nearly all of the remaining parameter space, and it will multiply the known ETNO sample with a characterised, modellable selection function.",
+   "color_hex": "#F08BB4",
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+  }
+ ],
+ "galactic_plane_note": "The surviving unsearched parameter space is concentrated where the northern galactic plane crosses the ecliptic, because crowded star fields badly degrade moving-object detection. [verified: Brown & Batygin 2024 abstract]",
+ "_verification": {
+  "checked": "October 2026",
+  "verified_from_abstracts": [
+   "des (area, TNO count, depth)",
+   "ossos (detection count, uniform-distribution conclusion)",
+   "ztf (depth, 56% exclusion)",
+   "ps1 (V=21.5, 78% cumulative exclusion)",
+   "iras_akari (candidate, mass and distance ranges)"
+  ],
+  "not_verified": [
+   "all footprint declination/RA bands, which are our own schematic approximations",
+   "ps1/css/ztf/hsc/lsst areas and depths, taken from general knowledge",
+   "the Luhman 2014 WISE mass limits"
+  ],
+  "guidance": "Footprints here are fine for a schematic all-sky map. Do not use them for any quantitative completeness claim; for that, use each survey's published pointing history (the OSSOS Survey Simulator, or the DES bias model released with Bernardinelli et al. 2022)."
+ },
+ "p9_search_coverage": {
+  "_what": "How much of Planet Nine's predicted parameter space direct searches have excluded.",
+  "ztf_2022_fraction_excluded": 0.56,
+  "cumulative_2024_fraction_excluded": 0.78,
+  "cumulative_surveys": [
+   "Pan-STARRS1",
+   "ZTF",
+   "DES"
+  ],
+  "remaining": "Faint (V > 21), concentrated near and in the region where the northern galactic plane crosses the ecliptic.",
+  "src": "Brown et al. 2022 and Brown & Batygin 2024, both verified from their abstracts."
+ }
+}

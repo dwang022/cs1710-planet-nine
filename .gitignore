@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.DS_Store
+
+# Regenerate with ./scripts/fetch_all.sh — the MPC discovery list alone is ~80 MB
+data/raw/

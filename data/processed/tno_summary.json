@@ -1,0 +1,16 @@
+{
+ "source_jpl": "JPL Small-Body Database Query API (ssd-api.jpl.nasa.gov/sbdb_query.api), a > 30 AU",
+ "source_mpc": "Minor Planet Center Extended_Files/distant_extended.json.gz",
+ "n_objects_a_gt_30": 8079,
+ "n_matched_to_mpc": 7286,
+ "n_a_gt_100": 1001,
+ "n_etno_a150_q30": 90,
+ "n_a250_q40": 23,
+ "etno_cut": {
+  "a_au_min": 150.0,
+  "q_au_min": 30.0
+ },
+ "planet_nine_varpi_deg_assumed": 246.7,
+ "n_etno_well_determined": 44,
+ "anti_aligned_fraction": 0.511
+}

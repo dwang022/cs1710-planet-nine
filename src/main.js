@@ -6,7 +6,7 @@ import { drawOrbits } from './charts/orbits.js'
 import { drawRose } from './charts/rose.js'
 import { drawNull } from './charts/nulldist.js'
 import { drawSkyMap } from './charts/skymap.js'
-import { drawDepth } from './charts/depth.js'
+import { depthColour, deepestAt } from './charts/skymap.js'
 import { drawMatrix } from './charts/matrix.js'
 import { drawTimeline } from './charts/timeline.js'
 import { drawPlacement, scorePlanet, physicalProperties } from './charts/placeplanet.js'
@@ -258,11 +258,20 @@ function renderLegend () {
       ${half === 'full' ? `<circle r="9" fill="${fill}"/>` : ''}
       ${half === 'half' ? `<path d="M 0,-9 A 9,9 0 0,1 0,9 Z" fill="${fill}"/>` : ''}
     </svg>`
+  // Sequential ramp for depth, plus the categorical overlays.
+  const ramp = `linear-gradient(90deg, ${d3.range(0, 1.01, 0.1)
+    .map(t => depthColour(20 + t * 6)).join(',')})`
   $('#skyLegend').innerHTML = `
-    <div class="legend-item"><span class="legend-swatch" style="background:var(--series-3)"></span>Where Planet Nine would be</div>
-    <div class="legend-item"><span class="legend-swatch" style="background:var(--series-1);border-radius:50%"></span>Direction each object leans</div>
-    <div class="legend-item"><span class="legend-swatch" style="background:var(--text-secondary)"></span>Ecliptic — the plane of the planets</div>
-    <div class="legend-item"><span class="legend-swatch" style="background:#e8dcc0"></span>Milky Way (±15°) — crowded, hard to search</div>`
+    <div class="legend-item" style="gap:10px">
+      <span style="width:120px;height:11px;border-radius:3px;background:${ramp};
+        border:1px solid var(--rule)"></span>
+      <span>How deep anyone has looked here —
+        <b style="color:var(--text-muted)">shallow</b> to <b style="color:#8fd3e2">deep</b></span>
+    </div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--series-3)"></span>Planet Nine's possible path</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--series-2)"></span>…where nobody has looked deep enough yet</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:#e8dcc0"></span>Milky Way — too crowded to search well</div>
+    <div class="legend-item"><span class="legend-swatch" style="background:var(--series-1);border-radius:50%"></span>Direction each object leans</div>`
 
   $('#matrixLegend').innerHTML = `
     <div class="legend-item">${mark('var(--series-3)', 'full')}Accounts for it</div>
@@ -286,7 +295,6 @@ function renderSky (visibleIds) {
     activeSurvey: ui.survey, showTrack: true, showPerihelia: true,
     visibleIds: renderSky.ids,
   })
-  drawDepth($('#chartDepth'), { surveys: SURVEYS, activeSurvey: ui.survey })
 }
 
 function renderSurveyChips () {
@@ -305,15 +313,23 @@ function renderSurveyChips () {
 
 function renderSearchStats () {
   // How much sky has actually been covered deeply enough to matter?
-  const SKY = 41253
+  const SKY_SQ_DEG = 41253   // was named SKY, which shadowed the track data
   const deepEnough = SURVEYS.filter(s =>
     s.wavelength === 'optical' && !s.future && (s.depth_mag ?? 0) >= 23.5 && s.area_sq_deg)
   const deepArea = d3.sum(deepEnough, s => s.area_sq_deg)
+  // How much of the predicted path has actually been imaged deeply enough to
+  // have excluded a faint Planet Nine? Computed from our own footprint data.
+  const nom = SKY.tracks.find(t => t.label === 'nominal')
+  const thin = nom.points.filter(pt => {
+    const d = deepestAt(SURVEYS, pt.ra_deg, pt.dec_deg)
+    return d === null || d < 23.5
+  }).length
   $('#depthStats').innerHTML = [
     ['Sky photographed at all', '~100%', 'between them, the wide surveys have covered everything'],
-    ['…but deep enough for a faint Planet Nine', `${Math.round(100 * deepArea / SKY)}%`,
+    ['…but deep enough for a faint Planet Nine', `${Math.round(100 * deepArea / SKY_SQ_DEG)}%`,
       'only DES and Subaru reach magnitude 23.5 or fainter'],
-    ['Widest surveys bottom out at', 'mag 20.5–22', 'ZTF, Catalina and Pan-STARRS1 — the brightest end of the prediction'],
+    ['Of its predicted path, still not searched deeply', `${Math.round(100 * thin / nom.points.length)}%`,
+      'imaged only to magnitude 22 — bright enough to have missed it'],
     ['What changes that', 'Rubin / LSST', 'mag 24.5 across 44% of the sky, starting 2025'],
   ].map(([k, v, d]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join('')
 

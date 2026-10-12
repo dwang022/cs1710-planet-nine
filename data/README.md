@@ -79,8 +79,17 @@ visible directly.
 
 **`surveys.json`** — 9 surveys with footprint, depth, years, and a note on what
 each one does or does not rule out. Footprints are declination bands plus RA
-ranges: a schematic of ragged real boundaries, fine for an all-sky map and not
-for anything quantitative. OSSOS is deliberately given as a whole rather than
+ranges: a schematic of ragged real boundaries.
+
+Each band also carries **`dec_range_calibrated`**, squeezed about its centre so
+its solid angle matches the area the survey actually published
+(`scripts/calibrate_footprints.py`). This matters because the sky map shades by
+depth and lets the deepest survey win a patch: uncalibrated, Subaru HSC's band
+covered 8,074 deg² against a published 1,400, so the two *deepest* surveys were
+also the two most inflated, and the map claimed roughly a fifth of the sky was
+deeply searched when the truth is about 4%. Calibration only ever shrinks a
+band. Surveys with `footprint_area_verified: false` (OSSOS, whose area we could
+not confirm) are drawn but excluded from depth shading. OSSOS is deliberately given as a whole rather than
 per-block; the real pointings live in the OSSOS Survey Simulator.
 
 **`planets.json`** — J2000 Keplerian elements plus per-century rates for the

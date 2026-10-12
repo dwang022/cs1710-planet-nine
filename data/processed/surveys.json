@@ -33,7 +33,12 @@
    "wavelength": "optical",
    "p9_relevance": "Brown & Batygin (2024) searched PS1 DR2 directly and ruled out the Brown & Batygin (2021) Planet Nine to a 50% completion depth of V = 21.5. [verified: abstract, doi:10.3847/1538-3881/ad24e9]",
    "color_hex": "#5B8FF9",
-   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint.",
+   "dec_range_calibrated": [
+    -27.111,
+    87.111
+   ],
+   "footprint_area_verified": true
   },
   {
    "id": "css",
@@ -59,7 +64,12 @@
    "wavelength": "optical",
    "p9_relevance": "Wide but shallow; excludes a nearby, bright Planet Nine only.",
    "color_hex": "#61DDAA",
-   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint.",
+   "dec_range_calibrated": [
+    -30.0,
+    65.0
+   ],
+   "footprint_area_verified": true
   },
   {
    "id": "ztf",
@@ -85,7 +95,12 @@
    "wavelength": "optical",
    "p9_relevance": "Brown et al. (2022) searched the ZTF public archive and found no candidate to V = 20.5 at 95% efficiency, excluding 56% of the predicted parameter space. Shallow, but it covers most of the northern part of the predicted orbit including the galactic plane. [verified: abstract, doi:10.3847/1538-3881/ac32dd]",
    "color_hex": "#F6BD16",
-   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint.",
+   "dec_range_calibrated": [
+    -27.111,
+    87.111
+   ],
+   "footprint_area_verified": true
   },
   {
    "id": "des",
@@ -116,7 +131,12 @@
    "wavelength": "optical",
    "p9_relevance": "Deep southern coverage of a contiguous 5000 sq deg; yielded 815 TNOs (Bernardinelli et al. 2022), whose 16 extreme objects are consistent with azimuthal isotropy. Contributes to the combined 78% exclusion. [verified: abstract, doi:10.3847/1538-4365/ac3914]",
    "color_hex": "#7262FD",
-   "area_note": "5000 sq deg contiguous, verified from the DES Y6 abstract."
+   "area_note": "5000 sq deg contiguous, verified from the DES Y6 abstract.",
+   "dec_range_calibrated": [
+    -70.0,
+    -35.0
+   ],
+   "footprint_area_verified": true
   },
   {
    "id": "ossos",
@@ -148,7 +168,8 @@
    "p9_relevance": "The key dataset for the bias counter-argument. OSSOS discovered more than 800 TNOs with a carefully characterised detection efficiency, and concluded its eight large-semimajor-axis detections are consistent with a uniform underlying distribution (Shankman et al. 2017). [verified: abstract, doi:10.3847/1538-3881/aa7aed]",
    "color_hex": "#F6903D",
    "area_note": "OSSOS surveyed eight discrete blocks. We did not verify a total area, so this is left null rather than guessed.",
-   "depth_note": "Depth varies by block; the single number here is indicative only."
+   "depth_note": "Depth varies by block; the single number here is indicative only.",
+   "footprint_area_verified": false
   },
   {
    "id": "hsc_ssp",
@@ -182,7 +203,12 @@
    "wavelength": "optical",
    "p9_relevance": "Deep enough to see Planet Nine anywhere on its orbit, but covers a tiny fraction of the sky.",
    "color_hex": "#78D3F8",
-   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint.",
+   "dec_range_calibrated": [
+    14.641,
+    23.359
+   ],
+   "footprint_area_verified": true
   },
   {
    "id": "wise",
@@ -207,7 +233,12 @@
    ],
    "wavelength": "mid-infrared",
    "p9_relevance": "Luhman (2014) used WISE to search for a distant companion to the Sun. A 6 Earth-mass Planet Nine is far too cold and faint for WISE, so this does not exclude it. [UNVERIFIED: the widely quoted Saturn-mass/10,000 AU and Jupiter-mass/26,000 AU limits come from this paper, but it has no arXiv preprint and we could not read the abstract. Check before quoting.]",
-   "color_hex": "#9661BC"
+   "color_hex": "#9661BC",
+   "dec_range_calibrated": [
+    -90,
+    90
+   ],
+   "footprint_area_verified": true
   },
   {
    "id": "iras_akari",
@@ -231,7 +262,12 @@
    ],
    "wavelength": "far-infrared",
    "p9_relevance": "Phan et al. (2025) cross-matched these two all-sky far-IR catalogues 23 years apart and found one surviving candidate out of 13 pairs, implying 500-700 AU and 7-17 Earth masses. Two epochs cannot fix an orbit. [verified: abstract, doi:10.1017/pasa.2025.10024]",
-   "color_hex": "#008685"
+   "color_hex": "#008685",
+   "dec_range_calibrated": [
+    -90,
+    90
+   ],
+   "footprint_area_verified": true
   },
   {
    "id": "lsst",
@@ -259,7 +295,12 @@
    "future": true,
    "p9_relevance": "The decisive test. Over a decade it should either find Planet Nine or exclude nearly all of the remaining parameter space, and it will multiply the known ETNO sample with a characterised, modellable selection function.",
    "color_hex": "#F08BB4",
-   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint."
+   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint.",
+   "dec_range_calibrated": [
+    -62.28,
+    -0.72
+   ],
+   "footprint_area_verified": true
   }
  ],
  "galactic_plane_note": "The surviving unsearched parameter space is concentrated where the northern galactic plane crosses the ecliptic, because crowded star fields badly degrade moving-object detection. [verified: Brown & Batygin 2024 abstract]",
@@ -290,5 +331,6 @@
   ],
   "remaining": "Faint (V > 21), concentrated near and in the region where the northern galactic plane crosses the ecliptic.",
   "src": "Brown et al. 2022 and Brown & Batygin 2024, both verified from their abstracts."
- }
+ },
+ "_footprint_calibration": "dec_range is the raw schematic band. dec_range_calibrated squeezes that band about its centre so its solid angle matches area_sq_deg, which the depth-shaded map uses. Surveys with footprint_area_verified = false have no published area we could confirm and are excluded from depth shading. Generated by scripts/calibrate_footprints.py."
 }

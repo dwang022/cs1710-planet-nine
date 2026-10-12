@@ -21,6 +21,43 @@ const D = Math.PI / 180
 const NGP_RA = 192.85948 * D, NGP_DEC = 27.12825 * D, L_NCP = 122.93192 * D
 const OBLIQUITY = 23.439291 * D
 
+// Depth is the real constraint on this search, so the map is shaded by it:
+// how faint could anyone see at this patch of sky? One hue, dark (shallow) to
+// bright (deep), on the dark surface.
+const DEPTH_RANGE = [20.0, 26.0]
+export const depthColour = d3.scaleLinear()
+  .domain(DEPTH_RANGE).clamp(true)
+  .range(['#1d2a31', '#8fd3e2'])
+  .interpolate(d3.interpolateLab)
+
+/**
+ * The declination band to actually draw and test against: the calibrated one,
+ * squeezed so the band's solid angle matches the survey's published area.
+ * See scripts/calibrate_footprints.py.
+ */
+export function footprintDec (s) { return s.dec_range_calibrated || s.dec_range }
+
+/** Does this survey's depth shading apply at this point? */
+function covers (s, raDeg, decDeg) {
+  if (!s.ra_ranges || !footprintDec(s)) return false
+  if (s.footprint_area_verified === false) return false
+  const [d0, d1] = footprintDec(s)
+  if (decDeg < d0 || decDeg > d1) return false
+  return s.ra_ranges.some(([r0, r1]) => raDeg >= r0 && raDeg <= r1)
+}
+
+/** The faintest magnitude anyone has reached at this position, or null. */
+export function deepestAt (surveys, raDeg, decDeg, { includeFuture = false } = {}) {
+  let best = null
+  for (const s of surveys) {
+    if (s.wavelength !== 'optical' || s.depth_mag == null) continue
+    if (!includeFuture && s.future) continue
+    if (!covers(s, raDeg, decDeg)) continue
+    if (best === null || s.depth_mag > best) best = s.depth_mag
+  }
+  return best
+}
+
 /** Galactic (l, b) in degrees -> equatorial [RA, Dec] in degrees. */
 function galacticToEquatorial (lDeg, bDeg) {
   const l = lDeg * D, b = bDeg * D
@@ -132,9 +169,12 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
   // Each footprint is a dec band crossed with one or more RA ranges.
   const patches = []
   for (const s of surveys) {
-    if (!s.dec_range || !s.ra_ranges) continue
+    if (!footprintDec(s) || !s.ra_ranges) continue
+    // Only area-verified optical surveys may paint depth; the rest would claim
+    // more deeply-searched sky than anyone actually searched.
+    if (s.footprint_area_verified === false) continue
     for (const [ra0, ra1] of s.ra_ranges) {
-      const [d0, d1] = s.dec_range
+      const [d0, d1] = footprintDec(s)
       // Declination is clamped off the poles: at dec = +/-90 every right
       // ascension collapses to one point, and joining through it draws a spike.
       // Trace the graticule cell: bottom parallel, up the eastern meridian,
@@ -152,26 +192,33 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
   }
   function clampRA (ra) { return Math.min(359.99, Math.max(0.01, ra)) }
 
+  // Painted shallowest first: a deeper survey drawn on top simply wins, which
+  // turns overlapping footprints into a true "deepest reached here" map without
+  // rasterising anything.
+  patches.sort((a, b) => (a.s.depth_mag ?? 0) - (b.s.depth_mag ?? 0))
+
   const fp = layers.selectAll('path.fp').data(patches, (d, i) => d.s.id + '-' + i)
   fp.exit().remove()
   fp.enter().append('path').attr('class', 'fp')
     .merge(fp)
     .attr('d', d => d3.line()(d.ring) + 'Z')
-    .attr('fill', d => d.s.color_hex)
-    .attr('stroke', d => d.s.color_hex)
-    .attr('stroke-width', 1)
-    .attr('fill-opacity', d => activeSurvey === d.s.id ? 0.34
-      : activeSurvey ? 0.03
-        : (d.s.area_sq_deg || 0) > 20000 ? 0.045 : 0.15)
-    .attr('stroke-opacity', d => activeSurvey === d.s.id ? 0.95 : (activeSurvey ? 0.1 : 0.38))
+    .attr('fill', d => d.s.depth_mag != null && d.s.wavelength === 'optical'
+      ? depthColour(d.s.depth_mag) : '#1a2228')
+    .attr('fill-opacity', d => d.s.future ? 0 : (activeSurvey && activeSurvey !== d.s.id ? 0.25 : 0.62))
+    .attr('stroke', d => activeSurvey === d.s.id ? d.s.color_hex : 'none')
+    .attr('stroke-width', 2)
+    .attr('stroke-opacity', d => activeSurvey === d.s.id ? 1 : 0)
     .style('cursor', 'pointer')
     .on('pointerenter', (ev, d) => showTip(ev, `
       <div class="t-name">${d.s.name}</div>
       <dl>
+        <dt>sees down to</dt><dd>${d.s.depth_mag ? 'mag ' + d.s.depth_mag : 'infrared'}</dd>
         <dt>years</dt><dd>${d.s.years[0]}–${d.s.years[1]}</dd>
-        <dt>depth</dt><dd>${d.s.depth_mag ? 'V/r ≈ ' + d.s.depth_mag : 'infrared'}</dd>
-        <dt>area</dt><dd>${d.s.area_sq_deg ? d3.format(',')(d.s.area_sq_deg) + ' sq°' : 'see note'}</dd>
-      </dl>`))
+      </dl>
+      <div style="margin-top:6px;color:var(--text-secondary)">${
+        (d.s.depth_mag ?? 0) >= 22
+          ? 'Deep enough to spot Planet Nine here.'
+          : 'Too shallow — Planet Nine could sit here unseen.'}</div>`))
     .on('pointerleave', hideTip)
 
   // --- reference circles ---------------------------------------------------
@@ -253,6 +300,32 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
     segs.push(cur)
     return segs.filter(s => s.length > 1).map(s => d3.line()(s)).join(' ')
   }
+
+  // --- the predicted path, split by whether anyone looked deep enough ------
+  // Planet Nine is predicted somewhere in magnitude 21-25. A survey bottoming
+  // out at 22 could only ever have caught it at the very brightest end, so it
+  // has not really excluded anything. 23.5 is the bar for ruling out a faint
+  // one, and it is the threshold this line is split on.
+  const P9_MAG = 23.5
+  const nom = track.tracks.find(t => t.label === 'nominal')
+  const unsearched = []
+  if (showTrack && nom) {
+    let run = []
+    for (const pt of nom.points) {
+      const d = deepestAt(surveys, pt.ra_deg, pt.dec_deg)
+      if (d === null || d < P9_MAG) run.push(pt)
+      else if (run.length) { unsearched.push(run); run = [] }
+    }
+    if (run.length) unsearched.push(run)
+  }
+  const us = layers.selectAll('path.unsearched').data(unsearched)
+  us.exit().remove()
+  us.enter().append('path').attr('class', 'unsearched')
+    .merge(us)
+    .attr('d', run => segmentedPath(run.map(p => [p.ra_deg, p.dec_deg])))
+    .attr('fill', 'none').attr('stroke', 'var(--series-2)')
+    .attr('stroke-width', 7).attr('stroke-opacity', 0.55)
+    .attr('stroke-linecap', 'round')
 
   // --- where the predicted path is hardest to search -----------------------
   // The surviving parameter space is concentrated where Planet Nine's orbit

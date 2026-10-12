@@ -3,6 +3,10 @@
 Two ways of wiring the same three views together, to test whether coordinated
 views help answer: **does the alignment survive, whichever objects you trust?**
 
+**Live:** https://dwang022.github.io/cs1710-planet-nine-prototypes/
+([A — cross-filter](https://dwang022.github.io/cs1710-planet-nine-prototypes/a.html) ·
+[B — comparison](https://dwang022.github.io/cs1710-planet-nine-prototypes/b.html))
+
 Runs **separately from the main site**: own `package.json`, own dependencies,
 own port. Both can run at once.
 
@@ -64,3 +68,11 @@ something crosses 0.05. The counter is there to keep that visible.
 `src/stats.js` is copied from the main app, where the Rayleigh test was checked
 against a 200,000-trial Monte Carlo (agreement within 5%). Data is the same
 verified ETNO table — JPL elements cross-checked against the Minor Planet Centre.
+
+## Deploying
+
+`./deploy.sh` rebuilds and republishes to GitHub Pages. It force-pushes the
+built output to the public repo `dwang022/cs1710-planet-nine-prototypes`; only
+compiled files and the data go there, never the source or the process book.
+
+Hosting is free: GitHub Pages on a public repo, no account or card needed.

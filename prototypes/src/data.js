@@ -6,7 +6,7 @@
 import { resultant, rayleighP, nullDistribution } from './stats.js'
 
 export async function loadObjects () {
-  const r = await fetch('/data/etnos.json')
+  const r = await fetch(import.meta.env.BASE_URL + 'data/etnos.json')
   if (!r.ok) throw new Error(`etnos.json → ${r.status}`)
   return r.json()
 }

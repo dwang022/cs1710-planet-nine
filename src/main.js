@@ -9,8 +9,10 @@ import { drawSkyMap } from './charts/skymap.js'
 import { drawMatrix } from './charts/matrix.js'
 import { drawTimeline } from './charts/timeline.js'
 import { drawPlacement, scorePlanet, physicalProperties } from './charts/placeplanet.js'
+import { makeScatter } from './charts/scatter.js'
+import { initTour } from './tour.js'
 
-const DEFAULTS = { aMin: 150, qMin: 30, quality: true, showP9: true }
+const DEFAULTS = { aMin: 150, qMin: 30, aMax: Infinity, qMax: Infinity, quality: true, showP9: true }
 const state = { ...DEFAULTS }
 // Your planet starts at the published best fit, so the first thing you see is
 // what the literature actually proposes.
@@ -20,6 +22,7 @@ const ui = { survey: null, alt: null, paper: null }
 
 let ETNOS = [], CUTS = [], SURVEYS = [], PAPERS = null
 let SKY = null, PERIHELIA = [], ALTS = null, PREDICTIONS = null
+let scatter = null
 
 const $ = s => document.querySelector(s)
 const fmt = d3.format(',.0f')
@@ -28,8 +31,25 @@ const fmt = d3.format(',.0f')
 
 function selected () {
   return ETNOS.filter(o =>
-    o.a_au >= state.aMin && (o.q_au ?? 0) >= state.qMin &&
+    o.a_au >= state.aMin && o.a_au <= state.aMax &&
+    (o.q_au ?? 0) >= state.qMin && (o.q_au ?? 0) <= state.qMax &&
     (!state.quality || o.well_determined))
+}
+
+const boxed = () => isFinite(state.aMax) || isFinite(state.qMax)
+
+/** Drive every control from one place, so the tour and the charts agree. */
+function applyState (patch) {
+  Object.assign(state, patch)
+  syncControls()
+  render()
+}
+
+function syncControls () {
+  $('#aMin').value = state.aMin; $('#aMinV').textContent = Math.round(state.aMin)
+  $('#qMin').value = state.qMin; $('#qMinV').textContent = Math.round(state.qMin)
+  $('#quality').checked = state.quality
+  $('#showP9').checked = state.showP9
 }
 
 function withAlignment (objects) {
@@ -79,6 +99,22 @@ function render () {
   const beat = nd.values.filter(v => v >= stats.R).length
   $('#nullSub').textContent =
     `${stats.n} objects. Of 4,000 random universes, ${beat.toLocaleString()} looked at least this aligned.`
+
+  if (scatter) {
+    const ids = new Set(objs.map(o => o.id))
+    scatter.update(state.quality ? ETNOS.filter(o => o.well_determined) : ETNOS,
+      o => ids.has(o.id))
+    scatter.setSelection(boxed() ? state : null)
+  }
+  $('#selChip').innerHTML = boxed()
+    ? `<span style="display:inline-flex;align-items:center;gap:10px;background:#199e7022;border:1px solid var(--series-3);
+         border-radius:999px;padding:6px 14px;font-size:.82rem">
+         Showing reach ${fmt(state.aMin)}–${fmt(state.aMax)} AU, closest ${state.qMin.toFixed(0)}–${state.qMax.toFixed(0)} AU
+         <button id="clearBox" style="background:none;border:0;color:var(--series-3);cursor:pointer;font:inherit;padding:0">clear ✕</button>
+       </span>`
+    : `<span style="font-size:.82rem;color:var(--text-muted)">No box drawn — showing everything the sliders allow.</span>`
+  const cb = $('#clearBox')
+  if (cb) cb.addEventListener('click', () => applyState({ aMin: DEFAULTS.aMin, qMin: DEFAULTS.qMin, aMax: Infinity, qMax: Infinity }))
 
   renderVerdict(stats, p)
   renderTable(objs)
@@ -343,8 +379,15 @@ function renderSources () {
 
 function bind () {
   const aMin = $('#aMin'), qMin = $('#qMin')
-  aMin.addEventListener('input', () => { state.aMin = +aMin.value; $('#aMinV').textContent = state.aMin; render() })
-  qMin.addEventListener('input', () => { state.qMin = +qMin.value; $('#qMinV').textContent = state.qMin; render() })
+  // Moving a slider drops any drawn box, so the two controls never disagree.
+  aMin.addEventListener('input', () => {
+    state.aMin = +aMin.value; state.aMax = Infinity; state.qMax = Infinity
+    $('#aMinV').textContent = state.aMin; render()
+  })
+  qMin.addEventListener('input', () => {
+    state.qMin = +qMin.value; state.aMax = Infinity; state.qMax = Infinity
+    $('#qMinV').textContent = state.qMin; render()
+  })
   $('#quality').addEventListener('change', e => { state.quality = e.target.checked; render() })
   $('#showP9').addEventListener('change', e => { state.showP9 = e.target.checked; render() })
   $('#reset').addEventListener('click', () => {
@@ -373,7 +416,18 @@ async function init () {
   renderLegend(); renderCutGrid(); renderBuildControls()
   renderSurveyChips(); renderSky(); renderSearchStats()
   renderMatrix(); renderTimeline(); renderSources()
+
+  scatter = makeScatter($('#chartScatter'), {
+    onBrush: box => {
+      if (box) Object.assign(state, box)
+      else Object.assign(state, { aMin: DEFAULTS.aMin, qMin: DEFAULTS.qMin, aMax: Infinity, qMax: Infinity })
+      syncControls()
+      render()
+    },
+  })
+
   bind(); render()
+  initTour(applyState)
 }
 
 init().catch(err => {

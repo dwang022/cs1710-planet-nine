@@ -4,6 +4,7 @@
 
 import * as d3 from 'd3'
 import { showTip, hideTip } from './tooltip.js'
+import { registerHighlight, setHover } from '../highlight.js'
 import { PLANET_NINE } from '../orbits.js'
 
 const RAD = Math.PI / 180
@@ -55,7 +56,7 @@ export function drawRose (root, { objects, stats, showP9 }) {
   }
 
   const dots = g.selectAll('circle.dot').data(placed, p => p.d.id)
-  dots.exit().transition().duration(180).attr('opacity', 0).remove()
+  dots.exit().interrupt().remove()
   const de = dots.enter().append('circle').attr('class', 'dot')
     .attr('r', 0).attr('stroke', 'var(--surface-1)').attr('stroke-width', 1.5)
   de.merge(dots)
@@ -66,12 +67,22 @@ export function drawRose (root, { objects, stats, showP9 }) {
     .transition().duration(360).attr('r', 5)
 
   g.selectAll('circle.dot')
-    .on('pointerenter', (ev, p) => showTip(ev, `
+    .on('pointerenter', (ev, p) => { setHover(p.d.id); showTip(ev, `
       <div class="t-name">${p.d.name || p.d.provisional_desig || p.d.id}</div>
       <dl><dt>ϖ</dt><dd>${p.d.varpi_deg.toFixed(1)}°</dd>
       <dt>a</dt><dd>${d3.format(',.0f')(p.d.a_au)} AU</dd>
-      <dt>group</dt><dd>${p.d.alignment}</dd></dl>`))
-    .on('pointerleave', hideTip)
+      <dt>group</dt><dd>${p.d.alignment}</dd></dl>`) })
+    .on('pointerleave', () => { setHover(null); hideTip() })
+
+  if (!root.__hl) {
+    root.__hl = true
+    registerHighlight(id => {
+      d3.select(root).selectAll('circle.dot')
+        .attr('r', p => p.d.id === id ? 8 : 5)
+        .attr('stroke', p => p.d.id === id ? 'var(--text-primary)' : 'var(--surface-1)')
+        .attr('stroke-width', p => p.d.id === id ? 2.5 : 1.5)
+    })
+  }
 
   // --- mean resultant vector ----------------------------------------------
   // Length is R scaled to the plot radius: a short arrow means "no preferred

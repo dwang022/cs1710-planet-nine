@@ -5,6 +5,7 @@
 import * as d3 from 'd3'
 import { orbitPath, orbitArc, perihelionPoint, PLANET_NINE } from '../orbits.js'
 import { showTip, hideTip } from './tooltip.js'
+import { registerHighlight, setHover } from '../highlight.js'
 
 const NEPTUNE = { a: 30.07, e: 0.00859, i: 1.770, node: 131.784, argperi: 273.19 }
 
@@ -61,7 +62,7 @@ export function drawOrbits (root, { objects, showP9, maxAu, stats }) {
 
   // --- the extreme objects -------------------------------------------------
   const sel = g.selectAll('g.obj').data(objects, d => d.id)
-  sel.exit().transition().duration(200).attr('opacity', 0).remove()
+  sel.exit().interrupt().remove()
 
   const enter = sel.enter().append('g').attr('class', 'obj').attr('opacity', 0)
   // Faint: the whole ellipse, which mostly runs off the edge - that is the point.
@@ -104,6 +105,7 @@ export function drawOrbits (root, { objects, showP9, maxAu, stats }) {
   all.transition().duration(420).attr('opacity', 1)
 
   all.on('pointerenter', function (ev, d) {
+    setHover(d.id)
     d3.select(this).select('path.track').attr('stroke-width', 3.6).attr('opacity', 1)
     d3.select(this).raise()
     showTip(ev, `
@@ -121,8 +123,29 @@ export function drawOrbits (root, { objects, showP9, maxAu, stats }) {
       d3.select(this).select('path.track')
         .attr('stroke-width', d.well_determined ? 2.2 : 1.3)
         .attr('opacity', d.well_determined ? 0.9 : 0.4)
+      setHover(null)
       hideTip()
     })
+
+  // Repaint this chart whenever any view highlights an object.
+  if (!root.__hl) {
+    root.__hl = true
+    registerHighlight(id => {
+      d3.select(root).selectAll('g.obj').each(function (d) {
+        const on = d.id === id
+        d3.select(this).select('path.track')
+          .attr('stroke', on ? 'var(--text-primary)' : 'var(--series-1)')
+          .attr('stroke-width', on ? 3.6 : (d.well_determined ? 2.2 : 1.3))
+          .attr('opacity', on ? 1 : (d.well_determined ? 0.5 : 0.22))
+        d3.select(this).select('circle.peri')
+          .attr('fill', on ? 'var(--text-primary)' : 'var(--series-1)')
+          .attr('r', on ? 8 : 5.5)
+        // Deliberately no raise() here. Re-ordering the element under the
+        // cursor re-fires pointerenter/leave, which ping-pongs with setHover
+        // and locks the page up. Raising happens once, in the hover handler.
+      })
+    })
+  }
 
   // --- Planet Nine ---------------------------------------------------------
   const p9data = showP9 ? [PLANET_NINE] : []

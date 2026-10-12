@@ -362,3 +362,76 @@ svg text.halo {
   font-family: var(--font-mono); letter-spacing: .04em; }
 
 @media (max-width: 900px) { .detail-cols { grid-template-columns: 1fr; } }
+
+/* --- linked-view additions: explainers, glossary, guided tour ------------- */
+
+/* "How do I read this?" — collapsed by default so experts aren't nagged */
+details.howto { margin: 0 0 16px; border: 1px solid var(--rule); border-radius: 10px; background: #ffffff05; }
+details.howto summary {
+  cursor: pointer; list-style: none; padding: 10px 14px;
+  font-size: .84rem; color: var(--text-secondary);
+  display: flex; align-items: center; gap: 9px;
+}
+details.howto summary::-webkit-details-marker { display: none; }
+details.howto summary::before {
+  content: "?"; flex: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--series-1); color: #fff; font-size: .72rem; font-weight: 700;
+  display: grid; place-items: center;
+}
+details.howto[open] summary { border-bottom: 1px solid var(--rule); }
+details.howto .howto-body { padding: 14px; font-size: .88rem; color: var(--text-secondary); }
+details.howto .howto-body p { margin: 0 0 9px; }
+details.howto .howto-body p:last-child { margin: 0; }
+details.howto ul { margin: 0 0 9px; padding-left: 18px; }
+details.howto li { margin-bottom: 5px; }
+details.howto b { color: var(--text-primary); }
+
+/* inline glossary */
+.gl {
+  border-bottom: 1px dotted var(--text-muted); cursor: help;
+  color: var(--text-primary); text-decoration: none;
+}
+.gl:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+
+/* primer strip */
+.primer { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0 4px; }
+.primer .pc { background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px; padding: 15px 17px; }
+.primer .pc h4 { margin: 0 0 6px; font-size: .92rem; }
+.primer .pc p { margin: 0; font-size: .84rem; }
+
+/* guided tour */
+#tourBtn {
+  background: var(--series-1); border: 0; color: #fff; border-radius: 9px;
+  padding: 11px 18px; font: inherit; font-weight: 600; font-size: .88rem;
+  cursor: pointer; min-height: 44px;
+}
+#tourBtn:hover { filter: brightness(1.08); }
+
+.tour-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+  background: var(--surface-2); border-top: 1px solid var(--rule);
+  box-shadow: 0 -12px 40px #000a;
+}
+.tour-inner {
+  max-width: var(--maxw); margin: 0 auto; padding: 15px 24px;
+  display: flex; gap: 18px; align-items: center;
+}
+.tour-step { font: 600 .72rem/1 var(--font-mono); color: var(--text-muted); flex: none; }
+.tour-text { flex: 1; font-size: .89rem; color: var(--text-secondary); }
+.tour-text strong { color: var(--text-primary); display: block; margin-bottom: 3px; }
+.tour-nav { display: flex; gap: 8px; flex: none; }
+.tour-nav button:disabled { opacity: .4; cursor: default; }
+body.touring { padding-bottom: 110px; }
+
+.tour-spot {
+  outline: 2px solid var(--series-3);
+  outline-offset: 8px;
+  border-radius: 8px;
+  transition: outline-color .2s;
+}
+
+@media (max-width: 760px) {
+  .primer { grid-template-columns: 1fr; }
+  .tour-inner { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+  .tour-text { flex: 1 1 100%; order: 3; }
+}

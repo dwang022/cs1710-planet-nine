@@ -9,6 +9,7 @@
 
 import * as d3 from 'd3'
 import { showTip, hideTip } from './tooltip.js'
+import { registerHighlight, setHover } from '../highlight.js'
 
 const W = 940, H = 500
 const M = { top: 26, right: 16, bottom: 34, left: 16 }
@@ -302,12 +303,22 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
     .attr('cy', d => mollweide(clampRA(d.peri_ra_deg), d.peri_dec_deg)[1])
     .attr('fill', 'var(--series-1)')
     .attr('opacity', d => d.well_determined ? 0.95 : 0.4)
-    .on('pointerenter', (ev, d) => showTip(ev, `
+    .on('pointerenter', (ev, d) => { setHover(d.id); showTip(ev, `
       <div class="t-name">${d.name || d.id}</div>
       <dl><dt>perihelion RA</dt><dd>${d.peri_ra_deg.toFixed(1)}°</dd>
       <dt>dec</dt><dd>${d.peri_dec_deg.toFixed(1)}°</dd>
-      <dt>distance</dt><dd>${d3.format(',.0f')(d.a_au)} AU</dd></dl>`))
-    .on('pointerleave', hideTip)
+      <dt>distance</dt><dd>${d3.format(',.0f')(d.a_au)} AU</dd></dl>`) })
+    .on('pointerleave', () => { setHover(null); hideTip() })
+
+  if (!root.__hl) {
+    root.__hl = true
+    registerHighlight(id => {
+      d3.select(root).selectAll('circle.ph')
+        .attr('r', d => d.id === id ? 7.5 : 4)
+        .attr('fill', d => d.id === id ? 'var(--text-primary)' : 'var(--series-1)')
+        .attr('stroke-width', d => d.id === id ? 2 : 1.2)
+    })
+  }
 
   // --- axis labels ---------------------------------------------------------
   g.selectAll('text.ral').data(gratRA).join('text')

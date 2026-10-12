@@ -22,6 +22,10 @@
       Every chart below is built from real telescope catalogues. Nothing is made up.
       Scroll, drag the sliders, and decide for yourself.
     </p>
+    <div style="margin-top:26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <button id="tourBtn" type="button">▶ Walk me through it</button>
+      <span style="font-size:.85rem;color:var(--text-muted)">7 steps, no astronomy needed</span>
+    </div>
     <div class="byline">
       <span>Daniel Wang</span><span>Gabriel Gonzalez</span><span>Russell Rui Luo</span>
     </div>
@@ -66,6 +70,25 @@
       <div class="stat"><div class="k">Direction they lean</div><div class="v" id="statDir">—</div><div class="d">average heading, around the sky</div></div>
     </div>
     <div class="scale-strip" id="scaleStrip"></div>
+
+    <div class="primer">
+      <div class="pc">
+        <h4>AU — the ruler</h4>
+        <p>One AU is Earth to the Sun, about 93 million miles. Neptune is 30 AU out.
+        These objects reach hundreds. Voyager 1, after 48 years, is at about 170.</p>
+      </div>
+      <div class="pc">
+        <h4>Orbits are ovals, not circles</h4>
+        <p>Every object has a near end and a far end. It moves fast through the
+        near end and crawls through the far one, so it spends most of its life
+        far away.</p>
+      </div>
+      <div class="pc">
+        <h4>"Which way it leans"</h4>
+        <p>Because the oval is long, it points somewhere. That direction — where
+        the near end sits — is the single number this whole page is about.</p>
+      </div>
+    </div>
   </section>
 
   <!-- 02 ============================================================== -->
@@ -77,6 +100,37 @@
         Each loop is one object's path around the Sun. The dot is where it comes
         closest. If nothing were herding them, those dots would ring the Sun evenly.
       </p>
+    </div>
+
+    <details class="howto">
+      <summary>How do I read these charts?</summary>
+      <div class="howto-body">
+        <p><b>The left chart</b> is the solar system seen from above, with the Sun
+        at the centre. Each bright arc is the part of one object's orbit nearest
+        the Sun, and the dot on it is the closest point — the direction that orbit
+        leans. The faint lines continue outward, mostly off the edge, because
+        these orbits are enormous.</p>
+        <p><b>The right chart</b> throws away everything except that one direction.
+        Each object becomes a dot placed by its angle, 0° to 360°. Distance from
+        the centre means nothing here; it only stops dots from overlapping.</p>
+        <p><b>What to look for:</b> if nothing were organising these objects, the
+        dots would be spread evenly around the circle. Instead they bunch on one
+        side. The white arrow is the average direction, and the longer it is, the
+        more the objects agree.</p>
+        <p><b>Everything is connected.</b> Point at any object in any chart on this
+        page and it lights up in all the others at the same time.</p>
+      </div>
+    </details>
+
+    <div class="card" style="margin-bottom:20px">
+      <h3>Choose which objects to include</h3>
+      <div class="sub">
+        Drag a box to pick a group. Every chart below — and in the next two
+        sections — rebuilds using only what you selected. The sliders at the top
+        do the same thing; this just lets you be more specific.
+      </div>
+      <div id="chartScatter"></div>
+      <div id="selChip" style="margin-top:12px"></div>
     </div>
 
     <div class="legend" id="legendMain"></div>
@@ -118,6 +172,21 @@
         in totally random directions. Grey is what luck looks like. Blue is reality.
       </p>
     </div>
+    <details class="howto">
+      <summary>How do I read this chart?</summary>
+      <div class="howto-body">
+        <p>We take the same number of objects you have selected, point them in
+        completely random directions, and measure how bunched up they look. Then
+        we do that four thousand more times.</p>
+        <p>Each <b>grey bar</b> counts how many of those random universes came out
+        at a given level of agreement. The pile shows what coincidence normally
+        produces. The <b>blue line</b> is the real objects.</p>
+        <p>If the blue line sits inside the grey pile, the real pattern is
+        unremarkable. The further right it sits, the worse chance works as an
+        explanation.</p>
+      </div>
+    </details>
+
     <div class="card">
       <h3 id="nullTitle">Reality against 4,000 random universes</h3>
       <div class="sub" id="nullSub">—</div>
@@ -146,6 +215,22 @@
         hunted. The green curve is where Planet Nine would have to be.
       </p>
     </div>
+    <details class="howto">
+      <summary>How do I read this map?</summary>
+      <div class="howto-body">
+        <p>This is the entire night sky, flattened onto a page the way a world map
+        flattens the globe. Left to right is the direction you would turn to face;
+        up and down is how high above the horizon.</p>
+        <p><b>Shaded patches</b> are the regions each telescope survey has actually
+        photographed. <b>The green line</b> is the path Planet Nine would follow if
+        it exists. <b>Blue dots</b> are the directions the real objects lean — the
+        same objects you selected above.</p>
+        <p><b>The pale diagonal band is the Milky Way.</b> It is so dense with stars
+        that spotting one slow-moving dot is nearly hopeless, and the green path
+        crosses it twice. That is where the search still has gaps.</p>
+      </div>
+    </details>
+
     <div class="legend" id="skyLegend"></div>
     <div class="chip-row" id="surveyChips"></div>
     <div class="card">

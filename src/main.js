@@ -6,6 +6,7 @@ import { drawOrbits } from './charts/orbits.js'
 import { drawRose } from './charts/rose.js'
 import { drawNull } from './charts/nulldist.js'
 import { drawSkyMap } from './charts/skymap.js'
+import { drawDepth } from './charts/depth.js'
 import { drawMatrix } from './charts/matrix.js'
 import { drawTimeline } from './charts/timeline.js'
 import { drawPlacement, scorePlanet, physicalProperties } from './charts/placeplanet.js'
@@ -285,6 +286,7 @@ function renderSky (visibleIds) {
     activeSurvey: ui.survey, showTrack: true, showPerihelia: true,
     visibleIds: renderSky.ids,
   })
+  drawDepth($('#chartDepth'), { surveys: SURVEYS, activeSurvey: ui.survey })
 }
 
 function renderSurveyChips () {
@@ -302,6 +304,19 @@ function renderSurveyChips () {
 }
 
 function renderSearchStats () {
+  // How much sky has actually been covered deeply enough to matter?
+  const SKY = 41253
+  const deepEnough = SURVEYS.filter(s =>
+    s.wavelength === 'optical' && !s.future && (s.depth_mag ?? 0) >= 23.5 && s.area_sq_deg)
+  const deepArea = d3.sum(deepEnough, s => s.area_sq_deg)
+  $('#depthStats').innerHTML = [
+    ['Sky photographed at all', '~100%', 'between them, the wide surveys have covered everything'],
+    ['…but deep enough for a faint Planet Nine', `${Math.round(100 * deepArea / SKY)}%`,
+      'only DES and Subaru reach magnitude 23.5 or fainter'],
+    ['Widest surveys bottom out at', 'mag 20.5–22', 'ZTF, Catalina and Pan-STARRS1 — the brightest end of the prediction'],
+    ['What changes that', 'Rubin / LSST', 'mag 24.5 across 44% of the sky, starting 2025'],
+  ].map(([k, v, d]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join('')
+
   const ex = PREDICTIONS.search_exclusions
   const done = ex.ps1_2024_cumulative.fraction_excluded
   $('#searchStats').innerHTML = [

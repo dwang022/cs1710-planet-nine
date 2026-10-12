@@ -4,3 +4,5 @@ dist/
 
 # Regenerate with ./scripts/fetch_all.sh — the MPC discovery list alone is ~80 MB
 data/raw/
+prototypes/node_modules/
+prototypes/dist/

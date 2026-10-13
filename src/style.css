@@ -35,7 +35,13 @@
   --font-sans: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", Inter, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
 
-  --maxw: 1180px;
+  /* Content spans ~95% of the viewport; the cap only stops ultrawide monitors
+     from stretching charts past usefulness. */
+  --maxw: 2400px;
+  --gutter: 64px;                     /* desktop ≥1200px; tablet/mobile set below */
+  /* Major section boundaries only (filter bar → 01 → … → 08 → footer).
+     Component borders keep using --rule. */
+  --divider: 3px solid #777777;
   --radius: 14px;
 }
 
@@ -69,7 +75,9 @@ body {
 
 main { position: relative; z-index: 1; }
 
-.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+/* The one source of horizontal page spacing. Everything that sits on .wrap sets
+   only vertical padding (padding-block) so it can never cancel the gutter. */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding-inline: var(--gutter); }
 
 /* --- type ---------------------------------------------------------------- */
 
@@ -94,41 +102,108 @@ a:hover { text-decoration-color: currentColor; }
 
 /* --- hero ---------------------------------------------------------------- */
 
-.hero { padding: 92px 0 48px; }
-.hero h1 { margin-bottom: 20px; max-width: 16ch; }
+.hero { padding-block: 92px 48px; }
+/* No width cap: the title sits on one line wherever it fits, wraps otherwise. */
+.hero h1 { margin-bottom: 12px; }
 .hero h1 em { font-style: normal; color: var(--series-1); }
 .byline {
-  margin-top: 28px; font-size: 0.85rem; color: var(--text-muted);
+  margin: 0 0 28px; font-size: 0.9rem; color: var(--text-muted);
   display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
 }
 .byline span:not(:last-child)::after { content: "·"; margin-left: 10px; color: var(--rule); }
 
+/* intro: hook → context → purpose → question */
+/* ~80% of the content area, capped so lines stay readable on very wide screens */
+.hero .hero-hook { font-size: clamp(1.15rem, 2.2vw, 1.35rem); margin-bottom: 36px; max-width: min(80%, 95ch); }
+.hero .hero-hook strong { color: var(--text-primary); font-weight: 600; }
+
+.hero-context {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 32px;
+}
+.hero-block {
+  background: var(--surface-1); border: 1px solid var(--rule);
+  border-radius: 12px; padding: 18px 20px;
+}
+.hero-block h3 { margin-bottom: 6px; }
+.hero-block p { margin: 0; font-size: 0.93rem; }
+
+.hero-purpose { margin-bottom: 32px; }
+.hero-purpose-lead { margin-bottom: 14px; }
+.hero-path {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px;
+}
+.hero-path a {
+  display: flex; align-items: center; gap: 12px; min-height: 44px;
+  padding: 9px 14px; border: 1px solid var(--rule); border-radius: 10px;
+  color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;
+  transition: border-color .15s ease, color .15s ease;
+}
+.hero-path a:hover, .hero-path a:focus-visible { border-color: var(--text-muted); color: var(--text-primary); }
+.hero-path a:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+.hero-path span {
+  font: 600 0.7rem/1 var(--font-mono); letter-spacing: 0.08em;
+  color: var(--series-1); flex: none;
+}
+
+/* Outlined callout, styled to match Section 01's .takeaway box */
+.hero-question {
+  margin: 0 auto; padding: 22px 24px; text-align: center; max-width: 68ch;
+  border: 2px solid var(--series-3); border-radius: 10px; background: #199e700d;
+  font-size: clamp(1.25rem, 2.6vw, 1.6rem); font-weight: 700;
+  letter-spacing: -0.015em; line-height: 1.3; color: var(--text-primary);
+}
+.hero-question .eyebrow {
+  display: block; margin-bottom: 10px; color: var(--series-3);
+  font-size: 0.85rem; letter-spacing: 0.14em;
+}
+
+@media (max-width: 1199px) {
+  :root { --gutter: 32px; }
+  .hero-path { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 767px) {
+  :root { --gutter: 16px; }
+  .hero .hero-hook { max-width: none; }
+  .hero-context, .hero-path { grid-template-columns: 1fr; }
+}
+
 /* --- sections ------------------------------------------------------------ */
 
-section { padding: 56px 0; border-top: 1px solid var(--rule); }
-section:first-of-type { border-top: 0; }
+section { padding-block: 56px; border-top: var(--divider); }
 .sec-head { margin-bottom: 28px; }
 .sec-head h2 { margin-bottom: 12px; }
 
-/* --- controls (one row, above the charts, never inside a card) ----------- */
+/* --- controls (section 01: one column per filter, never inside a card) ---- */
 
 .controls {
-  position: sticky; top: 0; z-index: 20;
-  background: color-mix(in srgb, var(--surface-0) 92%, transparent);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--rule);
-  padding: 14px 0;
+  border-block: 1px solid var(--rule);
+  padding: 14px 0 18px; margin-bottom: 28px;
 }
-.controls-inner {
-  display: flex; gap: 28px; align-items: center; flex-wrap: wrap;
+.controls-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+.controls-head .eyebrow { margin: 0; }
+
+/* Each filter spans three shared rows (name / control / description) via
+   subgrid, so names, controls and descriptions line up across columns. */
+.filter-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  column-gap: 32px; row-gap: 8px;
 }
+.filter { display: grid; grid-row: span 3; grid-template-rows: subgrid; }
+.filter > input[type="range"], .filter > .toggle { align-self: center; }
+.filter .toggle { min-height: 22px; padding: 0; justify-self: start; }
+.filter .toggle .state { font-size: 0.8rem; color: var(--text-muted); }
+.filter .toggle input:checked ~ .state::before { content: "On"; }
+.filter .toggle input:not(:checked) ~ .state::before { content: "Off"; }
+.filter-desc { margin: 0; font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); }
+
 .ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 190px; }
-.ctrl label {
+.ctrl label, .filter-name {
   font: 600 0.7rem/1 var(--font-mono); letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--text-muted);
   display: flex; justify-content: space-between; gap: 12px;
 }
-.ctrl label b { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+.ctrl label b, .filter-name b { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
 
 input[type="range"] {
   -webkit-appearance: none; appearance: none;
@@ -165,7 +240,7 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var
 .toggle input:focus-visible + .box { outline: 2px solid var(--series-1); outline-offset: 2px; }
 
 .btn-reset {
-  margin-left: auto; background: transparent; border: 1px solid var(--rule);
+  background: transparent; border: 1px solid var(--rule);
   color: var(--text-secondary); border-radius: 8px; padding: 8px 14px;
   font: inherit; font-size: 0.82rem; cursor: pointer; min-height: 40px;
 }
@@ -187,6 +262,9 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var
 .grid-stats.auto { grid-template-columns: repeat(auto-fit, minmax(176px, 1fr)); }
 
 svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* Wide columns would scale square charts taller than the screen; cap the height
+   and let the viewBox letterbox (aspect ratio is preserved, never stretched). */
+.card svg { max-height: 80vh; }
 svg text { font-family: var(--font-sans); }
 
 .axis-label { fill: var(--text-muted); font-size: 11px; }
@@ -277,20 +355,17 @@ td.num { text-align: right; }
 .src .ttl { color: var(--text-secondary); }
 .src .ttl b { color: var(--text-primary); font-weight: 600; }
 
-footer { padding: 48px 0 72px; border-top: 1px solid var(--rule); color: var(--text-muted); font-size: 0.84rem; }
+footer { padding-block: 48px 72px; border-top: var(--divider); color: var(--text-muted); font-size: 0.84rem; }
 
 /* --- responsive ---------------------------------------------------------- */
 
 @media (max-width: 900px) {
   .grid-2 { grid-template-columns: 1fr; }
   .grid-stats { grid-template-columns: repeat(2, 1fr); }
-  .controls-inner { gap: 16px; }
   .ctrl { min-width: 140px; flex: 1 1 140px; }
-  .btn-reset { margin-left: 0; }
 }
 @media (max-width: 560px) {
-  .wrap { padding: 0 16px; }
-  .hero { padding: 56px 0 32px; }
+  .hero { padding-block: 56px 32px; }
   .grid-stats { grid-template-columns: 1fr 1fr; }
 }
 
@@ -362,3 +437,69 @@ svg text.halo {
   font-family: var(--font-mono); letter-spacing: .04em; }
 
 @media (max-width: 900px) { .detail-cols { grid-template-columns: 1fr; } }
+
+/* --- section 01: explainer copy ------------------------------------------ */
+
+/* Section 01's intro runs the full content width; the global p/.lede ch caps
+   still apply everywhere else. */
+#objects .sec-head p, #alternatives .sec-head p { max-width: none; }
+#objects .aside { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+#objects .aside b { color: var(--text-secondary); font-weight: 600; }
+
+
+.stat .h { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid var(--rule);
+  font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); }
+.stat .h em { color: var(--text-secondary); }
+
+#objects .sub-head { margin-top: 36px; }
+#objects .sub-head h3 { margin-bottom: 6px; }
+#objects .sub-head p { font-size: 0.9rem; margin: 0; max-width: none; }
+#objects .scale-strip { margin-top: 14px; }
+#objects .scale-row { grid-template-columns: 190px 1fr 78px; }
+#objects .scale-row .nm small { display: block; font-size: 0.74rem; color: var(--text-muted); line-height: 1.35; }
+
+.takeaway {
+  margin-top: 28px; padding: 20px 24px; text-align: center;
+  border: 2px solid var(--series-1); background: #3987e50d;
+  border-radius: 10px;
+}
+.takeaway-title {
+  font-size: 1.2rem; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #8fbdf0; margin-bottom: 10px;
+}
+.takeaway p { margin: 0 auto 10px; font-size: 0.92rem; max-width: 90ch; }
+.takeaway a { font-size: 0.92rem; }
+
+@media (max-width: 1199px) { .filter-grid { grid-template-columns: repeat(2, 1fr); row-gap: 8px; } .filter:nth-child(n+3) { margin-top: 16px; } }
+@media (max-width: 767px) {
+  .filter-grid { grid-template-columns: 1fr; }
+  .filter:nth-child(n+2) { margin-top: 12px; }
+  #objects .scale-row { grid-template-columns: 112px 1fr 64px; gap: 10px; }
+}
+@media (max-width: 560px) { #objects .grid-stats { grid-template-columns: 1fr; } }
+
+/* --- section 06: competing-explanations scorecard ------------------------ */
+
+#matrixLegend { gap: 10px 32px; margin-bottom: 16px; }
+#matrixLegend .legend-item { font-size: 0.86rem; gap: 9px; }
+#matrixLegend svg { width: 18px; flex: none; }
+
+/* drawn at the card's real width; scrolls sideways below its minimum */
+#chartMatrix { overflow-x: auto; }
+#chartMatrix svg.matrix-svg { width: auto; max-height: none; }
+.mx .col-head { fill: var(--text-primary); font-weight: 600; }
+.mx .head-rule { stroke: var(--rule); }
+.mx .row { cursor: pointer; outline: none; }
+.mx .row-rule { stroke: var(--rule); stroke-opacity: .6; }
+.mx .rowbg { fill: transparent; transition: fill .12s ease; }
+.mx .rowbar { fill: transparent; }
+.mx .rowlabel { fill: var(--text-secondary); }
+.mx .chev { fill: var(--text-muted); font-size: 15px; }
+.mx .row:hover .rowbg { fill: #ffffff09; }
+.mx .row:hover .rowlabel, .mx .row:hover .chev { fill: var(--text-primary); }
+.mx .row.is-selected .rowbg { fill: #3987e514; }
+.mx .row.is-selected .rowbar { fill: var(--series-1); }
+.mx .row.is-selected .rowlabel { fill: var(--text-primary); font-weight: 600; }
+.mx .row.is-selected .chev { fill: var(--series-1); }
+.mx .row:focus-visible .rowbg { stroke: var(--series-1); stroke-width: 2; }
+#altDetail .detail .eyebrow { margin-bottom: 8px; }

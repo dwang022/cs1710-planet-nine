@@ -57,7 +57,7 @@ function render () {
   const f = formatP(p)
   $('#statP').textContent = stats.n >= 3 ? f.odds.replace('about ', '') : '—'
   $('#statPd').textContent = stats.n >= 3
-    ? `random data looks this aligned ${f.odds}`
+    ? `random orbits line up this well ${f.odds}`
     : 'need at least 3 objects'
   const tile = $('#statPtile')
   tile.classList.toggle('is-strong', p < 0.05 && stats.n >= 3)
@@ -124,16 +124,16 @@ function renderTable (objs) {
 function renderScaleStrip (objs) {
   const far = d3.max(objs, o => o.a_au * (1 + o.e)) || 1000
   const rows = [
-    { nm: 'Earth', au: 1, c: 'var(--series-1)' },
-    { nm: 'Neptune', au: 30.1, c: 'var(--neptune)' },
-    { nm: 'Pluto', au: 39.5, c: 'var(--text-muted)' },
-    { nm: 'Planet Nine (predicted)', au: PLANET_NINE.a_au, c: 'var(--series-3)' },
-    { nm: 'Furthest object in view', au: far, c: 'var(--series-2)' },
+    { nm: 'Earth', q: 'average distance', au: 1, c: 'var(--series-1)' },
+    { nm: 'Neptune', q: 'average distance', au: 30.1, c: 'var(--neptune)' },
+    { nm: 'Pluto', q: 'average distance', au: 39.5, c: 'var(--text-muted)' },
+    { nm: 'Planet Nine', q: 'predicted average distance', au: PLANET_NINE.a_au, c: 'var(--series-3)' },
+    { nm: 'Farthest point', q: 'reached by any object in view', au: far, c: 'var(--series-2)' },
   ]
   const x = d3.scaleSqrt().domain([0, far]).range([0, 100])
   $('#scaleStrip').innerHTML = rows.map(r => `
     <div class="scale-row">
-      <span class="nm">${r.nm}</span>
+      <span class="nm">${r.nm}<small>${r.q}</small></span>
       <span class="bar"><i style="width:${x(r.au).toFixed(1)}%;background:${r.c}"></i></span>
       <span class="au">${r.au < 10 ? r.au : fmt(r.au)} AU</span>
     </div>`).join('')
@@ -229,8 +229,8 @@ function renderLegend () {
 
   $('#matrixLegend').innerHTML = `
     <div class="legend-item">${mark('var(--series-3)', 'full')}Accounts for it</div>
-    <div class="legend-item">${mark('var(--series-2)', 'half')}Partly</div>
-    <div class="legend-item">${mark('var(--text-muted)', 'none')}Does not</div>`
+    <div class="legend-item">${mark('var(--series-2)', 'half')}Partly accounts for it</div>
+    <div class="legend-item">${mark('var(--text-muted)', 'none')}Does not account for it</div>`
 }
 
 function renderCutGrid () {
@@ -292,6 +292,7 @@ function renderAltDetail () {
   const cites = (a.key_dois || []).map(doi => PAPERS.papers.find(p => p.doi === doi)).filter(Boolean)
   el.innerHTML = `
     <div class="detail">
+      <div class="eyebrow">Selected explanation</div>
       <h4>${a.name} <span class="status-chip" style="background:${colours[a.status] || 'var(--surface-3)'}22;color:${colours[a.status] || 'var(--text-muted)'}">${a.status}</span></h4>
       <div class="d-lede">${a.one_liner}</div>
       <div class="detail-cols">
@@ -357,7 +358,7 @@ function bind () {
     render()
   })
   let t
-  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { render(); renderSky() }, 180) })
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { render(); renderSky(); renderMatrix() }, 180) })
 }
 
 async function init () {

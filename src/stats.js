@@ -40,13 +40,13 @@ export function rayleighP (n, R) {
  * return their R values, binned. This is what the histogram shows - the same
  * procedure the user could run by hand, not a formula they have to trust.
  */
-export function nullDistribution (n, trials = 4000, bins = 40) {
+export function nullDistribution (n, trials = 4000, bins = 40, random = Math.random) {
   const counts = new Array(bins).fill(0)
   const values = []
   for (let t = 0; t < trials; t++) {
     let c = 0, s = 0
     for (let i = 0; i < n; i++) {
-      const a = Math.random() * 2 * Math.PI
+      const a = random() * 2 * Math.PI
       c += Math.cos(a); s += Math.sin(a)
     }
     const R = Math.hypot(c / n, s / n)
@@ -54,6 +54,17 @@ export function nullDistribution (n, trials = 4000, bins = 40) {
     counts[Math.min(bins - 1, Math.floor(R * bins))]++
   }
   return { counts, bins, trials, values }
+}
+
+/** Small seeded generator (mulberry32), so a simulation can be repeated exactly. */
+export function seededRandom (seed) {
+  let t = seed >>> 0
+  return () => {
+    t = (t + 0x6D2B79F5) >>> 0
+    let r = Math.imul(t ^ (t >>> 15), 1 | t)
+    r = (r + Math.imul(r ^ (r >>> 7), 61 | r)) ^ r
+    return ((r ^ (r >>> 14)) >>> 0) / 4294967296
+  }
 }
 
 /** Format a p-value the way a reader can act on. */

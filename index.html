@@ -23,8 +23,8 @@
       Scroll, drag the sliders, and decide for yourself.
     </p>
     <div style="margin-top:26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-      <button id="tourBtn" type="button">▶ Walk me through it</button>
-      <span style="font-size:.85rem;color:var(--text-muted)">7 steps, no astronomy needed</span>
+      <a id="startBtn" href="#objects">Start reading ↓</a>
+      <span style="font-size:.85rem;color:var(--text-muted)">no astronomy needed, just scroll</span>
     </div>
     <div class="byline">
       <span>Daniel Wang</span><span>Gabriel Gonzalez</span><span>Russell Rui Luo</span>
@@ -92,169 +92,372 @@
   </section>
 
   <!-- 02 ============================================================== -->
-  <section class="wrap" id="picture">
-    <div class="sec-head">
-      <div class="eyebrow">02 — The claim</div>
-      <h2>They lean the same way</h2>
-      <p class="lede">
-        Each loop is one object's path around the Sun. The dot is where it comes
-        closest. If nothing were herding them, those dots would ring the Sun evenly.
-      </p>
+  <section id="picture" class="story">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">02 — The claim</div>
+        <h2>They lean the same way</h2>
+      </div>
+      <div class="bigidea">
+        <div class="bigidea-k">The point of this section</div>
+        <p>The far ends of the solar system are full of small icy objects on long,
+        oval orbits. <strong>Their orbits nearly all swing closest to the Sun on the same
+        side.</strong> If nothing were steering them, they would be spread evenly all
+        the way around.</p>
+      </div>
+      <p class="scroll-hint">Scroll slowly. The picture changes with each card.</p>
     </div>
 
-    <details class="howto">
-      <summary>How do I read these charts?</summary>
-      <div class="howto-body">
-        <p><b>The left chart</b> is the solar system seen from above, with the Sun
-        at the centre. Each bright arc is the part of one object's orbit nearest
-        the Sun, and the dot on it is the closest point — the direction that orbit
-        leans. The faint lines continue outward, mostly off the edge, because
-        these orbits are enormous.</p>
-        <p><b>The right chart</b> throws away everything except that one direction.
-        Each object becomes a dot placed by its angle, 0° to 360°. Distance from
-        the centre means nothing here; it only stops dots from overlapping.</p>
-        <p><b>What to look for:</b> if nothing were organising these objects, the
-        dots would be spread evenly around the circle. Instead they bunch on one
-        side. The white arrow is the average direction, and the longer it is, the
-        more the objects agree.</p>
-        <p><b>Everything is connected.</b> Point at any object in any chart on this
-        page and it lights up in all the others at the same time.</p>
+    <div class="scrolly wrap wide" id="leanStory">
+      <div class="scrolly-graphic">
+        <div class="viz-head" id="leanHead"><div id="leanReadout"></div><div class="seg" id="leanToggle" hidden><button type="button" data-v="orbits">Orbits</button><button type="button" data-v="ring">Compass</button></div></div>
+        <div class="viz" id="chartLean"></div>
       </div>
-    </details>
+      <div class="scrolly-steps">
+        <div class="step" data-step="one"><div class="step-card">
+          <div class="step-n">1 / 8</div>
+          <h3>Start with one object: Sedna</h3>
+          <p>The <span class="k-sun">yellow dot</span> is the Sun. The small
+          <span class="k-nep">blue loop</span> around it is Neptune's orbit, the
+          outermost planet.</p>
+          <p>The long <span class="k-obj">blue curve</span> is Sedna's orbit. It
+          swings in to the <strong>dot</strong>, its closest point to the Sun, then
+          heads back out far past the edge of this picture.</p>
+        </div></div>
 
-    <div class="card" style="margin-bottom:20px">
-      <h3>Choose which objects to include</h3>
-      <div class="sub">
-        Drag a box to pick a group. Every chart below — and in the next two
-        sections — rebuilds using only what you selected. The sliders at the top
-        do the same thing; this just lets you be more specific.
+        <div class="step" data-step="point"><div class="step-card">
+          <div class="step-n">2 / 8</div>
+          <h3>Every orbit points somewhere</h3>
+          <p>Draw a line from the Sun through that closest point. That is the
+          direction the orbit <em>points</em>. For Sedna it is
+          <strong><span data-n="sednaDeg">—</span>°</strong>, measured
+          counter-clockwise from the right, like a compass.</p>
+          <p class="step-key">This one angle per object is all that sections 02 and 03 are about.</p>
+        </div></div>
+
+        <div class="step" data-step="all"><div class="step-card">
+          <div class="step-n">3 / 8</div>
+          <h3>Now add the rest</h3>
+          <p>Here are all <strong><span data-n="strictN">—</span> objects</strong>
+          whose orbits have been measured well.</p>
+          <p class="step-key">Ignore the curves. Just look at where the dots are.</p>
+        </div></div>
+
+        <div class="step" data-step="half"><div class="step-card">
+          <div class="step-n">4 / 8</div>
+          <h3>Most of them are on one side</h3>
+          <p>Cut the picture in half through the Sun.
+          <strong><span data-n="strictHalf">—</span> of the <span data-n="strictN">—</span></strong>
+          dots fall in the shaded half.</p>
+          <p>If the directions were random, you would expect about
+          <span data-n="strictHalfExpect">—</span> on each side.</p>
+        </div></div>
+
+        <div class="step" data-step="ring"><div class="step-card">
+          <div class="step-n">5 / 8</div>
+          <h3>Make the pattern easier to see</h3>
+          <p>Throw away the curves and keep only each object's direction. Every dot
+          slides out to the rim of a compass, at its angle.</p>
+          <p class="step-key">The dots crowd one part of the rim and leave the
+          opposite side nearly empty.</p>
+        </div></div>
+
+        <div class="step" data-step="arrow"><div class="step-card">
+          <div class="step-n">6 / 8</div>
+          <h3>Boil it down to one arrow</h3>
+          <p>Average all the directions together. Dots spread evenly around the rim
+          cancel out and leave a stub. The more they agree, the longer the
+          <strong>white arrow</strong> gets. If every object pointed the same way, it
+          would reach the rim.</p>
+          <p class="step-key">Here it reaches <span data-n="strictR">—</span> of the
+          way. Is that a lot? Section 03 puts that to the test.</p>
+        </div></div>
+
+        <div class="step" data-step="p9"><div class="step-card">
+          <div class="step-n">7 / 8</div>
+          <h3>The proposed explanation: Planet Nine</h3>
+          <p>Astronomers proposed an unseen planet about
+          <strong>7 times Earth's mass</strong>, far beyond Neptune. Its own orbit
+          (<span class="k-p9">green</span>) points roughly the <em>opposite</em> way.</p>
+          <p>Over billions of years its gravity would herd the small orbits onto
+          the far side from itself. That is where the white arrow points.</p>
+        </div></div>
+
+        <div class="step" data-step="explore"><div class="step-card explore">
+          <div class="step-n">8 / 8 · your turn</div>
+          <h3>Explore it yourself</h3>
+          <ul>
+            <li><strong>Point at</strong> any orbit or dot to see which object it is.
+            It lights up in every other chart on the page too.</li>
+            <li><strong>Switch views</strong> with the buttons above the picture.</li>
+            <li><strong>Change which objects count</strong> with the sliders in the bar
+            at the top of the page.</li>
+          </ul>
+        </div></div>
       </div>
-      <div id="chartScatter"></div>
-      <div id="selChip" style="margin-top:12px"></div>
     </div>
 
-    <div class="legend" id="legendMain"></div>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Seen from above</h3>
-        <div class="sub">White arrow = the average direction they lean. Longer arrow means more alignment. Faded loops are orbits we have measured for only a short time.</div>
-        <div id="chartOrbits"></div>
+    <div class="wrap">
+      <div class="takeaway">
+        <div class="takeaway-k">So far</div>
+        <p>Looking only at the well-measured orbits, <strong><span data-n="strictHalf">—</span>
+        of <span data-n="strictN">—</span></strong> point into the same half of the sky.
+        A planet on the opposite side could explain that. First, though: could it
+        just be chance?</p>
       </div>
-      <div class="card">
-        <h3>Same objects, one angle each</h3>
-        <div class="sub">Every object placed by the direction it leans. Crowding on one side is the whole argument.</div>
-        <div id="chartRose"></div>
-      </div>
-    </div>
 
-    <details class="table-view">
-      <summary>View as a table — every object, every number</summary>
-      <div class="table-scroll">
-        <table id="dataTable">
-          <thead><tr>
-            <th>Object</th><th class="num">Reach (AU)</th><th class="num">Closest (AU)</th>
-            <th class="num">Tilt (°)</th><th class="num">Leans toward (°)</th>
-            <th>Vs. predicted planet</th><th>Orbit quality</th>
-          </tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </details>
+      <details class="table-view more">
+        <summary>Pick your own group of objects, or see every number</summary>
+        <div class="card" style="margin:14px 0 20px">
+          <h3>Choose which objects to include</h3>
+          <div class="sub">
+            Each dot is one object. Left to right: how far out its orbit goes. Bottom
+            to top: how close it ever comes to the Sun. Drag a box to pick a group;
+            every chart on the page then uses only those.
+          </div>
+          <div id="chartScatter"></div>
+          <div id="selChip" style="margin-top:12px"></div>
+        </div>
+        <div class="table-scroll">
+          <table id="dataTable">
+            <thead><tr>
+              <th>Object</th><th class="num">Reach (AU)</th><th class="num">Closest (AU)</th>
+              <th class="num">Tilt (°)</th><th class="num">Points toward (°)</th>
+              <th>Vs. predicted planet</th><th>Orbit quality</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </details>
+    </div>
   </section>
 
   <!-- 03 ============================================================== -->
-  <section class="wrap" id="luck">
-    <div class="sec-head">
-      <div class="eyebrow">03 — The test</div>
-      <h2>Could this just be luck?</h2>
-      <p class="lede">
-        We built 4,000 fake solar systems with the same number of objects pointing
-        in totally random directions. Grey is what luck looks like. Blue is reality.
-      </p>
-    </div>
-    <details class="howto">
-      <summary>How do I read this chart?</summary>
-      <div class="howto-body">
-        <p>We take the same number of objects you have selected, point them in
-        completely random directions, and measure how bunched up they look. Then
-        we do that four thousand more times.</p>
-        <p>Each <b>grey bar</b> counts how many of those random universes came out
-        at a given level of agreement. The pile shows what coincidence normally
-        produces. The <b>blue line</b> is the real objects.</p>
-        <p>If the blue line sits inside the grey pile, the real pattern is
-        unremarkable. The further right it sits, the worse chance works as an
-        explanation.</p>
+  <section id="luck" class="story">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">03 — The test</div>
+        <h2>Could this just be luck?</h2>
       </div>
-    </details>
+      <div class="bigidea">
+        <div class="bigidea-k">The point of this section</div>
+        <p>With only the well-measured orbits, luck almost never produces this much
+        lining up: <strong>about 1 in <span data-n="strictOdds">—</span></strong>.
+        <strong>Add the objects seen only briefly and the pattern disappears</strong>
+        (about 1 in <span data-n="looseOdds">—</span>). The answer depends on which
+        objects you trust.</p>
+      </div>
+    </div>
 
-    <div class="card">
-      <h3 id="nullTitle">Reality against 4,000 random universes</h3>
-      <div class="sub" id="nullSub">—</div>
-      <div id="chartNull"></div>
+    <div class="scrolly wrap wide" id="luckStory">
+      <div class="scrolly-graphic">
+        <div class="viz-head" id="luckHead"><div id="luckReadout"></div></div>
+        <div class="viz" id="chartLuck"></div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="step" data-step="one"><div class="step-card">
+          <div class="step-n">1 / 7</div>
+          <h3>What would luck look like?</h3>
+          <p>Take <span data-n="strictN">—</span> objects, the same number as the real
+          ones, and point each one in a <strong>completely random</strong> direction.
+          That gives one fake solar system, shown on the left.</p>
+          <p class="step-key">Its arrow is short, because random directions mostly
+          cancel out. Its arrow length becomes one block on the right.</p>
+        </div></div>
+
+        <div class="step" data-step="many"><div class="step-card">
+          <div class="step-n">2 / 7</div>
+          <h3>Do it again. And again.</h3>
+          <p>Each new fake solar system drops a block where its arrow length lands.</p>
+          <p class="step-key">Watch where they pile up. Luck nearly always makes a
+          short arrow.</p>
+        </div></div>
+
+        <div class="step" data-step="all"><div class="step-card">
+          <div class="step-n">3 / 7</div>
+          <h3>Now do it 4,000 times</h3>
+          <p>The grey pile shows <strong>what luck produces</strong>. It is tall on
+          the left, because short arrows are common. It thins out to the right,
+          because long arrows are rare.</p>
+        </div></div>
+
+        <div class="step" data-step="real"><div class="step-card">
+          <div class="step-n">4 / 7</div>
+          <h3>Now the real objects</h3>
+          <p>Their arrow is <strong><span data-n="strictR">—</span></strong>, out in
+          the thin right-hand tail. Only the <span class="k-obj">blue bars</span>,
+          <strong><span data-n="strictBeat">—</span> of 4,000</strong> fake solar
+          systems, did as well.</p>
+          <p class="step-key">Luck does this about 1 in <span data-n="strictOdds">—</span>
+          times. That is why astronomers took the idea seriously.</p>
+        </div></div>
+
+        <div class="step" data-step="catch"><div class="step-card warn">
+          <div class="step-n">5 / 7</div>
+          <h3>The catch</h3>
+          <p><span data-n="extraN">—</span> more objects have been spotted, but only
+          briefly, so their orbits are uncertain. We just switched off
+          <strong>"Only well-measured orbits"</strong> in the bar at the top so that
+          they count too.</p>
+          <p class="step-key">With all <span data-n="looseN">—</span> objects, the
+          arrow shrinks to <span data-n="looseR">—</span> and lands in the middle of
+          the pile. That is what luck looks like: about 1 in
+          <span data-n="looseOdds">—</span>.</p>
+        </div></div>
+
+        <div class="step" data-step="cuts"><div class="step-card">
+          <div class="step-n">6 / 7</div>
+          <h3>It is not just our choice</h3>
+          <p>Published studies have drawn the line in different ways: how far out an
+          orbit must go, how close it may come, and whether to trust briefly seen
+          ones.</p>
+          <p class="step-key">Only the samples restricted to
+          <span class="k-p9">well-measured orbits</span> pass the usual bar. The
+          verdict depends on which objects you trust.</p>
+        </div></div>
+
+        <div class="step" data-step="explore"><div class="step-card explore">
+          <div class="step-n">7 / 7 · your turn</div>
+          <h3>Try it yourself</h3>
+          <p>Use the sliders and the switch in the bar at the top. The pile, the
+          arrow and this verdict all update as you go.</p>
+          <div id="verdict"></div>
+        </div></div>
+      </div>
     </div>
-    <div id="verdict"></div>
-    <div class="note">
-      <div class="note-k">The catch</div>
-      <p>
-        This test assumes telescopes were equally likely to spot an object pointing
-        any direction. They were not. <strong>Switch off "Only well-measured orbits"
-        above</strong> and watch the signal collapse.
-      </p>
+
+    <div class="wrap">
+      <div class="takeaway">
+        <div class="takeaway-k">So far</div>
+        <p>The lining up is real in the well-measured orbits and gone in the full
+        set. If a planet is there, the cleanest way to settle the argument is to
+        <strong>find it</strong>. So why hasn't anyone?</p>
+      </div>
     </div>
-    <div class="grid-stats auto" id="cutGrid"></div>
-    <p class="caption">The same measurement under five published definitions of the sample. A real signal would not swing this much.</p>
   </section>
 
   <!-- 04 ============================================================== -->
-  <section class="wrap" id="sky">
-    <div class="sec-head">
-      <div class="eyebrow">04 — The search</div>
-      <h2>So why hasn't anyone found it?</h2>
-      <p class="lede">
-        Almost the whole sky has been photographed. That turns out not to be the
-        problem — the problem is how <em>deep</em> those photographs go. This map
-        shows both at once: where telescopes pointed, and how faint they could see.
+  <section id="sky" class="story">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">04 — The search</div>
+        <h2>So why hasn't anyone found it?</h2>
+      </div>
+      <div class="bigidea">
+        <div class="bigidea-k">The point of this section</div>
+        <p>Telescopes have photographed almost the entire sky, <strong>but only
+        about <span data-n="deepPct">—</span>% of it deeply enough</strong> to see
+        something as faint as Planet Nine. <strong><span data-n="thinPct">—</span>% of
+        its predicted path</strong> lies outside that small, deep part.</p>
+      </div>
+    </div>
+
+    <div class="scrolly wrap wide" id="skyStory">
+      <div class="scrolly-graphic">
+        <div class="viz-head" id="skyHead"><div class="legend" id="skyLegend"></div><div class="chip-row" id="surveyChips" hidden></div></div>
+        <div class="viz" id="chartSky"></div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="step" data-step="sky"><div class="step-card">
+          <div class="step-n">1 / 9</div>
+          <h3>This oval is the whole sky</h3>
+          <p>It is flattened onto the page the way a world map flattens the globe.
+          Left to right is the direction you face; up and down is north and south.</p>
+          <p>The faint curve is the <strong>ecliptic</strong>, the path the Sun and
+          planets follow across the sky.</p>
+        </div></div>
+
+        <div class="step" data-step="track"><div class="step-card">
+          <div class="step-n">2 / 9</div>
+          <h3>Planet Nine would be somewhere on the green line</h3>
+          <p>This is its predicted orbit, traced across the sky (Brown &amp; Batygin,
+          2021). The thin lines show how uncertain the prediction is.</p>
+          <p class="step-key">Nobody knows where on the line it is right now.</p>
+        </div></div>
+
+        <div class="step" data-step="coverage"><div class="step-card">
+          <div class="step-n">3 / 9</div>
+          <h3>Telescopes have photographed nearly all of it</h3>
+          <p>Every shaded area has been covered by at least one large sky survey,
+          and together they cover practically the whole sky.</p>
+          <p class="step-key">So why hasn't anyone spotted it?</p>
+        </div></div>
+
+        <div class="step" data-step="depth"><div class="step-card">
+          <div class="step-n">4 / 9</div>
+          <h3>Because a photo can be too shallow</h3>
+          <p>Planet Nine would be extremely faint: <strong>magnitude 22 to 25</strong>.
+          On this scale bigger means fainter, and your eye gives out at about 6.</p>
+          <p class="step-key">Each area is now shaded by how faint its photos can see.
+          Brighter means deeper. Only a few small patches are bright. Most of the
+          sky has only been photographed to about magnitude 22.</p>
+        </div></div>
+
+        <div class="step" data-step="deep"><div class="step-card">
+          <div class="step-n">5 / 9</div>
+          <h3>Only these slivers are deep enough</h3>
+          <p>Just two surveys reach <strong>magnitude 23.5</strong>, the depth needed to
+          catch a faint Planet Nine. Together they cover about
+          <strong><span data-n="deepPct">—</span>% of the sky</strong>.</p>
+        </div></div>
+
+        <div class="step" data-step="unsearched"><div class="step-card warn">
+          <div class="step-n">6 / 9</div>
+          <h3>Most of the path has never been searched deeply</h3>
+          <p>The <span class="k-warn">orange stretches</span> are where the predicted
+          path crosses sky that has only been photographed shallowly.</p>
+          <p class="step-key">That is <span data-n="thinPct">—</span>% of the path. A
+          faint planet there could easily have slipped through.</p>
+        </div></div>
+
+        <div class="step" data-step="milky"><div class="step-card">
+          <div class="step-n">7 / 9</div>
+          <h3>And part of it is lost in the Milky Way</h3>
+          <p>The pale band is our own galaxy, seen edge-on. Where the path crosses
+          it, there are so many stars that picking out one faint, slow-moving dot is
+          nearly hopeless, even in a deep photo.</p>
+        </div></div>
+
+        <div class="step" data-step="future"><div class="step-card">
+          <div class="step-n">8 / 9</div>
+          <h3>The search that could settle it</h3>
+          <p>The <span class="k-lsst">Vera C. Rubin Observatory</span> (pink outline)
+          is surveying the southern sky to magnitude 24.5 from 2025 to 2035. That is
+          deep enough.</p>
+          <p class="step-key">It covers <span data-n="lsstPct">—</span>% of the
+          unsearched stretches of the path. It should either find Planet Nine or
+          leave very few places for it to hide.</p>
+        </div></div>
+
+        <div class="step" data-step="explore"><div class="step-card explore">
+          <div class="step-n">9 / 9 · your turn</div>
+          <h3>Explore the map</h3>
+          <ul>
+            <li><strong>Point at</strong> any shaded area to see which survey took it
+            and how deep it went.</li>
+            <li><strong>Click a survey name</strong> above the map to outline just its
+            area.</li>
+            <li>The <span class="k-obj">blue dots</span> are the directions the objects
+            from section 02 point, now placed on the sky.</li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="takeaway">
+        <div class="takeaway-k">So far</div>
+        <p>It hasn't been found because almost nobody has looked deeply enough where
+        it should be. Searches have still ruled out a lot: of the places the
+        prediction allows, the share already searched and ruled out is shown below.</p>
+      </div>
+      <div class="grid-stats auto" id="searchStats" style="margin-top:22px"></div>
+      <p class="caption">
+        Footprints are simplified to bands of sky, each squeezed so it covers the
+        area that survey published. OSSOS has no area we could verify, so it is left
+        out. Planet Nine's brightness along its path is estimated, not observed.
       </p>
     </div>
-    <div class="grid-stats auto" id="depthStats" style="margin-bottom:26px"></div>
-
-    <details class="howto">
-      <summary>How do I read this map?</summary>
-      <div class="howto-body">
-        <p>This is the entire night sky, flattened onto a page the way a world map
-        flattens the globe. Left to right is the direction you would turn to face;
-        up and down is how high above the horizon.</p>
-        <p><b>Shaded patches</b> are the regions each telescope survey has actually
-        photographed. <b>The green line</b> is the path Planet Nine would follow if
-        it exists. <b>Blue dots</b> are the directions the real objects lean — the
-        same objects you selected above.</p>
-        <p><b>The pale diagonal band is the Milky Way.</b> It is so dense with stars
-        that spotting one slow-moving dot is nearly hopeless, and the green path
-        crosses it twice. That is where the search still has gaps.</p>
-      </div>
-    </details>
-
-    <div class="legend" id="skyLegend"></div>
-    <div class="chip-row" id="surveyChips"></div>
-    <div class="card">
-      <div id="chartSky"></div>
-      <div class="sub" style="margin:14px 0 0">
-        Brightness shows how faint anyone could see at that patch of sky — the
-        deepest survey covering it wins. The pale diagonal is the Milky Way, so
-        crowded with stars that spotting one slow-moving dot is nearly hopeless.
-        Planet Nine's path comes from the Brown &amp; Batygin (2021) orbit fit, with
-        thin lines for their uncertainty; the orange stretches are where nobody has
-        yet looked deep enough to have ruled it out.
-      </div>
-      <div class="sub" style="margin:10px 0 0">
-        Footprint shapes are simplified to declination bands, but each one is
-        squeezed so the amount of sky it claims matches the area that survey
-        published — otherwise the deepest surveys, which are also the narrowest,
-        would paint far more searched sky than really exists. OSSOS has no area we
-        could verify, so it is drawn but excluded from the shading.
-      </div>
-    </div>
-    <div class="grid-stats auto" id="searchStats" style="margin-top:22px"></div>
   </section>
 
   <!-- 05 ============================================================== -->

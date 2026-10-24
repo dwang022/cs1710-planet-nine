@@ -87,7 +87,20 @@ function eclipticToEquatorial (lamDeg) {
   return [ra, dec]
 }
 
-export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, showTrack, showPerihelia, visibleIds }) {
+// Which layers a story step shows. The explore step shows everything.
+export const ALL_LAYERS = {
+  surveys: 'depth', track: true, unsearched: true, milky: true,
+  perihelia: true, future: false, notes: [],
+}
+const T = 650
+
+/** Equatorial [RA, Dec] of a point on the galactic plane, for labels. */
+export const galacticPoint = galacticToEquatorial
+export const eclipticPoint = eclipticToEquatorial
+
+export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, visibleIds, scene = ALL_LAYERS }) {
+  const L = { ...ALL_LAYERS, ...scene }
+  const showTrack = L.track, showPerihelia = L.perihelia
   const svg = d3.select(root).selectAll('svg').data([0]).join('svg')
     .attr('viewBox', `0 0 ${W} ${H}`)
     .attr('role', 'img')
@@ -197,17 +210,31 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
   // rasterising anything.
   patches.sort((a, b) => (a.s.depth_mag ?? 0) - (b.s.depth_mag ?? 0))
 
+  // How each footprint is painted depends on the step: first just "someone
+  // photographed this" in one flat tone, then shaded by depth, then with only
+  // the deep-enough surveys left lit.
+  const isDeep = s => (s.depth_mag ?? 0) >= 23.5 && s.wavelength === 'optical'
+  const fpFill = d => {
+    if (d.s.future) return '#F08BB4'
+    if (L.surveys === 'coverage') return '#556b77'
+    return d.s.depth_mag != null && d.s.wavelength === 'optical' ? depthColour(d.s.depth_mag) : '#1a2228'
+  }
+  const fpOpacity = d => {
+    if (d.s.future) return L.future ? 0.22 : 0
+    if (L.surveys === 'none') return 0
+    if (L.surveys === 'coverage') return 0.45
+    if (L.surveys === 'deep') return isDeep(d.s) ? 0.9 : 0.06
+    return activeSurvey && activeSurvey !== d.s.id ? 0.25 : 0.62
+  }
   const fp = layers.selectAll('path.fp').data(patches, (d, i) => d.s.id + '-' + i)
   fp.exit().remove()
-  fp.enter().append('path').attr('class', 'fp')
+  fp.enter().append('path').attr('class', 'fp').attr('fill-opacity', 0)
     .merge(fp)
     .attr('d', d => d3.line()(d.ring) + 'Z')
-    .attr('fill', d => d.s.depth_mag != null && d.s.wavelength === 'optical'
-      ? depthColour(d.s.depth_mag) : '#1a2228')
-    .attr('fill-opacity', d => d.s.future ? 0 : (activeSurvey && activeSurvey !== d.s.id ? 0.25 : 0.62))
-    .attr('stroke', d => activeSurvey === d.s.id ? d.s.color_hex : 'none')
+    .style('pointer-events', d => fpOpacity(d) > 0.1 ? null : 'none')
+    .attr('stroke', d => d.s.future ? '#F08BB4' : activeSurvey === d.s.id ? d.s.color_hex : 'none')
     .attr('stroke-width', 2)
-    .attr('stroke-opacity', d => activeSurvey === d.s.id ? 1 : 0)
+    .attr('stroke-dasharray', d => d.s.future ? '6 5' : null)
     .style('cursor', 'pointer')
     .on('pointerenter', (ev, d) => showTip(ev, `
       <div class="t-name">${d.s.name}</div>
@@ -220,6 +247,10 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
           ? 'Deep enough to spot Planet Nine here.'
           : 'Too shallow — Planet Nine could sit here unseen.'}</div>`))
     .on('pointerleave', hideTip)
+    .transition().duration(T)
+    .attr('fill', fpFill)
+    .attr('fill-opacity', fpOpacity)
+    .attr('stroke-opacity', d => d.s.future ? (L.future ? 0.9 : 0) : activeSurvey === d.s.id ? 1 : 0)
 
   // --- reference circles ---------------------------------------------------
   // The ecliptic is where the planets (and these objects) live. The galactic
@@ -243,19 +274,23 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
       d3.range(0, 361, 2).map(l => galacticToEquatorial(l, 15)),
       d3.range(0, 361, 2).map(l => galacticToEquatorial(l, -15))))
     .attr('fill', '#e8dcc0')
-    .attr('fill-opacity', 0.1)
     .attr('stroke', 'none')
+    .transition().duration(T)
+    .attr('fill-opacity', L.milky ? 0.13 : 0)
   layers.selectAll('path.galplane').data([0]).join('path')
     .attr('class', 'galplane')
     .attr('d', segmentedPath(d3.range(0, 361, 2).map(l => galacticToEquatorial(l, 0))))
     .attr('fill', 'none').attr('stroke', '#e8dcc0')
-    .attr('stroke-width', 1.2).attr('stroke-opacity', 0.45)
+    .attr('stroke-width', 1.2)
+    .transition().duration(T)
+    .attr('stroke-opacity', L.milky ? 0.45 : 0)
 
   // --- predicted Planet Nine path -----------------------------------------
   const trackData = showTrack ? track.tracks : []
   const tk = layers.selectAll('path.track').data(trackData, d => d.label)
-  tk.exit().remove()
+  tk.exit().transition().duration(T / 2).attr('opacity', 0).remove()
   tk.enter().append('path').attr('class', 'track')
+    .attr('opacity', 0).call(e => e.transition().duration(T).attr('opacity', 1))
     .merge(tk)
     .attr('d', d => segmentedPath(d.points.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none')
@@ -309,7 +344,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
   const P9_MAG = 23.5
   const nom = track.tracks.find(t => t.label === 'nominal')
   const unsearched = []
-  if (showTrack && nom) {
+  if (showTrack && L.unsearched && nom) {
     let run = []
     for (const pt of nom.points) {
       const d = deepestAt(surveys, pt.ra_deg, pt.dec_deg)
@@ -333,7 +368,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
   // leaving the reader to spot the overlap.
   const nominal = track.tracks.find(t => t.label === 'nominal')
   const buried = []
-  if (showTrack && nominal) {
+  if (showTrack && L.milky && nominal) {
     let run = []
     for (const pt of nominal.points) {
       if (Math.abs(galacticLatitude(pt.ra_deg, pt.dec_deg)) <= 15) {
@@ -356,7 +391,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
   bl.exit().remove()
   bl.enter().append('text').attr('class', 'buriedlabel axis-label')
     .merge(bl)
-    .attr('fill', '#e8dcc0').attr('font-weight', 600).attr('text-anchor', 'middle')
+    .style('fill', '#e8dcc0').attr('font-weight', 600).attr('text-anchor', 'middle')
     .attr('x', run => mollweide(clampRA(run[Math.floor(run.length / 2)].ra_deg),
       run[Math.floor(run.length / 2)].dec_deg)[0])
     .attr('y', run => mollweide(clampRA(run[Math.floor(run.length / 2)].ra_deg),
@@ -392,6 +427,22 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, sho
         .attr('stroke-width', d => d.id === id ? 2 : 1.2)
     })
   }
+
+  // --- story annotations: each one names the thing it sits on ---------------
+  let gNotes = svg.select('g.sky-notes')
+  if (gNotes.empty()) gNotes = svg.append('g').attr('class', 'sky-notes')
+  const nt = gNotes.selectAll('text.note').data(L.notes, d => d.text)
+  nt.exit().transition().duration(T / 2).attr('opacity', 0).remove()
+  nt.enter().append('text').attr('class', 'note halo').attr('opacity', 0)
+    .merge(nt)
+    .attr('x', d => mollweide(clampRA(d.ra), d.dec)[0] + (d.dx || 0))
+    .attr('y', d => mollweide(clampRA(d.ra), d.dec)[1] + (d.dy || 0))
+    .attr('text-anchor', d => d.anchor || 'middle')
+    .attr('font-size', d => d.size || 15).attr('font-weight', 600)
+    .attr('fill', d => d.colour || 'var(--text-primary)')
+    .style('pointer-events', 'none')
+    .text(d => d.text)
+    .transition().duration(T).attr('opacity', 1)
 
   // --- axis labels ---------------------------------------------------------
   g.selectAll('text.ral').data(gratRA).join('text')

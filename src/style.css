@@ -428,14 +428,41 @@ svg text.halo {
 
 .caption { font-size: .84rem; color: var(--text-muted); margin-top: 10px; max-width: 70ch; }
 
-/* distance scale strip — gives "AU" a physical meaning before any chart */
-.scale-strip { display: grid; gap: 2px; margin-top: 26px; }
-.scale-row { display: grid; grid-template-columns: 120px 1fr 78px; gap: 14px; align-items: center;
-  padding: 7px 0; border-top: 1px solid var(--rule); font-size: .84rem; }
-.scale-row .nm { color: var(--text-primary); font-weight: 600; }
-.scale-row .bar { height: 9px; border-radius: 5px; background: var(--surface-3); position: relative; }
-.scale-row .bar i { position: absolute; inset: 0 auto 0 0; border-radius: 5px; display: block; }
-.scale-row .au { text-align: right; color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* --- art: the hand-drawn bodies in src/art.js, used from the injected sprite --- */
+.art { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
+h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
+.hero-mark { width: 78px; height: 78px; display: block; margin-bottom: 18px; }
+
+/* --- 01: how far — a continuous zoom (charts/distance.js) ------------------ */
+#objects .scrolly { margin-top: 14px; }
+#distReadout b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+#distReadout .muted { color: var(--text-muted); }
+.dist-lbl { font-size: 13px; fill: var(--text-secondary);
+  paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
+.dist-lbl.muted { fill: var(--text-muted); }
+.dist-lbl.small { font-size: 11.5px; }
+.dist-lbl.focus { font-size: 15px; font-weight: 600; fill: var(--text-primary); }
+.dist-lbl.focus.p9 { fill: #5cc79c; }
+.dist-lbl.focus-v { font-size: 13px; fill: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.dist-orbit { fill: none; stroke: #ffffff; stroke-opacity: .16; stroke-width: 1; stroke-dasharray: 3 5; }
+.dist-orbit.dwarf { stroke: #c8ad94; stroke-opacity: .3; }
+.dist-ray { stroke-width: 1.5; stroke-linecap: round; }
+.dist-ray.dwarf { stroke: #c8ad94; stroke-opacity: .55; stroke-width: 2; }
+.dist-ray.etno { stroke-opacity: .3; }
+.dist-ray.etno.anti { stroke: var(--series-1); }
+.dist-ray.etno.ali { stroke: var(--series-2); }
+.dist-ray.etno.hot { stroke-opacity: 1; stroke-width: 2.5; }
+.dist-body.etno { opacity: .85; cursor: pointer; }
+.dist-body.etno.hot { opacity: 1; }
+.dist-band.kuiper { fill: #ffffff; fill-opacity: .035; }
+.dist-band.p9 { fill: var(--series-3); fill-opacity: .16; }
+.dist-band.p9.wide { fill-opacity: .06; }
+.dist-edge { fill: none; stroke: var(--series-3); stroke-opacity: .55; stroke-width: 1; stroke-dasharray: 4 4; }
+.dist-edge.wide { stroke-opacity: .22; }
+.dist-focus { fill: none; stroke: #ffffff; stroke-opacity: .6; stroke-width: 1.4; }
+.dist-focus.dashed { stroke: var(--series-3); stroke-dasharray: 3 4; stroke-opacity: .9; }
+.voy { fill: var(--text-muted); }
+.dist-ruler line { stroke: var(--text-muted); stroke-width: 1.5; }
 
 /* survey filter chips */
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -506,9 +533,6 @@ svg text.halo {
 #objects .sub-head { margin-top: 36px; }
 #objects .sub-head h3 { margin-bottom: 6px; }
 #objects .sub-head p { font-size: 0.9rem; margin: 0; max-width: none; }
-#objects .scale-strip { margin-top: 14px; }
-#objects .scale-row { grid-template-columns: 190px 1fr 78px; }
-#objects .scale-row .nm small { display: block; font-size: 0.74rem; font-weight: 400; color: var(--text-muted); line-height: 1.35; }
 
 /* "Ready to see what changed?": a compact jump from the filters back to the
    explore steps of 02-04. The links reuse .hero-path's card, hover lift and
@@ -560,7 +584,6 @@ svg text.halo {
 @media (max-width: 767px) {
   .filter-grid { grid-template-columns: 1fr; }
   .filter:nth-child(n+2) { margin-top: 12px; }
-  #objects .scale-row { grid-template-columns: 112px 1fr 64px; gap: 10px; }
 }
 @media (max-width: 560px) { #objects .grid-stats { grid-template-columns: 1fr; } }
 

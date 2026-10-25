@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Mars" style="color:#ffffff"><defs><clipPath id="ag-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#ag-c)">
+      <circle cx="50" cy="50" r="40" fill="#c1440e"/>
+      <path d="M30,46 C40,38 56,40 62,50 C66,58 56,66 46,64 C36,62 26,54 30,46 Z" fill="#9a3509" opacity="0.85"/>
+      <ellipse cx="50" cy="13" rx="12" ry="5" fill="#f3e9df"/>
+      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.28"/>
+    </g><circle cx="50" cy="50" r="40" fill="none" stroke="#7a2806" stroke-width="2.5"/></svg>

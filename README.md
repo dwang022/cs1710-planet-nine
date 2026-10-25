@@ -34,6 +34,10 @@ The six sketches chosen in the Decide section of the process book:
 Four controls at the top drive every panel at once: how far out the orbit goes,
 closest approach, an orbit-quality filter, and Planet Nine on/off.
 
+Section 01 also opens with a scroll-driven zoom-out, from the Sun and Earth to
+the farthest point any object in view reaches, with Planet Nine's predicted
+distance drawn as the range it is.
+
 ## The thing worth demoing
 
 Switch off **"Only well-measured orbits"**. The sample jumps from 44 objects to
@@ -65,8 +69,11 @@ src/
   stats.js          circular statistics (resultant length, Rayleigh, Monte Carlo)
   orbits.js         Keplerian geometry, verified against Horizons
   style.css         design tokens; validated colourblind-safe palette
+  art.js            the hand-drawn bodies: Planet Nine logo, Sun, planets, TNOs
   charts/           one module per visualisation
 public/data/        the processed datasets the page fetches
+public/art/         the same drawings as standalone SVG and PNG files, with a
+                    contact sheet at /art/ (rebuild: node scripts/export_art.mjs)
 scripts/            the Python pipeline that builds those datasets
 ```
 

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Uranus" style="color:#ffffff"><defs><clipPath id="aj-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#aj-c)">
+      <circle cx="50" cy="50" r="40" fill="#9fd8e0"/>
+      <path d="M0,56 C25,54.4 40,57.6 60,56 S90,54.4 100,56.8 L100,65.6 C80,62.4 60,65.6 40,64 S15,62.4 0,64.8 Z" fill="#bde7ec" opacity="0.9"/>
+      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.24"/>
+    </g><circle cx="50" cy="50" r="40" fill="none" stroke="#5aa3ad" stroke-width="2.5"/>
+    <ellipse cx="50" cy="50" rx="6" ry="47" fill="none" stroke="#d9f1f4" stroke-width="2.5" opacity="0.55" transform="rotate(12 50 50)"/></svg>

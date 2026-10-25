@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Jupiter" style="color:#ffffff"><defs><clipPath id="ah-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#ah-c)">
+      <circle cx="50" cy="50" r="40" fill="#cfa57c"/>
+      <path d="M0,31 C25,28.8 40,33.2 60,31 S90,28.8 100,32.1 L100,41.2 C80,36.8 60,41.2 40,39 S15,36.8 0,40.1 Z" fill="#b57c55" opacity="1"/>
+      <path d="M0,45 C25,42.8 40,47.2 60,45 S90,42.8 100,46.1 L100,53.2 C80,48.8 60,53.2 40,51 S15,48.8 0,52.1 Z" fill="#e6cbac" opacity="1"/>
+      <path d="M0,58 C25,55.8 40,60.2 60,58 S90,55.8 100,59.1 L100,70.2 C80,65.8 60,70.2 40,68 S15,65.8 0,69.1 Z" fill="#b57c55" opacity="1"/>
+      <ellipse cx="62" cy="61" rx="9" ry="5" fill="#c45a3b" stroke="#a6462c" stroke-width="1"/>
+      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.3"/>
+    </g><circle cx="50" cy="50" r="40" fill="none" stroke="#8d6141" stroke-width="2.5"/></svg>

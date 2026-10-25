@@ -35,21 +35,6 @@ html.has-reveal .reveal:focus-within { opacity: 1; transform: none; }
 html.has-reveal .hero > h1.reveal:not(.is-in),
 html.has-reveal .sec-head > h2.reveal:not(.is-in) { transform: translate3d(0, 26px, 0); }
 
-/* --- 01: distance bars grow from zero, row by row ------------------------ */
-/* Reveal growth uses transform only; filter changes ease the bars' width
-   (main.js), so the two never fight and nothing replays mid-drag. */
-#scaleStrip .scale-row:nth-child(1) { --i: 0; }
-#scaleStrip .scale-row:nth-child(2) { --i: 1; }
-#scaleStrip .scale-row:nth-child(3) { --i: 2; }
-#scaleStrip .scale-row:nth-child(4) { --i: 3; }
-#scaleStrip .scale-row:nth-child(5) { --i: 4; }
-
-html.has-reveal #scaleStrip.reveal .bar i {
-  transform-origin: left center;
-  transition: transform .9s var(--reveal-ease) calc(250ms + var(--i, 0) * 110ms);
-}
-html.has-reveal #scaleStrip.reveal:not(.is-in) .bar i { transform: scaleX(0); }
-
 /* --- 01: the takeaway gets one soft glow once it has landed --------------- */
 html.has-reveal .takeaway.reveal.is-in {
   animation: p9-glow 1.8s ease-out calc(var(--reveal-delay, 0ms) + 500ms) 1;

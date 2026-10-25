@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>The Evidence for Planet Nine</title>
 <meta name="description" content="A few dozen icy worlds beyond Neptune appear to lean the same way. Explore the evidence for a ninth planet — the orbits, the odds, the search, and the alternatives — using real catalogue data." />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪐</text></svg>" />
+<link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body>
 <div class="stars" aria-hidden="true"></div>
 
 <main>
   <header class="hero wrap">
+    <svg class="hero-mark" viewBox="0 0 100 100" role="img" aria-label="Planet Nine"><use href="#art-planet-nine"/></svg>
     <div class="eyebrow">CS 1710 · Data Visualization</div>
     <h1>The evidence for <em>Planet Nine</em></h1>
     <div class="byline">
@@ -110,7 +111,7 @@
           <p class="filter-desc" id="qualityHelp">Hides objects observed too briefly for their orbits to be pinned down reliably.</p>
         </div>
         <div class="filter">
-          <label class="filter-name" for="showP9">Show Planet Nine</label>
+          <label class="filter-name" for="showP9"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine-mark"/></svg> Show Planet Nine</label>
           <label class="toggle" for="showP9">
             <input type="checkbox" id="showP9" checked aria-describedby="showP9Help" /><span class="box"></span><span class="state"></span>
           </label>
@@ -144,12 +145,77 @@
     <div class="sub-head">
       <h3>How far away are these objects?</h3>
       <p>
-        Familiar worlds for scale. The first four bars show each body's average distance
-        from the Sun; the last shows the farthest point reached by any object in view.
-        Bars use a square-root scale so Earth stays visible next to thousands of AU.
+        Scroll, and the picture zooms out. The Sun stays at the left edge; everything
+        else sits at its true distance from it. The drawn sizes are not to scale.
       </p>
     </div>
-    <div class="scale-strip" id="scaleStrip"></div>
+    <div class="scrolly" id="distStory">
+      <div class="scrolly-graphic">
+        <div class="viz-head" id="distHead"><div id="distReadout"></div></div>
+        <div class="viz" id="chartDist"></div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="step" data-step="home" id="dist-home" tabindex="-1"><div class="step-card">
+          <div class="step-n">1 / 7</div>
+          <h3>Start at home</h3>
+          <p>Earth sits <strong>1 AU</strong> from the Sun: about 150 million km, or
+          eight minutes at the speed of light. That is the ruler for everything on
+          this page.</p>
+          <p>Mercury, Venus and Mars all fit within two of them.</p>
+        </div></div>
+        <div class="step" data-step="giants" id="dist-giants" tabindex="-1"><div class="step-card">
+          <div class="step-n">2 / 7</div>
+          <h3>The giants</h3>
+          <p>Jupiter orbits at 5 AU and Saturn near 10. Already the four rocky
+          planets are crowding into the Sun's glow.</p>
+        </div></div>
+        <div class="step" data-step="neptune" id="dist-neptune" tabindex="-1"><div class="step-card">
+          <div class="step-n">3 / 7</div>
+          <h3>The edge of the familiar</h3>
+          <p>Uranus at 19 AU, Neptune at <strong>30 AU</strong>. Sunlight takes four
+          hours to get there. Every planet you learned in school fits inside this
+          circle.</p>
+        </div></div>
+        <div class="step" data-step="pluto" id="dist-pluto" tabindex="-1"><div class="step-card">
+          <div class="step-n">4 / 7</div>
+          <h3>Poor Pluto</h3>
+          <p>Pluto averages 39 AU, but its orbit is a stretched oval: it dips inside
+          Neptune's path at one end and reaches 49 AU at the other. It shares this
+          region, the Kuiper belt, with thousands of smaller icy bodies, which is why
+          it lost its planet title in 2006.</p>
+        </div></div>
+        <div class="step" data-step="extreme" id="dist-extreme" tabindex="-1"><div class="step-card">
+          <div class="step-n">5 / 7</div>
+          <h3>The extreme objects</h3>
+          <p>Each thin line is one object in your sample, drawn from the closest it
+          ever comes to the Sun to the farthest it goes. The rock marks its average
+          distance. They all pass near the Kuiper belt, then head out for hundreds
+          or thousands of AU.</p>
+          <p>Point at one to see its numbers.</p>
+        </div></div>
+        <div class="step" data-step="p9" id="dist-p9" tabindex="-1"><div class="step-card">
+          <div class="step-n">6 / 7</div>
+          <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Where Planet Nine would be</h3>
+          <p>The prediction is a range, not a spot. On its best-fit orbit the planet
+          would travel between <strong>about <span id="distP9q">320</span> and
+          <span id="distP9Q">600</span> AU</strong> from the Sun. Allow for the
+          uncertainty in that orbit and it could be anywhere from roughly
+          <span id="distP9min">200</span> to <span id="distP9max">900</span> AU out.
+          At those distances sunlight takes days to arrive, and only a trickle
+          comes back.</p>
+          <p>Turn off "Show Planet Nine" above to hide this band.</p>
+        </div></div>
+        <div class="step" data-step="farthest" id="dist-farthest" tabindex="-1"><div class="step-card">
+          <div class="step-n">7 / 7</div>
+          <h3>…and how far the farthest goes</h3>
+          <p>The most distant object in view reaches <strong><span id="distFarAu">—</span></strong>
+          from the Sun at the far end of its orbit. The planets you started with
+          are now a smudge inside the Sun's glow.</p>
+          <p>Change the filters at the top of this section and this picture, like
+          every chart below, follows.</p>
+        </div></div>
+      </div>
+    </div>
 
     <div class="primer">
       <div class="pc">
@@ -265,7 +331,7 @@
 
         <div class="step" data-step="p9"><div class="step-card">
           <div class="step-n">7 / 8</div>
-          <h3>The proposed explanation: Planet Nine</h3>
+          <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> The proposed explanation: Planet Nine</h3>
           <p>Astronomers proposed an unseen planet about
           <strong>7 times Earth's mass</strong>, far beyond Neptune. Its own orbit
           (<span class="k-p9">green</span>) points roughly the <em>opposite</em> way.</p>
@@ -554,7 +620,7 @@
   <section class="wrap" id="build">
     <div class="sec-head">
       <div class="eyebrow">05 — Your turn</div>
-      <h2>Put a planet out there yourself</h2>
+      <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Put a planet out there yourself</h2>
       <p class="lede">
         Drag the dials. We score your planet against what the real objects do and
         what the real searches have already ruled out.

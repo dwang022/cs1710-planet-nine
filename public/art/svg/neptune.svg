@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Neptune" style="color:#ffffff"><defs><clipPath id="ak-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#ak-c)">
+      <circle cx="50" cy="50" r="40" fill="#3f66c9"/>
+      <path d="M0,30 C25,27.8 40,32.2 60,30 S90,27.8 100,31.1 L100,39.2 C80,34.8 60,39.2 40,37 S15,34.8 0,38.1 Z" fill="#5a7fd6" opacity="0.8"/>
+      <ellipse cx="58" cy="57" rx="10" ry="6" fill="#2c4ea6"/>
+      <path d="M28,42 C36,36 46,38 54,36" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.3"/>
+    </g><circle cx="50" cy="50" r="40" fill="none" stroke="#253f8f" stroke-width="2.5"/></svg>

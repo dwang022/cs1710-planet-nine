@@ -107,10 +107,6 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .attr('aria-label', 'All-sky map showing survey coverage, the predicted path of Planet Nine, and the perihelion direction of each extreme object.')
 
   const iw = W - M.left - M.right, ih = H - M.top - M.bottom
-  const projection = d3.geoMollweide
-    ? d3.geoMollweide()
-    : null
-
   // d3-geo-projection is not bundled; Mollweide is simple enough to inline.
   // x = (2R/pi) * lambda * cos(theta), y = R * sin(theta), with theta solved
   // from 2*theta + sin(2*theta) = pi * sin(phi).

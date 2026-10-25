@@ -14,44 +14,57 @@
   <header class="hero wrap">
     <div class="eyebrow">CS 1710 · Data Visualization</div>
     <h1>The evidence for <em>Planet Nine</em></h1>
-    <p class="lede">
-      Far past Neptune, a few dozen frozen worlds appear to lean the same way.
-      Something huge may be pushing them. Or we may be seeing a face in the clouds.
-    </p>
-    <p class="lede" style="color:var(--text-muted);font-size:1rem">
-      Every chart below is built from real telescope catalogues. Nothing is made up.
-      Scroll, drag the sliders, and decide for yourself.
-    </p>
-    <div style="margin-top:26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-      <a id="startBtn" href="#objects">Start reading ↓</a>
-      <span style="font-size:.85rem;color:var(--text-muted)">no astronomy needed, just scroll</span>
-    </div>
     <div class="byline">
       <span>Daniel Wang</span><span>Gabriel Gonzalez</span><span>Russell Rui Luo</span>
     </div>
-  </header>
+    <p class="lede hero-hook">
+      Far beyond Neptune, astronomers have found distant icy objects whose unusual
+      orbits raise an intriguing possibility: <strong>could another planet be hiding
+      in our solar system?</strong>
+    </p>
 
-  <div class="controls" id="controls">
-    <div class="wrap controls-inner">
-      <div class="ctrl">
-        <label for="aMin">How far out the orbit goes ≥ <b><span id="aMinV">150</span> AU</b></label>
-        <input type="range" id="aMin" min="100" max="400" step="10" value="150" />
+    <div class="hero-context">
+      <div class="hero-block">
+        <h3>A planet no one has seen</h3>
+        <p>
+          Known as Planet Nine, this hypothetical world has never been directly observed.
+          It was proposed to explain patterns in how these distant objects move.
+        </p>
       </div>
-      <div class="ctrl">
-        <label for="qMin">Closest approach ≥ <b><span id="qMinV">30</span> AU</b></label>
-        <input type="range" id="qMin" min="30" max="60" step="1" value="30" />
+      <div class="hero-block">
+        <h3>A question still open</h3>
+        <p>
+          Scientists disagree about whether those patterns point to an undiscovered planet,
+          to bias in where telescopes happen to look, or to something else entirely.
+        </p>
       </div>
-      <label class="toggle" for="quality">
-        <input type="checkbox" id="quality" checked /><span class="box"></span>
-        Only well-measured orbits
-      </label>
-      <label class="toggle" for="showP9">
-        <input type="checkbox" id="showP9" checked /><span class="box"></span>
-        Show Planet Nine
-      </label>
-      <button class="btn-reset" id="reset" type="button">Reset</button>
     </div>
-  </div>
+
+    <div class="hero-purpose">
+      <h2 class="hero-purpose-title">Explore the evidence yourself</h2>
+      <p class="hero-purpose-lead">
+        Follow the story through interactive visualizations built from real astronomical data.
+        Here's what you'll discover:
+      </p>
+      <ol class="hero-path">
+        <li><a href="#picture"><span>02</span>Explore unusual orbits</a></li>
+        <li><a href="#luck"><span>03</span>Test whether alignment could be chance</a></li>
+        <li><a href="#sky"><span>04</span>See where telescopes have searched</a></li>
+        <li><a href="#build"><span>05</span>Put a planet out there yourself</a></li>
+        <li><a href="#alternatives"><span>06</span>Compare competing explanations</a></li>
+        <li><a href="#field"><span>07</span>Explore what astronomers think</a></li>
+      </ol>
+    </div>
+
+    <p class="hero-question">
+      <span class="eyebrow">The question to keep in mind</span>
+      Does the evidence really point to Planet Nine?
+    </p>
+    <div class="hero-start" style="margin-top:26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <a id="startBtn" href="#objects">Start reading ↓</a>
+      <span style="font-size:.85rem;color:var(--text-muted)">no astronomy needed, just scroll</span>
+    </div>
+  </header>
 
   <!-- 01 ============================================================== -->
   <section class="wrap" id="objects">
@@ -59,15 +72,82 @@
       <div class="eyebrow">01 — The sample</div>
       <h2>A handful of worlds, impossibly far away</h2>
       <p class="lede">
-        One AU is the distance from the Earth to the Sun. These objects wander
-        hundreds of AU out — so far that Neptune cannot reach them.
+        Beyond Neptune lies a swarm of small, icy bodies called
+        <strong>trans-Neptunian objects</strong> (TNOs). A few dozen of them travel on
+        extreme orbits that carry them hundreds of times farther from the Sun than Earth.
+        Over billions of years, the giant planets' gravity should have spread the
+        directions of these orbits evenly around the Sun. Some astronomers think the
+        orbits are bunched together instead, and that an unseen planet could be the cause.
+        Others suspect the pattern comes from where telescopes happened to look.
+        This section introduces the objects that every later chart is built from.
+      </p>
+      <p class="aside">
+        <b>AU</b> (astronomical unit) = the average Earth–Sun distance, about 150 million km.
+        Neptune orbits at 30 AU.
       </p>
     </div>
+    <div class="controls" id="controls" role="group" aria-labelledby="controlsLabel">
+      <div class="controls-head">
+        <div class="eyebrow" id="controlsLabel">Adjust the sample · updates Sections 01–05</div>
+        <button class="btn-reset" id="reset" type="button">Reset</button>
+      </div>
+      <div class="filter-grid">
+        <div class="filter">
+          <label class="filter-name" for="aMin">Minimum orbit distance <b><span id="aMinV">150</span> AU</b></label>
+          <input type="range" id="aMin" min="100" max="400" step="10" value="150" aria-describedby="aMinHelp" />
+          <p class="filter-desc" id="aMinHelp">Only show objects whose average distance from the Sun is at least this far.</p>
+        </div>
+        <div class="filter">
+          <label class="filter-name" for="qMin">Minimum closest approach <b><span id="qMinV">30</span> AU</b></label>
+          <input type="range" id="qMin" min="30" max="60" step="1" value="30" aria-describedby="qMinHelp" />
+          <p class="filter-desc" id="qMinHelp">Only show objects that never come closer to the Sun than this distance.</p>
+        </div>
+        <div class="filter">
+          <label class="filter-name" for="quality">Only well-measured orbits</label>
+          <label class="toggle" for="quality">
+            <input type="checkbox" id="quality" checked aria-describedby="qualityHelp" /><span class="box"></span><span class="state"></span>
+          </label>
+          <p class="filter-desc" id="qualityHelp">Hides objects observed too briefly for their orbits to be pinned down reliably.</p>
+        </div>
+        <div class="filter">
+          <label class="filter-name" for="showP9">Show Planet Nine</label>
+          <label class="toggle" for="showP9">
+            <input type="checkbox" id="showP9" checked aria-describedby="showP9Help" /><span class="box"></span><span class="state"></span>
+          </label>
+          <p class="filter-desc" id="showP9Help">Draws the predicted planet on the charts for comparison. It never changes the sample or the numbers.</p>
+        </div>
+      </div>
+    </div>
     <div class="grid-stats">
-      <div class="stat"><div class="k">Objects in view</div><div class="v" id="statN">—</div><div class="d" id="statNd">—</div></div>
-      <div class="stat"><div class="k">How aligned they are</div><div class="v" id="statR">—</div><div class="d">0 = pointing every which way · 1 = perfectly lined up</div></div>
-      <div class="stat" id="statPtile"><div class="k">Odds of this by luck</div><div class="v" id="statP">—</div><div class="d" id="statPd">—</div></div>
-      <div class="stat"><div class="k">Direction they lean</div><div class="v" id="statDir">—</div><div class="d">average heading, around the sky</div></div>
+      <div class="stat"><div class="k">Objects in view</div><div class="v" id="statN">—</div><div class="d" id="statNd">—</div>
+        <p class="h">The objects that pass every filter above. All the numbers and charts in Sections 01–05 use this group, except the guided story cards in 02–03, which use the fixed sample their text describes.</p></div>
+      <div class="stat"><div class="k">How aligned are they?</div><div class="v" id="statR">—</div><div class="d">0 = pointing every which way · 1 = perfectly lined up</div>
+        <p class="h">How closely the orbits point the same way around the Sun. Random directions still score a little above 0, especially in small groups.</p></div>
+      <div class="stat" id="statPtile"><div class="k">Odds of this happening by chance</div><div class="v" id="statP">—</div><div class="d" id="statPd">—</div>
+        <p class="h">How often randomly pointed orbits would line up this well. It is <em>not</em> the chance that Planet Nine exists, and it assumes telescopes could find objects in any direction equally (see 04).</p></div>
+      <div class="stat"><div class="k">Average orbit direction</div><div class="v" id="statDir">—</div><div class="d">average direction of closest approach</div>
+        <p class="h">The average side of the Sun where these orbits make their closest pass, as an angle from 0° to 360°. Planet Nine is predicted to point roughly the opposite way, near 247°.</p></div>
+    </div>
+
+    <nav class="turn-nav" aria-labelledby="turnNavTitle">
+      <div class="turn-nav-text">
+        <h3 id="turnNavTitle">Ready to see what changed?</h3>
+        <p>After adjusting the sample, jump back to an interactive visualization to see how your choices affect the evidence.</p>
+      </div>
+      <ul class="hero-path turn-nav-links">
+        <li><a href="#your-turn-02" data-your-turn><span>Section 02</span>Back to Your Turn</a></li>
+        <li><a href="#your-turn-03" data-your-turn><span>Section 03</span>Back to Your Turn</a></li>
+        <li><a href="#your-turn-04" data-your-turn><span>Section 04</span>Back to Your Turn</a></li>
+      </ul>
+    </nav>
+
+    <div class="sub-head">
+      <h3>How far away are these objects?</h3>
+      <p>
+        Familiar worlds for scale. The first four bars show each body's average distance
+        from the Sun; the last shows the farthest point reached by any object in view.
+        Bars use a square-root scale so Earth stays visible next to thousands of AU.
+      </p>
     </div>
     <div class="scale-strip" id="scaleStrip"></div>
 
@@ -88,6 +168,16 @@
         <p>Because the oval is long, it points somewhere. That direction — where
         the near end sits — is the single number this whole page is about.</p>
       </div>
+    </div>
+
+    <div class="takeaway">
+      <h3 class="takeaway-title">The main takeaway</h3>
+      <p>
+        The evidence rests on a small group of faint, very distant objects. With the default
+        filters their orbits look more lined up than chance usually produces, but that can
+        shift as you change the sample, and it depends on where telescopes have looked.
+      </p>
+      <a href="#picture">Section 02 shows the orbits themselves →</a>
     </div>
   </section>
 
@@ -183,15 +273,15 @@
           the far side from itself. That is where the white arrow points.</p>
         </div></div>
 
-        <div class="step" data-step="explore"><div class="step-card explore">
+        <div class="step" data-step="explore" id="your-turn-02" tabindex="-1"><div class="step-card explore">
           <div class="step-n">8 / 8 · your turn</div>
           <h3>Explore it yourself</h3>
           <ul>
             <li><strong>Point at</strong> any orbit or dot to see which object it is.
             It lights up in every other chart on the page too.</li>
             <li><strong>Switch views</strong> with the buttons above the picture.</li>
-            <li><strong>Change which objects count</strong> with the sliders in the bar
-            at the top of the page.</li>
+            <li><strong>Change which objects count</strong> with the filters in
+            <a href="#controls">Section 01</a>. This card always shows your choice.</li>
           </ul>
         </div></div>
       </div>
@@ -296,9 +386,9 @@
           <div class="step-n">5 / 7</div>
           <h3>The catch</h3>
           <p><span data-n="extraN">—</span> more objects have been spotted, but only
-          briefly, so their orbits are uncertain. We just switched off
-          <strong>"Only well-measured orbits"</strong> in the bar at the top so that
-          they count too.</p>
+          briefly, so their orbits are uncertain. This card counts them too, as if
+          <strong>"Only well-measured orbits"</strong> were switched off. Your own
+          filters are left as they are.</p>
           <p class="step-key">With all <span data-n="looseN">—</span> objects, the
           arrow shrinks to <span data-n="looseR">—</span> and lands in the middle of
           the pile. That is what luck looks like: about 1 in
@@ -316,11 +406,11 @@
           verdict depends on which objects you trust.</p>
         </div></div>
 
-        <div class="step" data-step="explore"><div class="step-card explore">
+        <div class="step" data-step="explore" id="your-turn-03" tabindex="-1"><div class="step-card explore">
           <div class="step-n">7 / 7 · your turn</div>
           <h3>Try it yourself</h3>
-          <p>Use the sliders and the switch in the bar at the top. The pile, the
-          arrow and this verdict all update as you go.</p>
+          <p>Use the filters in <a href="#controls">Section 01</a>. The pile, the
+          arrow and this verdict all follow them.</p>
           <div id="verdict"></div>
         </div></div>
       </div>
@@ -429,7 +519,7 @@
           leave very few places for it to hide.</p>
         </div></div>
 
-        <div class="step" data-step="explore"><div class="step-card explore">
+        <div class="step" data-step="explore" id="your-turn-04" tabindex="-1"><div class="step-card explore">
           <div class="step-n">9 / 9 · your turn</div>
           <h3>Explore the map</h3>
           <ul>
@@ -491,13 +581,14 @@
       <div class="eyebrow">06 — The competition</div>
       <h2>A planet is not the only explanation</h2>
       <p class="lede">
-        Four things need explaining. Eight ideas compete. Click a row to see where
-        each one holds up and where it breaks.
+        Planet Nine isn't the only possible explanation for these unusual orbits. Here, we
+        compare eight competing theories to see how well each explains the evidence—and
+        where each falls short. Click any row to explore further.
       </p>
     </div>
     <div class="legend" id="matrixLegend"></div>
     <div class="card"><div id="chartMatrix"></div></div>
-    <div id="altDetail"></div>
+    <div id="altDetail" aria-live="polite"></div>
   </section>
 
   <!-- 07 ============================================================== -->

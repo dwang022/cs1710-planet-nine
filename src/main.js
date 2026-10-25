@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import './style.css'
+import { animateValue, interpolateAngle, interpolateLog, duration, EASE } from './motion.js'
 import { resultant, rayleighP, nullDistribution, formatP, seededRandom } from './stats.js'
 import { PLANET_NINE, angleDiff, semiLatusRectum } from './orbits.js'
 import { drawSkyMap, depthColour, deepestAt, galacticPoint, eclipticPoint } from './charts/skymap.js'
@@ -9,7 +10,7 @@ import { drawMatrix } from './charts/matrix.js'
 import { drawTimeline } from './charts/timeline.js'
 import { drawPlacement, scorePlanet, physicalProperties } from './charts/placeplanet.js'
 import { makeScatter } from './charts/scatter.js'
-import { scrolly, pulse } from './scrolly.js'
+import { scrolly, initReveals } from './scrolly.js'
 
 const DEFAULTS = { aMin: 150, qMin: 30, aMax: Infinity, qMax: Infinity, quality: true, showP9: true }
 const state = { ...DEFAULTS }
@@ -24,12 +25,15 @@ let SKY = null, PERIHELIA = [], ALTS = null, PREDICTIONS = null
 let scatter = null
 let lean = null, luck = null
 
-// The story steps. Each scripted step pins the sample it describes, so the
+// The story steps. Each scripted step draws the sample it describes, so the
 // numbers in the text and the picture always agree; the last "explore" step of
-// each section leaves the controls alone and follows whatever the reader sets.
+// each section follows whatever the reader sets. Scripted steps only read
+// their sample: the reader's filters in `state` are never changed by scrolling.
 const STRICT = { aMin: 150, qMin: 30, aMax: Infinity, qMax: Infinity, quality: true }
 const LOOSE = { ...STRICT, quality: false }
 const story = { lean: 'one', luck: 'one', sky: 'sky' }
+const leanSample = step => step === 'explore' ? state : STRICT
+const luckSample = step => step === 'explore' ? state : step === 'catch' || step === 'cuts' ? LOOSE : STRICT
 let leanView = 'orbits'
 const SEDNA = '90377'
 
@@ -48,11 +52,12 @@ const fmt = d3.format(',.0f')
 
 // --------------------------------------------------------------------------
 
-function selected () {
+/** The one filter on the page: the reader's controls, or a story step's sample. */
+function selected (s = state) {
   return ETNOS.filter(o =>
-    o.a_au >= state.aMin && o.a_au <= state.aMax &&
-    (o.q_au ?? 0) >= state.qMin && (o.q_au ?? 0) <= state.qMax &&
-    (!state.quality || o.well_determined))
+    o.a_au >= s.aMin && o.a_au <= s.aMax &&
+    (o.q_au ?? 0) >= s.qMin && (o.q_au ?? 0) <= s.qMax &&
+    (!s.quality || o.well_determined))
 }
 
 const boxed = () => isFinite(state.aMax) || isFinite(state.qMax)
@@ -62,20 +67,6 @@ function applyState (patch) {
   Object.assign(state, patch)
   syncControls()
   render()
-}
-
-/**
- * Put the sample a story step needs in place. Any control that has to move is
- * pulsed, so the reader sees which switch the story just flipped.
- */
-function requireSample (patch) {
-  const changed = Object.keys(patch).filter(k => state[k] !== patch[k])
-  if (!changed.length) return false
-  if (changed.includes('quality')) pulse($('label[for="quality"]'))
-  if (changed.includes('aMin')) pulse($('#aMin').closest('.ctrl'))
-  if (changed.includes('qMin')) pulse($('#qMin').closest('.ctrl'))
-  applyState(patch)
-  return true
 }
 
 function syncControls () {
@@ -101,26 +92,32 @@ function render () {
   const stats = resultant(objs.map(o => o.varpi_deg))
   const p = rayleighP(stats.n, stats.R)
 
-  $('#statN').textContent = stats.n
+  // Tiles ease from the old value to the new one; the final frame prints
+  // exactly what the original formatting would have.
+  const statN = $('#statN'), statR = $('#statR'), statDir = $('#statDir')
+  animateValue(statN, stats.n, v => { statN.textContent = Math.round(v) })
   $('#statNd').textContent = `of ${ETNOS.length} known extreme objects`
-  $('#statR').textContent = stats.R.toFixed(3)
-  $('#statDir').textContent = stats.n ? `${stats.meanDeg.toFixed(0)}°` : '—'
+  animateValue(statR, stats.R, v => { statR.textContent = v.toFixed(3) })
+  animateValue(statDir, stats.n ? stats.meanDeg : null, (v, done) => {
+    statDir.textContent = v == null ? '—'
+      : `${(done ? stats.meanDeg : ((v % 360) + 360) % 360).toFixed(0)}°`
+  }, interpolateAngle)
 
   const f = formatP(p)
-  $('#statP').textContent = stats.n >= 3 ? f.odds.replace('about ', '') : '—'
-  $('#statPd').textContent = stats.n >= 3
-    ? `random data looks this aligned ${f.odds}`
-    : 'need at least 3 objects'
+  const statP = $('#statP'), statPd = $('#statPd')
+  animateValue(statP, stats.n >= 3 ? 1 / p : null, (v, done) => {
+    if (v == null) { statP.textContent = '—'; statPd.textContent = 'need at least 3 objects'; return }
+    const odds = done ? f.odds : `about 1 in ${Math.round(v).toLocaleString()}`
+    statP.textContent = odds.replace('about ', '')
+    statPd.textContent = `random orbits line up this well ${odds}`
+  }, interpolateLog)
   const tile = $('#statPtile')
   tile.classList.toggle('is-strong', p < 0.05 && stats.n >= 3)
   tile.classList.toggle('is-weak', p >= 0.05 && stats.n >= 3)
 
   const maxAu = state.showP9 ? viewScale(objs).withP9 : viewScale(objs).objects
-  renderLean(objs, stats)
-  renderLuck(objs, stats)
-  const readout = `<b>${stats.n}</b> objects · ${state.quality ? 'well-measured orbits only' : 'including briefly seen orbits'}${boxed() ? ' · your custom group' : ''}`
-  $('#leanReadout').innerHTML = readout
-  $('#luckReadout').innerHTML = readout
+  renderLean()
+  renderLuck()
 
   if (scatter) {
     const ids = new Set(objs.map(o => o.id))
@@ -182,28 +179,48 @@ function renderTable (objs) {
 function renderScaleStrip (objs) {
   const far = d3.max(objs, o => o.a_au * (1 + o.e)) || 1000
   const rows = [
-    { nm: 'Earth', au: 1, c: 'var(--series-1)' },
-    { nm: 'Neptune', au: 30.1, c: 'var(--neptune)' },
-    { nm: 'Pluto', au: 39.5, c: 'var(--text-muted)' },
-    { nm: 'Planet Nine (predicted)', au: PLANET_NINE.a_au, c: 'var(--series-3)' },
-    { nm: 'Furthest object in view', au: far, c: 'var(--series-2)' },
+    { nm: 'Earth', q: 'average distance', au: 1, c: 'var(--series-1)' },
+    { nm: 'Neptune', q: 'average distance', au: 30.1, c: 'var(--neptune)' },
+    { nm: 'Pluto', q: 'average distance', au: 39.5, c: 'var(--text-muted)' },
+    { nm: 'Planet Nine', q: 'predicted average distance', au: PLANET_NINE.a_au, c: 'var(--series-3)' },
+    { nm: 'Farthest point', q: 'reached by any object in view', au: far, c: 'var(--series-2)' },
   ]
   const x = d3.scaleSqrt().domain([0, far]).range([0, 100])
-  $('#scaleStrip').innerHTML = rows.map(r => `
-    <div class="scale-row">
-      <span class="nm">${r.nm}</span>
-      <span class="bar"><i style="width:${x(r.au).toFixed(1)}%;background:${r.c}"></i></span>
-      <span class="au">${r.au < 10 ? r.au : fmt(r.au)} AU</span>
-    </div>`).join('')
+  const label = au => `${au < 10 ? au : fmt(au)} AU`
+  // Keyed join so rows persist between filter changes and their bars can ease
+  // to the new length (the scale's maximum moves, so every bar shifts a little).
+  const row = d3.select('#scaleStrip').selectAll('.scale-row').data(rows, r => r.nm)
+    .join(enter => {
+      const e = enter.append('div').attr('class', 'scale-row')
+      e.append('span').attr('class', 'nm').html(r => `${r.nm}<small>${r.q}</small>`)
+      e.append('span').attr('class', 'bar').append('i')
+        .style('background', r => r.c).style('width', r => `${x(r.au).toFixed(1)}%`)
+      e.append('span').attr('class', 'au').text(r => label(r.au))
+      return e
+    })
+  row.select('.bar i').transition('width').duration(duration()).ease(EASE)
+    .style('width', r => `${x(r.au).toFixed(1)}%`)
+  row.select('.au').each(function (r) {
+    animateValue(this, r.au, (v, done) => { this.textContent = label(done ? r.au : Math.round(v)) })
+  })
 }
 
 // --------------------------------------------------------------------------
 // 02-04 — the three stories
 // --------------------------------------------------------------------------
 
-function current () {
-  const objs = withAlignment(selected())
+function current (s = state) {
+  const objs = withAlignment(selected(s))
   return { objs, stats: resultant(objs.map(o => o.varpi_deg)) }
+}
+
+/** What the pinned graphic is showing, so a story step never passes for the reader's filters. */
+function readout (s, n) {
+  const own = s === state
+  const note = own && boxed() ? ' · your custom group'
+    : !own && Object.keys(s).some(k => s[k] !== state[k]) ? ' · this step’s sample; your filters return on the last card'
+      : ''
+  return `<b>${n}</b> objects · ${s.quality ? 'well-measured orbits only' : 'including briefly seen orbits'}${note}`
 }
 
 /**
@@ -218,9 +235,11 @@ function viewScale (objs) {
   return { objects, withP9: Math.max(objects, PLANET_NINE.a_au * (1 - PLANET_NINE.e) * 1.22) }
 }
 
-function renderLean (objs, stats) {
+function renderLean () {
   if (!lean) return
-  if (!objs) ({ objs, stats } = current())
+  const sample = leanSample(story.lean)
+  const { objs, stats } = current(sample)
+  $('#leanReadout').innerHTML = readout(sample, stats.n)
   const sc = viewScale(objs)
   const halfCount = objs.filter(o => Math.abs(angleDiff(o.varpi_deg, stats.meanDeg)) <= 90).length
   const only = new Set([SEDNA])
@@ -243,9 +262,11 @@ function renderLean (objs, stats) {
   })
 }
 
-function renderLuck (objs, stats) {
+function renderLuck () {
   if (!luck) return
-  if (!objs) ({ objs, stats } = current())
+  const sample = luckSample(story.luck)
+  const { objs, stats } = current(sample)
+  $('#luckReadout').innerHTML = readout(sample, stats.n)
   const nd = nullFor(stats.n)
   const beat = nd.values.filter(v => v >= stats.R).length
   const blocksText = { histTitle: 'Where each fake solar system lands', histSub: 'each block is one fake solar system' }
@@ -269,7 +290,7 @@ function renderLuck (objs, stats) {
     cuts: { ...real, cuts: cutsView() },
     explore: { ...real, xMax: Math.min(1, Math.max(0.5, stats.R * 1.15)) },
   }
-  luck.update({ n: stats.n, real: objs, quality: state.quality, nullDist: nd, ...scenes[story.luck] })
+  luck.update({ n: stats.n, real: objs, quality: sample.quality, nullDist: nd, ...scenes[story.luck] })
 }
 
 /** The five published sample definitions, in words a reader can parse. */
@@ -330,8 +351,7 @@ function renderSkyLegend (L) {
 /** Numbers quoted in the story text, all computed from the data on load. */
 function fillStoryNumbers () {
   const sample = patch => {
-    const objs = ETNOS.filter(o => o.a_au >= patch.aMin && (o.q_au ?? 0) >= patch.qMin &&
-      (!patch.quality || o.well_determined))
+    const objs = selected(patch)
     const st = resultant(objs.map(o => o.varpi_deg))
     return { objs, st, p: rayleighP(st.n, st.R) }
   }
@@ -442,8 +462,8 @@ function renderLegend () {
     </svg>`
   $('#matrixLegend').innerHTML = `
     <div class="legend-item">${mark('var(--series-3)', 'full')}Accounts for it</div>
-    <div class="legend-item">${mark('var(--series-2)', 'half')}Partly</div>
-    <div class="legend-item">${mark('var(--text-muted)', 'none')}Does not</div>`
+    <div class="legend-item">${mark('var(--series-2)', 'half')}Partly accounts for it</div>
+    <div class="legend-item">${mark('var(--text-muted)', 'none')}Does not account for it</div>`
 }
 
 function renderSky (visibleIds) {
@@ -500,6 +520,7 @@ function renderAltDetail () {
   const cites = (a.key_dois || []).map(doi => PAPERS.papers.find(p => p.doi === doi)).filter(Boolean)
   el.innerHTML = `
     <div class="detail">
+      <div class="eyebrow">Selected explanation</div>
       <h4>${a.name} <span class="status-chip" style="background:${colours[a.status] || 'var(--surface-3)'}22;color:${colours[a.status] || 'var(--text-muted)'}">${a.status}</span></h4>
       <div class="d-lede">${a.one_liner}</div>
       <div class="detail-cols">
@@ -572,7 +593,7 @@ function bind () {
     render()
   })
   let t
-  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { setBarHeight(); render() }, 180) })
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { setBarHeight(); render(); renderMatrix() }, 180) })
   setBarHeight()
 
   $('#leanToggle').addEventListener('click', e => {
@@ -582,6 +603,35 @@ function bind () {
     render()
   })
   renderLeanToggle()
+}
+
+/**
+ * Section 01's "Back to Your Turn" links. Each lands its story's explore step
+ * where that story activates steps (mid-screen; lower on phones, below the
+ * pinned graphic), so the right picture is showing on arrival. Only scrolls:
+ * the filters are left exactly as the reader set them.
+ */
+function bindYourTurn () {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const go = (step, behavior) => {
+    const at = window.matchMedia('(max-width: 900px)').matches ? 0.78 : 0.5
+    const r = step.getBoundingClientRect()
+    window.scrollTo({ top: window.scrollY + r.top + r.height / 2 - innerHeight * at, behavior })
+    step.focus({ preventScroll: true })
+  }
+  document.querySelectorAll('a[data-your-turn]').forEach(a => a.addEventListener('click', e => {
+    const step = document.querySelector(a.hash)
+    if (!step) return
+    e.preventDefault()
+    history.pushState(null, '', a.hash)
+    go(step, reduce.matches ? 'instant' : 'smooth')
+  }))
+  // A shared link or a reload lands the same way, now that the charts exist.
+  const step = pendingTurn && document.querySelector(pendingTurn)
+  if (step) {
+    history.replaceState(null, '', pendingTurn)
+    go(step, 'instant')
+  }
 }
 
 /** The pinned graphics sit below the sticky control bar, whatever its height. */
@@ -624,26 +674,30 @@ async function init () {
 
   bind(); render()
 
-  // Steps that pin a sample re-render through applyState; the rest only
-  // need their own graphic redrawn.
+  // A step change only redraws its own graphic; the filters stay as the reader left them.
   scrolly($('#leanStory'), {
     onStep: (i, step) => {
       story.lean = step
       $('#leanToggle').hidden = step !== 'explore'
-      if (step === 'explore' || !requireSample(STRICT)) renderLean()
+      renderLean()
     },
   })
   scrolly($('#luckStory'), {
-    onStep: (i, step) => {
-      story.luck = step
-      const need = step === 'catch' ? LOOSE : step === 'explore' || step === 'cuts' ? null : STRICT
-      if (!need || !requireSample(need)) renderLuck()
-    },
+    onStep: (i, step) => { story.luck = step; renderLuck() },
   })
   scrolly($('#skyStory'), {
     onStep: (i, step) => { story.sky = step; renderSky() },
   })
+  bindYourTurn()
 }
+
+initReveals()   // experimental scroll-triggered reveals; delete this line to disable
+
+// Hold a shared #your-turn-NN link until the charts exist (bindYourTurn puts it
+// back). Left in the URL, the browser starts its own smooth jump while the page
+// is still loading, and wherever the two scrolls meet is where the reader lands.
+const pendingTurn = location.hash.startsWith('#your-turn-') ? location.hash : null
+if (pendingTurn) history.replaceState(null, '', location.pathname + location.search)
 
 init().catch(err => {
   document.querySelector('main').insertAdjacentHTML('afterbegin',

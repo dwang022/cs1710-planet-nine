@@ -127,7 +127,7 @@ export function makeLuck (root) {
       const bin = Math.floor(b.R / BIN)
       const k = stack.get(bin) || 0
       stack.set(bin, k + 1)
-      return { ...b, bx: x(bin * BIN) + 1, by: HIST.bottom - (k + 1) * 11 }
+      return { ...b, bx: Math.min(x(bin * BIN), HIST.x1 - bw) + 1, by: HIST.bottom - (k + 1) * 11 }
     })
     const sel = gBlocks.selectAll('rect').data(placed, d => d.id)
     sel.exit().transition().duration(300).attr('opacity', 0).remove()
@@ -157,7 +157,12 @@ export function makeLuck (root) {
   function update (s) {
     stopTimer()
     arrange()
-    const xMax = s.xMax || 0.5
+    const nd = s.nullDist
+    // The axis reaches the last fake solar system with any count: a small
+    // sample spreads them far past 0.5, and a bar beyond the axis would be
+    // drawn outside the chart. Bins are BIN wide, so this stays on a bin edge.
+    const reach = nd ? d3.max(nd.counts, (c, i) => c ? (i + 1) * BIN : 0) : 0
+    const xMax = Math.min(1, Math.max(s.xMax || 0.5, reach))
     x = d3.scaleLinear().domain([0, xMax]).range([HIST.x0, HIST.x1])
     gAxis.transition().duration(T)
       .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
@@ -188,10 +193,10 @@ export function makeLuck (root) {
       handoff.attr('d', `M${RING.cx + RING.r * 0.9},${RING.cy - 40} C${RING.cx + 230},${RING.cy - 140} ${bx},${HIST.bottom - 140} ${bx},${HIST.bottom - 16}`)
     }
 
-    const nd = s.nullDist
     const maxC = nd ? d3.max(nd.counts) : 1
     const y = d3.scaleLinear().domain([0, maxC]).range([0, HIST.bottom - HIST.top - 30])
-    const bars = gBars.selectAll('rect').data(nd && s.bars ? nd.counts : [], (d, i) => i)
+    const shown = nd && s.bars ? nd.counts.slice(0, Math.floor(xMax / BIN + 1e-9)) : []
+    const bars = gBars.selectAll('rect').data(shown, (d, i) => i)
     bars.exit().transition().duration(T / 2).attr('height', 0).attr('y', HIST.bottom).remove()
     bars.enter().append('rect').attr('rx', 2)
       .attr('y', HIST.bottom).attr('height', 0)

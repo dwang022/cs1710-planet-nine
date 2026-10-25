@@ -97,7 +97,7 @@ const TARGETS = [
   '.hero > .hero-mark', '.hero > .eyebrow', '.hero > h1', '.hero > .byline', '.hero-hook',
   '.hero-fact', '.hero-start', '.hero-nav-k', '.hero-path li',
   // 00 — the rules table and the question
-  '#planets .sub-title', '#planets .criteria-wrap', '#planets .iau', '.hero-question',
+  '#planets .sub-title', '#planets .definition', '#planets .criteria-wrap', '#planets .primer .pc', '.hero-question',
   // every section heading
   'section .sec-head > *',
   // 01 — explanation → filters → statistics → distances → takeaway

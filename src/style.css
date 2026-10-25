@@ -456,7 +456,8 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .dist-edge.wide { stroke-opacity: .22; }
 .dist-focus { fill: none; stroke: #ffffff; stroke-opacity: .6; stroke-width: 1.4; }
 .dist-focus.dashed { stroke: var(--series-3); stroke-dasharray: 3 4; stroke-opacity: .9; }
-.voy { fill: var(--text-muted); }
+.voy path { fill: var(--text-muted); }
+.voy .hit { fill: #ffffff; fill-opacity: 0; pointer-events: all; cursor: help; }
 .dist-ruler line { stroke: var(--text-muted); stroke-width: 1.5; }
 
 /* --- 00: the planet lineup (charts/lineup.js) ------------------------------ */
@@ -495,9 +496,16 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .criteria td.verdict { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
 .criteria td.verdict small { white-space: normal; font-weight: 400; }
 .criteria tr.p9 th, .criteria tr.p9 td { background: #199e700d; }
-.iau { margin: 18px 0 0; padding: 14px 18px; border-left: 3px solid var(--series-1); background: #3987e50d;
-  border-radius: 0 10px 10px 0; font-size: .92rem; color: var(--text-secondary); max-width: 80ch; line-height: 1.55; }
-.iau cite { display: block; margin-top: 8px; font-style: normal; color: var(--text-muted); font-size: .8rem; }
+/* the definition: a full-width list, numbered to match the table's columns */
+#planets .wrap > p { max-width: none; }
+.definition { list-style: none; margin: 12px 0 18px; padding: 0; }
+.definition li { display: flex; gap: 16px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--rule); font-size: 1.02rem; line-height: 1.55; color: var(--text-secondary); }
+.definition li:last-child { border-bottom: 1px solid var(--rule); }
+.definition .n { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--text-muted); margin-top: 1px;
+  display: inline-flex; align-items: center; justify-content: center; font: 600 .8rem var(--font-mono); color: var(--text-primary); }
+.definition b { color: var(--text-primary); }
+.definition cite { display: block; font-style: normal; color: var(--text-muted); font-size: .84rem; margin-top: 4px; }
+#planets .primer { margin-top: 26px; }
 
 /* survey filter chips */
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }

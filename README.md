@@ -24,7 +24,7 @@ The six sketches chosen in the Decide section of the process book:
 
 | § | Sketch | What it shows | Data |
 |---|---|---|---|
-| 00 | — | A recount: the nine planets, Pluto's 2006 demotion, and a ninth with a question mark; then the three IAU tests on familiar objects | `planets.json` |
+| 00 | — | Introduction: the nine planets, Pluto's 2006 reclassification, and a proposed ninth; the IAU's three conditions scored on familiar objects; a scroll-driven zoom-out from Earth to the farthest well-measured object | `planets.json`, `etnos.json` |
 | 02 | **DW1** — the evidence | 90 extreme orbits from above, plus the same objects reduced to one angle each | `etnos.json` |
 | 03 | **RL3** — is it luck? | Observed alignment against 4,000 random universes, recomputed live | `clustering_null.json` |
 | 04 | **DW5** — where telescopes look | Mollweide all-sky map: survey footprints, Planet Nine's predicted path, each object's perihelion direction | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json` |
@@ -35,9 +35,8 @@ The six sketches chosen in the Decide section of the process book:
 Four controls at the top drive every panel at once: how far out the orbit goes,
 closest approach, an orbit-quality filter, and Planet Nine on/off.
 
-Section 01 also opens with a scroll-driven zoom-out, from the Sun and Earth to
-the farthest point any object in view reaches, with Planet Nine's predicted
-distance drawn as the range it is.
+The zoom-out in Section 00 draws the default sample (well-measured orbits
+only) and does not follow the filters, since it comes before them.
 
 ## The thing worth demoing
 

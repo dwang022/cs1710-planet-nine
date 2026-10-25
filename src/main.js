@@ -145,7 +145,6 @@ function render () {
   renderVerdict(stats, p)
   renderTable(objs)
   if (SKY) renderSky(new Set(objs.map(o => o.id)))
-  renderDistance(objs)
   renderBuild(objs, stats, maxAu)
 }
 
@@ -189,26 +188,32 @@ function renderTable (objs) {
 /**
  * The width of the view, in AU, at each story card. Scrolling eases between
  * them in log space, so every step of the zoom feels the same size. The later
- * keys follow the reader's sample: the extreme objects' typical reach, Planet
- * Nine's widest predicted range, and the farthest point any object in view
- * reaches.
+ * keys come from the objects drawn: their typical reach, Planet Nine's widest
+ * predicted range, and the farthest point any of them reaches.
  */
 function distKeyframes (objs) {
   const farObj = objs.length ? objs.reduce((m, o) => (o.Q_au > m.Q_au ? o : m)) : null
   const far = farObj && distance ? distance.viewFor(farObj) : 1000
   const as = objs.map(o => o.a_au).sort(d3.ascending)
   const extreme = Math.max(420, (d3.quantile(as, 0.75) || 500) * 1.6)
-  const p9 = state.showP9 && distance ? distance.p9.QMax * 1.12 : extreme
+  const p9 = distance ? distance.p9.QMax * 1.12 : extreme
   const keys = [1.75, 11.5, 34, 56, extreme, Math.max(extreme, p9), far]
   for (let i = 1; i < keys.length; i++) keys[i] = Math.max(keys[i], keys[i - 1] * 1.05)
   return keys
 }
 
-function renderDistance (objs) {
+/**
+ * The zoom-out sits in the introduction, before the reader has chosen
+ * anything, so it draws one fixed group: the well-measured extreme objects
+ * (the default sample). Briefly observed orbits are left out because their
+ * far ends are too uncertain to put on a ruler.
+ */
+function renderDistance () {
   if (!distance) return
+  const objs = withAlignment(selected(STRICT))
   const far = objs.length ? objs.reduce((m, o) => (o.Q_au > m.Q_au ? o : m)) : null
   distKeys = distKeyframes(objs)
-  distance.update({ objects: objs, showP9: state.showP9, far, step: story.dist })
+  distance.update({ objects: objs, showP9: true, far, step: story.dist })
   $('#distFarAu').textContent = far ? `${fmtAu(far.Q_au)} (${far.name || far.provisional_desig || far.id})` : '—'
   applyDistView()
 }
@@ -223,8 +228,7 @@ function applyDistView () {
   const s = u * u * (3 - 2 * u)
   const view = Math.exp(Math.log(a) + (Math.log(b) - Math.log(a)) * s)
   distance.setView(view)
-  $('#distReadout').innerHTML = `Sun out to <b>${fmtAu(view)}</b> · light takes <b>${lightTime(view)}</b> to cross this view` +
-    (state.showP9 ? '' : ' · <span class="muted">Planet Nine hidden</span>')
+  $('#distReadout').innerHTML = `Sun out to <b>${fmtAu(view)}</b> · light takes <b>${lightTime(view)}</b> to cross this view`
 }
 
 // --------------------------------------------------------------------------
@@ -707,6 +711,7 @@ async function init () {
   $('#distP9min').textContent = fmt(distance.p9.qMin); $('#distP9max').textContent = fmt(distance.p9.QMax)
 
   bind(); render()
+  renderDistance()
 
   // A step change only redraws its own graphic; the filters stay as the reader left them.
   scrolly($('#lineupStory'), {

@@ -69,6 +69,7 @@ export function makeDistance (root, { planets, p9 }) {
   const gOrbits = g.append('g')
   const gRays = g.append('g')
   const gBodies = g.append('g')
+  const gVoy = g.append('g')
   const gSun = g.append('g')
   const gFocus = g.append('g').style('pointer-events', 'none')
   const gNotes = g.append('g').style('pointer-events', 'none')
@@ -217,8 +218,14 @@ export function makeDistance (root, { planets, p9 }) {
     // --- Voyager 1, for a human-made yardstick --------------------------------
     const vx = VOYAGER_AU * k
     const voy = vx > 70 && vx < W - SUN.x - 20 ? [pos(VOYAGER_AU, -14, k)] : []
-    gNotes.selectAll('path.voy').data(voy).join('path').attr('class', 'voy')
-      .attr('d', ([x, y]) => `M${x - 5},${y + 5} L${x + 5},${y + 5} L${x},${y - 6} Z`)
+    const voyG = gVoy.selectAll('g').data(voy).join(enter => {
+      const e = enter.append('g').attr('class', 'voy')
+      e.append('circle').attr('class', 'hit').attr('r', 14)
+      e.append('path').attr('d', 'M-5,5 L5,5 L0,-6 Z')
+      return e
+    })
+    voyG.attr('transform', ([x, y]) => `translate(${x},${y})`)
+      .on('pointerenter', voyagerTip).on('pointermove', voyagerTip).on('pointerleave', () => hideTip())
     if (voy.length) notes.push({ x: voy[0][0] + 9, y: voy[0][1] + 4, text: `Voyager 1 · ~${VOYAGER_AU} AU`, cls: 'muted small', anchor: 'start' })
 
     // --- the farthest point in view -------------------------------------------
@@ -228,7 +235,7 @@ export function makeDistance (root, { planets, p9 }) {
         focusAt = { x: o.x2, y: o.y2, r: 9 }
         const left = o.x2 > W - 260, up = o.y2 > H - 70
         const lx = o.x2 + (left ? -14 : 14)
-        notes.push({ x: lx, y: up ? o.y2 - 28 : o.y2 - 8, text: `farthest point in view: ${fmtAu(o.Q_au)}`, cls: 'focus', anchor: left ? 'end' : 'start' })
+        notes.push({ x: lx, y: up ? o.y2 - 28 : o.y2 - 8, text: `farthest point: ${fmtAu(o.Q_au)}`, cls: 'focus', anchor: left ? 'end' : 'start' })
         notes.push({ x: lx, y: up ? o.y2 - 11 : o.y2 + 10, text: `${nameOf(o)} · light takes ${lightTime(o.Q_au)} to get there`, cls: 'focus-v', anchor: left ? 'end' : 'start' })
       }
     }
@@ -271,6 +278,13 @@ export function makeDistance (root, { planets, p9 }) {
       <div class="note">${d.well_determined ? 'well-measured orbit' : 'seen only briefly: the far end is uncertain'}</div>`)
   }
   function unhover () { setHover(null); hideTip() }
+
+  function voyagerTip (ev) {
+    showTip(ev, `<b>Voyager 1</b>
+      <div>Launched in 1977, it is the farthest human-made object: about ${VOYAGER_AU} AU from the Sun,
+      moving outward at roughly 3.6 AU a year. It crossed into interstellar space in 2012 and is still transmitting.</div>
+      <div class="note">A marker for how far people have actually sent anything.</div>`)
+  }
 
   registerHighlight(id => { if (id !== S.hot) { S.hot = id; draw() } })
 

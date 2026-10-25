@@ -32,16 +32,16 @@ const FACTS = {
 const EDITION = {
   nine: ['1930 – 2006 edition', 'nine planets'],
   neighbours: ['1992 – 2005', "Pluto's neighbourhood fills up"],
-  rules: ['2006', 'the IAU writes down the rules'],
+  rules: ['2006', 'the IAU defines the word'],
   eight: ['2006 edition', 'eight planets, one dwarf planet'],
-  'nine-again': ['2016 edition', 'eight planets and a question mark'],
+  'nine-again': ['2016 edition', 'eight planets and one proposed'],
 }
 const COUNT = {
   nine: '9 planets',
-  neighbours: '9 planets, and a few thousand neighbours',
-  rules: '9 planets, 3 rules',
+  neighbours: '9 planets, and a crowded neighbourhood',
+  rules: '9 planets, 3 conditions',
   eight: '8 planets + 1 dwarf planet',
-  'nine-again': '8 planets + 1 dwarf planet + 1 question mark',
+  'nine-again': '8 planets + 1 dwarf planet + 1 proposed',
 }
 
 // A small seeded generator so the Kuiper belt speckle is the same on every visit.
@@ -126,20 +126,22 @@ export function makeLineup (root, { planets, readout }) {
     body.transition().duration(T)
       .attr('transform', d => `translate(${d.x},${d.y + (d.dwarf && dropped ? DROP : 0)})`)
       .attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.7 : 1)
-    body.select('text.sub').text(d => d.dwarf && dropped ? 'dwarf planet · 2006' : d.p9 ? 'proposed 2016 · never seen' : '')
+    body.select('text.sub').text(d => d.dwarf && dropped ? 'dwarf planet · 2006' : d.p9 ? 'proposed 2016 · not yet observed' : '')
+    // Pluto's face appears only at the moment it is reclassified.
+    body.select('use').attr('href', d => d.dwarf && dropped ? '#art-pluto-sad' : `#art-${d.art}`)
     gArcs.selectAll('circle').transition().duration(T).attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.4 : 1)
 
     // Notes beside Pluto: the crowd, then the scorecard.
     const notes = []
     const nx = pluto.x, ny = pluto.y + (dropped ? DROP : 0)
-    if (step === 'neighbours') notes.push({ x: nx - 40, y: ny + 70, t: 'and thousands more like it: Eris, Makemake, Haumea…', cls: '' })
+    if (step === 'neighbours') notes.push({ x: nx - 40, y: ny + 70, t: 'and thousands of others: Eris, Makemake, Haumea…', cls: '' })
     if (step === 'rules') {
       notes.push({ x: nx, y: ny + 62, t: 'orbits the Sun ✓', cls: 'good' })
       notes.push({ x: nx, y: ny + 80, t: 'round ✓', cls: 'good' })
       notes.push({ x: nx, y: ny + 98, t: 'cleared its orbit ✗', cls: 'bad' })
     }
-    if (step === 'eight') notes.push({ x: nx, y: ny + 60, t: 'still here, still round, just not a planet', cls: '' })
-    if (step === 'nine-again') notes.push({ x: P9X - 2, y: p9.y - 56, t: 'not Pluto’s comeback', cls: 'p9' })
+    if (step === 'eight') notes.push({ x: nx, y: ny + 60, t: 'reclassified: condition 3 not met', cls: '' })
+    if (step === 'nine-again') notes.push({ x: P9X - 2, y: p9.y - 56, t: 'predicted, not observed', cls: 'p9' })
     gNotes.selectAll('text').data(notes, d => d.t).join(
       enter => enter.append('text').attr('class', d => `lu-note ${d.cls}`).attr('text-anchor', 'middle')
         .attr('x', d => Math.min(W - 8, d.x)).attr('y', d => d.y).text(d => d.t)

@@ -148,8 +148,8 @@ const sheet = `<!doctype html>
 <span class="light-bg"><img src="svg/planet-nine.svg" width="40" alt=""><b>Planet Nine</b><img src="svg/planet-nine-lockup-light.svg" height="48" alt=""></span></div>
 
 <h2>The Sun and the planets</h2>
-<p>Deliberately simple: one disc, one outline, a band or two. Pluto gets a face. The Moon and Ceres are there for the planet-rules table.</p>
-<div class="row">${files.filter(f => ['sun', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'moon', 'ceres'].includes(f.name)).map(f => tile(f, f.name === 'sun' ? 110 : 84)).join('')}</div>
+<p>Deliberately simple: one disc, one outline, a band or two. Pluto has a plain version and a sad one, used only at the moment it is reclassified. The Moon and Ceres are there for the planet-definition table.</p>
+<div class="row">${files.filter(f => ['sun', 'mercury', 'venus', 'earth', 'mars', 'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'pluto-sad', 'moon', 'ceres'].includes(f.name)).map(f => tile(f, f.name === 'sun' ? 110 : 84)).join('')}</div>
 
 <h2>Trans-Neptunian objects</h2>
 <p>Three looks so a swarm reads as many different rocks. Pick by hashing the object id, as the distance chart does.</p>

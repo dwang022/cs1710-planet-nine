@@ -60,6 +60,22 @@ function planetNineBody (id, { halo: ring = true } = {}) {
   ${ring ? halo(true) : ''}`
 }
 
+/** Pluto: the heart-shaped plain, two craters; a face only for the moment it is reclassified. */
+function plutoBody (id, sad) {
+  return `<g clip-path="url(#${id}-c)">
+      ${disc('#c7ad95')}
+      <path d="M62,72 C50,64 52,54 59,57 C61,59 61,59 65,57 C72,54 74,64 62,72 Z" fill="#ece0d0"/>
+      <circle cx="30" cy="34" r="4" fill="#ad927a"/><circle cx="68" cy="30" r="3" fill="#ad927a"/>
+      ${shade(0.26)}
+    </g>${outline('#85684f')}` + (sad ? `
+    <g fill="#3a2a1e" stroke="#3a2a1e" stroke-width="2.5" stroke-linecap="round">
+      <circle cx="37" cy="41" r="2.7" stroke="none"/><circle cx="49" cy="41" r="2.7" stroke="none"/>
+      <path d="M32,36 L39,33 M54,33 L61,36" fill="none"/>
+      <path d="M36,54 Q43,48 50,54" fill="none"/>
+    </g>
+    <ellipse cx="51" cy="48" rx="1.8" ry="3" fill="#9fd8e0"/>` : '')
+}
+
 // --- the catalogue ---------------------------------------------------------
 //
 // Each entry: a label for assistive tech, an optional box (default 100 x 100),
@@ -209,20 +225,14 @@ export const ART = {
     </g>${outline('#253f8f')}`,
   },
   pluto: {
-    label: 'Pluto, looking a little sad about 2006',
+    label: 'Pluto',
     defs: id => clip(id),
-    body: id => `<g clip-path="url(#${id}-c)">
-      ${disc('#c7ad95')}
-      <path d="M62,72 C50,64 52,54 59,57 C61,59 61,59 65,57 C72,54 74,64 62,72 Z" fill="#ece0d0"/>
-      <circle cx="30" cy="34" r="4" fill="#ad927a"/><circle cx="68" cy="30" r="3" fill="#ad927a"/>
-      ${shade(0.26)}
-    </g>${outline('#85684f')}
-    <g fill="#3a2a1e" stroke="#3a2a1e" stroke-width="2.5" stroke-linecap="round">
-      <circle cx="37" cy="41" r="2.7" stroke="none"/><circle cx="49" cy="41" r="2.7" stroke="none"/>
-      <path d="M32,36 L39,33 M54,33 L61,36" fill="none"/>
-      <path d="M36,54 Q43,48 50,54" fill="none"/>
-    </g>
-    <ellipse cx="51" cy="48" rx="1.8" ry="3" fill="#9fd8e0"/>`,
+    body: id => plutoBody(id, false),
+  },
+  'pluto-sad': {
+    label: 'Pluto, at the moment it stopped being a planet',
+    defs: id => clip(id),
+    body: id => plutoBody(id, true),
   },
 
   // --- two more for the "what counts as a planet" table ---

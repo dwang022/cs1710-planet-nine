@@ -1,5 +1,7 @@
 import * as d3 from 'd3'
 import './style.css'
+import './scrolly.js'   // experimental scroll-triggered reveals; delete this line to disable
+import { animateValue, interpolateAngle, interpolateLog, duration, EASE } from './motion.js'
 import { resultant, rayleighP, nullDistribution, formatP } from './stats.js'
 import { PLANET_NINE, angleDiff, semiLatusRectum } from './orbits.js'
 import { drawOrbits } from './charts/orbits.js'
@@ -49,16 +51,25 @@ function render () {
   const p = rayleighP(stats.n, stats.R)
   const nd = nullDistribution(Math.max(stats.n, 2), 4000)
 
-  $('#statN').textContent = stats.n
+  // Tiles ease from the old value to the new one; the final frame prints
+  // exactly what the original formatting would have.
+  const statN = $('#statN'), statR = $('#statR'), statDir = $('#statDir')
+  animateValue(statN, stats.n, v => { statN.textContent = Math.round(v) })
   $('#statNd').textContent = `of ${ETNOS.length} known extreme objects`
-  $('#statR').textContent = stats.R.toFixed(3)
-  $('#statDir').textContent = stats.n ? `${stats.meanDeg.toFixed(0)}°` : '—'
+  animateValue(statR, stats.R, v => { statR.textContent = v.toFixed(3) })
+  animateValue(statDir, stats.n ? stats.meanDeg : null, (v, done) => {
+    statDir.textContent = v == null ? '—'
+      : `${(done ? stats.meanDeg : ((v % 360) + 360) % 360).toFixed(0)}°`
+  }, interpolateAngle)
 
   const f = formatP(p)
-  $('#statP').textContent = stats.n >= 3 ? f.odds.replace('about ', '') : '—'
-  $('#statPd').textContent = stats.n >= 3
-    ? `random orbits line up this well ${f.odds}`
-    : 'need at least 3 objects'
+  const statP = $('#statP'), statPd = $('#statPd')
+  animateValue(statP, stats.n >= 3 ? 1 / p : null, (v, done) => {
+    if (v == null) { statP.textContent = '—'; statPd.textContent = 'need at least 3 objects'; return }
+    const odds = done ? f.odds : `about 1 in ${Math.round(v).toLocaleString()}`
+    statP.textContent = odds.replace('about ', '')
+    statPd.textContent = `random orbits line up this well ${odds}`
+  }, interpolateLog)
   const tile = $('#statPtile')
   tile.classList.toggle('is-strong', p < 0.05 && stats.n >= 3)
   tile.classList.toggle('is-weak', p >= 0.05 && stats.n >= 3)
@@ -131,12 +142,23 @@ function renderScaleStrip (objs) {
     { nm: 'Farthest point', q: 'reached by any object in view', au: far, c: 'var(--series-2)' },
   ]
   const x = d3.scaleSqrt().domain([0, far]).range([0, 100])
-  $('#scaleStrip').innerHTML = rows.map(r => `
-    <div class="scale-row">
-      <span class="nm">${r.nm}<small>${r.q}</small></span>
-      <span class="bar"><i style="width:${x(r.au).toFixed(1)}%;background:${r.c}"></i></span>
-      <span class="au">${r.au < 10 ? r.au : fmt(r.au)} AU</span>
-    </div>`).join('')
+  const label = au => `${au < 10 ? au : fmt(au)} AU`
+  // Keyed join so rows persist between filter changes and their bars can ease
+  // to the new length (the scale's maximum moves, so every bar shifts a little).
+  const row = d3.select('#scaleStrip').selectAll('.scale-row').data(rows, r => r.nm)
+    .join(enter => {
+      const e = enter.append('div').attr('class', 'scale-row')
+      e.append('span').attr('class', 'nm').html(r => `${r.nm}<small>${r.q}</small>`)
+      e.append('span').attr('class', 'bar').append('i')
+        .style('background', r => r.c).style('width', r => `${x(r.au).toFixed(1)}%`)
+      e.append('span').attr('class', 'au').text(r => label(r.au))
+      return e
+    })
+  row.select('.bar i').transition('width').duration(duration()).ease(EASE)
+    .style('width', r => `${x(r.au).toFixed(1)}%`)
+  row.select('.au').each(function (r) {
+    animateValue(this, r.au, (v, done) => { this.textContent = label(done ? r.au : Math.round(v)) })
+  })
 }
 
 // --------------------------------------------------------------------------

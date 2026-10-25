@@ -124,11 +124,33 @@ a:hover { text-decoration-color: currentColor; }
   background: var(--surface-1); border: 1px solid var(--rule);
   border-radius: 12px; padding: 18px 20px;
 }
+/* Shared lift for the intro cards and the section links. Uses `translate`, not
+   `transform`, because the scroll reveal owns transform on these elements.
+   Hover is mouse-only; the links get the same treatment on keyboard focus.
+   The info cards stay non-clickable (no cursor change). */
+.hero-block, .hero-path a {
+  transition: border-color .22s ease, background-color .22s ease, box-shadow .22s ease,
+    translate .22s ease, color .22s ease;
+}
+@media (hover: hover) {
+  .hero-block:hover, .hero-path a:hover {
+    border-color: #3987e599; background: var(--surface-2);
+    box-shadow: 0 8px 24px #00000059; translate: 0 -3px;
+  }
+}
+.hero-path a:focus-visible {
+  border-color: #3987e599; background: var(--surface-2);
+  box-shadow: 0 8px 24px #00000059; translate: 0 -3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-block:hover, .hero-path a:hover, .hero-path a:focus-visible { translate: none; }
+}
 .hero-block h3 { margin-bottom: 6px; }
 .hero-block p { margin: 0; font-size: 0.93rem; }
 
 .hero-purpose { margin-bottom: 32px; }
-.hero-purpose-lead { margin-bottom: 14px; }
+.hero-purpose-title { font-size: clamp(1.35rem, 2.4vw, 1.6rem); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.hero .hero-purpose-lead { font-size: 1.1rem; color: var(--text-muted); max-width: none; margin-bottom: 18px; }
 .hero-path {
   list-style: none; margin: 0; padding: 0;
   display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px;
@@ -137,14 +159,14 @@ a:hover { text-decoration-color: currentColor; }
   display: flex; align-items: center; gap: 12px; min-height: 44px;
   padding: 9px 14px; border: 1px solid var(--rule); border-radius: 10px;
   color: var(--text-secondary); text-decoration: none; font-size: 0.9rem;
-  transition: border-color .15s ease, color .15s ease;
 }
-.hero-path a:hover, .hero-path a:focus-visible { border-color: var(--text-muted); color: var(--text-primary); }
+.hero-path a:hover, .hero-path a:focus-visible { color: var(--text-primary); }
 .hero-path a:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
 .hero-path span {
   font: 600 0.7rem/1 var(--font-mono); letter-spacing: 0.08em;
-  color: var(--series-1); flex: none;
+  color: var(--series-1); flex: none; transition: color .22s ease;
 }
+.hero-path a:hover span, .hero-path a:focus-visible span { color: #8fbdf0; }
 
 /* Outlined callout, styled to match Section 01's .takeaway box */
 .hero-question {
@@ -196,6 +218,24 @@ section { padding-block: 56px; border-top: var(--divider); }
 .filter .toggle input:checked ~ .state::before { content: "On"; }
 .filter .toggle input:not(:checked) ~ .state::before { content: "Off"; }
 .filter-desc { margin: 0; font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); }
+
+/* Filter titles read as headings for their control; values pick up the accent.
+   Scoped to .filter so Section 05's .ctrl labels keep the shared small style. */
+.filter .filter-name {
+  font-size: 0.82rem; font-weight: 700; line-height: 1.3;
+  letter-spacing: 0.08em; color: var(--text-primary);
+}
+.filter .filter-name b { color: var(--series-1); font-weight: 700; white-space: nowrap; }
+
+/* Quiet hover / focus feedback: a soft accent halo, no movement. */
+.filter input[type="range"]::-webkit-slider-runnable-track { transition: background .15s ease; }
+.filter input[type="range"]::-webkit-slider-thumb { transition: box-shadow .15s ease; }
+.filter input[type="range"]:hover::-webkit-slider-runnable-track { background: #3c3c38; }
+.filter input[type="range"]:hover::-webkit-slider-thumb,
+.filter input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 1px #0006, 0 0 0 5px #3987e533; }
+.filter .toggle .box { transition: background .16s ease, box-shadow .15s ease; }
+.filter .toggle:hover .box { box-shadow: 0 0 0 4px #3987e526; }
+.filter .toggle:hover .state { color: var(--text-secondary); }
 
 .ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 190px; }
 .ctrl label, .filter-name {
@@ -392,10 +432,10 @@ svg text.halo {
 .scale-strip { display: grid; gap: 2px; margin-top: 26px; }
 .scale-row { display: grid; grid-template-columns: 120px 1fr 78px; gap: 14px; align-items: center;
   padding: 7px 0; border-top: 1px solid var(--rule); font-size: .84rem; }
-.scale-row .nm { color: var(--text-secondary); }
+.scale-row .nm { color: var(--text-primary); font-weight: 600; }
 .scale-row .bar { height: 9px; border-radius: 5px; background: var(--surface-3); position: relative; }
 .scale-row .bar i { position: absolute; inset: 0 auto 0 0; border-radius: 5px; display: block; }
-.scale-row .au { text-align: right; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.scale-row .au { text-align: right; color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* survey filter chips */
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -447,6 +487,18 @@ svg text.halo {
 #objects .aside b { color: var(--text-secondary); font-weight: 600; }
 
 
+/* Section 01's tile titles match the filter titles above; other sections'
+   tiles keep the small muted .k. The value (1.95rem) stays the loudest thing. */
+#objects .stat .k {
+  font-size: 0.95rem; font-weight: 600; line-height: 1.3;
+  letter-spacing: 0.06em; color: var(--text-primary);
+  min-height: 2.6em;   /* two lines, so a wrapping title can't knock its value out of line */
+}
+@media (max-width: 560px) { #objects .stat .k { min-height: 0; } }   /* one column: nothing to align with */
+
+/* the odds tile turns green/orange with the sample; ease it like the numbers */
+#objects .stat .v { transition: color .45s ease; }
+
 .stat .h { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid var(--rule);
   font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); }
 .stat .h em { color: var(--text-secondary); }
@@ -456,19 +508,25 @@ svg text.halo {
 #objects .sub-head p { font-size: 0.9rem; margin: 0; max-width: none; }
 #objects .scale-strip { margin-top: 14px; }
 #objects .scale-row { grid-template-columns: 190px 1fr 78px; }
-#objects .scale-row .nm small { display: block; font-size: 0.74rem; color: var(--text-muted); line-height: 1.35; }
+#objects .scale-row .nm small { display: block; font-size: 0.74rem; font-weight: 400; color: var(--text-muted); line-height: 1.35; }
 
 .takeaway {
-  margin-top: 28px; padding: 20px 24px; text-align: center;
+  margin-top: 28px; padding: 18px 40px 20px; text-align: center;
   border: 2px solid var(--series-1); background: #3987e50d;
   border-radius: 10px;
 }
 .takeaway-title {
-  font-size: 1.2rem; font-weight: 600; letter-spacing: 0.06em;
+  font-size: 1.75rem; font-weight: 600; letter-spacing: 0.06em;
   text-transform: uppercase; color: #8fbdf0; margin-bottom: 10px;
 }
-.takeaway p { margin: 0 auto 10px; font-size: 0.92rem; max-width: 90ch; }
-.takeaway a { font-size: 0.92rem; }
+/* wide enough to use the box on desktop; the text still wraps on anything smaller */
+.takeaway p { margin: 0 auto 12px; font-size: 1.2rem; line-height: 1.6; max-width: 1250px; }
+.takeaway a { font-size: 1rem; }
+@media (max-width: 767px) {
+  .takeaway { padding: 16px 18px 18px; }
+  .takeaway-title { font-size: 1.35rem; }
+  .takeaway p { font-size: 1.05rem; }
+}
 
 @media (max-width: 1199px) { .filter-grid { grid-template-columns: repeat(2, 1fr); row-gap: 8px; } .filter:nth-child(n+3) { margin-top: 16px; } }
 @media (max-width: 767px) {

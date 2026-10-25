@@ -41,9 +41,10 @@
     </div>
 
     <div class="hero-purpose">
+      <h2 class="hero-purpose-title">Explore the evidence yourself</h2>
       <p class="hero-purpose-lead">
-        <strong>Our goal is to let you investigate the evidence for yourself.</strong>
-        Every chart below is built from real astronomical catalogues. Along the way you'll:
+        Follow the story through interactive visualizations built from real astronomical data.
+        Here's what you'll discover:
       </p>
       <ol class="hero-path">
         <li><a href="#picture"><span>02</span>Explore unusual orbits</a></li>
@@ -88,14 +89,14 @@
       </div>
       <div class="filter-grid">
         <div class="filter">
-          <label class="filter-name" for="aMin">How far out the orbit goes ≥ <b><span id="aMinV">150</span> AU</b></label>
+          <label class="filter-name" for="aMin">Minimum orbit distance <b><span id="aMinV">150</span> AU</b></label>
           <input type="range" id="aMin" min="100" max="400" step="10" value="150" aria-describedby="aMinHelp" />
-          <p class="filter-desc" id="aMinHelp">Keeps objects whose average distance from the Sun is at least this many AU. The catalogue starts at 150 AU, so lower settings add nothing.</p>
+          <p class="filter-desc" id="aMinHelp">Only show objects whose average distance from the Sun is at least this far.</p>
         </div>
         <div class="filter">
-          <label class="filter-name" for="qMin">Closest approach ≥ <b><span id="qMinV">30</span> AU</b></label>
+          <label class="filter-name" for="qMin">Minimum closest approach <b><span id="qMinV">30</span> AU</b></label>
           <input type="range" id="qMin" min="30" max="60" step="1" value="30" aria-describedby="qMinHelp" />
-          <p class="filter-desc" id="qMinHelp">Keeps objects that never come closer to the Sun than this. Raising it removes objects Neptune can still tug on.</p>
+          <p class="filter-desc" id="qMinHelp">Only show objects that never come closer to the Sun than this distance.</p>
         </div>
         <div class="filter">
           <label class="filter-name" for="quality">Only well-measured orbits</label>
@@ -116,11 +117,11 @@
     <div class="grid-stats">
       <div class="stat"><div class="k">Objects in view</div><div class="v" id="statN">—</div><div class="d" id="statNd">—</div>
         <p class="h">The objects that pass every filter above. All the numbers and charts in Sections 01–05 use this group.</p></div>
-      <div class="stat"><div class="k">How aligned they are</div><div class="v" id="statR">—</div><div class="d">0 = pointing every which way · 1 = perfectly lined up</div>
+      <div class="stat"><div class="k">How aligned are they?</div><div class="v" id="statR">—</div><div class="d">0 = pointing every which way · 1 = perfectly lined up</div>
         <p class="h">How closely the orbits point the same way around the Sun. Random directions still score a little above 0, especially in small groups.</p></div>
-      <div class="stat" id="statPtile"><div class="k">Odds of this by luck</div><div class="v" id="statP">—</div><div class="d" id="statPd">—</div>
+      <div class="stat" id="statPtile"><div class="k">Odds of this happening by chance</div><div class="v" id="statP">—</div><div class="d" id="statPd">—</div>
         <p class="h">How often randomly pointed orbits would line up this well. It is <em>not</em> the chance that Planet Nine exists, and it assumes telescopes could find objects in any direction equally (see 04).</p></div>
-      <div class="stat"><div class="k">Direction they lean</div><div class="v" id="statDir">—</div><div class="d">average direction of closest approach</div>
+      <div class="stat"><div class="k">Average orbit direction</div><div class="v" id="statDir">—</div><div class="d">average direction of closest approach</div>
         <p class="h">The average side of the Sun where these orbits make their closest pass, as an angle from 0° to 360°. Planet Nine is predicted to point roughly the opposite way, near 247°.</p></div>
     </div>
 

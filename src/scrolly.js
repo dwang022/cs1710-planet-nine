@@ -1,5 +1,57 @@
-// Scrollytelling — experimental, self-contained, reversible.
-// Remove the `import './scrolly.js'` line in main.js to switch it off entirely.
+import './scrolly.css'
+
+// Scrollytelling: a pinned graphic beside a column of short step cards.
+//
+// The step whose card crosses the middle of the viewport is the active one.
+// Each section supplies its own onStep, which redraws the pinned graphic for
+// that step, so scrolling back up replays the story in reverse for free.
+
+export function scrolly (root, { onStep }) {
+  const steps = [...root.querySelectorAll('.step')]
+  let active = -1
+
+  function activate (i) {
+    if (i === active) return
+    active = i
+    steps.forEach((s, k) => s.classList.toggle('is-active', k === i))
+    onStep(i, steps[i].dataset.step)
+  }
+
+  // A zero-height band across the viewport: whichever card is crossing it is
+  // the one being read. On phones the graphic takes the top of the screen and
+  // the cards are read below it, so the band sits lower.
+  const at = window.matchMedia('(max-width: 900px)').matches ? 75 : 50
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (e.isIntersecting) activate(steps.indexOf(e.target))
+    }
+  }, { rootMargin: `-${at}% 0px -${100 - at}% 0px`, threshold: 0 })
+  steps.forEach(s => io.observe(s))
+
+  // Clicking a dimmed card jumps to it, so nobody has to hunt for the trigger.
+  steps.forEach(s => s.addEventListener('click', e => {
+    if (s.classList.contains('is-active') || e.target.closest('a, button, input, label')) return
+    s.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }))
+
+  activate(0)
+  return { current: () => steps[active]?.dataset.step }
+}
+
+/**
+ * Draw the eye to a control the story just changed, so the reader learns what
+ * the switch does by watching it move.
+ */
+export function pulse (el) {
+  if (!el) return
+  el.classList.remove('pulse')
+  void el.offsetWidth // restart the animation
+  el.classList.add('pulse')
+}
+
+// --------------------------------------------------------------------------
+// Scroll-triggered reveals — experimental, self-contained, reversible.
+// Remove the `initReveals()` call in main.js to switch it off entirely.
 //
 // Progressive enhancement: content is only ever hidden once this script has
 // confirmed it can reveal it again (IntersectionObserver available, motion
@@ -8,18 +60,17 @@
 // screen, so nothing ever disappears while you can see it. Nothing here touches
 // the charts' data or handlers.
 
-import './scrolly.css'
-
 // Everything that eases in, in document order. Items that come into view in the
 // same frame (the hero on load, a row of stat tiles) are staggered together.
 const TARGETS = [
   // introduction
   '.hero > .eyebrow', '.hero > h1', '.hero > .byline', '.hero-hook',
   '.hero-block', '.hero-purpose-title', '.hero-purpose-lead', '.hero-path li', '.hero-question',
+  '.hero-start',
   // every section heading
   'section .sec-head > *',
   // 01 — explanation → filters → statistics → distances → takeaway
-  '#objects .controls', '#objects .stat', '#objects .sub-head',
+  '#objects .controls', '#objects .stat', '#objects .turn-nav', '#objects .sub-head',
   '#objects .scale-strip', '#objects .takeaway',
   // 06 — legend, then the scorecard (its rows cascade in via CSS)
   '#matrixLegend', '#alternatives > .card',
@@ -34,7 +85,7 @@ function revealAll (els) {
   els.forEach(el => el.classList.add('is-in'))
 }
 
-function init () {
+export function initReveals () {
   const els = [...document.querySelectorAll(TARGETS)]
   if (!els.length) return
   if (!('IntersectionObserver' in window) || motionQuery.matches) return
@@ -62,12 +113,10 @@ function init () {
   }, { rootMargin: '10% 0px 10% 0px', threshold: 0 })
 
   els.forEach(el => { el.classList.add('reveal'); enter.observe(el); leave.observe(el) })
-  document.documentElement.classList.add('scrolly')
+  document.documentElement.classList.add('has-reveal')
 
   // If the visitor turns on reduced motion mid-visit, or prints, show everything.
   const bail = () => { enter.disconnect(); leave.disconnect(); revealAll(els) }
   motionQuery.addEventListener?.('change', e => { if (e.matches) bail() })
   window.addEventListener('beforeprint', bail)
 }
-
-init()

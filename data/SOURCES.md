@@ -247,4 +247,4 @@ in [`README.md`](README.md).
 
 ---
 
-*Generated 2026-10-04 by `scripts/build_sources_doc.py`.*
+*Generated 2026-10-12 by `scripts/build_sources_doc.py`.*

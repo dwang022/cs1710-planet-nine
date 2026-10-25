@@ -22,6 +22,9 @@ python3 scripts/build_tnos.py
 echo "==> Discovery circumstances"
 python3 scripts/build_discovery.py
 
+echo "==> Calibrating survey footprints to published areas"
+python3 scripts/calibrate_footprints.py
+
 echo "==> Sky geometry"
 python3 scripts/build_sky.py
 

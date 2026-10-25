@@ -510,8 +510,36 @@ svg text.halo {
 #objects .scale-row { grid-template-columns: 190px 1fr 78px; }
 #objects .scale-row .nm small { display: block; font-size: 0.74rem; font-weight: 400; color: var(--text-muted); line-height: 1.35; }
 
-.takeaway {
-  margin-top: 28px; padding: 18px 40px 20px; text-align: center;
+/* "Ready to see what changed?": a compact jump from the filters back to the
+   explore steps of 02-04. The links reuse .hero-path's card, hover lift and
+   focus ring; only the layout differs. */
+.turn-nav {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); gap: 14px 28px; align-items: center;
+  margin: 4px 0 0; padding: 16px 18px;
+  border: 1px solid #3987e540; border-radius: 12px; background: #3987e50a;
+}
+.turn-nav h3 { font-size: 1rem; margin: 0 0 4px; }
+.turn-nav p { margin: 0; font-size: 0.86rem; color: var(--text-muted); max-width: none; }
+.turn-nav-links.hero-path { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.turn-nav-links a { flex-direction: column; align-items: flex-start; justify-content: center; gap: 6px; }
+@media (max-width: 1199px) { .turn-nav { grid-template-columns: 1fr; } }
+@media (max-width: 767px) {
+  .turn-nav-links.hero-path { grid-template-columns: 1fr; }
+  .turn-nav-links a { flex-direction: row; align-items: center; justify-content: flex-start; gap: 12px; }
+}
+
+/* An explore step reached from those links takes focus; show it on the card.
+   The margin is for the browser's own jump to #your-turn-NN (a shared link):
+   it lands the step across the line that activates it, and on phones keeps
+   the card clear of the pinned graphic. */
+.step[tabindex] { outline: none; scroll-margin-top: 30vh; }
+@media (max-width: 900px) { .step[tabindex] { scroll-margin-top: 46vh; } }
+.step:focus-visible .step-card { outline: 2px solid var(--series-1); outline-offset: 3px; }
+
+/* Section 01's closing box. Scoped to #objects because 02–04 use the plain
+   .takeaway ("So far") below; max-width/margin undo that rule's layout. */
+#objects .takeaway {
+  margin: 28px 0 0; padding: 18px 40px 20px; text-align: center; max-width: none;
   border: 2px solid var(--series-1); background: #3987e50d;
   border-radius: 10px;
 }
@@ -520,12 +548,12 @@ svg text.halo {
   text-transform: uppercase; color: #8fbdf0; margin-bottom: 10px;
 }
 /* wide enough to use the box on desktop; the text still wraps on anything smaller */
-.takeaway p { margin: 0 auto 12px; font-size: 1.2rem; line-height: 1.6; max-width: 1250px; }
-.takeaway a { font-size: 1rem; }
+#objects .takeaway p { margin: 0 auto 12px; font-size: 1.2rem; line-height: 1.6; max-width: 1250px; }
+#objects .takeaway a { font-size: 1rem; }
 @media (max-width: 767px) {
-  .takeaway { padding: 16px 18px 18px; }
+  #objects .takeaway { padding: 16px 18px 18px; }
   .takeaway-title { font-size: 1.35rem; }
-  .takeaway p { font-size: 1.05rem; }
+  #objects .takeaway p { font-size: 1.05rem; }
 }
 
 @media (max-width: 1199px) { .filter-grid { grid-template-columns: repeat(2, 1fr); row-gap: 8px; } .filter:nth-child(n+3) { margin-top: 16px; } }
@@ -561,3 +589,176 @@ svg text.halo {
 .mx .row.is-selected .chev { fill: var(--series-1); }
 .mx .row:focus-visible .rowbg { stroke: var(--series-1); stroke-width: 2; }
 #altDetail .detail .eyebrow { margin-bottom: 8px; }
+
+/* --- linked-view additions: explainers, glossary -------------------------- */
+
+/* "How do I read this?" — collapsed by default so experts aren't nagged */
+details.howto { margin: 0 0 16px; border: 1px solid var(--rule); border-radius: 10px; background: #ffffff05; }
+details.howto summary {
+  cursor: pointer; list-style: none; padding: 10px 14px;
+  font-size: .84rem; color: var(--text-secondary);
+  display: flex; align-items: center; gap: 9px;
+}
+details.howto summary::-webkit-details-marker { display: none; }
+details.howto summary::before {
+  content: "?"; flex: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--series-1); color: #fff; font-size: .72rem; font-weight: 700;
+  display: grid; place-items: center;
+}
+details.howto[open] summary { border-bottom: 1px solid var(--rule); }
+details.howto .howto-body { padding: 14px; font-size: .88rem; color: var(--text-secondary); }
+details.howto .howto-body p { margin: 0 0 9px; }
+details.howto .howto-body p:last-child { margin: 0; }
+details.howto ul { margin: 0 0 9px; padding-left: 18px; }
+details.howto li { margin-bottom: 5px; }
+details.howto b { color: var(--text-primary); }
+
+/* inline glossary */
+.gl {
+  border-bottom: 1px dotted var(--text-muted); cursor: help;
+  color: var(--text-primary); text-decoration: none;
+}
+.gl:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+
+/* primer strip */
+.primer { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0 4px; }
+.primer .pc { background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px; padding: 15px 17px; }
+.primer .pc h4 { margin: 0 0 6px; font-size: .92rem; }
+.primer .pc p { margin: 0; font-size: .84rem; }
+
+/* hero call to action */
+#startBtn {
+  display: inline-flex; align-items: center; background: var(--series-1); color: #fff;
+  border-radius: 9px; padding: 11px 18px; font-weight: 600; font-size: .88rem;
+  min-height: 44px; text-decoration: none;
+}
+#startBtn:hover { filter: brightness(1.08); }
+
+/* --- scrollytelling -------------------------------------------------------
+   A pinned graphic beside a column of step cards. The graphic sits below the
+   sticky control bar (--bar-h is measured in JS) and fills the rest of the
+   viewport, so the picture is never cropped while the reader scrolls. */
+
+:root { --bar-h: 72px; }
+[hidden] { display: none !important; }
+
+section.story { padding-bottom: 24px; }
+.wrap.wide { max-width: 1480px; }
+
+.bigidea {
+  border: 1px solid #3987e555; background: #3987e512; border-radius: var(--radius);
+  padding: 20px 24px; margin: 6px 0 10px; max-width: 900px;
+}
+.bigidea p { margin: 0; font-size: 1.18rem; line-height: 1.55; color: var(--text-secondary); max-width: none; }
+.bigidea-k, .takeaway-k {
+  font: 600 .7rem/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
+  color: #8fbdf0; margin-bottom: 10px;
+}
+.scroll-hint { font-size: .85rem; color: var(--text-muted); margin-top: 14px; }
+
+.scrolly {
+  display: grid; grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
+  gap: 48px; align-items: start; margin-top: 12px;
+}
+.scrolly-steps { grid-column: 1; grid-row: 1; padding: 34vh 0 40vh; }
+.scrolly-graphic {
+  grid-column: 2; grid-row: 1;
+  position: sticky; top: calc(var(--bar-h) + 12px);
+  height: calc(100vh - var(--bar-h) - 24px);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.viz-head {
+  display: flex; gap: 14px; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; min-height: 32px; font-size: .86rem; color: var(--text-secondary);
+}
+.viz-head .legend { margin: 0; gap: 8px 18px; }
+.viz-head .chip-row { margin: 0; }
+.viz {
+  flex: 1; min-height: 0; background: var(--surface-1); border: 1px solid var(--rule);
+  border-radius: var(--radius); padding: 14px; display: flex;
+}
+.viz svg { width: 100%; height: 100%; }
+
+.step { min-height: 88vh; display: flex; align-items: center; }
+.step:first-child { min-height: 60vh; }
+.step-card {
+  background: var(--surface-2); border: 1px solid var(--rule); border-radius: var(--radius);
+  padding: 22px 24px; opacity: .3; transition: opacity .35s ease, border-color .35s ease;
+  cursor: pointer;
+}
+.step.is-active .step-card { opacity: 1; border-color: var(--text-muted); cursor: default; }
+.step-card h3 { font-size: 1.3rem; margin-bottom: 12px; }
+.step-card p { font-size: 1.02rem; margin: 0 0 12px; }
+.step-card p:last-child { margin-bottom: 0; }
+.step-card ul { margin: 0; padding-left: 20px; color: var(--text-secondary); }
+.step-card li { margin-bottom: 8px; }
+.step-card li strong { color: var(--text-primary); }
+.step-card .step-key {
+  color: var(--text-primary); font-weight: 600; border-left: 3px solid var(--series-1);
+  padding-left: 12px;
+}
+.step-card.warn .step-key { border-left-color: var(--series-2); }
+.step-card.explore { border-style: dashed; }
+.step-n { font: 600 .7rem/1 var(--font-mono); letter-spacing: .1em; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; }
+.step-card #verdict .note { margin: 14px 0 0; }
+
+/* inline colour keys that match the marks they name */
+.k-sun { color: var(--sun); font-weight: 600; }
+.k-nep { color: #8ea8d8; font-weight: 600; }
+.k-obj { color: #8fbdf0; font-weight: 600; }
+.k-p9 { color: #5cc79c; font-weight: 600; }
+.k-warn { color: #eba181; font-weight: 600; }
+.k-lsst { color: #F08BB4; font-weight: 600; }
+
+.takeaway {
+  border-left: 3px solid var(--series-3); background: #199e700f;
+  border-radius: 0 var(--radius) var(--radius) 0; padding: 18px 22px; margin: 8px 0 22px; max-width: 900px;
+}
+.takeaway .takeaway-k { color: #5cc79c; }
+.takeaway p { margin: 0; font-size: 1.08rem; max-width: none; }
+
+details.more > summary { font-size: .95rem; }
+
+/* view switch above a pinned graphic */
+.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 9px; overflow: hidden; }
+.seg button {
+  background: transparent; border: 0; color: var(--text-secondary); font: inherit; font-size: .85rem;
+  padding: 7px 14px; cursor: pointer; min-height: 36px;
+}
+.seg button[aria-pressed="true"] { background: #ffffff14; color: var(--text-primary); }
+
+/* a control the story just changed */
+.pulse { animation: pulse 1.6s ease-out 2; border-radius: 10px; }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 #d95926cc; background: #d9592633; }
+  100% { box-shadow: 0 0 0 14px #d9592600; background: transparent; }
+}
+
+@media (max-width: 900px) {
+  /* Phones: the control bar stops following the reader (it would eat a quarter
+     of the screen), the graphic pins to the top half, and the cards scroll up
+     from the bottom and slide underneath it. */
+  .controls { position: static; }
+  .scrolly { display: block; }
+  .scrolly-graphic {
+    top: 0; height: 56vh; z-index: 2; padding: 8px 0 10px;
+    background: var(--surface-0); box-shadow: 0 14px 18px -10px var(--surface-0);
+  }
+  .viz { padding: 6px; }
+  /* The legend and survey chips each keep to one line that scrolls sideways;
+     wrapped, they took most of the pinned graphic and squeezed the map flat. */
+  .viz-head .legend, .viz-head .chip-row {
+    flex: 1 1 100%; min-width: 0; flex-wrap: nowrap; overflow-x: auto;
+    scrollbar-width: thin; padding-bottom: 2px;
+  }
+  .viz-head .legend-item, .viz-head .chip { flex: none; white-space: nowrap; }
+  .scrolly-steps { position: relative; z-index: 1; padding: 6vh 0 30vh; }
+  .step, .step:first-child { min-height: 64vh; align-items: center; }
+  .step-card { padding: 18px; }
+  .step-card h3 { font-size: 1.12rem; }
+  .step-card p { font-size: .95rem; }
+}
+
+@media (max-width: 760px) {
+  .primer { grid-template-columns: 1fr; }
+}

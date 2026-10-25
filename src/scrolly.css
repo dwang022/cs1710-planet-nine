@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------------------
-   Scrollytelling — loaded by scrolly.js. Every rule is scoped to html.scrolly,
+   Scrollytelling — loaded by scrolly.js. Every rule is scoped to html.has-reveal,
    which the script only sets when it can reveal content again, so without JS
    (or with reduced motion) the page renders exactly as before.
    Only opacity and transform animate: no layout shifts, no colour changes.
@@ -10,18 +10,18 @@
   --reveal-rise: 18px;
 }
 
-html.scrolly .reveal {
+html.has-reveal .reveal {
   transition:
     opacity .6s var(--reveal-ease) var(--reveal-delay, 0ms),
     transform .7s var(--reveal-ease) var(--reveal-delay, 0ms);
 }
-html.scrolly .reveal:not(.is-in) {
+html.has-reveal .reveal:not(.is-in) {
   opacity: 0;
   transform: translate3d(0, var(--reveal-rise), 0);
 }
 /* The intro cards also ease their hover styles; keep those quick and undelayed
    while the reveal keeps its own timing. */
-html.scrolly .hero-block.reveal {
+html.has-reveal .hero-block.reveal {
   transition:
     opacity .6s var(--reveal-ease) var(--reveal-delay, 0ms),
     transform .7s var(--reveal-ease) var(--reveal-delay, 0ms),
@@ -29,11 +29,11 @@ html.scrolly .hero-block.reveal {
 }
 
 /* Keyboard users tabbing ahead of the scroll never land on something invisible. */
-html.scrolly .reveal:focus-within { opacity: 1; transform: none; }
+html.has-reveal .reveal:focus-within { opacity: 1; transform: none; }
 
 /* Headings rise a touch further than body copy, so the hierarchy reads in motion. */
-html.scrolly .hero > h1.reveal:not(.is-in),
-html.scrolly .sec-head > h2.reveal:not(.is-in) { transform: translate3d(0, 26px, 0); }
+html.has-reveal .hero > h1.reveal:not(.is-in),
+html.has-reveal .sec-head > h2.reveal:not(.is-in) { transform: translate3d(0, 26px, 0); }
 
 /* --- 01: distance bars grow from zero, row by row ------------------------ */
 /* Reveal growth uses transform only; filter changes ease the bars' width
@@ -44,14 +44,14 @@ html.scrolly .sec-head > h2.reveal:not(.is-in) { transform: translate3d(0, 26px,
 #scaleStrip .scale-row:nth-child(4) { --i: 3; }
 #scaleStrip .scale-row:nth-child(5) { --i: 4; }
 
-html.scrolly #scaleStrip.reveal .bar i {
+html.has-reveal #scaleStrip.reveal .bar i {
   transform-origin: left center;
   transition: transform .9s var(--reveal-ease) calc(250ms + var(--i, 0) * 110ms);
 }
-html.scrolly #scaleStrip.reveal:not(.is-in) .bar i { transform: scaleX(0); }
+html.has-reveal #scaleStrip.reveal:not(.is-in) .bar i { transform: scaleX(0); }
 
 /* --- 01: the takeaway gets one soft glow once it has landed --------------- */
-html.scrolly .takeaway.reveal.is-in {
+html.has-reveal .takeaway.reveal.is-in {
   animation: p9-glow 1.8s ease-out calc(var(--reveal-delay, 0ms) + 500ms) 1;
 }
 @keyframes p9-glow {
@@ -74,17 +74,17 @@ html.scrolly .takeaway.reveal.is-in {
 .mx .row:nth-of-type(9)  { --i: 8; }
 .mx .row:nth-of-type(10) { --i: 9; }
 
-html.scrolly #alternatives > .card.reveal .mx .row {
+html.has-reveal #alternatives > .card.reveal .mx .row {
   transition: opacity .5s var(--reveal-ease) calc(200ms + var(--i, 0) * 75ms);
 }
-html.scrolly #alternatives > .card.reveal:not(.is-in) .mx .row { opacity: 0; }
-html.scrolly #alternatives > .card.reveal:focus-within .mx .row { opacity: 1; }
+html.has-reveal #alternatives > .card.reveal:not(.is-in) .mx .row { opacity: 0; }
+html.has-reveal #alternatives > .card.reveal:focus-within .mx .row { opacity: 1; }
 
 /* A faint highlight sweeps down the rows, and each chevron nudges once. */
-html.scrolly #alternatives > .card.is-in .mx .rowbg {
+html.has-reveal #alternatives > .card.is-in .mx .rowbg {
   animation: p9-sweep .9s ease-in-out calc(800ms + var(--i, 0) * 90ms) 1;
 }
-html.scrolly #alternatives > .card.is-in .mx .chev {
+html.has-reveal #alternatives > .card.is-in .mx .chev {
   animation: p9-nudge .8s ease-in-out calc(900ms + var(--i, 0) * 90ms) 1;
 }
 @keyframes p9-sweep {
@@ -97,7 +97,7 @@ html.scrolly #alternatives > .card.is-in .mx .chev {
 }
 
 /* The detail panel eases in each time a row is opened (it is re-rendered per click). */
-html.scrolly #altDetail .detail { animation: p9-rise .45s var(--reveal-ease) both; }
+html.has-reveal #altDetail .detail { animation: p9-rise .45s var(--reveal-ease) both; }
 @keyframes p9-rise {
   from { opacity: 0; transform: translate3d(0, 10px, 0); }
   to   { opacity: 1; transform: none; }
@@ -106,16 +106,16 @@ html.scrolly #altDetail .detail { animation: p9-rise .45s var(--reveal-ease) bot
 /* --- safety nets ---------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-  html.scrolly .reveal,
-  html.scrolly .reveal .bar i { opacity: 1 !important; transform: none !important; }
+  html.has-reveal .reveal,
+  html.has-reveal .reveal .bar i { opacity: 1 !important; transform: none !important; }
   /* rows: opacity only — their position lives in an SVG transform attribute */
-  html.scrolly .reveal .mx .row { opacity: 1 !important; }
-  html.scrolly .takeaway, html.scrolly .mx .rowbg, html.scrolly .mx .chev,
-  html.scrolly #altDetail .detail { animation: none !important; }
+  html.has-reveal .reveal .mx .row { opacity: 1 !important; }
+  html.has-reveal .takeaway, html.has-reveal .mx .rowbg, html.has-reveal .mx .chev,
+  html.has-reveal #altDetail .detail { animation: none !important; }
 }
 @media print {
-  html.scrolly .reveal,
-  html.scrolly .reveal .bar i { opacity: 1 !important; transform: none !important; }
+  html.has-reveal .reveal,
+  html.has-reveal .reveal .bar i { opacity: 1 !important; transform: none !important; }
   /* rows: opacity only — their position lives in an SVG transform attribute */
-  html.scrolly .reveal .mx .row { opacity: 1 !important; }
+  html.has-reveal .reveal .mx .row { opacity: 1 !important; }
 }

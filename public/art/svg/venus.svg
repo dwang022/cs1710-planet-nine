@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Venus" style="color:#ffffff"><defs><clipPath id="ae-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#ae-c)">
+      <circle cx="50" cy="50" r="40" fill="#d9b98a"/>
+      <path d="M18,42 C32,34 44,48 60,40 S86,36 92,44" fill="none" stroke="#efe0c3" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+      <path d="M12,62 C28,56 40,68 56,60 S80,56 90,64" fill="none" stroke="#efe0c3" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.26"/>
+    </g><circle cx="50" cy="50" r="40" fill="none" stroke="#a0784a" stroke-width="2.5"/></svg>

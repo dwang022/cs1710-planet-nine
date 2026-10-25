@@ -54,7 +54,8 @@ export function makeLean (root) {
   const gMean = svg.append('g')
   const gDots = svg.append('g')
   const gNotes = svg.append('g').style('pointer-events', 'none')
-  svg.append('circle').attr('cx', cx).attr('cy', cy).attr('r', 5).attr('fill', 'var(--sun)')
+  svg.append('use').attr('href', '#art-sun').style('pointer-events', 'none')
+    .attr('x', cx - 13).attr('y', cy - 13).attr('width', 26).attr('height', 26)
 
   let scene = {}
 
@@ -76,6 +77,8 @@ export function makeLean (root) {
     .attr('stroke', 'var(--series-3)').attr('stroke-width', 3)
   gP9.append('circle').attr('class', 'p9dot').attr('r', 8)
     .attr('fill', 'var(--series-3)').attr('stroke', 'var(--surface-1)').attr('stroke-width', 2)
+  gP9.append('use').attr('class', 'p9icon').attr('href', '#art-planet-nine')
+    .attr('width', 28).attr('height', 28).attr('opacity', 0)
   const p9Spoke = svg.insert('line', () => gMean.node())
     .attr('stroke', 'var(--series-3)').attr('stroke-width', 3)
     .attr('stroke-dasharray', '2 6').attr('stroke-linecap', 'round')
@@ -238,6 +241,9 @@ export function makeLean (root) {
       .attr('opacity', showArc ? 1 : 0)
     gP9.select('circle.p9dot').transition().duration(T)
       .attr('cx', cx + r(p9pt[0])).attr('cy', cy - r(p9pt[1]))
+      .attr('opacity', showArc ? 1 : 0)
+    gP9.select('use.p9icon').transition().duration(T)
+      .attr('x', cx + r(p9pt[0]) - 14).attr('y', cy - r(p9pt[1]) - 14)
       .attr('opacity', showArc ? 1 : 0)
     p9Spoke.transition().duration(T).attr('opacity', s.p9 ? 1 : 0)
 

@@ -10,7 +10,10 @@ import { drawMatrix } from './charts/matrix.js'
 import { drawTimeline } from './charts/timeline.js'
 import { drawPlacement, scorePlanet, physicalProperties } from './charts/placeplanet.js'
 import { makeScatter } from './charts/scatter.js'
-import { scrolly, initReveals } from './scrolly.js'
+import { makeDistance, fmtAu, lightTime } from './charts/distance.js'
+import { makeLineup } from './charts/lineup.js'
+import { scrolly, initReveals, scrollyProgress } from './scrolly.js'
+import { sprite } from './art.js'
 
 const DEFAULTS = { aMin: 150, qMin: 30, aMax: Infinity, qMax: Infinity, quality: true, showP9: true }
 const state = { ...DEFAULTS }
@@ -24,6 +27,10 @@ let ETNOS = [], CUTS = [], SURVEYS = [], PAPERS = null
 let SKY = null, PERIHELIA = [], ALTS = null, PREDICTIONS = null
 let scatter = null
 let lean = null, luck = null
+let distance = null, lineup = null, PLANETS = []
+let distKeys = [1.75, 11.5, 34, 56, 700, 1000, 3000]
+let distProgress = { k: 0, t: 0 }
+let remeasureDist = () => {}
 
 // The story steps. Each scripted step draws the sample it describes, so the
 // numbers in the text and the picture always agree; the last "explore" step of
@@ -31,7 +38,7 @@ let lean = null, luck = null
 // their sample: the reader's filters in `state` are never changed by scrolling.
 const STRICT = { aMin: 150, qMin: 30, aMax: Infinity, qMax: Infinity, quality: true }
 const LOOSE = { ...STRICT, quality: false }
-const story = { lean: 'one', luck: 'one', sky: 'sky' }
+const story = { lineup: 'nine', dist: 'home', lean: 'one', luck: 'one', sky: 'sky' }
 const leanSample = step => step === 'explore' ? state : STRICT
 const luckSample = step => step === 'explore' ? state : step === 'catch' || step === 'cuts' ? LOOSE : STRICT
 let leanView = 'orbits'
@@ -138,7 +145,6 @@ function render () {
   renderVerdict(stats, p)
   renderTable(objs)
   if (SKY) renderSky(new Set(objs.map(o => o.id)))
-  renderScaleStrip(objs)
   renderBuild(objs, stats, maxAu)
 }
 
@@ -175,34 +181,54 @@ function renderTable (objs) {
     '<tr><td colspan="7" style="padding:18px;text-align:center">No objects match.</td></tr>'
 }
 
-/** Gives "AU" a physical meaning before any chart asks the reader to use it. */
-function renderScaleStrip (objs) {
-  const far = d3.max(objs, o => o.a_au * (1 + o.e)) || 1000
-  const rows = [
-    { nm: 'Earth', q: 'average distance', au: 1, c: 'var(--series-1)' },
-    { nm: 'Neptune', q: 'average distance', au: 30.1, c: 'var(--neptune)' },
-    { nm: 'Pluto', q: 'average distance', au: 39.5, c: 'var(--text-muted)' },
-    { nm: 'Planet Nine', q: 'predicted average distance', au: PLANET_NINE.a_au, c: 'var(--series-3)' },
-    { nm: 'Farthest point', q: 'reached by any object in view', au: far, c: 'var(--series-2)' },
-  ]
-  const x = d3.scaleSqrt().domain([0, far]).range([0, 100])
-  const label = au => `${au < 10 ? au : fmt(au)} AU`
-  // Keyed join so rows persist between filter changes and their bars can ease
-  // to the new length (the scale's maximum moves, so every bar shifts a little).
-  const row = d3.select('#scaleStrip').selectAll('.scale-row').data(rows, r => r.nm)
-    .join(enter => {
-      const e = enter.append('div').attr('class', 'scale-row')
-      e.append('span').attr('class', 'nm').html(r => `${r.nm}<small>${r.q}</small>`)
-      e.append('span').attr('class', 'bar').append('i')
-        .style('background', r => r.c).style('width', r => `${x(r.au).toFixed(1)}%`)
-      e.append('span').attr('class', 'au').text(r => label(r.au))
-      return e
-    })
-  row.select('.bar i').transition('width').duration(duration()).ease(EASE)
-    .style('width', r => `${x(r.au).toFixed(1)}%`)
-  row.select('.au').each(function (r) {
-    animateValue(this, r.au, (v, done) => { this.textContent = label(done ? r.au : Math.round(v)) })
-  })
+// --------------------------------------------------------------------------
+// 01 — how far away: a continuous zoom from the Sun outward
+// --------------------------------------------------------------------------
+
+/**
+ * The width of the view, in AU, at each story card. Scrolling eases between
+ * them in log space, so every step of the zoom feels the same size. The later
+ * keys come from the objects drawn: their typical reach, Planet Nine's widest
+ * predicted range, and the farthest point any of them reaches.
+ */
+function distKeyframes (objs) {
+  const farObj = objs.length ? objs.reduce((m, o) => (o.Q_au > m.Q_au ? o : m)) : null
+  const far = farObj && distance ? distance.viewFor(farObj) : 1000
+  const as = objs.map(o => o.a_au).sort(d3.ascending)
+  const extreme = Math.max(420, (d3.quantile(as, 0.75) || 500) * 1.6)
+  const p9 = distance ? distance.p9.QMax * 1.12 : extreme
+  const keys = [1.75, 11.5, 34, 56, extreme, Math.max(extreme, p9), far]
+  for (let i = 1; i < keys.length; i++) keys[i] = Math.max(keys[i], keys[i - 1] * 1.05)
+  return keys
+}
+
+/**
+ * The zoom-out sits in the introduction, before the reader has chosen
+ * anything, so it draws one fixed group: the well-measured extreme objects
+ * (the default sample). Briefly observed orbits are left out because their
+ * far ends are too uncertain to put on a ruler.
+ */
+function renderDistance () {
+  if (!distance) return
+  const objs = withAlignment(selected(STRICT))
+  const far = objs.length ? objs.reduce((m, o) => (o.Q_au > m.Q_au ? o : m)) : null
+  distKeys = distKeyframes(objs)
+  distance.update({ objects: objs, showP9: true, far, step: story.dist })
+  $('#distFarAu').textContent = far ? `${fmtAu(far.Q_au)} (${far.name || far.provisional_desig || far.id})` : '—'
+  applyDistView()
+}
+
+/** Hold at a card's keyframe while it is being read; ease between cards. */
+function applyDistView () {
+  if (!distance) return
+  const { k, t } = distProgress
+  const a = distKeys[Math.min(k, distKeys.length - 1)]
+  const b = distKeys[Math.min(k + 1, distKeys.length - 1)]
+  const u = Math.min(1, Math.max(0, (t - 0.25) / 0.5))
+  const s = u * u * (3 - 2 * u)
+  const view = Math.exp(Math.log(a) + (Math.log(b) - Math.log(a)) * s)
+  distance.setView(view)
+  $('#distReadout').innerHTML = `Sun out to <b>${fmtAu(view)}</b> · light takes <b>${lightTime(view)}</b> to cross this view`
 }
 
 // --------------------------------------------------------------------------
@@ -593,7 +619,7 @@ function bind () {
     render()
   })
   let t
-  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { setBarHeight(); render(); renderMatrix() }, 180) })
+  window.addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { setBarHeight(); render(); renderMatrix(); remeasureDist() }, 180) })
   setBarHeight()
 
   $('#leanToggle').addEventListener('click', e => {
@@ -648,13 +674,15 @@ function renderLeanToggle () {
 
 async function init () {
   const j = u => fetch(u).then(r => { if (!r.ok) throw new Error(`${u} → ${r.status}`); return r.json() })
-  const [etnos, nulls, surveys, papers, sky, peri, alts, preds] = await Promise.all([
+  const [etnos, nulls, surveys, papers, sky, peri, alts, preds, planets] = await Promise.all([
     j('/data/etnos.json'), j('/data/clustering_null.json'), j('/data/surveys.json'),
     j('/data/papers.json'), j('/data/p9_sky_track.json'), j('/data/etno_perihelion_sky.json'),
-    j('/data/alternatives.json'), j('/data/planet_nine_predictions.json'),
+    j('/data/alternatives.json'), j('/data/planet_nine_predictions.json'), j('/data/planets.json'),
   ])
   ETNOS = etnos; CUTS = nulls.cuts; SURVEYS = surveys.surveys; PAPERS = papers
   SKY = sky; PERIHELIA = peri.objects; ALTS = alts; PREDICTIONS = preds
+  PLANETS = planets.planets.map(p => ({ name: p.name, a: p.a, e: p.e, q: p.a * (1 - p.e), Q: p.a * (1 + p.e) }))
+  lineup = makeLineup($('#chartLineup'), { planets: PLANETS, readout: $('#lineupReadout') })
 
   lean = makeLean($('#chartLean'))
   luck = makeLuck($('#chartLuck'))
@@ -672,9 +700,27 @@ async function init () {
     },
   })
 
+  // The zoom-out's Planet Nine band spans the published orbit and its stated
+  // uncertainty (Brown & Batygin 2021 posterior), so the range is theirs, not ours.
+  const bb21 = PREDICTIONS.orbit_predictions.find(p => p.is_default) || {}
+  distance = makeDistance($('#chartDist'), {
+    planets: PLANETS,
+    p9: { a: PLANET_NINE.a_au, e: PLANET_NINE.e, aErr: bb21.a_au_err || [0, 0], eErr: bb21.e_err || [0, 0] },
+  })
+  $('#distP9q').textContent = fmt(distance.p9.q); $('#distP9Q').textContent = fmt(distance.p9.Q)
+  $('#distP9min').textContent = fmt(distance.p9.qMin); $('#distP9max').textContent = fmt(distance.p9.QMax)
+
   bind(); render()
+  renderDistance()
 
   // A step change only redraws its own graphic; the filters stay as the reader left them.
+  scrolly($('#lineupStory'), {
+    onStep: (i, step) => { story.lineup = step; lineup.setStep(step) },
+  })
+  scrolly($('#distStory'), {
+    onStep: (i, step) => { story.dist = step; distance.update({ step }) },
+  })
+  remeasureDist = scrollyProgress($('#distStory'), (k, t) => { distProgress = { k, t }; applyDistView() })
   scrolly($('#leanStory'), {
     onStep: (i, step) => {
       story.lean = step
@@ -691,12 +737,15 @@ async function init () {
   bindYourTurn()
 }
 
+// The hand-drawn bodies, once, so <use href="#art-NAME"> works anywhere on the page.
+document.body.insertAdjacentHTML('afterbegin', sprite())
+
 initReveals()   // experimental scroll-triggered reveals; delete this line to disable
 
 // Hold a shared #your-turn-NN link until the charts exist (bindYourTurn puts it
 // back). Left in the URL, the browser starts its own smooth jump while the page
 // is still loading, and wherever the two scrolls meet is where the reader lands.
-const pendingTurn = location.hash.startsWith('#your-turn-') ? location.hash : null
+const pendingTurn = /^#(your-turn-|dist-)/.test(location.hash) ? location.hash : null
 if (pendingTurn) history.replaceState(null, '', location.pathname + location.search)
 
 init().catch(err => {

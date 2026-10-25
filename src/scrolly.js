@@ -49,6 +49,36 @@ export function pulse (el) {
   el.classList.add('pulse')
 }
 
+/**
+ * Continuous progress through a scrolly, for graphics that move with the
+ * scroll rather than cutting between cards. Reports (k, t): the last step whose
+ * card centre has passed the activation line, and how far the line has
+ * travelled toward the next card's centre, 0 to 1. Before the first card it is
+ * (0, 0); after the last, (last, 0). Returns a function that re-measures, for
+ * callers whose layout changes without a scroll.
+ */
+export function scrollyProgress (root, onProgress) {
+  const steps = [...root.querySelectorAll('.step')]
+  let raf = 0
+  function measure () {
+    raf = 0
+    const at = window.matchMedia('(max-width: 900px)').matches ? 0.75 : 0.5
+    const line = window.innerHeight * at
+    const mid = steps.map(s => { const r = s.getBoundingClientRect(); return r.top + r.height / 2 })
+    let k = -1
+    for (let i = 0; i < mid.length; i++) if (mid[i] <= line) k = i
+    if (k < 0) return onProgress(0, 0)
+    if (k >= mid.length - 1) return onProgress(mid.length - 1, 0)
+    const t = (line - mid[k]) / (mid[k + 1] - mid[k])
+    onProgress(k, Math.min(1, Math.max(0, t)))
+  }
+  const request = () => { if (!raf) raf = requestAnimationFrame(measure) }
+  window.addEventListener('scroll', request, { passive: true })
+  window.addEventListener('resize', request)
+  measure()
+  return request
+}
+
 // --------------------------------------------------------------------------
 // Scroll-triggered reveals — experimental, self-contained, reversible.
 // Remove the `initReveals()` call in main.js to switch it off entirely.
@@ -64,14 +94,15 @@ export function pulse (el) {
 // same frame (the hero on load, a row of stat tiles) are staggered together.
 const TARGETS = [
   // introduction
-  '.hero > .eyebrow', '.hero > h1', '.hero > .byline', '.hero-hook',
-  '.hero-block', '.hero-purpose-title', '.hero-purpose-lead', '.hero-path li', '.hero-question',
-  '.hero-start',
+  '.hero > .hero-mark', '.hero > .eyebrow', '.hero > h1', '.hero > .byline', '.hero-hook',
+  '.hero-fact', '.hero-start', '.hero-nav-k', '.hero-path li',
+  // 00 — the rules table and the question
+  '#planets .sub-title', '#planets .definition', '#planets .criteria-wrap', '#planets .primer .pc', '.hero-question',
   // every section heading
   'section .sec-head > *',
   // 01 — explanation → filters → statistics → distances → takeaway
   '#objects .controls', '#objects .stat', '#objects .turn-nav', '#objects .sub-head',
-  '#objects .scale-strip', '#objects .takeaway',
+  '#objects .takeaway',
   // 06 — legend, then the scorecard (its rows cascade in via CSS)
   '#matrixLegend', '#alternatives > .card',
 ].join(', ')

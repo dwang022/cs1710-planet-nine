@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Saturn" style="color:#ffffff"><defs><clipPath id="ai-c"><circle cx="50" cy="50" r="27"/></clipPath><clipPath id="ai-f" clipPathUnits="userSpaceOnUse"><rect x="-10" y="50" width="120" height="60"/></clipPath></defs><g transform="rotate(-18 50 50)">
+      <ellipse cx="50" cy="50" rx="46" ry="11" fill="none" stroke="#cdb882" stroke-width="7" opacity="0.9"/>
+    </g>
+    <g clip-path="url(#ai-c)">
+      <circle cx="50" cy="50" r="27" fill="#e3d6a8"/>
+      <path d="M0,40 C25,38.6 40,41.4 60,40 S90,38.6 100,40.7 L100,46.4 C80,43.6 60,46.4 40,45 S15,43.6 0,45.7 Z" fill="#cbb97f" opacity="0.8"/>
+      <path d="M0,52 C25,50.6 40,53.4 60,52 S90,50.6 100,52.7 L100,59.4 C80,56.6 60,59.4 40,58 S15,56.6 0,58.7 Z" fill="#f1e8c8" opacity="0.9"/>
+      <circle cx="64.04" cy="50" r="27" fill="#06100e" opacity="0.26"/>
+    </g><circle cx="50" cy="50" r="27" fill="none" stroke="#a8955f" stroke-width="2.5"/>
+    <g transform="rotate(-18 50 50)" clip-path="url(#ai-f)">
+      <ellipse cx="50" cy="50" rx="46" ry="11" fill="none" stroke="#cdb882" stroke-width="7" opacity="0.95"/>
+      <ellipse cx="50" cy="50" rx="46" ry="11" fill="none" stroke="#9a8853" stroke-width="1" opacity="0.6"/>
+    </g></svg>

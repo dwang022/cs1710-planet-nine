@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Earth" style="color:#ffffff"><defs><clipPath id="af-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#af-c)">
+      <circle cx="50" cy="50" r="40" fill="#4f86c6"/>
+      <path d="M26,30 C34,22 48,24 50,34 C52,42 44,46 38,50 C30,54 22,46 26,30 Z" fill="#5faa5f"/>
+      <path d="M56,52 C64,46 76,52 74,62 C72,72 60,74 56,66 C52,60 52,56 56,52 Z" fill="#5faa5f"/>
+      <path d="M40,66 C46,62 54,64 58,70" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+      <path d="M58,30 C64,28 70,30 74,34" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.8"/>
+      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.3"/>
+    </g><circle cx="50" cy="50" r="40" fill="none" stroke="#2d5a93" stroke-width="2.5"/></svg>

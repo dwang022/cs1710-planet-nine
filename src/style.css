@@ -117,23 +117,24 @@ a:hover { text-decoration-color: currentColor; }
 .hero .hero-hook { font-size: clamp(1.15rem, 2.2vw, 1.35rem); margin-bottom: 36px; max-width: min(80%, 95ch); }
 .hero .hero-hook strong { color: var(--text-primary); font-weight: 600; }
 
-.hero-context {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 32px;
-}
-.hero-block {
-  background: var(--surface-1); border: 1px solid var(--rule);
-  border-radius: 12px; padding: 18px 20px;
-}
+/* three numbers that carry the hook */
+.hero-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0 0 26px; max-width: 980px; }
+.hero-fact { background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; }
+.hero-fact .v { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.hero-fact .v em { font-style: normal; color: #5cc79c; }
+.hero-fact .k { margin-top: 6px; font-size: .86rem; color: var(--text-muted); line-height: 1.45; }
+.hero-nav { margin-top: 36px; }
+.hero-nav-k { margin-bottom: 10px; }
 /* Shared lift for the intro cards and the section links. Uses `translate`, not
    `transform`, because the scroll reveal owns transform on these elements.
    Hover is mouse-only; the links get the same treatment on keyboard focus.
    The info cards stay non-clickable (no cursor change). */
-.hero-block, .hero-path a {
+.hero-path a {
   transition: border-color .22s ease, background-color .22s ease, box-shadow .22s ease,
     translate .22s ease, color .22s ease;
 }
 @media (hover: hover) {
-  .hero-block:hover, .hero-path a:hover {
+  .hero-path a:hover {
     border-color: #3987e599; background: var(--surface-2);
     box-shadow: 0 8px 24px #00000059; translate: 0 -3px;
   }
@@ -143,17 +144,11 @@ a:hover { text-decoration-color: currentColor; }
   box-shadow: 0 8px 24px #00000059; translate: 0 -3px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-block:hover, .hero-path a:hover, .hero-path a:focus-visible { translate: none; }
+  .hero-path a:hover, .hero-path a:focus-visible { translate: none; }
 }
-.hero-block h3 { margin-bottom: 6px; }
-.hero-block p { margin: 0; font-size: 0.93rem; }
-
-.hero-purpose { margin-bottom: 32px; }
-.hero-purpose-title { font-size: clamp(1.35rem, 2.4vw, 1.6rem); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-.hero .hero-purpose-lead { font-size: 1.1rem; color: var(--text-muted); max-width: none; margin-bottom: 18px; }
 .hero-path {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 14px;
 }
 .hero-path a {
   display: flex; align-items: center; gap: 12px; min-height: 44px;
@@ -187,7 +182,7 @@ a:hover { text-decoration-color: currentColor; }
 @media (max-width: 767px) {
   :root { --gutter: 16px; }
   .hero .hero-hook { max-width: none; }
-  .hero-context, .hero-path { grid-template-columns: 1fr; }
+  .hero-facts, .hero-path { grid-template-columns: 1fr; }
 }
 
 /* --- sections ------------------------------------------------------------ */
@@ -428,14 +423,89 @@ svg text.halo {
 
 .caption { font-size: .84rem; color: var(--text-muted); margin-top: 10px; max-width: 70ch; }
 
-/* distance scale strip — gives "AU" a physical meaning before any chart */
-.scale-strip { display: grid; gap: 2px; margin-top: 26px; }
-.scale-row { display: grid; grid-template-columns: 120px 1fr 78px; gap: 14px; align-items: center;
-  padding: 7px 0; border-top: 1px solid var(--rule); font-size: .84rem; }
-.scale-row .nm { color: var(--text-primary); font-weight: 600; }
-.scale-row .bar { height: 9px; border-radius: 5px; background: var(--surface-3); position: relative; }
-.scale-row .bar i { position: absolute; inset: 0 auto 0 0; border-radius: 5px; display: block; }
-.scale-row .au { text-align: right; color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+/* --- art: the hand-drawn bodies in src/art.js, used from the injected sprite --- */
+.art { display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em; }
+h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
+.hero-mark { width: 78px; height: 78px; display: block; margin-bottom: 18px; }
+
+/* --- 01: how far — a continuous zoom (charts/distance.js) ------------------ */
+#objects .scrolly { margin-top: 14px; }
+#distReadout b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+#distReadout .muted { color: var(--text-muted); }
+.dist-lbl { font-size: 13px; fill: var(--text-secondary);
+  paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
+.dist-lbl.muted { fill: var(--text-muted); }
+.dist-lbl.small { font-size: 11.5px; }
+.dist-lbl.focus { font-size: 15px; font-weight: 600; fill: var(--text-primary); }
+.dist-lbl.focus.p9 { fill: #5cc79c; }
+.dist-lbl.focus-v { font-size: 13px; fill: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.dist-orbit { fill: none; stroke: #ffffff; stroke-opacity: .16; stroke-width: 1; stroke-dasharray: 3 5; }
+.dist-orbit.dwarf { stroke: #c8ad94; stroke-opacity: .3; }
+.dist-ray { stroke-width: 1.5; stroke-linecap: round; }
+.dist-ray.dwarf { stroke: #c8ad94; stroke-opacity: .55; stroke-width: 2; }
+.dist-ray.etno { stroke-opacity: .3; }
+.dist-ray.etno.anti { stroke: var(--series-1); }
+.dist-ray.etno.ali { stroke: var(--series-2); }
+.dist-ray.etno.hot { stroke-opacity: 1; stroke-width: 2.5; }
+.dist-body.etno { opacity: .85; cursor: pointer; }
+.dist-body.etno.hot { opacity: 1; }
+.dist-band.kuiper { fill: #ffffff; fill-opacity: .035; }
+.dist-band.p9 { fill: var(--series-3); fill-opacity: .16; }
+.dist-band.p9.wide { fill-opacity: .06; }
+.dist-edge { fill: none; stroke: var(--series-3); stroke-opacity: .55; stroke-width: 1; stroke-dasharray: 4 4; }
+.dist-edge.wide { stroke-opacity: .22; }
+.dist-focus { fill: none; stroke: #ffffff; stroke-opacity: .6; stroke-width: 1.4; }
+.dist-focus.dashed { stroke: var(--series-3); stroke-dasharray: 3 4; stroke-opacity: .9; }
+.voy path { fill: var(--text-muted); }
+.voy .hit { fill: #ffffff; fill-opacity: 0; pointer-events: all; cursor: help; }
+.dist-ruler line { stroke: var(--text-muted); stroke-width: 1.5; }
+
+/* --- 00: the planet lineup (charts/lineup.js) ------------------------------ */
+.viz-note { font-size: .8rem; color: var(--text-muted); }
+.lu-title { font-size: 19px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; fill: var(--text-primary); }
+.lu-sub { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; fill: var(--text-muted); }
+.lu-lbl { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; fill: var(--text-secondary);
+  paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
+.lu-lbl.sub { font-size: 11px; font-weight: 400; letter-spacing: .02em; text-transform: none; fill: var(--text-muted); }
+.lu-lbl.p9 { fill: #5cc79c; }
+.lu-arc { fill: none; stroke-width: 1.2; stroke-opacity: .35; }
+.lu-arc.dashed { stroke-dasharray: 4 5; stroke-opacity: .55; }
+.lu-halo { fill: none; stroke: #ffffff; stroke-opacity: .42; stroke-width: 1.3; }
+.lu-halo.dashed { stroke: var(--series-3); stroke-dasharray: 3 4; stroke-opacity: .8; }
+.lu-body { cursor: pointer; }
+.lu-kbo { fill: #9fb0bf; fill-opacity: .7; }
+.lu-note { font-size: 12.5px; fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
+.lu-note.bad { fill: var(--series-2); font-weight: 600; }
+.lu-note.good { fill: #5cc79c; font-weight: 600; }
+.lu-note.p9 { fill: #5cc79c; }
+
+/* the three-test table */
+.sub-title { margin: 30px 0 8px; font-size: 1.3rem; }
+.criteria-wrap { overflow-x: auto; margin-top: 16px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-1); }
+.criteria { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 760px; }
+.criteria th, .criteria td { padding: 13px 16px; text-align: left; vertical-align: top; border-top: 1px solid var(--rule); }
+.criteria thead th { border-top: 0; font: 600 .7rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.criteria tbody th { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.criteria tbody th .art { width: 2.3em; height: 2.3em; vertical-align: middle; margin-right: 10px; }
+.criteria tbody th small { display: block; font-weight: 400; color: var(--text-muted); font-size: .78rem; white-space: normal; max-width: 22ch; margin-left: calc(2.3em + 10px); line-height: 1.35; }
+.criteria td .mark { font-weight: 700; font-size: 1.1rem; display: inline-block; min-width: 1.3em; line-height: 1.2; }
+.criteria td.ok .mark, .criteria td.maybe .mark { color: #5cc79c; }
+.criteria td.no .mark { color: var(--series-2); }
+.criteria td.na .mark { color: var(--text-muted); }
+.criteria td small { display: block; color: var(--text-muted); font-size: .8rem; line-height: 1.4; max-width: 26ch; margin-top: 2px; }
+.criteria td.verdict { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.criteria td.verdict small { white-space: normal; font-weight: 400; }
+.criteria tr.p9 th, .criteria tr.p9 td { background: #199e700d; }
+/* the definition: a full-width list, numbered to match the table's columns */
+#planets .wrap > p { max-width: none; }
+.definition { list-style: none; margin: 12px 0 18px; padding: 0; }
+.definition li { display: flex; gap: 16px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--rule); font-size: 1.02rem; line-height: 1.55; color: var(--text-secondary); }
+.definition li:last-child { border-bottom: 1px solid var(--rule); }
+.definition .n { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--text-muted); margin-top: 1px;
+  display: inline-flex; align-items: center; justify-content: center; font: 600 .8rem var(--font-mono); color: var(--text-primary); }
+.definition b { color: var(--text-primary); }
+.definition cite { display: block; font-style: normal; color: var(--text-muted); font-size: .84rem; margin-top: 4px; }
+#planets .primer { margin-top: 26px; }
 
 /* survey filter chips */
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -506,9 +576,6 @@ svg text.halo {
 #objects .sub-head { margin-top: 36px; }
 #objects .sub-head h3 { margin-bottom: 6px; }
 #objects .sub-head p { font-size: 0.9rem; margin: 0; max-width: none; }
-#objects .scale-strip { margin-top: 14px; }
-#objects .scale-row { grid-template-columns: 190px 1fr 78px; }
-#objects .scale-row .nm small { display: block; font-size: 0.74rem; font-weight: 400; color: var(--text-muted); line-height: 1.35; }
 
 /* "Ready to see what changed?": a compact jump from the filters back to the
    explore steps of 02-04. The links reuse .hero-path's card, hover lift and
@@ -560,7 +627,6 @@ svg text.halo {
 @media (max-width: 767px) {
   .filter-grid { grid-template-columns: 1fr; }
   .filter:nth-child(n+2) { margin-top: 12px; }
-  #objects .scale-row { grid-template-columns: 112px 1fr 64px; gap: 10px; }
 }
 @media (max-width: 560px) { #objects .grid-stats { grid-template-columns: 1fr; } }
 

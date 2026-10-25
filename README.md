@@ -24,6 +24,7 @@ The six sketches chosen in the Decide section of the process book:
 
 | § | Sketch | What it shows | Data |
 |---|---|---|---|
+| 00 | — | Introduction: the nine planets, Pluto's 2006 reclassification, and a proposed ninth; the IAU's three conditions scored on familiar objects; a scroll-driven zoom-out from Earth to the farthest well-measured object | `planets.json`, `etnos.json` |
 | 02 | **DW1** — the evidence | 90 extreme orbits from above, plus the same objects reduced to one angle each | `etnos.json` |
 | 03 | **RL3** — is it luck? | Observed alignment against 4,000 random universes, recomputed live | `clustering_null.json` |
 | 04 | **DW5** — where telescopes look | Mollweide all-sky map: survey footprints, Planet Nine's predicted path, each object's perihelion direction | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json` |
@@ -33,6 +34,9 @@ The six sketches chosen in the Decide section of the process book:
 
 Four controls at the top drive every panel at once: how far out the orbit goes,
 closest approach, an orbit-quality filter, and Planet Nine on/off.
+
+The zoom-out in Section 00 draws the default sample (well-measured orbits
+only) and does not follow the filters, since it comes before them.
 
 ## The thing worth demoing
 
@@ -65,8 +69,12 @@ src/
   stats.js          circular statistics (resultant length, Rayleigh, Monte Carlo)
   orbits.js         Keplerian geometry, verified against Horizons
   style.css         design tokens; validated colourblind-safe palette
-  charts/           one module per visualisation
+  art.js            the hand-drawn bodies: Planet Nine logo, Sun, planets, TNOs
+  charts/           one module per visualisation (lineup.js and distance.js
+                    are the two scroll-driven openers)
 public/data/        the processed datasets the page fetches
+public/art/         the same drawings as standalone SVG and PNG files, with a
+                    contact sheet at /art/ (rebuild: node scripts/export_art.mjs)
 scripts/            the Python pipeline that builds those datasets
 ```
 

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Planet Nine art</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; background: #121211; color: #c3c2b7; font: 15px/1.6 ui-sans-serif, -apple-system, "Segoe UI", Inter, system-ui, sans-serif; padding: 40px clamp(16px, 5vw, 64px); }
+  h1 { color: #fff; font-size: 1.8rem; margin: 0 0 6px; letter-spacing: -0.02em; }
+  h2 { color: #fff; font-size: 1.1rem; margin: 40px 0 10px; }
+  p { max-width: 70ch; margin: 0 0 10px; }
+  code, pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: .85em; }
+  pre { background: #1a1a19; border: 1px solid #34342f; border-radius: 10px; padding: 14px 16px; overflow-x: auto; color: #e8e8e0; }
+  .row { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; }
+  figure { margin: 0; text-align: center; }
+  figcaption { font: 11px/1.4 ui-monospace, Menlo, monospace; color: #8a8a80; margin-top: 6px; word-break: break-all; max-width: 150px; }
+  .t { display: inline-flex; align-items: center; justify-content: center; padding: 10px; border-radius: 12px; border: 1px solid #34342f;
+       background-image: linear-gradient(45deg, #2a2a28 25%, transparent 25%), linear-gradient(-45deg, #2a2a28 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #2a2a28 75%), linear-gradient(-45deg, transparent 75%, #2a2a28 75%);
+       background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0; background-color: #1f1f1d; }
+  .t.dark, .t.light { background-image: none; }
+  .t.dark { background-color: #121211; } .t.light { background-color: #f4f2ec; border-color: #d8d5cc; }
+  .light-bg { background: #f4f2ec; color: #1a1a19; padding: 18px; border-radius: 12px; display: inline-flex; gap: 20px; align-items: center; }
+  table { border-collapse: collapse; font-size: .9rem; } td, th { text-align: left; padding: 4px 14px 4px 0; vertical-align: top; } th { color: #fff; }
+  .art { width: 1.15em; height: 1.15em; vertical-align: -0.18em; }
+</style></head><body>
+<h1>Planet Nine art</h1>
+<p>Everything the site draws by hand, in one place. Every file is an SVG (any size, any background), with PNG rasters beside it for slides and documents. Regenerate with <code>node scripts/export_art.mjs</code>; the drawings themselves live in <code>src/art.js</code>.</p>
+
+<h2>The logo</h2>
+<p>Use <code>planet-nine</code> (disc plus dashed ring) wherever the planet is named. The dashed ring is the point: it is a predicted body, not a seen one. The plain <code>mark</code> is for tiny sizes and inline text; <code>mono</code> takes <code>currentColor</code> for one-colour contexts; the <code>lockup</code> pairs it with a wordmark.</p>
+<div class="row"><figure><div class="t none"><img src="svg/planet-nine.svg" width="120" alt=""></div><figcaption>planet-nine.svg</figcaption></figure><figure><div class="t dark"><img src="svg/planet-nine-dark.svg" width="120" alt=""></div><figcaption>planet-nine-dark.svg</figcaption></figure><figure><div class="t light"><img src="svg/planet-nine-light.svg" width="120" alt=""></div><figcaption>planet-nine-light.svg</figcaption></figure></div>
+<div class="row" style="margin-top:14px"><figure><div class="t none"><img src="svg/planet-nine-mark.svg" width="72" alt=""></div><figcaption>planet-nine-mark.svg</figcaption></figure><figure><div class="t dark"><img src="svg/planet-nine-mark-dark.svg" width="72" alt=""></div><figcaption>planet-nine-mark-dark.svg</figcaption></figure><figure><div class="t light"><img src="svg/planet-nine-mark-light.svg" width="72" alt=""></div><figcaption>planet-nine-mark-light.svg</figcaption></figure><figure><div class="t none"><img src="svg/planet-nine-mono.svg" width="72" alt=""></div><figcaption>planet-nine-mono.svg</figcaption></figure><figure><div class="t dark"><img src="svg/planet-nine-mono-dark.svg" width="72" alt=""></div><figcaption>planet-nine-mono-dark.svg</figcaption></figure><figure><div class="t light"><img src="svg/planet-nine-mono-light.svg" width="72" alt=""></div><figcaption>planet-nine-mono-light.svg</figcaption></figure></div>
+<div class="row" style="margin-top:14px"><figure><div class="t none"><img src="svg/planet-nine-lockup.svg" width="300" alt=""></div><figcaption>planet-nine-lockup.svg</figcaption></figure><figure><div class="t dark"><img src="svg/planet-nine-lockup-dark.svg" width="300" alt=""></div><figcaption>planet-nine-lockup-dark.svg</figcaption></figure><figure><div class="t light"><img src="svg/planet-nine-lockup-light.svg" width="300" alt=""></div><figcaption>planet-nine-lockup-light.svg</figcaption></figure></div>
+<p style="margin-top:14px">Small, in running text and on a light surface:</p>
+<div class="row"><span style="font-size:1.1rem"><img class="art" src="svg/planet-nine-mark.svg" alt=""> Planet Nine &nbsp;·&nbsp; <img class="art" src="svg/planet-nine.svg" alt=""> Planet Nine (predicted)</span>
+<span class="light-bg"><img src="svg/planet-nine.svg" width="40" alt=""><b>Planet Nine</b><img src="svg/planet-nine-lockup-light.svg" height="48" alt=""></span></div>
+
+<h2>The Sun and the planets</h2>
+<p>Deliberately simple: one disc, one outline, a band or two. Pluto has a plain version and a sad one, used only at the moment it is reclassified. The Moon and Ceres are there for the planet-definition table.</p>
+<div class="row"><figure><div class="t none"><img src="svg/sun.svg" width="110" alt=""></div><figcaption>sun.svg</figcaption></figure><figure><div class="t none"><img src="svg/mercury.svg" width="84" alt=""></div><figcaption>mercury.svg</figcaption></figure><figure><div class="t none"><img src="svg/venus.svg" width="84" alt=""></div><figcaption>venus.svg</figcaption></figure><figure><div class="t none"><img src="svg/earth.svg" width="84" alt=""></div><figcaption>earth.svg</figcaption></figure><figure><div class="t none"><img src="svg/mars.svg" width="84" alt=""></div><figcaption>mars.svg</figcaption></figure><figure><div class="t none"><img src="svg/jupiter.svg" width="84" alt=""></div><figcaption>jupiter.svg</figcaption></figure><figure><div class="t none"><img src="svg/saturn.svg" width="84" alt=""></div><figcaption>saturn.svg</figcaption></figure><figure><div class="t none"><img src="svg/uranus.svg" width="84" alt=""></div><figcaption>uranus.svg</figcaption></figure><figure><div class="t none"><img src="svg/neptune.svg" width="84" alt=""></div><figcaption>neptune.svg</figcaption></figure><figure><div class="t none"><img src="svg/pluto.svg" width="84" alt=""></div><figcaption>pluto.svg</figcaption></figure><figure><div class="t none"><img src="svg/pluto-sad.svg" width="84" alt=""></div><figcaption>pluto-sad.svg</figcaption></figure><figure><div class="t none"><img src="svg/moon.svg" width="84" alt=""></div><figcaption>moon.svg</figcaption></figure><figure><div class="t none"><img src="svg/ceres.svg" width="84" alt=""></div><figcaption>ceres.svg</figcaption></figure></div>
+
+<h2>Trans-Neptunian objects</h2>
+<p>Three looks so a swarm reads as many different rocks. Pick by hashing the object id, as the distance chart does.</p>
+<div class="row"><figure><div class="t none"><img src="svg/tno-1.svg" width="72" alt=""></div><figcaption>tno-1.svg</figcaption></figure><figure><div class="t none"><img src="svg/tno-2.svg" width="72" alt=""></div><figcaption>tno-2.svg</figcaption></figure><figure><div class="t none"><img src="svg/tno-3.svg" width="72" alt=""></div><figcaption>tno-3.svg</figcaption></figure></div>
+
+<h2>Files</h2>
+<table><tr><th>Name</th><th>SVG</th><th>PNG sizes</th></tr>
+<tr><td><code>planet-nine</code></td><td><code>svg/planet-nine.svg</code><br><code>svg/planet-nine-dark.svg</code><br><code>svg/planet-nine-light.svg</code></td><td>64px, 128px, 256px, 512px × none / dark / light</td></tr>
+<tr><td><code>planet-nine-mark</code></td><td><code>svg/planet-nine-mark.svg</code><br><code>svg/planet-nine-mark-dark.svg</code><br><code>svg/planet-nine-mark-light.svg</code></td><td>64px, 128px, 256px, 512px × none / dark / light</td></tr>
+<tr><td><code>planet-nine-mono</code></td><td><code>svg/planet-nine-mono.svg</code><br><code>svg/planet-nine-mono-dark.svg</code><br><code>svg/planet-nine-mono-light.svg</code></td><td>64px, 128px, 256px, 512px × none / dark / light</td></tr>
+<tr><td><code>planet-nine-lockup</code></td><td><code>svg/planet-nine-lockup.svg</code><br><code>svg/planet-nine-lockup-dark.svg</code><br><code>svg/planet-nine-lockup-light.svg</code></td><td>64px, 128px, 256px, 512px × none / dark / light</td></tr>
+<tr><td><code>sun</code></td><td><code>svg/sun.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>mercury</code></td><td><code>svg/mercury.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>venus</code></td><td><code>svg/venus.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>earth</code></td><td><code>svg/earth.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>mars</code></td><td><code>svg/mars.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>jupiter</code></td><td><code>svg/jupiter.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>saturn</code></td><td><code>svg/saturn.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>uranus</code></td><td><code>svg/uranus.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>neptune</code></td><td><code>svg/neptune.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>pluto</code></td><td><code>svg/pluto.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>pluto-sad</code></td><td><code>svg/pluto-sad.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>moon</code></td><td><code>svg/moon.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>ceres</code></td><td><code>svg/ceres.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>tno-1</code></td><td><code>svg/tno-1.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>tno-2</code></td><td><code>svg/tno-2.svg</code></td><td>64px, 256px</td></tr>
+<tr><td><code>tno-3</code></td><td><code>svg/tno-3.svg</code></td><td>64px, 256px</td></tr>
+</table>
+
+<h2>Using them</h2>
+<pre>&lt;!-- as a file --&gt;
+&lt;img src="/art/svg/planet-nine.svg" width="40" alt="Planet Nine"&gt;
+
+&lt;!-- in the page, once main.js has injected the sprite --&gt;
+&lt;svg class="art"&gt;&lt;use href="#art-planet-nine"/&gt;&lt;/svg&gt;
+
+// in a chart
+import { inline } from './art.js'
+g.append('use').attr('href', '#art-sun').attr('width', 40).attr('height', 40)</pre>
+</body></html>

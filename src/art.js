@@ -41,6 +41,9 @@ const halo = (dashed = false, r = HALO_R) =>
 
 const FONT = "ui-sans-serif, -apple-system, 'SF Pro Text', 'Segoe UI', Inter, system-ui, sans-serif"
 
+/** The question mark: Planet Nine is a prediction, and the mark says so at any size. */
+const QMARK = `<text x="50" y="67" text-anchor="middle" font-family="${FONT}" font-size="48" font-weight="700" fill="#e6f4ef" stroke="#1b3a32" stroke-width="2.5" stroke-linejoin="round" paint-order="stroke">?</text>`
+
 // --- Planet Nine -----------------------------------------------------------
 
 function planetNineBody (id, { halo: ring = true } = {}) {
@@ -53,6 +56,7 @@ function planetNineBody (id, { halo: ring = true } = {}) {
     ${shade(0.36)}
   </g>
   ${outline('#1b3a32')}
+  ${QMARK}
   ${ring ? halo(true) : ''}`
 }
 
@@ -75,11 +79,8 @@ export const ART = {
   'planet-nine-mono': {
     label: 'Planet Nine',
     defs: id => clip(id),
-    body: id => `<g clip-path="url(#${id}-c)">
-      ${disc('currentColor')}
-      ${band(46, 11, '#000000', 0.18)}
-      ${shade(0.35)}
-    </g>
+    body: () => `<circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="5"/>
+    <text x="50" y="67" text-anchor="middle" font-family="${FONT}" font-size="50" font-weight="700" fill="currentColor">?</text>
     <circle cx="50" cy="50" r="${HALO_R}" fill="none" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.4" stroke-dasharray="2.5 3.5"/>`,
   },
   'planet-nine-lockup': {
@@ -222,6 +223,29 @@ export const ART = {
       <path d="M36,54 Q43,48 50,54" fill="none"/>
     </g>
     <ellipse cx="51" cy="48" rx="1.8" ry="3" fill="#9fd8e0"/>`,
+  },
+
+  // --- two more for the "what counts as a planet" table ---
+  moon: {
+    label: 'The Moon',
+    defs: id => clip(id, 30),
+    body: id => `<g clip-path="url(#${id}-c)">
+      ${disc('#b9b4ad', 30)}
+      <circle cx="40" cy="42" r="6" fill="#8f8a83"/><circle cx="58" cy="56" r="4" fill="#8f8a83"/>
+      <circle cx="56" cy="36" r="2.5" fill="#8f8a83"/><circle cx="44" cy="62" r="2.5" fill="#8f8a83"/>
+      <ellipse cx="42" cy="34" rx="9" ry="5" fill="#dcd8d1" opacity="0.5"/>
+      ${shade(0.3, 30)}
+    </g>${outline('#6f6a63', 30)}`,
+  },
+  ceres: {
+    label: 'Ceres, the largest body in the asteroid belt',
+    defs: id => clip(id, 24),
+    body: id => `<g clip-path="url(#${id}-c)">
+      ${disc('#8f877c', 24)}
+      <circle cx="42" cy="46" r="4.5" fill="#6d665c"/><circle cx="58" cy="58" r="3" fill="#6d665c"/>
+      <circle cx="55" cy="40" r="3.6" fill="#f1ece4"/>
+      ${shade(0.3, 24)}
+    </g>${outline('#55504a', 24)}`,
   },
 
   // --- trans-Neptunian objects: three looks, so a swarm reads as many bodies ---

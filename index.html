@@ -19,53 +19,188 @@
       <span>Daniel Wang</span><span>Gabriel Gonzalez</span><span>Russell Rui Luo</span>
     </div>
     <p class="lede hero-hook">
-      Far beyond Neptune, astronomers have found distant icy objects whose unusual
-      orbits raise an intriguing possibility: <strong>could another planet be hiding
-      in our solar system?</strong>
+      Out past Neptune, a few dozen frozen worlds seem to be leaning the same way, as if
+      something heavy were tugging at them from the dark.
+      <strong>Is there a ninth planet out there, or are we fooling ourselves?</strong>
     </p>
 
-    <div class="hero-context">
-      <div class="hero-block">
-        <h3>A planet no one has seen</h3>
-        <p>
-          Known as Planet Nine, this hypothetical world has never been directly observed.
-          It was proposed to explain patterns in how these distant objects move.
-        </p>
-      </div>
-      <div class="hero-block">
-        <h3>A question still open</h3>
-        <p>
-          Scientists disagree about whether those patterns point to an undiscovered planet,
-          to bias in where telescopes happen to look, or to something else entirely.
-        </p>
-      </div>
+    <div class="hero-facts" aria-label="Three things to know">
+      <div class="hero-fact"><div class="v">9 → 8 → <em>9?</em></div><div class="k">planets in the solar system, depending on which decade you ask</div></div>
+      <div class="hero-fact"><div class="v">5 – 10×</div><div class="k">Earth's mass, if the predicted planet is real</div></div>
+      <div class="hero-fact"><div class="v">0</div><div class="k">photographs of it, after a decade of looking</div></div>
     </div>
 
-    <div class="hero-purpose">
-      <h2 class="hero-purpose-title">Explore the evidence yourself</h2>
-      <p class="hero-purpose-lead">
-        Follow the story through interactive visualizations built from real astronomical data.
-        Here's what you'll discover:
-      </p>
+    <div class="hero-start" style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+      <a id="startBtn" href="#planets">Start with a recount ↓</a>
+      <span style="font-size:.85rem;color:var(--text-muted)">no astronomy needed, just scroll</span>
+    </div>
+
+    <nav class="hero-nav" aria-label="Sections">
+      <div class="eyebrow hero-nav-k">Or jump ahead</div>
       <ol class="hero-path">
-        <li><a href="#picture"><span>02</span>Explore unusual orbits</a></li>
-        <li><a href="#luck"><span>03</span>Test whether alignment could be chance</a></li>
+        <li><a href="#planets"><span>00</span>What counts as a planet</a></li>
+        <li><a href="#objects"><span>01</span>Meet the distant objects</a></li>
+        <li><a href="#picture"><span>02</span>See the orbits lean</a></li>
+        <li><a href="#luck"><span>03</span>Test whether it could be chance</a></li>
         <li><a href="#sky"><span>04</span>See where telescopes have searched</a></li>
         <li><a href="#build"><span>05</span>Put a planet out there yourself</a></li>
         <li><a href="#alternatives"><span>06</span>Compare competing explanations</a></li>
-        <li><a href="#field"><span>07</span>Explore what astronomers think</a></li>
+        <li><a href="#field"><span>07</span>See what astronomers think</a></li>
       </ol>
+    </nav>
+  </header>
+
+  <!-- 00 ============================================================== -->
+  <section id="planets" class="story">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">00 — First, a recount</div>
+        <h2>Nine planets. Then eight. Now… nine again?</h2>
+      </div>
+      <div class="bigidea">
+        <div class="bigidea-k">The point of this section</div>
+        <p>For 76 years the solar system had nine planets. In 2006 astronomers finally
+        wrote down what the word "planet" means, and Pluto didn't make the cut.
+        <strong>Ten years later, two of them argued there is a ninth planet after all</strong>:
+        not Pluto's comeback, but a world several times heavier than Earth, hiding far
+        beyond Neptune.</p>
+      </div>
+      <p class="scroll-hint">Scroll slowly. The chart changes with each card.</p>
     </div>
 
-    <p class="hero-question">
-      <span class="eyebrow">The question to keep in mind</span>
-      Does the evidence really point to Planet Nine?
-    </p>
-    <div class="hero-start" style="margin-top:26px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
-      <a id="startBtn" href="#objects">Start reading ↓</a>
-      <span style="font-size:.85rem;color:var(--text-muted)">no astronomy needed, just scroll</span>
+    <div class="scrolly wrap wide" id="lineupStory">
+      <div class="scrolly-graphic">
+        <div class="viz-head" id="lineupHead"><div id="lineupReadout"></div><div class="viz-note">not to scale, in any direction</div></div>
+        <div class="viz" id="chartLineup"></div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="step" data-step="nine"><div class="step-card">
+          <div class="step-n">1 / 5</div>
+          <h3>The nine you memorised</h3>
+          <p>Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune, Pluto.
+          <em>My Very Educated Mother Just Served Us Nine Pizzas.</em></p>
+          <p>Pluto, found in 1930, was the little one at the end. For sixty years nobody
+          worried about it, mostly because nobody had found anything else out there.</p>
+        </div></div>
+        <div class="step" data-step="neighbours"><div class="step-card">
+          <div class="step-n">2 / 5</div>
+          <h3>Then Pluto's neighbourhood got crowded</h3>
+          <p>From 1992 on, telescopes kept finding icy bodies right where Pluto lives.
+          In 2005 one of them, Eris, turned out to be <em>heavier</em> than Pluto.</p>
+          <p>Either the solar system had ten planets, or twelve, or fifty, or somebody
+          had to define the word.</p>
+        </div></div>
+        <div class="step" data-step="rules"><div class="step-card">
+          <div class="step-n">3 / 5</div>
+          <h3>2006: the IAU writes down the rules</h3>
+          <p>A planet <strong>orbits the Sun</strong>, is <strong>round</strong> under its
+          own gravity, and has <strong>cleared its orbit</strong> of other debris.</p>
+          <p>Pluto passes the first two with ease. The third is the problem: it shares
+          its lane with thousands of neighbours, and it is nowhere near the biggest
+          thing in the lane.</p>
+        </div></div>
+        <div class="step" data-step="eight"><div class="step-card">
+          <div class="step-n">4 / 5</div>
+          <h3>Eight planets, one dwarf planet, many hurt feelings</h3>
+          <p>Pluto became a <em>dwarf planet</em>, a category it now shares with Ceres
+          and Eris. Mother now serves us Nachos. Textbooks were reprinted.</p>
+          <p>Pluto did nothing wrong. The word "planet" simply got a definition, and
+          definitions have edges.</p>
+        </div></div>
+        <div class="step" data-step="nine-again"><div class="step-card">
+          <div class="step-n">5 / 5</div>
+          <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> 2016: wait, nine again?</h3>
+          <p>Two astronomers at Caltech noticed that a handful of the most distant icy
+          bodies seemed to be herded together, as if something big were steering
+          them. They proposed <strong>Planet Nine</strong>: five to ten times Earth's
+          mass, hundreds of times farther out than Neptune, never seen.</p>
+          <p>If it is real, it passes all three rules without breaking a sweat.
+          <em>If.</em> The rest of this page is about that word.</p>
+        </div></div>
+      </div>
     </div>
-  </header>
+
+    <div class="wrap">
+      <h3 class="sub-title">So what counts as a planet?</h3>
+      <p>The 2006 definition is three tests. Here is how some familiar objects do on
+      them, drawn the way they will look on the rest of the page.</p>
+      <div class="criteria-wrap">
+        <table class="criteria">
+          <thead><tr>
+            <th scope="col">Object</th>
+            <th scope="col">1 · Orbits the Sun</th>
+            <th scope="col">2 · Round under its own gravity</th>
+            <th scope="col">3 · Has cleared its orbit</th>
+            <th scope="col">Verdict</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-earth"/></svg><b>Earth</b><small>home</small></th>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="ok"><span class="mark">✓</span><small>nothing else of note shares its lane</small></td>
+              <td class="verdict">Planet</td>
+            </tr>
+            <tr>
+              <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-jupiter"/></svg><b>Jupiter</b><small>the biggest</small></th>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="ok"><span class="mark">✓</span><small>so thoroughly that it herds the leftovers into two camps ahead of and behind it</small></td>
+              <td class="verdict">Planet</td>
+            </tr>
+            <tr>
+              <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-moon"/></svg><b>The Moon</b><small>Earth's</small></th>
+              <td class="no"><span class="mark">✗</span><small>it orbits Earth; the Sun is Earth's business</small></td>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="na"><span class="mark">–</span><small>never reaches the third test</small></td>
+              <td class="verdict">A moon</td>
+            </tr>
+            <tr>
+              <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-ceres"/></svg><b>Ceres</b><small>in the asteroid belt</small></th>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="ok"><span class="mark">✓</span><small>just: 940 km across</small></td>
+              <td class="no"><span class="mark">✗</span><small>shares the belt with millions of rocks</small></td>
+              <td class="verdict">Dwarf planet<small>called a planet when found in 1801; demoted once already</small></td>
+            </tr>
+            <tr>
+              <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-pluto"/></svg><b>Pluto</b><small>in the Kuiper belt</small></th>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="no"><span class="mark">✗</span><small>shares its lane with thousands of icy bodies, one of them heavier</small></td>
+              <td class="verdict">Dwarf planet<small>planet 1930 – 2006</small></td>
+            </tr>
+            <tr>
+              <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-tno-2"/></svg><b>Arrokoth</b><small>a typical trans-Neptunian object</small></th>
+              <td class="ok"><span class="mark">✓</span></td>
+              <td class="no"><span class="mark">✗</span><small>two lumps stuck together, 35 km long</small></td>
+              <td class="no"><span class="mark">✗</span></td>
+              <td class="verdict">Small body<small>visited by New Horizons in 2019</small></td>
+            </tr>
+            <tr class="p9">
+              <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg><b>Planet Nine</b><small>predicted, never seen</small></th>
+              <td class="maybe"><span class="mark">✓?</span><small>it would, far beyond Neptune</small></td>
+              <td class="maybe"><span class="mark">✓?</span><small>at five to ten Earth masses, easily</small></td>
+              <td class="maybe"><span class="mark">✓?</span><small>heavy enough to boss its whole region around, which is the entire argument for it</small></td>
+              <td class="verdict">A planet<small>if it exists</small></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <blockquote class="iau">
+        A planet is a celestial body that (a) is in orbit around the Sun, (b) has sufficient
+        mass for its self-gravity to overcome rigid body forces so that it assumes a
+        hydrostatic equilibrium (nearly round) shape, and (c) has cleared the
+        neighbourhood around its orbit.
+        <cite>International Astronomical Union, Resolution B5, 24 August 2006. A dwarf planet
+        meets (a) and (b) but not (c), and is not a moon.</cite>
+      </blockquote>
+
+      <p class="hero-question" style="margin-top:36px">
+        <span class="eyebrow">The question to keep in mind</span>
+        Does the evidence really point to Planet Nine?
+      </p>
+    </div>
+  </section>
 
   <!-- 01 ============================================================== -->
   <section class="wrap" id="objects">
@@ -74,74 +209,17 @@
       <h2>A handful of worlds, impossibly far away</h2>
       <p class="lede">
         Beyond Neptune lies a swarm of small, icy bodies called
-        <strong>trans-Neptunian objects</strong> (TNOs). A few dozen of them travel on
-        extreme orbits that carry them hundreds of times farther from the Sun than Earth.
-        Over billions of years, the giant planets' gravity should have spread the
-        directions of these orbits evenly around the Sun. Some astronomers think the
-        orbits are bunched together instead, and that an unseen planet could be the cause.
-        Others suspect the pattern comes from where telescopes happened to look.
-        This section introduces the objects that every later chart is built from.
+        <strong>trans-Neptunian objects</strong> (TNOs): Pluto's neighbours, and Arrokoth's.
+        A few dozen of them travel on extreme orbits that carry them hundreds of times
+        farther from the Sun than Earth. Those few dozen are the whole case for Planet
+        Nine. This section first shows how far out they live, then lets you choose which
+        of them every later chart is built from.
       </p>
       <p class="aside">
         <b>AU</b> (astronomical unit) = the average Earth–Sun distance, about 150 million km.
         Neptune orbits at 30 AU.
       </p>
     </div>
-    <div class="controls" id="controls" role="group" aria-labelledby="controlsLabel">
-      <div class="controls-head">
-        <div class="eyebrow" id="controlsLabel">Adjust the sample · updates Sections 01–05</div>
-        <button class="btn-reset" id="reset" type="button">Reset</button>
-      </div>
-      <div class="filter-grid">
-        <div class="filter">
-          <label class="filter-name" for="aMin">Minimum orbit distance <b><span id="aMinV">150</span> AU</b></label>
-          <input type="range" id="aMin" min="100" max="400" step="10" value="150" aria-describedby="aMinHelp" />
-          <p class="filter-desc" id="aMinHelp">Only show objects whose average distance from the Sun is at least this far.</p>
-        </div>
-        <div class="filter">
-          <label class="filter-name" for="qMin">Minimum closest approach <b><span id="qMinV">30</span> AU</b></label>
-          <input type="range" id="qMin" min="30" max="60" step="1" value="30" aria-describedby="qMinHelp" />
-          <p class="filter-desc" id="qMinHelp">Only show objects that never come closer to the Sun than this distance.</p>
-        </div>
-        <div class="filter">
-          <label class="filter-name" for="quality">Only well-measured orbits</label>
-          <label class="toggle" for="quality">
-            <input type="checkbox" id="quality" checked aria-describedby="qualityHelp" /><span class="box"></span><span class="state"></span>
-          </label>
-          <p class="filter-desc" id="qualityHelp">Hides objects observed too briefly for their orbits to be pinned down reliably.</p>
-        </div>
-        <div class="filter">
-          <label class="filter-name" for="showP9"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine-mark"/></svg> Show Planet Nine</label>
-          <label class="toggle" for="showP9">
-            <input type="checkbox" id="showP9" checked aria-describedby="showP9Help" /><span class="box"></span><span class="state"></span>
-          </label>
-          <p class="filter-desc" id="showP9Help">Draws the predicted planet on the charts for comparison. It never changes the sample or the numbers.</p>
-        </div>
-      </div>
-    </div>
-    <div class="grid-stats">
-      <div class="stat"><div class="k">Objects in view</div><div class="v" id="statN">—</div><div class="d" id="statNd">—</div>
-        <p class="h">The objects that pass every filter above. All the numbers and charts in Sections 01–05 use this group, except the guided story cards in 02–03, which use the fixed sample their text describes.</p></div>
-      <div class="stat"><div class="k">How aligned are they?</div><div class="v" id="statR">—</div><div class="d">0 = pointing every which way · 1 = perfectly lined up</div>
-        <p class="h">How closely the orbits point the same way around the Sun. Random directions still score a little above 0, especially in small groups.</p></div>
-      <div class="stat" id="statPtile"><div class="k">Odds of this happening by chance</div><div class="v" id="statP">—</div><div class="d" id="statPd">—</div>
-        <p class="h">How often randomly pointed orbits would line up this well. It is <em>not</em> the chance that Planet Nine exists, and it assumes telescopes could find objects in any direction equally (see 04).</p></div>
-      <div class="stat"><div class="k">Average orbit direction</div><div class="v" id="statDir">—</div><div class="d">average direction of closest approach</div>
-        <p class="h">The average side of the Sun where these orbits make their closest pass, as an angle from 0° to 360°. Planet Nine is predicted to point roughly the opposite way, near 247°.</p></div>
-    </div>
-
-    <nav class="turn-nav" aria-labelledby="turnNavTitle">
-      <div class="turn-nav-text">
-        <h3 id="turnNavTitle">Ready to see what changed?</h3>
-        <p>After adjusting the sample, jump back to an interactive visualization to see how your choices affect the evidence.</p>
-      </div>
-      <ul class="hero-path turn-nav-links">
-        <li><a href="#your-turn-02" data-your-turn><span>Section 02</span>Back to Your Turn</a></li>
-        <li><a href="#your-turn-03" data-your-turn><span>Section 03</span>Back to Your Turn</a></li>
-        <li><a href="#your-turn-04" data-your-turn><span>Section 04</span>Back to Your Turn</a></li>
-      </ul>
-    </nav>
-
     <div class="sub-head">
       <h3>How far away are these objects?</h3>
       <p>
@@ -211,8 +289,8 @@
           <p>The most distant object in view reaches <strong><span id="distFarAu">—</span></strong>
           from the Sun at the far end of its orbit. The planets you started with
           are now a smudge inside the Sun's glow.</p>
-          <p>Change the filters at the top of this section and this picture, like
-          every chart below, follows.</p>
+          <p>Change the filters just below this picture and it follows, like every
+          chart after it.</p>
         </div></div>
       </div>
     </div>
@@ -235,6 +313,68 @@
         the near end sits — is the single number this whole page is about.</p>
       </div>
     </div>
+
+    <div class="sub-head">
+      <h3>Now choose the sample</h3>
+      <p>
+        Which of these objects should count? That choice is where the argument starts.
+        Every number and chart in Sections 01–05 follows the filters below.
+      </p>
+    </div>
+    <div class="controls" id="controls" role="group" aria-labelledby="controlsLabel">
+      <div class="controls-head">
+        <div class="eyebrow" id="controlsLabel">Adjust the sample · updates Sections 01–05</div>
+        <button class="btn-reset" id="reset" type="button">Reset</button>
+      </div>
+      <div class="filter-grid">
+        <div class="filter">
+          <label class="filter-name" for="aMin">Minimum orbit distance <b><span id="aMinV">150</span> AU</b></label>
+          <input type="range" id="aMin" min="100" max="400" step="10" value="150" aria-describedby="aMinHelp" />
+          <p class="filter-desc" id="aMinHelp">Only show objects whose average distance from the Sun is at least this far.</p>
+        </div>
+        <div class="filter">
+          <label class="filter-name" for="qMin">Minimum closest approach <b><span id="qMinV">30</span> AU</b></label>
+          <input type="range" id="qMin" min="30" max="60" step="1" value="30" aria-describedby="qMinHelp" />
+          <p class="filter-desc" id="qMinHelp">Only show objects that never come closer to the Sun than this distance.</p>
+        </div>
+        <div class="filter">
+          <label class="filter-name" for="quality">Only well-measured orbits</label>
+          <label class="toggle" for="quality">
+            <input type="checkbox" id="quality" checked aria-describedby="qualityHelp" /><span class="box"></span><span class="state"></span>
+          </label>
+          <p class="filter-desc" id="qualityHelp">Hides objects observed too briefly for their orbits to be pinned down reliably.</p>
+        </div>
+        <div class="filter">
+          <label class="filter-name" for="showP9"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine-mark"/></svg> Show Planet Nine</label>
+          <label class="toggle" for="showP9">
+            <input type="checkbox" id="showP9" checked aria-describedby="showP9Help" /><span class="box"></span><span class="state"></span>
+          </label>
+          <p class="filter-desc" id="showP9Help">Draws the predicted planet on the charts for comparison. It never changes the sample or the numbers.</p>
+        </div>
+      </div>
+    </div>
+    <div class="grid-stats">
+      <div class="stat"><div class="k">Objects in view</div><div class="v" id="statN">—</div><div class="d" id="statNd">—</div>
+        <p class="h">The objects that pass every filter above. All the numbers and charts in Sections 01–05 use this group, except the guided story cards in 02–03, which use the fixed sample their text describes.</p></div>
+      <div class="stat"><div class="k">How aligned are they?</div><div class="v" id="statR">—</div><div class="d">0 = pointing every which way · 1 = perfectly lined up</div>
+        <p class="h">How closely the orbits point the same way around the Sun. Random directions still score a little above 0, especially in small groups.</p></div>
+      <div class="stat" id="statPtile"><div class="k">Odds of this happening by chance</div><div class="v" id="statP">—</div><div class="d" id="statPd">—</div>
+        <p class="h">How often randomly pointed orbits would line up this well. It is <em>not</em> the chance that Planet Nine exists, and it assumes telescopes could find objects in any direction equally (see 04).</p></div>
+      <div class="stat"><div class="k">Average orbit direction</div><div class="v" id="statDir">—</div><div class="d">average direction of closest approach</div>
+        <p class="h">The average side of the Sun where these orbits make their closest pass, as an angle from 0° to 360°. Planet Nine is predicted to point roughly the opposite way, near 247°.</p></div>
+    </div>
+
+    <nav class="turn-nav" aria-labelledby="turnNavTitle">
+      <div class="turn-nav-text">
+        <h3 id="turnNavTitle">Ready to see what changed?</h3>
+        <p>After adjusting the sample, jump back to an interactive visualization to see how your choices affect the evidence.</p>
+      </div>
+      <ul class="hero-path turn-nav-links">
+        <li><a href="#your-turn-02" data-your-turn><span>Section 02</span>Back to Your Turn</a></li>
+        <li><a href="#your-turn-03" data-your-turn><span>Section 03</span>Back to Your Turn</a></li>
+        <li><a href="#your-turn-04" data-your-turn><span>Section 04</span>Back to Your Turn</a></li>
+      </ul>
+    </nav>
 
     <div class="takeaway">
       <h3 class="takeaway-title">The main takeaway</h3>

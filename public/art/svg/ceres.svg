@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Ceres, the largest body in the asteroid belt" style="color:#ffffff"><defs><clipPath id="an-c"><circle cx="50" cy="50" r="24"/></clipPath></defs><g clip-path="url(#an-c)">
+      <circle cx="50" cy="50" r="24" fill="#8f877c"/>
+      <circle cx="42" cy="46" r="4.5" fill="#6d665c"/><circle cx="58" cy="58" r="3" fill="#6d665c"/>
+      <circle cx="55" cy="40" r="3.6" fill="#f1ece4"/>
+      <circle cx="62.480000000000004" cy="50" r="24" fill="#06100e" opacity="0.3"/>
+    </g><circle cx="50" cy="50" r="24" fill="none" stroke="#55504a" stroke-width="2.5"/></svg>

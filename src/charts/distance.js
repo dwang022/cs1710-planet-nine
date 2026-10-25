@@ -95,6 +95,13 @@ export function makeDistance (root, { planets, p9 }) {
 
   function draw () {
     const k = (W - SUN.x - RIGHT_PAD) / S.view
+
+    // The Sun shrinks as the view opens out, so the zoom reads as a zoom; it
+    // stays an icon, never to scale (at 5,000 AU it would be a thousandth of a pixel).
+    const sunR = Math.max(13, Math.min(SUN.r, SUN.r * Math.pow(1.75 / S.view, 0.28)))
+    gSun.select('use').attr('x', SUN.x - sunR).attr('y', SUN.y - sunR).attr('width', sunR * 2).attr('height', sunR * 2)
+    gSun.select('text').attr('y', SUN.y + sunR + 14)
+
     const focus = S.step === 'farthest' ? S.far?.id : FOCUS[S.step]
     const p9On = S.showP9 && (S.step === 'p9' || S.step === 'farthest')
     const notes = []        // { x, y, text, cls, anchor }

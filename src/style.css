@@ -117,23 +117,24 @@ a:hover { text-decoration-color: currentColor; }
 .hero .hero-hook { font-size: clamp(1.15rem, 2.2vw, 1.35rem); margin-bottom: 36px; max-width: min(80%, 95ch); }
 .hero .hero-hook strong { color: var(--text-primary); font-weight: 600; }
 
-.hero-context {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 32px;
-}
-.hero-block {
-  background: var(--surface-1); border: 1px solid var(--rule);
-  border-radius: 12px; padding: 18px 20px;
-}
+/* three numbers that carry the hook */
+.hero-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0 0 26px; max-width: 980px; }
+.hero-fact { background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px; padding: 16px 18px; }
+.hero-fact .v { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 700; letter-spacing: -0.02em; color: var(--text-primary); line-height: 1.1; font-variant-numeric: tabular-nums; }
+.hero-fact .v em { font-style: normal; color: #5cc79c; }
+.hero-fact .k { margin-top: 6px; font-size: .86rem; color: var(--text-muted); line-height: 1.45; }
+.hero-nav { margin-top: 36px; }
+.hero-nav-k { margin-bottom: 10px; }
 /* Shared lift for the intro cards and the section links. Uses `translate`, not
    `transform`, because the scroll reveal owns transform on these elements.
    Hover is mouse-only; the links get the same treatment on keyboard focus.
    The info cards stay non-clickable (no cursor change). */
-.hero-block, .hero-path a {
+.hero-path a {
   transition: border-color .22s ease, background-color .22s ease, box-shadow .22s ease,
     translate .22s ease, color .22s ease;
 }
 @media (hover: hover) {
-  .hero-block:hover, .hero-path a:hover {
+  .hero-path a:hover {
     border-color: #3987e599; background: var(--surface-2);
     box-shadow: 0 8px 24px #00000059; translate: 0 -3px;
   }
@@ -143,17 +144,11 @@ a:hover { text-decoration-color: currentColor; }
   box-shadow: 0 8px 24px #00000059; translate: 0 -3px;
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero-block:hover, .hero-path a:hover, .hero-path a:focus-visible { translate: none; }
+  .hero-path a:hover, .hero-path a:focus-visible { translate: none; }
 }
-.hero-block h3 { margin-bottom: 6px; }
-.hero-block p { margin: 0; font-size: 0.93rem; }
-
-.hero-purpose { margin-bottom: 32px; }
-.hero-purpose-title { font-size: clamp(1.35rem, 2.4vw, 1.6rem); font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-.hero .hero-purpose-lead { font-size: 1.1rem; color: var(--text-muted); max-width: none; margin-bottom: 18px; }
 .hero-path {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px 14px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px 14px;
 }
 .hero-path a {
   display: flex; align-items: center; gap: 12px; min-height: 44px;
@@ -187,7 +182,7 @@ a:hover { text-decoration-color: currentColor; }
 @media (max-width: 767px) {
   :root { --gutter: 16px; }
   .hero .hero-hook { max-width: none; }
-  .hero-context, .hero-path { grid-template-columns: 1fr; }
+  .hero-facts, .hero-path { grid-template-columns: 1fr; }
 }
 
 /* --- sections ------------------------------------------------------------ */
@@ -463,6 +458,46 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .dist-focus.dashed { stroke: var(--series-3); stroke-dasharray: 3 4; stroke-opacity: .9; }
 .voy { fill: var(--text-muted); }
 .dist-ruler line { stroke: var(--text-muted); stroke-width: 1.5; }
+
+/* --- 00: the planet lineup (charts/lineup.js) ------------------------------ */
+.viz-note { font-size: .8rem; color: var(--text-muted); }
+.lu-title { font-size: 19px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; fill: var(--text-primary); }
+.lu-sub { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; fill: var(--text-muted); }
+.lu-lbl { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; fill: var(--text-secondary);
+  paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
+.lu-lbl.sub { font-size: 11px; font-weight: 400; letter-spacing: .02em; text-transform: none; fill: var(--text-muted); }
+.lu-lbl.p9 { fill: #5cc79c; }
+.lu-arc { fill: none; stroke-width: 1.2; stroke-opacity: .35; }
+.lu-arc.dashed { stroke-dasharray: 4 5; stroke-opacity: .55; }
+.lu-halo { fill: none; stroke: #ffffff; stroke-opacity: .42; stroke-width: 1.3; }
+.lu-halo.dashed { stroke: var(--series-3); stroke-dasharray: 3 4; stroke-opacity: .8; }
+.lu-body { cursor: pointer; }
+.lu-kbo { fill: #9fb0bf; fill-opacity: .7; }
+.lu-note { font-size: 12.5px; fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
+.lu-note.bad { fill: var(--series-2); font-weight: 600; }
+.lu-note.good { fill: #5cc79c; font-weight: 600; }
+.lu-note.p9 { fill: #5cc79c; }
+
+/* the three-test table */
+.sub-title { margin: 30px 0 8px; font-size: 1.3rem; }
+.criteria-wrap { overflow-x: auto; margin-top: 16px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-1); }
+.criteria { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 760px; }
+.criteria th, .criteria td { padding: 13px 16px; text-align: left; vertical-align: top; border-top: 1px solid var(--rule); }
+.criteria thead th { border-top: 0; font: 600 .7rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.criteria tbody th { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.criteria tbody th .art { width: 2.3em; height: 2.3em; vertical-align: middle; margin-right: 10px; }
+.criteria tbody th small { display: block; font-weight: 400; color: var(--text-muted); font-size: .78rem; white-space: normal; max-width: 22ch; margin-left: calc(2.3em + 10px); line-height: 1.35; }
+.criteria td .mark { font-weight: 700; font-size: 1.1rem; display: inline-block; min-width: 1.3em; line-height: 1.2; }
+.criteria td.ok .mark, .criteria td.maybe .mark { color: #5cc79c; }
+.criteria td.no .mark { color: var(--series-2); }
+.criteria td.na .mark { color: var(--text-muted); }
+.criteria td small { display: block; color: var(--text-muted); font-size: .8rem; line-height: 1.4; max-width: 26ch; margin-top: 2px; }
+.criteria td.verdict { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.criteria td.verdict small { white-space: normal; font-weight: 400; }
+.criteria tr.p9 th, .criteria tr.p9 td { background: #199e700d; }
+.iau { margin: 18px 0 0; padding: 14px 18px; border-left: 3px solid var(--series-1); background: #3987e50d;
+  border-radius: 0 10px 10px 0; font-size: .92rem; color: var(--text-secondary); max-width: 80ch; line-height: 1.55; }
+.iau cite { display: block; margin-top: 8px; font-style: normal; color: var(--text-muted); font-size: .8rem; }
 
 /* survey filter chips */
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }

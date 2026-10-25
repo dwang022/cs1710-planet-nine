@@ -11,6 +11,7 @@ import { drawTimeline } from './charts/timeline.js'
 import { drawPlacement, scorePlanet, physicalProperties } from './charts/placeplanet.js'
 import { makeScatter } from './charts/scatter.js'
 import { makeDistance, fmtAu, lightTime } from './charts/distance.js'
+import { makeLineup } from './charts/lineup.js'
 import { scrolly, initReveals, scrollyProgress } from './scrolly.js'
 import { sprite } from './art.js'
 
@@ -26,7 +27,7 @@ let ETNOS = [], CUTS = [], SURVEYS = [], PAPERS = null
 let SKY = null, PERIHELIA = [], ALTS = null, PREDICTIONS = null
 let scatter = null
 let lean = null, luck = null
-let distance = null, PLANETS = []
+let distance = null, lineup = null, PLANETS = []
 let distKeys = [1.75, 11.5, 34, 56, 700, 1000, 3000]
 let distProgress = { k: 0, t: 0 }
 let remeasureDist = () => {}
@@ -37,7 +38,7 @@ let remeasureDist = () => {}
 // their sample: the reader's filters in `state` are never changed by scrolling.
 const STRICT = { aMin: 150, qMin: 30, aMax: Infinity, qMax: Infinity, quality: true }
 const LOOSE = { ...STRICT, quality: false }
-const story = { dist: 'home', lean: 'one', luck: 'one', sky: 'sky' }
+const story = { lineup: 'nine', dist: 'home', lean: 'one', luck: 'one', sky: 'sky' }
 const leanSample = step => step === 'explore' ? state : STRICT
 const luckSample = step => step === 'explore' ? state : step === 'catch' || step === 'cuts' ? LOOSE : STRICT
 let leanView = 'orbits'
@@ -677,6 +678,7 @@ async function init () {
   ETNOS = etnos; CUTS = nulls.cuts; SURVEYS = surveys.surveys; PAPERS = papers
   SKY = sky; PERIHELIA = peri.objects; ALTS = alts; PREDICTIONS = preds
   PLANETS = planets.planets.map(p => ({ name: p.name, a: p.a, e: p.e, q: p.a * (1 - p.e), Q: p.a * (1 + p.e) }))
+  lineup = makeLineup($('#chartLineup'), { planets: PLANETS, readout: $('#lineupReadout') })
 
   lean = makeLean($('#chartLean'))
   luck = makeLuck($('#chartLuck'))
@@ -707,6 +709,9 @@ async function init () {
   bind(); render()
 
   // A step change only redraws its own graphic; the filters stay as the reader left them.
+  scrolly($('#lineupStory'), {
+    onStep: (i, step) => { story.lineup = step; lineup.setStep(step) },
+  })
   scrolly($('#distStory'), {
     onStep: (i, step) => { story.dist = step; distance.update({ step }) },
   })

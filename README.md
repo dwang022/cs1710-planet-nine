@@ -24,6 +24,7 @@ The six sketches chosen in the Decide section of the process book:
 
 | § | Sketch | What it shows | Data |
 |---|---|---|---|
+| 00 | — | A recount: the nine planets, Pluto's 2006 demotion, and a ninth with a question mark; then the three IAU tests on familiar objects | `planets.json` |
 | 02 | **DW1** — the evidence | 90 extreme orbits from above, plus the same objects reduced to one angle each | `etnos.json` |
 | 03 | **RL3** — is it luck? | Observed alignment against 4,000 random universes, recomputed live | `clustering_null.json` |
 | 04 | **DW5** — where telescopes look | Mollweide all-sky map: survey footprints, Planet Nine's predicted path, each object's perihelion direction | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json` |
@@ -70,7 +71,8 @@ src/
   orbits.js         Keplerian geometry, verified against Horizons
   style.css         design tokens; validated colourblind-safe palette
   art.js            the hand-drawn bodies: Planet Nine logo, Sun, planets, TNOs
-  charts/           one module per visualisation
+  charts/           one module per visualisation (lineup.js and distance.js
+                    are the two scroll-driven openers)
 public/data/        the processed datasets the page fetches
 public/art/         the same drawings as standalone SVG and PNG files, with a
                     contact sheet at /art/ (rebuild: node scripts/export_art.mjs)

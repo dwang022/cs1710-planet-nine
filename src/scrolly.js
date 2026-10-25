@@ -95,8 +95,9 @@ export function scrollyProgress (root, onProgress) {
 const TARGETS = [
   // introduction
   '.hero > .hero-mark', '.hero > .eyebrow', '.hero > h1', '.hero > .byline', '.hero-hook',
-  '.hero-block', '.hero-purpose-title', '.hero-purpose-lead', '.hero-path li', '.hero-question',
-  '.hero-start',
+  '.hero-fact', '.hero-start', '.hero-nav-k', '.hero-path li',
+  // 00 — the rules table and the question
+  '#planets .sub-title', '#planets .criteria-wrap', '#planets .iau', '.hero-question',
   // every section heading
   'section .sec-head > *',
   // 01 — explanation → filters → statistics → distances → takeaway

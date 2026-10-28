@@ -30,7 +30,7 @@ The six sketches chosen in the Decide section of the process book:
 | 04 | **DW5** — where telescopes look | Mollweide all-sky map: survey footprints, Planet Nine's predicted path, each object's perihelion direction | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json` |
 | 05 | **Put a planet anywhere** + physical properties | Place your own planet; scored on three cited criteria, with size/temperature/brightness derived | `planet_nine_predictions.json` |
 | 06 | **GG8** — what else explains it | Eight hypotheses against the four things any of them must account for | `alternatives.json` |
-| 07 | **RL5** — who supports it | Year by year in three lanes: arguments for a planet on the left, against one on the right, data and searches down the middle, each discovery branching toward the side its authors favour and each empty search showing how much of the predicted planet it ruled out; key papers drawn large; what comes next at the bottom | `field_timeline.json`, `papers.json` |
+| 07 | **RL5** — who supports it | A ledger: one full-width row per paper, year by year, each a one-line claim with a small drawing of the point (aligned orbits, a tilted orbit, the fraction of the predicted planet a search ruled out). Rows for a planet open from the left in green, rows against from the right in orange; data and searches are boxed in blue and branch toward the side their authors favour; key papers are larger; what comes next sits at the bottom | `field_timeline.json`, `papers.json` |
 
 Four controls at the top drive every panel at once: how far out the orbit goes,
 closest approach, an orbit-quality filter, and Planet Nine on/off.
@@ -74,7 +74,8 @@ src/
   field.css         section 07's timeline (loaded by charts/field.js)
   art.js            the hand-drawn bodies: Planet Nine logo, Sun, planets, TNOs
   charts/           one module per visualisation (lineup.js and distance.js
-                    are the two scroll-driven openers)
+                    are the two scroll-driven openers; field.js is section 07's ledger,
+                    fieldart.js its small diagrams and lane icons)
 public/data/        the processed datasets the page fetches
 public/art/         the same drawings as standalone SVG and PNG files, with a
                     contact sheet at /art/ (rebuild: node scripts/export_art.mjs)

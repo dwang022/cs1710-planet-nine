@@ -1,228 +1,163 @@
 /* ---------------------------------------------------------------------------
-   Section 07 — the field, year by year (charts/field.js). Three lanes: for a
-   planet on the left (green, left-aligned, borderless), against one on the
-   right (orange, right-aligned, borderless), data and searches down the
-   middle (neutral cards). A data card branches toward the side its authors
-   favour. Key papers are larger. Loaded by field.js.
+   Section 07 — the field as a ledger (charts/field.js). One full-width row per
+   paper. The year rides in a gutter on the left. A row's lane is said three
+   ways: colour, icon, and which edge its accent and drawing sit on. Loaded by
+   field.js.
    --------------------------------------------------------------------------- */
 
 :root {
-  --fl-center: 440px;                   /* the data lane */
-  --fl-colgap: 36px;                    /* the gap a branch reaches across */
-  --fl-for: var(--series-3);     --fl-for-ink: #5cc79c;
-  --fl-against: var(--series-2); --fl-against-ink: #eba181;
-  --fl-data: #8a8a80;            --fl-data-ink: #c3c2b7;
-  --fl-next: var(--series-1);    --fl-next-ink: #8fbdf0;
+  --fl-for: #199e70;     --fl-for-ink: #5cc79c;      /* the Planet Nine green */
+  --fl-against: #d95926; --fl-against-ink: #eba181;
+  --fl-data: #3987e5;    --fl-data-ink: #8fbdf0;     /* the colour of the objects elsewhere on the page */
+  --fl-next: #f08bb4;    --fl-next-ink: #f5a8c6;     /* Rubin's colour on the sky map */
+  --fl-art: 236px;                                   /* the drawing's width */
 }
 
-/* inline colour keys in the section's copy and legend */
 .k-for { color: var(--fl-for-ink); font-weight: 600; }
 .k-against { color: var(--fl-against-ink); font-weight: 600; }
 .k-data { color: var(--fl-data-ink); font-weight: 600; }
 .k-next { color: var(--fl-next-ink); font-weight: 600; }
-#field .sec-head p { max-width: none; }
-.fl-legend { gap: 10px 26px; margin: 4px 0 26px; }
-.fl-legend .legend-item { font-size: .84rem; }
-.fl-legend .legend-swatch { width: 4px; height: 16px; border-radius: 2px; }
-.fl-legend .legend-swatch.swatch-card { width: 18px; height: 13px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--text-muted); }
-.fl-legend .legend-swatch.key { width: auto; height: auto; font: 600 .62rem/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--text-muted); padding: 3px 6px; border-radius: 4px; }
-.fl-legend .legend-swatch.dashed { width: 14px; height: 14px; border-radius: 50%; background: none; border: 2px dashed var(--fl-next); }
+#field .sec-head p { max-width: 78ch; }
 
-/* --- a year: hairline, a label that sticks to the top, a three-lane grid --- */
+/* legend: the icons, in their colours */
+.fl-legend { gap: 8px 24px; margin: 2px 0 22px; align-items: center; }
+.fl-legend .legend-item { font-size: .86rem; gap: 7px; }
+.fl-legend .legend-item.is-muted { color: var(--text-muted); }
+.fl-legend .fr-icon { width: 20px; height: 20px; }
+.fl-legend .is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); }
+.fl-legend .is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); }
+.fl-legend .is-data { --lane: var(--fl-data); --ink: var(--fl-data-ink); }
+.fl-legend .is-next { --lane: var(--fl-next); --ink: var(--fl-next-ink); }
 
-.fl { position: relative; max-width: 1240px; margin: 10px auto 0; }
-.fl-year { position: relative; border-top: 1px solid var(--rule); padding-bottom: 36px; }
-.fl-year-head {
-  position: sticky; top: 18px; z-index: 3; height: 0;
-  display: flex; justify-content: center; pointer-events: none;
+/* --- a year: a gutter label that sticks, and its rows ---------------------- */
+
+.fl { position: relative; max-width: 1180px; margin: 0 auto; }
+.fy { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 0 18px; padding: 18px 0 22px; border-top: 1px solid var(--rule); }
+.fy-year { align-self: start; position: sticky; top: 16px; }
+.fy-year span {
+  display: inline-block; font: 700 .9rem/1 var(--font-mono); letter-spacing: .1em;
+  color: var(--text-secondary); padding: 6px 0 8px; font-variant-numeric: tabular-nums;
 }
-.fl-year-pill {
-  transform: translateY(-50%);
-  font: 700 .86rem/1 var(--font-mono); letter-spacing: .14em; color: var(--text-primary);
-  background: var(--surface-0); border: 1px solid var(--rule); border-radius: 999px;
-  padding: 9px 16px; box-shadow: 0 6px 18px #00000090;
+.fy-next .fy-year span { color: var(--fl-next-ink); }
+.fy-rows { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+
+/* --- a row ----------------------------------------------------------------- */
+
+.fr {
+  position: relative; display: grid; align-items: center;
+  grid-template-columns: 30px minmax(0, 1fr) var(--fl-art); gap: 10px 20px;
+  padding: 14px 18px 14px 16px; border-radius: 12px;
 }
-.fl-year-next .fl-year-pill { color: var(--fl-next-ink); border-color: var(--fl-next); border-style: dashed; text-transform: uppercase; }
-
-.fl-row {
-  display: grid; grid-template-columns: minmax(0, 1fr) var(--fl-center) minmax(0, 1fr);
-  column-gap: var(--fl-colgap); row-gap: 30px; padding-top: 42px; align-items: start;
+.fr.is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); box-shadow: inset 3px 0 0 var(--lane); }
+.fr.is-against {
+  --lane: var(--fl-against); --ink: var(--fl-against-ink);
+  grid-template-columns: var(--fl-art) minmax(0, 1fr) 30px; text-align: right;
+  padding: 14px 16px 14px 18px; box-shadow: inset -3px 0 0 var(--lane);
 }
-
-/* --- the blocks ------------------------------------------------------------ */
-
-.fl-item, .fl-branch { position: relative; min-width: 0; }
-.fl-item.is-support, .fl-branch.is-support { --lane: var(--fl-for); --ink: var(--fl-for-ink); }
-.fl-item.is-against, .fl-branch.is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); }
-.fl-item.is-data { --lane: var(--fl-data); --ink: var(--fl-data-ink); }
-.fl-item.is-future { --lane: var(--fl-next); --ink: var(--fl-next-ink); }
-
-/* for: borderless, a green rule on the outer edge, text to the left */
-.fl-item.is-support { grid-column: 1; padding-left: 18px; border-left: 2px solid var(--lane); }
-/* against: the mirror image */
-.fl-item.is-against { grid-column: 3; padding-right: 18px; border-right: 2px solid var(--lane); text-align: right; }
-/* data: the one carded lane */
-.fl-item.is-data {
-  grid-column: 2; padding: 16px 18px;
-  background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px;
+.fr.is-against .fr-art { order: 1; }
+.fr.is-against .fr-body { order: 2; }
+.fr.is-against .fr-icon { order: 3; }
+.fr.is-data {
+  --lane: var(--fl-data); --ink: var(--fl-data-ink);
+  background: var(--surface-1); border: 1px solid var(--rule); box-shadow: inset 0 3px 0 var(--lane);
+  padding-top: 16px;
 }
-/* key papers: heavier rule, lit surface, larger type (below) */
-.fl-item.is-key.is-support, .fl-item.is-key.is-against { border-width: 3px; }
-.fl-item.is-key.is-data { background: var(--surface-2); border-color: var(--text-muted); }
-
-/* the wide figure a key paper opens with */
-.fl-fig { margin: 0 0 14px; border-radius: 10px; overflow: hidden; aspect-ratio: 2 / 1; background: var(--surface-2); }
-.fl-fig-img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.fl-item.is-key.is-data .fl-fig { margin: -16px -18px 16px; border-radius: 11px 11px 0 0; }
-
-/* meta line: lane · type · (key) … year */
-.fl-meta {
-  display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center;
-  font: 600 .66rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
-  color: var(--text-muted); margin-bottom: 10px;
+.fr.is-next {
+  --lane: var(--fl-next); --ink: var(--fl-next-ink);
+  border: 1px dashed #f08bb480; background: #f08bb408;
 }
-.fl-lane { color: var(--ink); }
-.fl-type::before { content: "·"; margin-right: 10px; color: var(--rule); }
-.fl-key { color: #fff; background: var(--lane); padding: 3px 7px; border-radius: 4px; letter-spacing: .08em; }
-.fl-item.is-data .fl-key { color: var(--surface-0); background: var(--text-secondary); }
-.fl-item.is-key .fl-type { display: none; }
-.fl-when { margin-left: auto; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
-.fl-item.is-against .fl-meta { flex-direction: row-reverse; }
-.fl-item.is-against .fl-when { margin-left: 0; margin-right: auto; }
+/* key papers: larger title and drawing, a lit surface */
+.fr.is-key { --fl-art: 300px; padding: 20px 22px 20px 18px; background: #ffffff06; }
+.fr.is-key.is-against { padding: 20px 18px 20px 22px; }
+.fr.is-key.is-data { background: var(--surface-2); border-color: var(--text-muted); }
 
-/* faces + title */
-.fl-top { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
-.fl-item.is-against .fl-top { flex-direction: row-reverse; }
-.fl-faces { display: flex; align-items: center; flex: none; }
-.fl-face {
-  display: block; flex: none; width: 56px; height: 56px; border-radius: 50%;
-  object-fit: cover; background: var(--surface-2);
-  border: 2px solid var(--surface-3); box-shadow: 0 0 0 2px var(--surface-0);
-}
-.fl-item.is-data .fl-face { box-shadow: 0 0 0 2px var(--surface-1); }
-.fl-face + .fl-face { margin-left: -14px; }
-.fl-item.is-against .fl-faces { flex-direction: row-reverse; }
-.fl-item.is-against .fl-face + .fl-face { margin-left: 0; margin-right: -16px; }
-.fl-item.is-key .fl-face { width: 64px; height: 64px; }
-.fl-face.fl-mono {
-  display: grid; place-items: center; font: 700 .95rem/1 var(--font-mono);
-  letter-spacing: .04em; color: var(--text-secondary); background: var(--surface-3);
-}
-.fl-face.fl-art { padding: 4px; background: var(--surface-2); color: var(--text-muted); }
-.fl-head { font-size: 1.1rem; line-height: 1.25; margin: 0 0 9px; }
-.fl-item.is-key .fl-head { font-size: 1.4rem; letter-spacing: -.02em; margin-bottom: 10px; }
-.fl-who { font-size: .86rem; color: var(--text-secondary); min-width: 0; }
-.fl-org { display: block; font-size: .76rem; color: var(--text-muted); margin-top: 2px; }
+/* icon */
+.fr-icon { width: 30px; height: 30px; color: var(--ink); display: grid; place-items: center; }
+.fr-icon .fi, .fr-bicon .fi { display: block; width: 100%; height: 100%; }
+.fr-bicon { width: 22px; height: 22px; flex: none; color: var(--ink); }
 
 /* words */
-.fl-text { margin: 0; font-size: .95rem; line-height: 1.55; color: var(--text-secondary); max-width: none; }
-.fl-item.is-key .fl-text { font-size: 1.04rem; }
-.fl-stat { margin: 10px 0 0; font-size: .95rem; font-weight: 600; color: var(--text-primary); max-width: none; }
-.fl-note { margin: 8px 0 0; font-size: .78rem; line-height: 1.45; color: var(--text-muted); max-width: none; }
-.fl-note.fl-warn { color: var(--fl-against-ink); }
-.fl-links {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 2px;
-  margin-top: 10px; font-size: .8rem; color: var(--text-muted);
+.fr-body { min-width: 0; }
+.fr-title { font-size: 1.14rem; line-height: 1.3; margin: 0 0 6px; letter-spacing: -.01em; }
+.fr.is-key .fr-title { font-size: 1.5rem; letter-spacing: -.02em; margin-bottom: 8px; }
+.fr-line { margin: 0; font-size: .92rem; line-height: 1.5; color: var(--text-secondary); max-width: none; }
+.fr.is-key .fr-line { font-size: 1rem; }
+.fr-avatar {
+  width: 22px; height: 22px; border-radius: 50%; object-fit: cover; vertical-align: -5px;
+  margin-right: 4px; border: 1px solid var(--surface-3);
 }
-.fl-item.is-against .fl-links { justify-content: flex-end; }
-.fl-cites { font-family: var(--font-mono); font-size: .72rem; }
-.fl-sep { color: var(--rule); margin: 0 6px; }
+.fr-avatar + .fr-avatar { margin-left: -8px; }
+.fr-foot { margin-top: 8px; font-size: .78rem; color: var(--text-muted); display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; }
+.fr.is-against .fr-foot { justify-content: flex-end; }
+.fr-sep { color: var(--rule); margin: 0 5px; }
 
-/* a null search: how much of the predicted planet it ruled out */
-.fl-bar { margin-top: 12px; }
-.fl-bar-track { height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
-.fl-bar-fill { display: block; height: 100%; border-radius: 4px; background: var(--text-secondary); }
-.fl-item.is-key .fl-bar-fill { background: var(--text-primary); }
-.fl-bar-label { margin-top: 6px; font-size: .8rem; line-height: 1.4; color: var(--text-muted); }
-.fl-bar-label b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+/* an empty search: how much of the predicted planet it ruled out */
+.fr-bar { display: flex; align-items: center; gap: 12px; margin-top: 10px; font-size: .82rem; color: var(--text-muted); }
+.fr-bar-track { flex: 0 0 160px; height: 7px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.fr-bar-track b { display: block; height: 100%; border-radius: 4px; background: var(--ink); }
+.fr-bar strong { color: var(--text-primary); font-variant-numeric: tabular-nums; }
 
-/* --- a branch: what a discovery's authors concluded, joined to its card ---- */
+/* the drawing */
+.fr-art { color: var(--ink); min-width: 0; }
+.fr-art .fd { display: block; width: 100%; height: auto; overflow: hidden; }
 
-.fl-branch { padding-top: 2px; }
-.fl-branch.is-support { grid-column: 1; padding-left: 18px; border-left: 2px dashed var(--lane); }
-.fl-branch.is-against { grid-column: 3; padding-right: 18px; border-right: 2px dashed var(--lane); text-align: right; }
-.fl-branch::before {
-  content: ""; position: absolute; top: 15px; width: calc(var(--fl-colgap) + 2px); height: 2px;
-  background: var(--lane); opacity: .75;
+/* a branch: what the finders concluded, rising from under the data card */
+.fr-branch {
+  grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px;
+  margin: 2px 0 0; padding: 12px 0 0; border-top: 1px dashed var(--rule);
 }
-.fl-branch.is-support::before { right: calc(-1 * var(--fl-colgap) - 2px); }
-.fl-branch.is-against::before { left: calc(-1 * var(--fl-colgap) - 2px); }
-.fl-branch::after {
-  content: ""; position: absolute; top: 11px; width: 10px; height: 10px; border-radius: 50%;
-  background: var(--lane); box-shadow: 0 0 0 2px var(--surface-0);
-}
-.fl-branch.is-support::after { right: -5px; }
-.fl-branch.is-against::after { left: -5px; }
-.fl-branch-label {
-  font: 600 .66rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
-  color: var(--ink); margin: 6px 0 8px;
-}
-.fl-branch-head { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; line-height: 1.3; }
-.fl-branch-text { margin: 0; font-size: .9rem; line-height: 1.5; color: var(--text-secondary); max-width: none; }
-
-/* --- what comes next: a four-up strip in dashed blue ---------------------- */
-
-.fl-next { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; padding-top: 42px; }
-.fl-item.is-future {
-  padding: 16px 18px; border: 1px dashed var(--fl-next); border-radius: 12px; background: #3987e50a;
-}
-.fl-item.is-future .fl-head { color: var(--fl-next-ink); font-size: 1.05rem; }
-.fl-item.is-future .fl-text { font-size: .9rem; }
+.fr-branch.is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); }
+.fr-branch.is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); flex-direction: row-reverse; text-align: right; }
+.fr-turn { color: var(--ink); font-size: 1.1rem; line-height: 1.2; flex: none; }
+.fr-branch.is-against .fr-turn { transform: scaleX(-1); }
+.fr-branch p { margin: 0; font-size: .95rem; line-height: 1.5; color: var(--text-primary); max-width: none; }
 
 /* --- credits --------------------------------------------------------------- */
 
 .fl-credits { margin-top: 18px; font-size: .8rem; color: var(--text-muted); }
 .fl-credits summary { cursor: pointer; color: var(--text-secondary); }
 .fl-credits ul { margin: 8px 0 0; padding-left: 18px; }
-.fl-credits li { margin-bottom: 3px; }
 
-/* --- entrance: each block slides in from its own lane ---------------------- */
+/* --- entrance -------------------------------------------------------------- */
 /* Scoped to html.has-reveal, which scrolly.js only sets when it can reveal
    content again. Opacity and transform only, so nothing shifts layout. */
 
-html.has-reveal .fl-item, html.has-reveal .fl-branch {
-  transition: opacity .6s var(--reveal-ease), transform .7s var(--reveal-ease);
-}
-html.has-reveal .fl-branch { transition-delay: .15s; }
-html.has-reveal .fl-item:not(.is-in), html.has-reveal .fl-branch:not(.is-in) { opacity: 0; }
-html.has-reveal .is-support:not(.is-in) { transform: translate3d(-48px, 0, 0); }
-html.has-reveal .is-against:not(.is-in) { transform: translate3d(48px, 0, 0); }
-html.has-reveal .is-data:not(.is-in), html.has-reveal .is-future:not(.is-in) { transform: translate3d(0, 24px, 0); }
-html.has-reveal .fl-item:focus-within, html.has-reveal .fl-branch:focus-within { opacity: 1; transform: none; }
+html.has-reveal .fr { transition: opacity .55s var(--reveal-ease), transform .65s var(--reveal-ease); }
+html.has-reveal .fr:not(.is-in) { opacity: 0; }
+html.has-reveal .fr.is-for:not(.is-in) { transform: translate3d(-40px, 0, 0); }
+html.has-reveal .fr.is-against:not(.is-in) { transform: translate3d(40px, 0, 0); }
+html.has-reveal .fr.is-data:not(.is-in), html.has-reveal .fr.is-next:not(.is-in) { transform: translate3d(0, 22px, 0); }
+html.has-reveal .fr-branch { transition: opacity .5s var(--reveal-ease) .3s, transform .6s var(--reveal-ease) .3s; }
+html.has-reveal .fr:not(.is-in) .fr-branch { opacity: 0; transform: translate3d(0, 18px, 0); }
+html.has-reveal .fr:focus-within, html.has-reveal .fr:focus-within .fr-branch { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce), print {
-  html.has-reveal .fl-item, html.has-reveal .fl-branch { opacity: 1 !important; transform: none !important; }
+  html.has-reveal .fr, html.has-reveal .fr-branch { opacity: 1 !important; transform: none !important; }
 }
 
 /* --- narrower screens ------------------------------------------------------ */
 
-@media (max-width: 1280px) {
-  :root { --fl-center: 340px; }
-  .fl-next { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 1100px) {
+  :root { --fl-art: 200px; }
+  .fr.is-key { --fl-art: 240px; }
 }
-
-/* phones: one column, everything left-aligned, a branch hangs under its card */
 @media (max-width: 900px) {
-  .fl-row { grid-template-columns: 1fr; row-gap: 18px; padding-top: 34px; }
-  .fl-item, .fl-branch { grid-column: 1 !important; grid-row: auto !important; }
-  .fl-item.is-against, .fl-branch.is-against {
-    text-align: left; border-right: 0; padding-right: 0;
-    border-left: 2px solid var(--lane); padding-left: 18px;
+  .fy { grid-template-columns: 1fr; gap: 10px 0; padding: 14px 0 18px; }
+  .fy-year { position: static; }
+  .fr, .fr.is-against, .fr.is-key, .fr.is-key.is-against {
+    grid-template-columns: 26px minmax(0, 1fr); padding: 14px 16px; text-align: left;
   }
-  .fl-item.is-key.is-against { border-left-width: 3px; }
-  .fl-item.is-against .fl-meta, .fl-item.is-against .fl-top, .fl-item.is-against .fl-faces { flex-direction: row; }
-  .fl-item.is-against .fl-when { margin-left: auto; margin-right: 0; }
-  .fl-item.is-against .fl-face + .fl-face { margin-left: -16px; margin-right: 0; }
-  .fl-item.is-against .fl-links { justify-content: flex-start; }
-  .fl-branch { margin: -6px 0 0 22px; }
-  .fl-branch::before, .fl-branch::after { display: none; }
-  .fl-branch.is-against { border-left-style: dashed; }
-  .fl-year-head { top: 8px; }
-  .fl-year { padding-bottom: 28px; }
-  .fl-item.is-key .fl-head { font-size: 1.25rem; }
-  .fl-next { grid-template-columns: 1fr; padding-top: 34px; }
+  .fr.is-against { box-shadow: inset 3px 0 0 var(--lane); }
+  .fr.is-against .fr-icon { order: 0; }
+  .fr.is-against .fr-body { order: 1; }
+  .fr-art, .fr.is-against .fr-art { order: 2; grid-column: 2; max-width: 260px; }
+  .fr.is-against .fr-foot { justify-content: flex-start; }
+  .fr-branch.is-against { flex-direction: row; text-align: left; }
+  .fr-branch.is-against .fr-turn { transform: none; }
+  .fr.is-key .fr-title { font-size: 1.25rem; }
+  .fr-icon { width: 26px; height: 26px; }
 }
 @media (max-width: 560px) {
-  .fl-type { display: none; }
-  .fl-item.is-data { padding: 14px; }
+  .fr-bar-track { flex-basis: 110px; }
+  .fr-art { max-width: 200px; }
 }

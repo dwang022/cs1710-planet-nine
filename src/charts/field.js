@@ -1,25 +1,29 @@
-// Sketch RL5 — who supports it. The argument, year by year, in three lanes.
+// Sketch RL5 — who supports it. The argument as a ledger: one full-width row
+// per paper, year by year, the year riding in a gutter on the left.
 //
-// Arguments for a planet sit on the left, arguments against one on the right,
-// and the data (new objects, searches, surveys) run down the middle. A data
-// card branches toward the side its authors say it favours; a search that
-// finds nothing takes no side and instead shows how much of the predicted
-// planet it ruled out. Key papers are drawn larger. Each year's label sticks
-// to the top of the screen while its row scrolls past, so the years advance
-// with the reader. Within a year, entries pack into as few rows as the three
-// lanes allow.
+// Each row is one claim: a title that says what the paper did to the question,
+// one line of context, a small drawing of the point, and a link. The lane is
+// said three ways at once: colour, icon, and which edge the drawing and the
+// accent sit on (arguments for a planet open from the left, arguments against
+// one from the right, data and searches are boxed and centred). A data row
+// that ends in a conclusion grows a branch beneath it, in that side's colour.
 //
-// Content comes from field_timeline.json (which entries, which lane, the
-// plain-language text, the images); titles, journals, citation counts and
-// links come from papers.json by DOI, so the two files cannot disagree.
+// Content comes from field_timeline.json; titles, journals, citation counts
+// and links come from papers.json by DOI, so the two files cannot disagree.
 
 import '../field.css'
+import { diagram, icon } from './fieldart.js'
 
 const LANE = {
-  support: { word: 'For a planet', cls: 'is-support', col: 1 },
-  against: { word: 'Against a planet', cls: 'is-against', col: 3 },
-  data: { word: 'Data & searches', cls: 'is-data', col: 2 },
-  future: { word: 'What comes next', cls: 'is-future', col: 2 },
+  for: { word: 'For a planet', cls: 'is-for', icon: 'planet' },
+  against: { word: 'Against a planet', cls: 'is-against', icon: 'noplanet' },
+  data: { word: 'Data and searches', cls: 'is-data', icon: 'object' },
+  next: { word: 'What comes next', cls: 'is-next', icon: 'next' },
+}
+// what the row's icon says, when the lane alone would be too coarse
+const KIND_ICON = {
+  object: 'object', search: 'search', limit: 'search', constraint: 'constraint',
+  candidate: 'candidate', survey: 'survey', bias: 'noplanet', alt: 'noplanet',
 }
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
@@ -31,109 +35,73 @@ function paperLink (p) {
   return `<a href="${esc(href)}" rel="noopener">${esc(p.label)}${journal ? ' · ' + esc(journal) : ''}</a>`
 }
 
-const img = (p, w, h, cls) =>
-  `<img class="${cls}" src="${esc(p.src)}" alt="${esc(p.alt)}" width="${w}" height="${h}" loading="lazy" decoding="async"
-    title="${esc(p.alt)} — ${esc(p.credit)} (${esc(p.license)})">`
-
-function faces (e) {
-  if (e.monogram) return `<span class="fl-face fl-mono" aria-hidden="true">${esc(e.monogram)}</span>`
-  if (e.art) return `<svg class="fl-face fl-art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-${esc(e.art)}"/></svg>`
-  return (e.photos || []).filter(p => p.src).map(p => img(p, 240, 240, 'fl-face')).join('')
-}
-
-function figure (e) {
-  const f = e.figure
-  if (!f || !f.src) return ''
-  return `<figure class="fl-fig">${img(f, 720, 360, 'fl-fig-img')}</figure>`
-}
-
 function links (e, byDoi) {
   const out = []
   if (e.doi) out.push(paperLink(byDoi.get(e.doi)))
   for (const d of e.also || []) out.push(paperLink(byDoi.get(d)))
   for (const l of e.links || []) out.push(`<a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`)
   const p = e.doi && byDoi.get(e.doi)
-  if (p && p.citations_crossref != null) out.push(`<span class="fl-cites">${p.citations_crossref} citations</span>`)
-  return out.filter(Boolean).join('<span class="fl-sep">·</span>')
+  if (p && p.citations_crossref != null) out.push(`<span>${p.citations_crossref} citations</span>`)
+  return out.filter(Boolean).join('<span class="fr-sep">·</span>')
 }
 
-/** A null search: how much of the predicted parameter space it ruled out. */
+const avatars = e => (e.photos || []).filter(p => p.src).map(p =>
+  `<img class="fr-avatar" src="${esc(p.src)}" alt="" width="240" height="240" loading="lazy" decoding="async" title="${esc(p.alt)} — ${esc(p.credit)} (${esc(p.license)})">`).join('')
+
 function bar (e) {
   const x = e.excluded
   if (!x) return ''
-  return `<div class="fl-bar" role="img" aria-label="${x.pct}% ${esc(x.text)}">
-    <div class="fl-bar-track"><i class="fl-bar-fill" style="width:${x.pct}%"></i></div>
-    <div class="fl-bar-label"><b>${x.pct}%</b> ${esc(x.text)}</div>
+  return `<div class="fr-bar" role="img" aria-label="${x.pct}% ${esc(x.text)}">
+    <i class="fr-bar-track"><b style="width:${x.pct}%"></b></i><span><strong>${x.pct}%</strong> ${esc(x.text)}</span>
   </div>`
 }
 
-function item (e, byDoi, row) {
+function row (e, byDoi) {
   const lane = LANE[e.lane]
-  const when = e.lane === 'future' ? e.when : e.year
-  const style = row ? ` style="grid-column:${lane.col};grid-row:${row}"` : ''
-  const face = faces(e)
-  return `<article class="fl-item ${lane.cls}${e.key ? ' is-key' : ''}" data-id="${esc(e.id)}"${style} aria-label="${esc(e.headline)}">
-    ${e.key ? figure(e) : ''}
-    <div class="fl-meta"><span class="fl-lane">${esc(lane.word)}</span>${e.type ? `<span class="fl-type">${esc(e.type)}</span>` : ''}${e.key ? '<span class="fl-key">Key paper</span>' : ''}<span class="fl-when">${esc(when)}</span></div>
-    <h4 class="fl-head">${esc(e.headline)}</h4>
-    <div class="fl-top">${face ? `<div class="fl-faces">${face}</div>` : ''}<div class="fl-who">${esc(e.who)}<span class="fl-org">${esc(e.org)}</span></div></div>
-    <p class="fl-text">${esc(e.text)}</p>
-    ${e.stat ? `<p class="fl-stat">${esc(e.stat)}</p>` : ''}
-    ${bar(e)}
-    ${e.note ? `<p class="fl-note">${esc(e.note)}</p>` : ''}
-    ${e.unverified ? `<p class="fl-note fl-warn">⚠ ${esc(e.unverified)}</p>` : ''}
-    <div class="fl-links">${links(e, byDoi)}</div>
+  const b = e.branch && LANE[e.branch.side]
+  const foot = links(e, byDoi)
+  return `<article class="fr ${lane.cls}${e.key ? ' is-key' : ''}" data-id="${esc(e.id)}" data-kind="${esc(e.kind || '')}">
+    <div class="fr-icon" title="${esc(lane.word)}">${icon(KIND_ICON[e.kind] || lane.icon)}</div>
+    <div class="fr-body">
+      <h4 class="fr-title">${esc(e.title)}</h4>
+      <p class="fr-line">${avatars(e)}${esc(e.line)}</p>
+      ${bar(e)}
+      ${foot ? `<div class="fr-foot">${foot}</div>` : ''}
+    </div>
+    <div class="fr-art">${e.diagram ? diagram(e.diagram, e.id) : ''}</div>
+    ${b ? `<div class="fr-branch ${b.cls}" aria-label="${esc(b.word)}">
+      <span class="fr-turn" aria-hidden="true">↳</span>
+      <span class="fr-bicon">${icon(b.icon)}</span>
+      <p>${esc(e.branch.text)}</p>
+    </div>` : ''}
   </article>`
-}
-
-/** What a data entry's authors concluded, drawn in the lane it favours and joined to the card. */
-function branch (e, row) {
-  const b = e.branch
-  if (!b) return ''
-  const lane = LANE[b.side]
-  const label = b.side === 'support' ? `◀ ${lane.word}` : `${lane.word} ▶`
-  return `<div class="fl-branch ${lane.cls}" style="grid-column:${lane.col};grid-row:${row}" aria-label="${esc(b.label)}">
-    <div class="fl-branch-label">${label}</div>
-    <div class="fl-branch-head">${esc(b.label)}</div>
-    <p class="fl-branch-text">${esc(b.text)}</p>
-  </div>`
-}
-
-/**
- * Pack one year's entries into rows. A side entry takes the next free row of
- * its lane; a data entry takes the next row free in the middle and, if it
- * branches, in the lane it branches to. So 2021's three papers share one row.
- */
-function pack (entries) {
-  const next = { 1: 1, 2: 1, 3: 1 }
-  return entries.map(e => {
-    const cols = e.lane === 'data'
-      ? [2].concat(e.branch ? [LANE[e.branch.side].col] : [])
-      : [LANE[e.lane].col]
-    const row = Math.max(...cols.map(c => next[c]))
-    cols.forEach(c => { next[c] = row + 1 })
-    return { e, row }
-  })
 }
 
 function credits (entries) {
   const seen = new Map()
-  for (const e of entries) {
-    for (const p of (e.photos || []).concat(e.figure ? [e.figure] : [])) {
-      if (p.src && !seen.has(p.src)) seen.set(p.src, p)
-    }
-  }
+  for (const e of entries) for (const p of e.photos || []) if (p.src && !seen.has(p.src)) seen.set(p.src, p)
+  if (!seen.size) return ''
   const rows = [...seen.values()].map(p =>
     `<li>${esc(p.alt)} — ${esc(p.credit)} · ${p.license_url ? `<a href="${esc(p.license_url)}" rel="noopener">${esc(p.license)}</a>` : esc(p.license)}${p.source ? ` · <a href="${esc(p.source)}" rel="noopener">source</a>` : ''}</li>`)
-  return `<details class="fl-credits"><summary>Image credits (${rows.length} images, Wikimedia Commons)</summary><ul>${rows.join('')}</ul></details>`
+  return `<details class="fl-credits"><summary>Portrait credits (${rows.length}, Wikimedia Commons)</summary><ul>${rows.join('')}</ul></details>`
 }
 
-export function drawField (root, { timeline, papers }) {
+function legend () {
+  return [
+    ['is-for', 'planet', 'For a planet'],
+    ['is-against', 'noplanet', 'Against a planet'],
+    ['is-data', 'object', 'Data and searches'],
+    ['is-next', 'next', 'What comes next'],
+  ].map(([cls, ic, word]) => `<div class="legend-item ${cls}"><span class="fr-icon">${icon(ic)}</span>${word}</div>`).join('') +
+    `<div class="legend-item is-muted">Larger rows: the papers the field answers to</div>`
+}
+
+export function drawField (root, { timeline, papers, legend: legendEl }) {
   root.__field?.destroy()
   const byDoi = new Map(papers.map(p => [p.doi, p]))
-  const dated = timeline.entries.filter(e => e.lane !== 'future')
+  const dated = timeline.entries.filter(e => e.lane !== 'next')
     .sort((a, b) => a.year - b.year || a.order - b.order)
-  const future = timeline.entries.filter(e => e.lane === 'future').sort((a, b) => a.order - b.order)
+  const future = timeline.entries.filter(e => e.lane === 'next').sort((a, b) => a.order - b.order)
 
   const years = []
   for (const e of dated) {
@@ -142,22 +110,20 @@ export function drawField (root, { timeline, papers }) {
     else years.push({ year: e.year, entries: [e] })
   }
 
-  const html = years.map(y => `
-    <div class="fl-year" data-year="${y.year}">
-      <div class="fl-year-head"><span class="fl-year-pill">${y.year}</span></div>
-      <div class="fl-row">${pack(y.entries).map(({ e, row }) => item(e, byDoi, row) + branch(e, row)).join('')}</div>
-    </div>`).join('')
+  const group = (label, entries, cls = '') => `
+    <div class="fy ${cls}">
+      <div class="fy-year"><span>${label}</span></div>
+      <div class="fy-rows">${entries.map(e => row(e, byDoi)).join('')}</div>
+    </div>`
 
-  root.innerHTML = html + `
-    <div class="fl-year fl-year-next">
-      <div class="fl-year-head"><span class="fl-year-pill">What comes next</span></div>
-      <div class="fl-next">${future.map(e => item(e, byDoi, 0)).join('')}</div>
-    </div>` + credits(timeline.entries)
+  root.innerHTML = years.map(y => group(y.year, y.entries)).join('') +
+    group('Next', future, 'fy-next') + credits(timeline.entries)
+  if (legendEl) legendEl.innerHTML = legend()
 
-  // --- entrance: each block slides in from its own lane ---------------------
+  // --- entrance: each row comes in from its own side, a branch rises after it
   // Scoped to html.has-reveal (set by initReveals in scrolly.js), so with
-  // reduced motion or without JS the blocks are simply there.
-  const blocks = [...root.querySelectorAll('.fl-item, .fl-branch')]
+  // reduced motion or without JS the rows are simply there.
+  const rows = [...root.querySelectorAll('.fr')]
   let enter = null, leave = null
   if (document.documentElement.classList.contains('has-reveal') && 'IntersectionObserver' in window) {
     enter = new IntersectionObserver(es => {
@@ -166,9 +132,9 @@ export function drawField (root, { timeline, papers }) {
     leave = new IntersectionObserver(es => {
       for (const e of es) if (!e.isIntersecting) e.target.classList.remove('is-in')
     }, { rootMargin: '10% 0px 10% 0px', threshold: 0 })
-    blocks.forEach(b => { enter.observe(b); leave.observe(b) })
+    rows.forEach(r => { enter.observe(r); leave.observe(r) })
   } else {
-    blocks.forEach(b => b.classList.add('is-in'))
+    rows.forEach(r => r.classList.add('is-in'))
   }
 
   root.__field = { destroy () { enter?.disconnect(); leave?.disconnect() } }

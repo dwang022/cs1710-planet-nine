@@ -559,7 +559,7 @@ function renderAltDetail () {
 }
 
 function renderField () {
-  drawField($('#fieldTimeline'), { timeline: FIELD, papers: PAPERS.papers })
+  drawField($('#fieldTimeline'), { timeline: FIELD, papers: PAPERS.papers, legend: $('#fieldLegend') })
 }
 
 function renderSources () {

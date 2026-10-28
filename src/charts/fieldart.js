@@ -48,7 +48,7 @@ function arc (fx, fy, a, e, deg, nu0, nu1, attrs, n = 28) {
 // --- the diagrams ------------------------------------------------------------
 
 /** Distant orbits seen from above: aligned or not, with the proposed planet if asked. */
-function orbits ({ n = 6, aligned = true, jitter = 14, planet = false, region = false, highlight = false, anti = false, big = false, footprints = false, dashed = false }, seed) {
+function orbits ({ n = 6, aligned = true, jitter = 14, planet = false, region = false, highlight = false, anti = false, big = false, footprints = false, dashed = false, far = false }, seed) {
   const r = rng(seed)
   const [fx, fy] = [120, 60]
   const dash = dashed ? 'stroke-dasharray="3 3"' : ''
@@ -70,9 +70,10 @@ function orbits ({ n = 6, aligned = true, jitter = 14, planet = false, region = 
       `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="currentColor" opacity=".16" stroke="currentColor" stroke-opacity=".6" stroke-width="1"/>`).join('')
   }
   if (planet) {
-    out += orbit(fx, fy, 56, 0.5, 180, 'stroke="var(--fl-for)" stroke-width="1.8" stroke-dasharray="4 3"')
-    if (region) out += arc(fx, fy, 56, 0.5, 180, Math.PI - 0.55, Math.PI + 0.55, 'stroke="var(--fl-for)" stroke-width="7" stroke-linecap="round" opacity=".45"')
-    out += `<circle cx="${fx + 56 * 1.5}" cy="${fy}" r="3.6" fill="var(--fl-for)"/>`
+    const pa = far ? 76 : 56   // `far`: the planet pushed out, as Ammonite's finders argue
+    out += orbit(fx, fy, pa, 0.5, 180, 'stroke="var(--fl-for)" stroke-width="1.8" stroke-dasharray="4 3"')
+    if (region) out += arc(fx, fy, pa, 0.5, 180, Math.PI - 0.55, Math.PI + 0.55, 'stroke="var(--fl-for)" stroke-width="7" stroke-linecap="round" opacity=".45"')
+    out += `<circle cx="${fx + pa * 1.5}" cy="${fy}" r="3.6" fill="var(--fl-for)"/>`
   }
   out += sun(fx, fy)
   return svg(out)

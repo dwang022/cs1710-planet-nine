@@ -1,12 +1,13 @@
 // Sketch RL5 — who supports it. The argument as a ledger: one full-width row
 // per paper, year by year, the year riding in a gutter on the left.
 //
-// Each row is one claim: a title that says what the paper did to the question,
-// one line of context, a small drawing of the point, and a link. The lane is
-// said three ways at once: colour, a large icon, and placement (arguments for
-// a planet sit as a box shifted left, arguments against one shifted right, data
-// and searches centred with their text centred). A data row
-// that ends in a conclusion grows a branch beneath it, in that side's colour.
+// Each row is one claim: a title that says what the paper means for the
+// search, one line of context, a small drawing of the point, and a link. The
+// lane is said three ways at once: colour, a large icon, and placement
+// (arguments for a planet are boxes shifted left, arguments against one
+// shifted right, data and searches centred with centred text). When a data
+// row's authors draw a conclusion, it hangs a for/against row of its own
+// beneath the data row, joined by a connector and labelled as their reading.
 //
 // Content comes from field_timeline.json; titles, journals, citation counts
 // and links come from papers.json by DOI, so the two files cannot disagree.
@@ -56,24 +57,27 @@ function bar (e) {
   </div>`
 }
 
-function row (e, byDoi) {
+/** One row. `from` labels a row that hangs off the data row above it. */
+function row (e, byDoi, from = null) {
   const lane = LANE[e.lane]
-  const b = e.branch && LANE[e.branch.side]
   const foot = links(e, byDoi)
-  return `<article class="fr ${lane.cls}${e.key ? ' is-key' : ''}" data-id="${esc(e.id)}" data-kind="${esc(e.kind || '')}">
+  return `<article class="fr ${lane.cls}${e.key ? ' is-key' : ''}${from ? ' is-branch' : ''}" data-id="${esc(e.id)}" data-kind="${esc(e.kind || '')}">
     <div class="fr-icon" title="${esc(lane.word)}">${icon(KIND_ICON[e.kind] || lane.icon)}</div>
     <div class="fr-body">
+      ${from ? `<div class="fr-from"><span aria-hidden="true">↳</span> ${esc(from)}</div>` : ''}
       <h4 class="fr-title">${esc(e.title)}</h4>
-      <p class="fr-line">${avatars(e)}${esc(e.line)}</p>
+      ${e.line ? `<p class="fr-line">${avatars(e)}${esc(e.line)}</p>` : ''}
     </div>
     <div class="fr-art">${e.diagram ? diagram(e.diagram, e.id) : ''}</div>
     <div class="fr-meta">${bar(e)}${foot ? `<div class="fr-foot">${foot}</div>` : ''}</div>
-    ${b ? `<div class="fr-branch ${b.cls}" aria-label="${esc(b.word)}">
-      <span class="fr-turn" aria-hidden="true">↳</span>
-      <span class="fr-bicon">${icon(b.icon)}</span>
-      <p>${esc(e.branch.text)}</p>
-    </div>` : ''}
   </article>`
+}
+
+/** The for/against row a data entry's authors earned it. */
+function branchRow (e) {
+  const b = e.branch
+  return row({ id: e.id + '-branch', lane: b.side, kind: 'branch', title: b.title, line: b.line, diagram: b.diagram },
+    new Map(), b.from || 'What its finders concluded')
 }
 
 function credits (entries) {
@@ -112,14 +116,14 @@ export function drawField (root, { timeline, papers, legend: legendEl }) {
   const group = (label, entries, cls = '') => `
     <div class="fy ${cls}">
       <div class="fy-year"><span>${label}</span></div>
-      <div class="fy-rows">${entries.map(e => row(e, byDoi)).join('')}</div>
+      <div class="fy-rows">${entries.map(e => row(e, byDoi) + (e.branch ? branchRow(e) : '')).join('')}</div>
     </div>`
 
   root.innerHTML = years.map(y => group(y.year, y.entries)).join('') +
     group('Next', future, 'fy-next') + credits(timeline.entries)
   if (legendEl) legendEl.innerHTML = legend()
 
-  // --- entrance: each row comes in from its own side, a branch rises after it
+  // --- entrance: each row comes in from its own side; a hung row follows its data row
   // Scoped to html.has-reveal (set by initReveals in scrolly.js), so with
   // reduced motion or without JS the rows are simply there.
   const rows = [...root.querySelectorAll('.fr')]

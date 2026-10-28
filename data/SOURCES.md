@@ -70,7 +70,6 @@ These are worth knowing about: two of them are the obvious next additions.
 | **Planet Nine MCMC posterior samples** | — | Not published machine-readably. Without them we have a median-orbit sky track, not a real probability map. |
 | **NASA ADS** | <https://ui.adsabs.harvard.edu/help/api/> | Needs an API token. Its citation counts are far better than Crossref's for astronomy. |
 | **Semantic Scholar Graph API** | <https://api.semanticscholar.org/graph/v1> | Rate-limited (HTTP 429) without a key. Fell back to Crossref. |
-| **Luhman 2014 (WISE)** | <https://doi.org/10.1088/0004-637X/781/1/4> | No arXiv preprint, so we could not read the abstract to verify its mass limits. Flagged in the data. |
 
 ---
 
@@ -82,7 +81,7 @@ Crossref's, which undercount astronomy badly (the field cites through arXiv and
 ADS); treat them as relative weight only.
 
 Every summary below was checked against the paper's own abstract or full text,
-except where marked ⚠. arXiv links are given where a preprint exists (24 of
+except where marked ⚠. arXiv links are given where a preprint exists (25 of
 28); they are free to read, unlike several of the journal versions.
 
 > **Note on link checking:** `doi.org` links to Astronomy & Astrophysics papers,
@@ -145,10 +144,10 @@ One far-infrared candidate from two all-sky surveys 23 years apart, implying 500
 
 ### Against it, or narrowing where it can hide (8)
 
-**Luhman 2014 (WISE)** ⚠  
+**Luhman 2014 (WISE)**  
 K. L. Luhman (2013). *A SEARCH FOR A DISTANT COMPANION TO THE SUN WITH THE<i>WIDE-FIELD INFRARED SURVEY EXPLORER</i>*. The Astrophysical Journal  
 [doi](https://doi.org/10.1088/0004-637X/781/1/4) · 86 Crossref citations  
-An all-sky infrared search rules out a Saturn-mass body within 10,000 AU. A small, cold Planet Nine stays allowed.
+An all-sky infrared search for a distant companion to the Sun by its parallactic motion finds nothing to W2 = 14.5: no Saturn analog within 28,000 AU and no Jupiter analog within 82,000 AU (26,000 AU for a Jupiter-mass brown dwarf on fainter models). A planet of a few Earth masses is far below this reach.
 
 **Shankman et al. 2017 (OSSOS VI)**  
 Cory Shankman et al. (2017). *OSSOS. VI. Striking Biases in the Detection of Large Semimajor Axis Trans-Neptunian Objects*. The Astronomical Journal  
@@ -218,7 +217,7 @@ Proposes millimetre-wave cosmology surveys as an independent search channel.
 
 **Fienga et al. 2016 (Cassini)**  
 A. Fienga et al. (2016). *Constraints on the location of a possible 9th planet derived from the<i>Cassini</i>data*. Astronomy &amp; Astrophysics  
-[doi](https://doi.org/10.1051/0004-6361/201628227) · 68 Crossref citations  
+[doi](https://doi.org/10.1051/0004-6361/201628227) · [arXiv:1602.06116](https://arxiv.org/abs/1602.06116) · 68 Crossref citations  
 Cassini ranging to Saturn narrows where a massive planet could sit without visibly perturbing the giant planets.
 
 **Fortney et al. 2016**  
@@ -252,8 +251,8 @@ A blind millimetre-wave search over 18,000 square degrees finds no significant d
 - **Planet Nine's ϖ and Ω** (246.7°, 96.9°) read directly from the Figure 8
   corner plot of Brown & Batygin 2021, <https://arxiv.org/abs/2108.09868v2> —
   the abstract does not contain them.
-- **Every paper summary** checked against its abstract via the arXiv API, except
-  Luhman 2014.
+- **Every paper summary** checked against its abstract via the arXiv API; Luhman
+  2014, which has no preprint, against the journal PDF (`papers/`).
 - **Survey exclusion fractions** (56% ZTF, 78% cumulative) verified from the ZTF
   and Pan-STARRS1 search abstracts.
 

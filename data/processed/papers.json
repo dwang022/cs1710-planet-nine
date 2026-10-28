@@ -39,8 +39,8 @@
    "arxiv": null,
    "arxiv_url": null,
    "stance": "against",
-   "summary": "An all-sky infrared search rules out a Saturn-mass body within 10,000 AU. A small, cold Planet Nine stays allowed.",
-   "summary_checked_against_abstract": false,
+   "summary": "An all-sky infrared search for a distant companion to the Sun by its parallactic motion finds nothing to W2 = 14.5: no Saturn analog within 28,000 AU and no Jupiter analog within 82,000 AU (26,000 AU for a Jupiter-mass brown dwarf on fainter models). A planet of a few Earth masses is far below this reach.",
+   "summary_checked_against_abstract": true,
    "resolved": true
   },
   {
@@ -104,8 +104,8 @@
    "journal": "Astronomy &amp; Astrophysics",
    "citations_crossref": 68,
    "url": "https://doi.org/10.1051/0004-6361/201628227",
-   "arxiv": null,
-   "arxiv_url": null,
+   "arxiv": "1602.06116",
+   "arxiv_url": "https://arxiv.org/abs/1602.06116",
    "stance": "neutral",
    "summary": "Cassini ranging to Saturn narrows where a massive planet could sit without visibly perturbing the giant planets.",
    "summary_checked_against_abstract": true,

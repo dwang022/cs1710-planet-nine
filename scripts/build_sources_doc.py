@@ -87,7 +87,6 @@ These are worth knowing about: two of them are the obvious next additions.
 | **Planet Nine MCMC posterior samples** | — | Not published machine-readably. Without them we have a median-orbit sky track, not a real probability map. |
 | **NASA ADS** | <https://ui.adsabs.harvard.edu/help/api/> | Needs an API token. Its citation counts are far better than Crossref's for astronomy. |
 | **Semantic Scholar Graph API** | <https://api.semanticscholar.org/graph/v1> | Rate-limited (HTTP 429) without a key. Fell back to Crossref. |
-| **Luhman 2014 (WISE)** | <https://doi.org/10.1088/0004-637X/781/1/4> | No arXiv preprint, so we could not read the abstract to verify its mass limits. Flagged in the data. |
 
 ---
 
@@ -120,8 +119,8 @@ FOOT = """
 - **Planet Nine's ϖ and Ω** (246.7°, 96.9°) read directly from the Figure 8
   corner plot of Brown & Batygin 2021, <https://arxiv.org/abs/2108.09868v2> —
   the abstract does not contain them.
-- **Every paper summary** checked against its abstract via the arXiv API, except
-  Luhman 2014.
+- **Every paper summary** checked against its abstract via the arXiv API; Luhman
+  2014, which has no preprint, against the journal PDF (`papers/`).
 - **Survey exclusion fractions** (56% ZTF, 78% cumulative) verified from the ZTF
   and Pan-STARRS1 search abstracts.
 

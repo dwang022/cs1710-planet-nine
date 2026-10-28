@@ -1,15 +1,17 @@
 /* ---------------------------------------------------------------------------
-   Section 07 — the field as a timeline (charts/field.js). Years run down the
-   page. Support enters from the left in green, opposition from the right in
-   orange, new data crosses the spine in grey, and what comes next sits at the
-   bottom in dashed blue. Loaded by field.js.
+   Section 07 — the field, year by year (charts/field.js). Three lanes: for a
+   planet on the left (green, left-aligned, borderless), against one on the
+   right (orange, right-aligned, borderless), data and searches down the
+   middle (neutral cards). A data card branches toward the side its authors
+   favour. Key papers are larger. Loaded by field.js.
    --------------------------------------------------------------------------- */
 
 :root {
-  --fl-gap: 84px;                       /* the spine column between the sides */
+  --fl-center: 440px;                   /* the data lane */
+  --fl-colgap: 36px;                    /* the gap a branch reaches across */
   --fl-for: var(--series-3);     --fl-for-ink: #5cc79c;
   --fl-against: var(--series-2); --fl-against-ink: #eba181;
-  --fl-data: #9a9a90;            --fl-data-ink: #c3c2b7;
+  --fl-data: #8a8a80;            --fl-data-ink: #c3c2b7;
   --fl-next: var(--series-1);    --fl-next-ink: #8fbdf0;
 }
 
@@ -19,207 +21,208 @@
 .k-data { color: var(--fl-data-ink); font-weight: 600; }
 .k-next { color: var(--fl-next-ink); font-weight: 600; }
 #field .sec-head p { max-width: none; }
-.fl-legend { gap: 10px 28px; margin: 4px 0 6px; }
-.fl-legend .legend-swatch { width: 12px; height: 12px; border-radius: 50%; }
-.fl-legend .legend-swatch.dashed { background: none; border: 2px dashed var(--fl-next); }
+.fl-legend { gap: 10px 26px; margin: 4px 0 26px; }
+.fl-legend .legend-item { font-size: .84rem; }
+.fl-legend .legend-swatch { width: 4px; height: 16px; border-radius: 2px; }
+.fl-legend .legend-swatch.swatch-card { width: 18px; height: 13px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--text-muted); }
+.fl-legend .legend-swatch.key { width: auto; height: auto; font: 600 .62rem/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: #fff; background: var(--text-muted); padding: 3px 6px; border-radius: 4px; }
+.fl-legend .legend-swatch.dashed { width: 14px; height: 14px; border-radius: 50%; background: none; border: 2px dashed var(--fl-next); }
 
-.fl { position: relative; }
-.fl-list {
-  position: relative;
-  display: grid; grid-template-columns: minmax(0, 1fr) var(--fl-gap) minmax(0, 1fr);
-  row-gap: 26px; padding: 14px 0 8px;
+/* --- a year: hairline, a label that sticks to the top, a three-lane grid --- */
+
+.fl { position: relative; max-width: 1240px; margin: 10px auto 0; }
+.fl-year { position: relative; border-top: 1px solid var(--rule); padding-bottom: 36px; }
+.fl-year-head {
+  position: sticky; top: 18px; z-index: 3; height: 0;
+  display: flex; justify-content: center; pointer-events: none;
 }
-
-/* --- the spine and the year markers that sit on it ----------------------- */
-
-.fl-spine {
-  position: absolute; top: 0; left: 50%; width: 2px; margin-left: -1px;
-  background: var(--rule); border-radius: 1px;
-}
-.fl-year { grid-column: 1 / -1; display: flex; justify-content: center; position: relative; z-index: 1; }
-.fl-year span {
-  font: 600 .8rem/1 var(--font-mono); letter-spacing: .14em; color: var(--text-secondary);
+.fl-year-pill {
+  transform: translateY(-50%);
+  font: 700 .86rem/1 var(--font-mono); letter-spacing: .14em; color: var(--text-primary);
   background: var(--surface-0); border: 1px solid var(--rule); border-radius: 999px;
-  padding: 8px 14px; transition: color .3s ease, border-color .3s ease;
+  padding: 9px 16px; box-shadow: 0 6px 18px #00000090;
 }
-.fl-year.is-past span { color: var(--text-muted); }
-.fl-year-next { margin-top: 10px; }
-.fl-year-next span { color: var(--fl-next-ink); border: 1px dashed var(--fl-next); text-transform: uppercase; }
+.fl-year-next .fl-year-pill { color: var(--fl-next-ink); border-color: var(--fl-next); border-style: dashed; text-transform: uppercase; }
 
-/* --- the badge that rides the reading line ------------------------------- */
+.fl-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--fl-center) minmax(0, 1fr);
+  column-gap: var(--fl-colgap); row-gap: 30px; padding-top: 42px; align-items: start;
+}
 
-.fl-sticky {
-  position: sticky; top: 50vh; height: 0; z-index: 4; pointer-events: none;
-  opacity: 0; transition: opacity .3s ease;
-}
-.fl-sticky.is-on { opacity: 1; }
-.fl-pill {
-  position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%);
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 9px 14px 8px; min-width: 96px;
-  background: var(--surface-2); border: 1px solid var(--text-muted); border-radius: 12px;
-  box-shadow: 0 10px 28px #000000a0;
-}
-.fl-pill-year {
-  font: 700 1.3rem/1 var(--font-mono); letter-spacing: .04em; color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
-}
-.fl-pill-tally {
-  font: 600 .64rem/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
-  color: var(--text-muted); white-space: nowrap;
-}
-.fl-pill-tally b { font-variant-numeric: tabular-nums; }
-.fl-pill-tally b.for { color: var(--fl-for-ink); }
-.fl-pill-tally b.against { color: var(--fl-against-ink); }
-.fl-sep { color: var(--rule); margin: 0 2px; }
+/* --- the blocks ------------------------------------------------------------ */
 
-/* --- items: which side, which colour -------------------------------------- */
+.fl-item, .fl-branch { position: relative; min-width: 0; }
+.fl-item.is-support, .fl-branch.is-support { --lane: var(--fl-for); --ink: var(--fl-for-ink); }
+.fl-item.is-against, .fl-branch.is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); }
+.fl-item.is-data { --lane: var(--fl-data); --ink: var(--fl-data-ink); }
+.fl-item.is-future { --lane: var(--fl-next); --ink: var(--fl-next-ink); }
 
-.fl-item { position: relative; }
-.fl-item.is-support { grid-column: 1; --dot: var(--fl-for); --ink: var(--fl-for-ink); }
-.fl-item.is-against { grid-column: 3; --dot: var(--fl-against); --ink: var(--fl-against-ink); }
+/* for: borderless, a green rule on the outer edge, text to the left */
+.fl-item.is-support { grid-column: 1; padding-left: 18px; border-left: 2px solid var(--lane); }
+/* against: the mirror image */
+.fl-item.is-against { grid-column: 3; padding-right: 18px; border-right: 2px solid var(--lane); text-align: right; }
+/* data: the one carded lane */
 .fl-item.is-data {
-  grid-column: 1 / -1; --dot: var(--fl-data); --ink: var(--fl-data-ink);
-  display: grid; grid-template-columns: minmax(0, 1fr) var(--fl-gap) minmax(0, 1fr); align-items: stretch;
+  grid-column: 2; padding: 16px 18px;
+  background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px;
 }
-.fl-item.is-future { --dot: var(--fl-next); --ink: var(--fl-next-ink); }
-.fl-item.is-data .fl-card-l { grid-column: 1; }
-.fl-item.is-data .fl-card-r { grid-column: 3; }
+/* key papers: heavier rule, lit surface, larger type (below) */
+.fl-item.is-key.is-support, .fl-item.is-key.is-against { border-width: 3px; }
+.fl-item.is-key.is-data { background: var(--surface-2); border-color: var(--text-muted); }
 
-/* the dot on the spine, and the tick that joins a card to it */
-.fl-item::before {
-  content: ""; position: absolute; top: 26px; width: 14px; height: 14px; box-sizing: border-box;
-  border-radius: 50%; background: var(--surface-0); border: 3px solid var(--dot); z-index: 2;
-}
-.fl-item::after { content: ""; position: absolute; top: 32px; height: 2px; background: var(--dot); opacity: .55; }
-.fl-item.is-support::before { right: calc(-1 * var(--fl-gap) / 2 - 7px); }
-.fl-item.is-support::after { right: calc(-1 * var(--fl-gap) / 2 + 7px); width: calc(var(--fl-gap) / 2 - 7px); }
-.fl-item.is-against::before { left: calc(-1 * var(--fl-gap) / 2 - 7px); }
-.fl-item.is-against::after { left: calc(-1 * var(--fl-gap) / 2 + 7px); width: calc(var(--fl-gap) / 2 - 7px); }
-.fl-item.is-data::before { left: 50%; margin-left: -7px; }
-.fl-item.is-data::after { left: calc(50% - var(--fl-gap) / 2); width: var(--fl-gap); }
-.fl-item.is-future::before, .fl-item.is-future::after { display: none; }
+/* the wide figure a key paper opens with */
+.fl-fig { margin: 0 0 14px; border-radius: 10px; overflow: hidden; aspect-ratio: 2 / 1; background: var(--surface-2); }
+.fl-fig-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.fl-item.is-key.is-data .fl-fig { margin: -16px -18px 16px; border-radius: 11px 11px 0 0; }
 
-/* --- the card -------------------------------------------------------------- */
-
-.fl-card {
-  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: start;
-  padding: 20px 22px; background: var(--surface-1); border: 1px solid var(--rule);
-  border-radius: var(--radius); box-shadow: inset 3px 0 0 var(--dot);
-  transition: border-color .25s ease;
-}
-.fl-item.is-against .fl-card { box-shadow: inset -3px 0 0 var(--dot); }
-.fl-item.is-data .fl-card { box-shadow: inset 0 3px 0 var(--dot); }
-.fl-item.is-data .fl-card-r { grid-template-columns: minmax(0, 1fr); }
-.fl-item.is-future .fl-card {
-  box-shadow: none; border: 1px dashed var(--fl-next); background: #3987e50c;
-}
-@media (hover: hover) { .fl-card:hover { border-color: var(--text-muted); } }
-
-/* faces: a photo, two overlapping photos, a monogram, or a drawn body */
-.fl-faces { display: flex; align-items: center; min-height: 76px; }
-.fl-faces:empty { display: none; }
-.fl-face {
-  display: block; flex: none; width: 76px; height: 76px; border-radius: 50%;
-  object-fit: cover; background: var(--surface-2);
-  border: 2px solid var(--surface-3); box-shadow: 0 0 0 2px var(--surface-1);
-}
-.fl-face + .fl-face { margin-left: -22px; }
-.fl-face.fl-mono {
-  display: grid; place-items: center; font: 700 1.15rem/1 var(--font-mono);
-  letter-spacing: .04em; color: var(--text-secondary); background: var(--surface-3);
-}
-.fl-face.fl-art { padding: 5px; background: var(--surface-2); color: var(--text-muted); }
-
-/* the words */
-.fl-body { min-width: 0; }
+/* meta line: lane · type · (key) … year */
 .fl-meta {
   display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center;
   font: 600 .66rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
-  color: var(--text-muted); margin-bottom: 9px;
+  color: var(--text-muted); margin-bottom: 10px;
 }
-.fl-kind { color: var(--ink); }
-.fl-tag::before { content: "·"; margin-right: 10px; color: var(--rule); }
+.fl-lane { color: var(--ink); }
+.fl-type::before { content: "·"; margin-right: 10px; color: var(--rule); }
+.fl-key { color: #fff; background: var(--lane); padding: 3px 7px; border-radius: 4px; letter-spacing: .08em; }
+.fl-item.is-data .fl-key { color: var(--surface-0); background: var(--text-secondary); }
+.fl-item.is-key .fl-type { display: none; }
 .fl-when { margin-left: auto; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
-.fl-head { font-size: 1.15rem; line-height: 1.25; margin: 0 0 6px; }
-.fl-who { font-size: .88rem; color: var(--text-secondary); margin-bottom: 10px; }
-.fl-who .fl-org { display: block; font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
-.fl-text { margin: 0; font-size: .97rem; line-height: 1.55; max-width: none; }
+.fl-item.is-against .fl-meta { flex-direction: row-reverse; }
+.fl-item.is-against .fl-when { margin-left: 0; margin-right: auto; }
+
+/* faces + title */
+.fl-top { display: flex; gap: 12px; align-items: center; margin-bottom: 10px; }
+.fl-item.is-against .fl-top { flex-direction: row-reverse; }
+.fl-faces { display: flex; align-items: center; flex: none; }
+.fl-face {
+  display: block; flex: none; width: 56px; height: 56px; border-radius: 50%;
+  object-fit: cover; background: var(--surface-2);
+  border: 2px solid var(--surface-3); box-shadow: 0 0 0 2px var(--surface-0);
+}
+.fl-item.is-data .fl-face { box-shadow: 0 0 0 2px var(--surface-1); }
+.fl-face + .fl-face { margin-left: -14px; }
+.fl-item.is-against .fl-faces { flex-direction: row-reverse; }
+.fl-item.is-against .fl-face + .fl-face { margin-left: 0; margin-right: -16px; }
+.fl-item.is-key .fl-face { width: 64px; height: 64px; }
+.fl-face.fl-mono {
+  display: grid; place-items: center; font: 700 .95rem/1 var(--font-mono);
+  letter-spacing: .04em; color: var(--text-secondary); background: var(--surface-3);
+}
+.fl-face.fl-art { padding: 4px; background: var(--surface-2); color: var(--text-muted); }
+.fl-head { font-size: 1.1rem; line-height: 1.25; margin: 0 0 9px; }
+.fl-item.is-key .fl-head { font-size: 1.4rem; letter-spacing: -.02em; margin-bottom: 10px; }
+.fl-who { font-size: .86rem; color: var(--text-secondary); min-width: 0; }
+.fl-org { display: block; font-size: .76rem; color: var(--text-muted); margin-top: 2px; }
+
+/* words */
+.fl-text { margin: 0; font-size: .95rem; line-height: 1.55; color: var(--text-secondary); max-width: none; }
+.fl-item.is-key .fl-text { font-size: 1.04rem; }
+.fl-stat { margin: 10px 0 0; font-size: .95rem; font-weight: 600; color: var(--text-primary); max-width: none; }
 .fl-note { margin: 8px 0 0; font-size: .78rem; line-height: 1.45; color: var(--text-muted); max-width: none; }
 .fl-note.fl-warn { color: var(--fl-against-ink); }
 .fl-links {
   display: flex; flex-wrap: wrap; align-items: center; gap: 4px 2px;
   margin-top: 10px; font-size: .8rem; color: var(--text-muted);
 }
+.fl-item.is-against .fl-links { justify-content: flex-end; }
 .fl-cites { font-family: var(--font-mono); font-size: .72rem; }
+.fl-sep { color: var(--rule); margin: 0 6px; }
 
-/* --- what comes next: a two-up grid in dashed blue ------------------------ */
+/* a null search: how much of the predicted planet it ruled out */
+.fl-bar { margin-top: 12px; }
+.fl-bar-track { height: 8px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.fl-bar-fill { display: block; height: 100%; border-radius: 4px; background: var(--text-secondary); }
+.fl-item.is-key .fl-bar-fill { background: var(--text-primary); }
+.fl-bar-label { margin-top: 6px; font-size: .8rem; line-height: 1.4; color: var(--text-muted); }
+.fl-bar-label b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
 
-.fl-next { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-.fl-next .fl-head { color: var(--fl-next-ink); }
+/* --- a branch: what a discovery's authors concluded, joined to its card ---- */
+
+.fl-branch { padding-top: 2px; }
+.fl-branch.is-support { grid-column: 1; padding-left: 18px; border-left: 2px dashed var(--lane); }
+.fl-branch.is-against { grid-column: 3; padding-right: 18px; border-right: 2px dashed var(--lane); text-align: right; }
+.fl-branch::before {
+  content: ""; position: absolute; top: 15px; width: calc(var(--fl-colgap) + 2px); height: 2px;
+  background: var(--lane); opacity: .75;
+}
+.fl-branch.is-support::before { right: calc(-1 * var(--fl-colgap) - 2px); }
+.fl-branch.is-against::before { left: calc(-1 * var(--fl-colgap) - 2px); }
+.fl-branch::after {
+  content: ""; position: absolute; top: 11px; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--lane); box-shadow: 0 0 0 2px var(--surface-0);
+}
+.fl-branch.is-support::after { right: -5px; }
+.fl-branch.is-against::after { left: -5px; }
+.fl-branch-label {
+  font: 600 .66rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink); margin: 6px 0 8px;
+}
+.fl-branch-head { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; line-height: 1.3; }
+.fl-branch-text { margin: 0; font-size: .9rem; line-height: 1.5; color: var(--text-secondary); max-width: none; }
+
+/* --- what comes next: a four-up strip in dashed blue ---------------------- */
+
+.fl-next { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; padding-top: 42px; }
+.fl-item.is-future {
+  padding: 16px 18px; border: 1px dashed var(--fl-next); border-radius: 12px; background: #3987e50a;
+}
+.fl-item.is-future .fl-head { color: var(--fl-next-ink); font-size: 1.05rem; }
+.fl-item.is-future .fl-text { font-size: .9rem; }
 
 /* --- credits --------------------------------------------------------------- */
 
-.fl-credits { margin-top: 20px; font-size: .8rem; color: var(--text-muted); }
+.fl-credits { margin-top: 18px; font-size: .8rem; color: var(--text-muted); }
 .fl-credits summary { cursor: pointer; color: var(--text-secondary); }
 .fl-credits ul { margin: 8px 0 0; padding-left: 18px; }
 .fl-credits li { margin-bottom: 3px; }
 
-/* --- entrance: each card slides in from its own side ----------------------- */
+/* --- entrance: each block slides in from its own lane ---------------------- */
 /* Scoped to html.has-reveal, which scrolly.js only sets when it can reveal
    content again. Opacity and transform only, so nothing shifts layout. */
 
-html.has-reveal .fl-item,
-html.has-reveal .fl-item.is-data .fl-card {
+html.has-reveal .fl-item, html.has-reveal .fl-branch {
   transition: opacity .6s var(--reveal-ease), transform .7s var(--reveal-ease);
 }
-html.has-reveal .fl-item:not(.is-in) { opacity: 0; }
-html.has-reveal .fl-item.is-support:not(.is-in) { transform: translate3d(-56px, 0, 0); }
-html.has-reveal .fl-item.is-against:not(.is-in) { transform: translate3d(56px, 0, 0); }
-html.has-reveal .fl-item.is-future:not(.is-in) { transform: translate3d(0, 24px, 0); }
-html.has-reveal .fl-item.is-data:not(.is-in) .fl-card-l { transform: translate3d(-40px, 0, 0); }
-html.has-reveal .fl-item.is-data:not(.is-in) .fl-card-r { transform: translate3d(40px, 0, 0); }
-html.has-reveal .fl-item:focus-within,
-html.has-reveal .fl-item:focus-within .fl-card { opacity: 1; transform: none; }
+html.has-reveal .fl-branch { transition-delay: .15s; }
+html.has-reveal .fl-item:not(.is-in), html.has-reveal .fl-branch:not(.is-in) { opacity: 0; }
+html.has-reveal .is-support:not(.is-in) { transform: translate3d(-48px, 0, 0); }
+html.has-reveal .is-against:not(.is-in) { transform: translate3d(48px, 0, 0); }
+html.has-reveal .is-data:not(.is-in), html.has-reveal .is-future:not(.is-in) { transform: translate3d(0, 24px, 0); }
+html.has-reveal .fl-item:focus-within, html.has-reveal .fl-branch:focus-within { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce), print {
-  html.has-reveal .fl-item, html.has-reveal .fl-item .fl-card { opacity: 1 !important; transform: none !important; }
-  .fl-sticky { display: none; }
+  html.has-reveal .fl-item, html.has-reveal .fl-branch { opacity: 1 !important; transform: none !important; }
 }
 
-/* --- phones: one column, the spine on the left ---------------------------- */
+/* --- narrower screens ------------------------------------------------------ */
 
+@media (max-width: 1280px) {
+  :root { --fl-center: 340px; }
+  .fl-next { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* phones: one column, everything left-aligned, a branch hangs under its card */
 @media (max-width: 900px) {
-  :root { --fl-gap: 40px; }
-  .fl-list { grid-template-columns: 1fr; padding-left: var(--fl-gap); row-gap: 18px; }
-  .fl-spine { left: 13px; margin-left: 0; }
-  .fl-year { justify-content: flex-start; margin-left: calc(-1 * var(--fl-gap)); }
-  .fl-year span { padding: 7px 12px; }
-  .fl-item.is-support, .fl-item.is-against, .fl-item.is-data { grid-column: 1; }
-  .fl-item.is-data { display: grid; grid-template-columns: 1fr; gap: 10px; }
-  .fl-item.is-data .fl-card-l, .fl-item.is-data .fl-card-r { grid-column: 1; }
-  .fl-item.is-data .fl-card-r { box-shadow: none; }
-  .fl-item::before { left: calc(-1 * var(--fl-gap) + 7px) !important; right: auto !important; margin-left: 0; top: 22px; }
-  .fl-item::after { left: calc(-1 * var(--fl-gap) + 20px) !important; width: calc(var(--fl-gap) - 20px) !important; top: 28px; }
-  .fl-item.is-against .fl-card { box-shadow: inset 3px 0 0 var(--dot); }
-  .fl-card { padding: 16px; gap: 14px; }
-  .fl-face { width: 60px; height: 60px; }
-  .fl-face + .fl-face { margin-left: -18px; }
-  .fl-head { font-size: 1.05rem; }
-  .fl-text { font-size: .93rem; }
-  .fl-next { grid-template-columns: 1fr; }
-  .fl-sticky { top: 60vh; }
-  .fl-pill { left: auto; right: 0; transform: translateY(-50%); min-width: 0; padding: 7px 10px; }
-  .fl-pill-year { font-size: 1.05rem; }
-  .fl-pill-tally { display: none; }
-  .fl-pill { opacity: .92; }
-  html.has-reveal .fl-item.is-against:not(.is-in) { transform: translate3d(32px, 0, 0); }
-  html.has-reveal .fl-item.is-support:not(.is-in) { transform: translate3d(-32px, 0, 0); }
-  html.has-reveal .fl-item.is-data:not(.is-in) .fl-card-l,
-  html.has-reveal .fl-item.is-data:not(.is-in) .fl-card-r { transform: translate3d(0, 16px, 0); }
+  .fl-row { grid-template-columns: 1fr; row-gap: 18px; padding-top: 34px; }
+  .fl-item, .fl-branch { grid-column: 1 !important; grid-row: auto !important; }
+  .fl-item.is-against, .fl-branch.is-against {
+    text-align: left; border-right: 0; padding-right: 0;
+    border-left: 2px solid var(--lane); padding-left: 18px;
+  }
+  .fl-item.is-key.is-against { border-left-width: 3px; }
+  .fl-item.is-against .fl-meta, .fl-item.is-against .fl-top, .fl-item.is-against .fl-faces { flex-direction: row; }
+  .fl-item.is-against .fl-when { margin-left: auto; margin-right: 0; }
+  .fl-item.is-against .fl-face + .fl-face { margin-left: -16px; margin-right: 0; }
+  .fl-item.is-against .fl-links { justify-content: flex-start; }
+  .fl-branch { margin: -6px 0 0 22px; }
+  .fl-branch::before, .fl-branch::after { display: none; }
+  .fl-branch.is-against { border-left-style: dashed; }
+  .fl-year-head { top: 8px; }
+  .fl-year { padding-bottom: 28px; }
+  .fl-item.is-key .fl-head { font-size: 1.25rem; }
+  .fl-next { grid-template-columns: 1fr; padding-top: 34px; }
 }
 @media (max-width: 560px) {
-  .fl-card { grid-template-columns: 1fr; }
-  .fl-tag { display: none; }
-  .fl-faces { min-height: 0; }
+  .fl-type { display: none; }
+  .fl-item.is-data { padding: 14px; }
 }

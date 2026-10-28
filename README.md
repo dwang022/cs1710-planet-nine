@@ -30,7 +30,7 @@ The six sketches chosen in the Decide section of the process book:
 | 04 | **DW5** — where telescopes look | Mollweide all-sky map: survey footprints, Planet Nine's predicted path, each object's perihelion direction | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json` |
 | 05 | **Put a planet anywhere** + physical properties | Place your own planet; scored on three cited criteria, with size/temperature/brightness derived | `planet_nine_predictions.json` |
 | 06 | **GG8** — what else explains it | Eight hypotheses against the four things any of them must account for | `alternatives.json` |
-| 07 | **RL5** — who supports it | A timeline you scroll down: the years advance, work for a planet enters from the left, work against it from the right, new data runs across, and the searches that could settle it sit at the bottom | `field_timeline.json`, `papers.json` |
+| 07 | **RL5** — who supports it | Year by year in three lanes: arguments for a planet on the left, against one on the right, data and searches down the middle, each discovery branching toward the side its authors favour and each empty search showing how much of the predicted planet it ruled out; key papers drawn large; what comes next at the bottom | `field_timeline.json`, `papers.json` |
 
 Four controls at the top drive every panel at once: how far out the orbit goes,
 closest approach, an orbit-quality filter, and Planet Nine on/off.
@@ -81,6 +81,10 @@ public/art/         the same drawings as standalone SVG and PNG files, with a
 public/field/       the section 07 photos, cropped square from Wikimedia Commons
                     by scripts/fetch_portraits.py, with their licences in CREDITS.md
 scripts/            the Python pipeline that builds those datasets
+papers/             every paper the site cites: README.md is the generated index of
+                    links, access and which PDFs are on disk; the PDFs themselves
+                    are ignored by git (scripts/build_paper_index.py --fetch gets
+                    the open-access ones)
 ```
 
 Rebuild the datasets from source with `./scripts/fetch_all.sh`.

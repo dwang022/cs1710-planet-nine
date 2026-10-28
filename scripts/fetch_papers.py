@@ -22,7 +22,7 @@ PAPERS = [
  ("10.1038/nature13156", "supports", "Trujillo & Sheppard 2014",
   "Discovery of 2012 VP113. First to point out that the distant objects share an argument of perihelion, and to suggest a super-Earth as the cause."),
  ("10.1088/0004-637X/781/1/4", "against", "Luhman 2014 (WISE)",
-  "An all-sky infrared search rules out a Saturn-mass body within 10,000 AU. A small, cold Planet Nine stays allowed."),
+  "An all-sky infrared search for a distant companion to the Sun by its parallactic motion finds nothing to W2 = 14.5: no Saturn analog within 28,000 AU and no Jupiter analog within 82,000 AU (26,000 AU for a Jupiter-mass brown dwarf on fainter models). A planet of a few Earth masses is far below this reach."),
  ("10.3847/0004-6256/151/2/22", "supports", "Batygin & Brown 2016",
   "The founding paper. Six distant objects share an orbital orientation, and a ~10 Earth-mass planet on an anti-aligned orbit reproduces it."),
  ("10.3847/2041-8205/824/2/L23", "supports", "Brown & Batygin 2016",
@@ -78,7 +78,7 @@ PAPERS = [
 ]
 
 # arXiv ids, each confirmed by an exact title match against the arXiv API.
-# Papers absent here have no preprint we could find (Nature and A&A titles).
+# Papers absent here have no preprint we could find (Trujillo & Sheppard 2014 in Nature, Fienga et al. 2020 in A&A).
 ARXIV = {
     "10.3847/0004-6256/151/2/22": "1601.05438",
     "10.3847/2041-8205/822/1/L2": "1602.05963",
@@ -102,6 +102,7 @@ ARXIV = {
     "10.3847/1538-3881/ad24e9": "2401.17977",
     "10.1017/pasa.2025.10024": "2504.17288",
     "10.3847/1538-4357/ac2307": "2104.10264",
+    "10.1051/0004-6361/201628227": "1602.06116",
     "10.1038/s41550-025-02595-7": "2508.02162",
     "10.3847/2041-8213/ae3a75": "2505.15806",
 }
@@ -140,7 +141,7 @@ def main():
             "arxiv_url": ("https://arxiv.org/abs/" + ARXIV[doi]) if doi in ARXIV else None,
             "stance": stance,
             "summary": summary,
-            "summary_checked_against_abstract": doi != "10.1088/0004-637X/781/1/4",
+            "summary_checked_against_abstract": True,
             "resolved": True,
         })
         print(f"  {parts[0]} [{stance:<11}] {papers[-1]['citations_crossref']:>5} cites  {label}")

@@ -37,3 +37,6 @@ python3 scripts/fetch_papers.py
 echo
 echo "Done. Curated files (planets.json, planet_nine_predictions.json,"
 echo "surveys.json, alternatives.json) are hand-maintained and not regenerated."
+
+echo "==> Paper index (which PDFs are local, which still need downloading)"
+python3 scripts/build_paper_index.py

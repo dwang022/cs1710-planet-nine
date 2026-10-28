@@ -99,7 +99,7 @@ Crossref's, which undercount astronomy badly (the field cites through arXiv and
 ADS); treat them as relative weight only.
 
 Every summary below was checked against the paper's own abstract or full text,
-except where marked ⚠. arXiv links are given where a preprint exists (21 of
+except where marked ⚠. arXiv links are given where a preprint exists ({na} of
 {n}); they are free to read, unlike several of the journal versions.
 
 > **Note on link checking:** `doi.org` links to Astronomy & Astrophysics papers,
@@ -135,7 +135,7 @@ in [`README.md`](README.md).
 
 
 def main():
-    papers = json.load(open(os.path.join(P, "papers.json")))["papers"]
+    papers = json.load(open(os.path.join(P, "papers.json"), encoding="utf-8"))["papers"]
     body = []
     for stance in STANCE_ORDER:
         group = [p for p in papers if p["stance"] == stance]
@@ -160,10 +160,11 @@ def main():
                 f"{p['summary']}\n")
         body.append("")
 
-    doc = (HEAD.replace("{n}", str(len(papers)))
+    n_arxiv = sum(1 for p in papers if p.get("arxiv_url"))
+    doc = (HEAD.replace("{n}", str(len(papers))).replace("{na}", str(n_arxiv))
            + "\n".join(body)
            + FOOT.replace("{date}", time.strftime("%Y-%m-%d")))
-    with open(OUT, "w") as f:
+    with open(OUT, "w", encoding="utf-8") as f:
         f.write(doc)
     print(f"wrote {OUT} ({len(papers)} papers, {len(doc.splitlines())} lines)")
 

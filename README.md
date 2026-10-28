@@ -30,7 +30,7 @@ The six sketches chosen in the Decide section of the process book:
 | 04 | **DW5** — where telescopes look | Mollweide all-sky map: survey footprints, Planet Nine's predicted path, each object's perihelion direction | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json` |
 | 05 | **Put a planet anywhere** + physical properties | Place your own planet; scored on three cited criteria, with size/temperature/brightness derived | `planet_nine_predictions.json` |
 | 06 | **GG8** — what else explains it | Eight hypotheses against the four things any of them must account for | `alternatives.json` |
-| 07 | **RL5** — who supports it | 25 papers by year and stance, sized by citations | `papers.json` |
+| 07 | **RL5** — who supports it | A timeline you scroll down: the years advance, work for a planet enters from the left, work against it from the right, new data runs across, and the searches that could settle it sit at the bottom | `field_timeline.json`, `papers.json` |
 
 Four controls at the top drive every panel at once: how far out the orbit goes,
 closest approach, an orbit-quality filter, and Planet Nine on/off.
@@ -56,6 +56,8 @@ the honest state of this field, and the whole point of the page.
   independently lands Batygin & Brown's 2016 orbit at V = 22.4, inside their
   published 22 < V < 25.
 - Every paper summary was checked against the paper's own abstract.
+- Section 07's cards retell those summaries in plain language and link to the
+  paper; the 2026 entries link to Rubin Observatory's own announcements.
 
 Full provenance in [`data/SOURCES.md`](data/SOURCES.md); corrections and
 remaining unverified claims in [`data/README.md`](data/README.md).
@@ -69,12 +71,15 @@ src/
   stats.js          circular statistics (resultant length, Rayleigh, Monte Carlo)
   orbits.js         Keplerian geometry, verified against Horizons
   style.css         design tokens; validated colourblind-safe palette
+  field.css         section 07's timeline (loaded by charts/field.js)
   art.js            the hand-drawn bodies: Planet Nine logo, Sun, planets, TNOs
   charts/           one module per visualisation (lineup.js and distance.js
                     are the two scroll-driven openers)
 public/data/        the processed datasets the page fetches
 public/art/         the same drawings as standalone SVG and PNG files, with a
                     contact sheet at /art/ (rebuild: node scripts/export_art.mjs)
+public/field/       the section 07 photos, cropped square from Wikimedia Commons
+                    by scripts/fetch_portraits.py, with their licences in CREDITS.md
 scripts/            the Python pipeline that builds those datasets
 ```
 

@@ -1,0 +1,225 @@
+/* ---------------------------------------------------------------------------
+   Section 07 — the field as a timeline (charts/field.js). Years run down the
+   page. Support enters from the left in green, opposition from the right in
+   orange, new data crosses the spine in grey, and what comes next sits at the
+   bottom in dashed blue. Loaded by field.js.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --fl-gap: 84px;                       /* the spine column between the sides */
+  --fl-for: var(--series-3);     --fl-for-ink: #5cc79c;
+  --fl-against: var(--series-2); --fl-against-ink: #eba181;
+  --fl-data: #9a9a90;            --fl-data-ink: #c3c2b7;
+  --fl-next: var(--series-1);    --fl-next-ink: #8fbdf0;
+}
+
+/* inline colour keys in the section's copy and legend */
+.k-for { color: var(--fl-for-ink); font-weight: 600; }
+.k-against { color: var(--fl-against-ink); font-weight: 600; }
+.k-data { color: var(--fl-data-ink); font-weight: 600; }
+.k-next { color: var(--fl-next-ink); font-weight: 600; }
+#field .sec-head p { max-width: none; }
+.fl-legend { gap: 10px 28px; margin: 4px 0 6px; }
+.fl-legend .legend-swatch { width: 12px; height: 12px; border-radius: 50%; }
+.fl-legend .legend-swatch.dashed { background: none; border: 2px dashed var(--fl-next); }
+
+.fl { position: relative; }
+.fl-list {
+  position: relative;
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--fl-gap) minmax(0, 1fr);
+  row-gap: 26px; padding: 14px 0 8px;
+}
+
+/* --- the spine and the year markers that sit on it ----------------------- */
+
+.fl-spine {
+  position: absolute; top: 0; left: 50%; width: 2px; margin-left: -1px;
+  background: var(--rule); border-radius: 1px;
+}
+.fl-year { grid-column: 1 / -1; display: flex; justify-content: center; position: relative; z-index: 1; }
+.fl-year span {
+  font: 600 .8rem/1 var(--font-mono); letter-spacing: .14em; color: var(--text-secondary);
+  background: var(--surface-0); border: 1px solid var(--rule); border-radius: 999px;
+  padding: 8px 14px; transition: color .3s ease, border-color .3s ease;
+}
+.fl-year.is-past span { color: var(--text-muted); }
+.fl-year-next { margin-top: 10px; }
+.fl-year-next span { color: var(--fl-next-ink); border: 1px dashed var(--fl-next); text-transform: uppercase; }
+
+/* --- the badge that rides the reading line ------------------------------- */
+
+.fl-sticky {
+  position: sticky; top: 50vh; height: 0; z-index: 4; pointer-events: none;
+  opacity: 0; transition: opacity .3s ease;
+}
+.fl-sticky.is-on { opacity: 1; }
+.fl-pill {
+  position: absolute; left: 50%; top: 0; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 9px 14px 8px; min-width: 96px;
+  background: var(--surface-2); border: 1px solid var(--text-muted); border-radius: 12px;
+  box-shadow: 0 10px 28px #000000a0;
+}
+.fl-pill-year {
+  font: 700 1.3rem/1 var(--font-mono); letter-spacing: .04em; color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.fl-pill-tally {
+  font: 600 .64rem/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-muted); white-space: nowrap;
+}
+.fl-pill-tally b { font-variant-numeric: tabular-nums; }
+.fl-pill-tally b.for { color: var(--fl-for-ink); }
+.fl-pill-tally b.against { color: var(--fl-against-ink); }
+.fl-sep { color: var(--rule); margin: 0 2px; }
+
+/* --- items: which side, which colour -------------------------------------- */
+
+.fl-item { position: relative; }
+.fl-item.is-support { grid-column: 1; --dot: var(--fl-for); --ink: var(--fl-for-ink); }
+.fl-item.is-against { grid-column: 3; --dot: var(--fl-against); --ink: var(--fl-against-ink); }
+.fl-item.is-data {
+  grid-column: 1 / -1; --dot: var(--fl-data); --ink: var(--fl-data-ink);
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--fl-gap) minmax(0, 1fr); align-items: stretch;
+}
+.fl-item.is-future { --dot: var(--fl-next); --ink: var(--fl-next-ink); }
+.fl-item.is-data .fl-card-l { grid-column: 1; }
+.fl-item.is-data .fl-card-r { grid-column: 3; }
+
+/* the dot on the spine, and the tick that joins a card to it */
+.fl-item::before {
+  content: ""; position: absolute; top: 26px; width: 14px; height: 14px; box-sizing: border-box;
+  border-radius: 50%; background: var(--surface-0); border: 3px solid var(--dot); z-index: 2;
+}
+.fl-item::after { content: ""; position: absolute; top: 32px; height: 2px; background: var(--dot); opacity: .55; }
+.fl-item.is-support::before { right: calc(-1 * var(--fl-gap) / 2 - 7px); }
+.fl-item.is-support::after { right: calc(-1 * var(--fl-gap) / 2 + 7px); width: calc(var(--fl-gap) / 2 - 7px); }
+.fl-item.is-against::before { left: calc(-1 * var(--fl-gap) / 2 - 7px); }
+.fl-item.is-against::after { left: calc(-1 * var(--fl-gap) / 2 + 7px); width: calc(var(--fl-gap) / 2 - 7px); }
+.fl-item.is-data::before { left: 50%; margin-left: -7px; }
+.fl-item.is-data::after { left: calc(50% - var(--fl-gap) / 2); width: var(--fl-gap); }
+.fl-item.is-future::before, .fl-item.is-future::after { display: none; }
+
+/* --- the card -------------------------------------------------------------- */
+
+.fl-card {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: start;
+  padding: 20px 22px; background: var(--surface-1); border: 1px solid var(--rule);
+  border-radius: var(--radius); box-shadow: inset 3px 0 0 var(--dot);
+  transition: border-color .25s ease;
+}
+.fl-item.is-against .fl-card { box-shadow: inset -3px 0 0 var(--dot); }
+.fl-item.is-data .fl-card { box-shadow: inset 0 3px 0 var(--dot); }
+.fl-item.is-data .fl-card-r { grid-template-columns: minmax(0, 1fr); }
+.fl-item.is-future .fl-card {
+  box-shadow: none; border: 1px dashed var(--fl-next); background: #3987e50c;
+}
+@media (hover: hover) { .fl-card:hover { border-color: var(--text-muted); } }
+
+/* faces: a photo, two overlapping photos, a monogram, or a drawn body */
+.fl-faces { display: flex; align-items: center; min-height: 76px; }
+.fl-faces:empty { display: none; }
+.fl-face {
+  display: block; flex: none; width: 76px; height: 76px; border-radius: 50%;
+  object-fit: cover; background: var(--surface-2);
+  border: 2px solid var(--surface-3); box-shadow: 0 0 0 2px var(--surface-1);
+}
+.fl-face + .fl-face { margin-left: -22px; }
+.fl-face.fl-mono {
+  display: grid; place-items: center; font: 700 1.15rem/1 var(--font-mono);
+  letter-spacing: .04em; color: var(--text-secondary); background: var(--surface-3);
+}
+.fl-face.fl-art { padding: 5px; background: var(--surface-2); color: var(--text-muted); }
+
+/* the words */
+.fl-body { min-width: 0; }
+.fl-meta {
+  display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center;
+  font: 600 .66rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--text-muted); margin-bottom: 9px;
+}
+.fl-kind { color: var(--ink); }
+.fl-tag::before { content: "·"; margin-right: 10px; color: var(--rule); }
+.fl-when { margin-left: auto; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.fl-head { font-size: 1.15rem; line-height: 1.25; margin: 0 0 6px; }
+.fl-who { font-size: .88rem; color: var(--text-secondary); margin-bottom: 10px; }
+.fl-who .fl-org { display: block; font-size: .78rem; color: var(--text-muted); margin-top: 2px; }
+.fl-text { margin: 0; font-size: .97rem; line-height: 1.55; max-width: none; }
+.fl-note { margin: 8px 0 0; font-size: .78rem; line-height: 1.45; color: var(--text-muted); max-width: none; }
+.fl-note.fl-warn { color: var(--fl-against-ink); }
+.fl-links {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px 2px;
+  margin-top: 10px; font-size: .8rem; color: var(--text-muted);
+}
+.fl-cites { font-family: var(--font-mono); font-size: .72rem; }
+
+/* --- what comes next: a two-up grid in dashed blue ------------------------ */
+
+.fl-next { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.fl-next .fl-head { color: var(--fl-next-ink); }
+
+/* --- credits --------------------------------------------------------------- */
+
+.fl-credits { margin-top: 20px; font-size: .8rem; color: var(--text-muted); }
+.fl-credits summary { cursor: pointer; color: var(--text-secondary); }
+.fl-credits ul { margin: 8px 0 0; padding-left: 18px; }
+.fl-credits li { margin-bottom: 3px; }
+
+/* --- entrance: each card slides in from its own side ----------------------- */
+/* Scoped to html.has-reveal, which scrolly.js only sets when it can reveal
+   content again. Opacity and transform only, so nothing shifts layout. */
+
+html.has-reveal .fl-item,
+html.has-reveal .fl-item.is-data .fl-card {
+  transition: opacity .6s var(--reveal-ease), transform .7s var(--reveal-ease);
+}
+html.has-reveal .fl-item:not(.is-in) { opacity: 0; }
+html.has-reveal .fl-item.is-support:not(.is-in) { transform: translate3d(-56px, 0, 0); }
+html.has-reveal .fl-item.is-against:not(.is-in) { transform: translate3d(56px, 0, 0); }
+html.has-reveal .fl-item.is-future:not(.is-in) { transform: translate3d(0, 24px, 0); }
+html.has-reveal .fl-item.is-data:not(.is-in) .fl-card-l { transform: translate3d(-40px, 0, 0); }
+html.has-reveal .fl-item.is-data:not(.is-in) .fl-card-r { transform: translate3d(40px, 0, 0); }
+html.has-reveal .fl-item:focus-within,
+html.has-reveal .fl-item:focus-within .fl-card { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce), print {
+  html.has-reveal .fl-item, html.has-reveal .fl-item .fl-card { opacity: 1 !important; transform: none !important; }
+  .fl-sticky { display: none; }
+}
+
+/* --- phones: one column, the spine on the left ---------------------------- */
+
+@media (max-width: 900px) {
+  :root { --fl-gap: 40px; }
+  .fl-list { grid-template-columns: 1fr; padding-left: var(--fl-gap); row-gap: 18px; }
+  .fl-spine { left: 13px; margin-left: 0; }
+  .fl-year { justify-content: flex-start; margin-left: calc(-1 * var(--fl-gap)); }
+  .fl-year span { padding: 7px 12px; }
+  .fl-item.is-support, .fl-item.is-against, .fl-item.is-data { grid-column: 1; }
+  .fl-item.is-data { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .fl-item.is-data .fl-card-l, .fl-item.is-data .fl-card-r { grid-column: 1; }
+  .fl-item.is-data .fl-card-r { box-shadow: none; }
+  .fl-item::before { left: calc(-1 * var(--fl-gap) + 7px) !important; right: auto !important; margin-left: 0; top: 22px; }
+  .fl-item::after { left: calc(-1 * var(--fl-gap) + 20px) !important; width: calc(var(--fl-gap) - 20px) !important; top: 28px; }
+  .fl-item.is-against .fl-card { box-shadow: inset 3px 0 0 var(--dot); }
+  .fl-card { padding: 16px; gap: 14px; }
+  .fl-face { width: 60px; height: 60px; }
+  .fl-face + .fl-face { margin-left: -18px; }
+  .fl-head { font-size: 1.05rem; }
+  .fl-text { font-size: .93rem; }
+  .fl-next { grid-template-columns: 1fr; }
+  .fl-sticky { top: 60vh; }
+  .fl-pill { left: auto; right: 0; transform: translateY(-50%); min-width: 0; padding: 7px 10px; }
+  .fl-pill-year { font-size: 1.05rem; }
+  .fl-pill-tally { display: none; }
+  .fl-pill { opacity: .92; }
+  html.has-reveal .fl-item.is-against:not(.is-in) { transform: translate3d(32px, 0, 0); }
+  html.has-reveal .fl-item.is-support:not(.is-in) { transform: translate3d(-32px, 0, 0); }
+  html.has-reveal .fl-item.is-data:not(.is-in) .fl-card-l,
+  html.has-reveal .fl-item.is-data:not(.is-in) .fl-card-r { transform: translate3d(0, 16px, 0); }
+}
+@media (max-width: 560px) {
+  .fl-card { grid-template-columns: 1fr; }
+  .fl-tag { display: none; }
+  .fl-faces { min-height: 0; }
+}

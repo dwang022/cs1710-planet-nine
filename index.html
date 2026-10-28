@@ -786,15 +786,27 @@
       <div class="eyebrow">07 — The field</div>
       <h2>Astronomers do not agree</h2>
       <p class="lede">
-        Every paper we read, placed by year and position. Bigger circle = cited more
-        often. Click one to read what it found.
+        The major papers, in the order they landed. Scroll down and the years advance.
+        Work that argues <span class="k-for">for a planet</span> enters from the left;
+        work that argues <span class="k-against">against one</span>, or narrows where it
+        could still hide, enters from the right. <span class="k-data">New data</span> that
+        both sides use runs across the middle, and at the bottom are
+        <span class="k-next">the searches that could settle it</span>.
       </p>
     </div>
-    <div class="card"><div id="chartTimeline"></div></div>
-    <div id="paperDetail"></div>
+    <div class="legend fl-legend" aria-hidden="true">
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--fl-for)"></span>For a planet</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--fl-against)"></span>Against, or narrowing it</div>
+      <div class="legend-item"><span class="legend-swatch" style="background:var(--fl-data)"></span>New data</div>
+      <div class="legend-item"><span class="legend-swatch dashed"></span>What comes next</div>
+    </div>
+    <div class="fl" id="fieldTimeline"></div>
     <p class="caption">
-      Stance is <strong>our</strong> reading of each abstract, not a label the authors chose.
-      25 papers we selected — not a census of the field.
+      Which side a paper lands on is <strong>our</strong> reading of its abstract, not a
+      label the authors chose. These are the entries we judged major, chosen from a
+      literature of hundreds; the full set of papers we read is in section 08. Photos
+      are from Wikimedia Commons and credited above. Where no freely licensed portrait
+      exists, the card shows the instrument or institution behind the work.
     </p>
   </section>
 

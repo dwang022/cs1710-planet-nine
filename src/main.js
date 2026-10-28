@@ -7,7 +7,7 @@ import { drawSkyMap, depthColour, deepestAt, galacticPoint, eclipticPoint } from
 import { makeLean } from './charts/lean.js'
 import { makeLuck } from './charts/luck.js'
 import { drawMatrix } from './charts/matrix.js'
-import { drawTimeline } from './charts/timeline.js'
+import { drawField } from './charts/field.js'
 import { drawPlacement, scorePlanet, physicalProperties } from './charts/placeplanet.js'
 import { makeScatter } from './charts/scatter.js'
 import { makeDistance, fmtAu, lightTime } from './charts/distance.js'
@@ -21,9 +21,9 @@ const state = { ...DEFAULTS }
 // what the literature actually proposes.
 const PLANET_DEFAULTS = { a: 460, e: 0.30, i: 16, varpi: 247, node: 97, mass: 6.9, albedo: 0.4 }
 const planet = { ...PLANET_DEFAULTS }
-const ui = { survey: null, alt: null, paper: null }
+const ui = { survey: null, alt: null }
 
-let ETNOS = [], CUTS = [], SURVEYS = [], PAPERS = null
+let ETNOS = [], CUTS = [], SURVEYS = [], PAPERS = null, FIELD = null
 let SKY = null, PERIHELIA = [], ALTS = null, PREDICTIONS = null
 let scatter = null
 let lean = null, luck = null
@@ -558,28 +558,8 @@ function renderAltDetail () {
     </div>`
 }
 
-function renderTimeline () {
-  drawTimeline($('#chartTimeline'), {
-    papers: PAPERS.papers, selected: ui.paper,
-    onSelect: doi => { ui.paper = doi; renderTimeline(); renderPaperDetail() },
-  })
-}
-
-function renderPaperDetail () {
-  const el = $('#paperDetail')
-  const p = PAPERS.papers.find(x => x.doi === ui.paper)
-  if (!p) { el.innerHTML = ''; return }
-  el.innerHTML = `
-    <div class="detail">
-      <h4>${p.title}</h4>
-      <div class="d-lede">${p.authors.slice(0, 4).join(', ')}${p.authors.length > 4 ? ' et al.' : ''}
-        · ${p.journal || ''} · ${p.year}</div>
-      <p style="margin:0 0 12px">${p.summary}</p>
-      <p class="caption" style="margin:0">
-        <a href="${p.arxiv_url || p.url}">${p.arxiv_url ? 'arXiv:' + p.arxiv : 'doi.org'}</a>
-        · ${p.citations_crossref ?? '—'} Crossref citations
-        · our stance label: <strong>${p.stance}</strong></p>
-    </div>`
+function renderField () {
+  drawField($('#fieldTimeline'), { timeline: FIELD, papers: PAPERS.papers })
 }
 
 function renderSources () {
@@ -674,12 +654,13 @@ function renderLeanToggle () {
 
 async function init () {
   const j = u => fetch(u).then(r => { if (!r.ok) throw new Error(`${u} → ${r.status}`); return r.json() })
-  const [etnos, nulls, surveys, papers, sky, peri, alts, preds, planets] = await Promise.all([
+  const [etnos, nulls, surveys, papers, sky, peri, alts, preds, planets, field] = await Promise.all([
     j('/data/etnos.json'), j('/data/clustering_null.json'), j('/data/surveys.json'),
     j('/data/papers.json'), j('/data/p9_sky_track.json'), j('/data/etno_perihelion_sky.json'),
     j('/data/alternatives.json'), j('/data/planet_nine_predictions.json'), j('/data/planets.json'),
+    j('/data/field_timeline.json'),
   ])
-  ETNOS = etnos; CUTS = nulls.cuts; SURVEYS = surveys.surveys; PAPERS = papers
+  ETNOS = etnos; CUTS = nulls.cuts; SURVEYS = surveys.surveys; PAPERS = papers; FIELD = field
   SKY = sky; PERIHELIA = peri.objects; ALTS = alts; PREDICTIONS = preds
   PLANETS = planets.planets.map(p => ({ name: p.name, a: p.a, e: p.e, q: p.a * (1 - p.e), Q: p.a * (1 + p.e) }))
   lineup = makeLineup($('#chartLineup'), { planets: PLANETS, readout: $('#lineupReadout') })
@@ -689,7 +670,7 @@ async function init () {
   fillStoryNumbers()
   renderLegend(); renderBuildControls()
   renderSurveyChips(); renderSearchStats()
-  renderMatrix(); renderTimeline(); renderSources()
+  renderMatrix(); renderField(); renderSources()
 
   scatter = makeScatter($('#chartScatter'), {
     onBrush: box => {

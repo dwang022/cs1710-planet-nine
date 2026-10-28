@@ -17,7 +17,7 @@ scripts/          fetch + build
 | **DW5** — Sky view: where do telescopes look | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json` |
 | **RL3** — How likely everything just lines up | `clustering_null.json`, `etnos.json`, `surveys.json` (the bias argument) |
 | **"Put the planet anywhere"** + physical properties | `planet_nine_predictions.json`, `planets.json`, `etnos.json` |
-| **RL5** — Who supports it, for and against | `papers.json` |
+| **RL5** — Who supports it, for and against | `field_timeline.json`, `papers.json` |
 | **GG8** — What else could explain the evidence | `alternatives.json`, `papers.json`, `clustering_null.json` |
 
 ## Processed files
@@ -106,13 +106,23 @@ abstract), `paper` (read from its body or figures), `derived` (computed by us
 from published values), or `ours` (our own assumption — *not* a published
 number). Anything tagged `ours` must not be presented to users as a finding.
 
-**`papers.json`** — 25 papers, 2014–2025, pinned to DOIs verified one by one,
+**`papers.json`** — 28 papers, 2014–2026, pinned to DOIs verified one by one,
 with Crossref titles, dates, authors and citation counts. Every summary was
 checked against the paper's own abstract except Luhman 2014
 (`summary_checked_against_abstract: false`). `stance` is **our** editorial
 reading (supports / against / alternative / neutral), not a label the authors
-chose. Current split: 10 supports, 6 against, 4 alternative, 5 neutral — a
+chose. Current split: 10 supports, 8 against, 4 alternative, 6 neutral — a
 property of the sample we picked, not a measurement of community opinion.
+
+**`field_timeline.json`** — the entries on the section 07 timeline: which of
+the papers we judged major, which side of the spine each goes on (`kind`:
+support / against / data / future), a plain-language retelling of its
+abstract-checked summary, who did the work, and the photo shown with it. Hand
+curated; `scripts/fetch_portraits.py` fills in each photo's credit, licence and
+source from the Wikimedia Commons API and writes the cropped images to
+`public/field/`. The 2026 entry (Rubin's survey start and first dwarf-planet
+candidate) and the four `future` entries cite announcements and preprints
+rather than refereed papers, and are labelled as such on the page.
 
 **`alternatives.json`** — 8 competing explanations, each with what it explains,
 what its critics say it fails to explain, a status, and links back into

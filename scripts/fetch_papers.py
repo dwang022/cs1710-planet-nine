@@ -69,6 +69,12 @@ PAPERS = [
   "Rules out the Brown & Batygin (2021) Planet Nine to a 50% completion depth of V = 21.5. With ZTF and DES, 78% of the predicted parameter space is now excluded; what remains is faint and near where the northern galactic plane crosses the ecliptic."),
  ("10.1017/pasa.2025.10024", "supports", "Phan et al. 2025 (IRAS/AKARI)",
   "One far-infrared candidate from two all-sky surveys 23 years apart, implying 500-700 AU and 7-17 Earth masses. Two detections cannot fix an orbit, so this stays a candidate until followed up."),
+ ("10.3847/1538-4357/ac2307", "neutral", "Naess et al. 2021 (ACT)",
+  "A blind millimetre-wave search over 18,000 square degrees finds no significant detection, rules out roughly 17% (5 Earth masses) or 9% (10 Earth masses) of the parameter space, and lists ten weak candidates for follow-up."),
+ ("10.1038/s41550-025-02595-7", "against", "Chen et al. 2025 (Ammonite)",
+  "Discovery of 2023 KQ14, a Sedna-like object with q = 66 AU and a = 252 AU. Its orbit does not align with the other Sedna-like objects, and its long-term stability favours a hypothetical planet on a larger orbit (about 500 AU) rather than a closer one."),
+ ("10.3847/2041-8213/ae3a75", "against", "Cheng, Li & Yang 2026 (2017 OF201)",
+  "A roughly 700 km dwarf-planet candidate on an 830 AU orbit with perihelion at 45 AU (posted May 2025). Its longitude of perihelion lies outside the observed clustering, which the authors call a challenge to the dynamical evidence for Planet Nine."),
 ]
 
 # arXiv ids, each confirmed by an exact title match against the arXiv API.
@@ -95,6 +101,9 @@ ARXIV = {
     "10.3847/1538-3881/ac32dd": "2110.13117",
     "10.3847/1538-3881/ad24e9": "2401.17977",
     "10.1017/pasa.2025.10024": "2504.17288",
+    "10.3847/1538-4357/ac2307": "2104.10264",
+    "10.1038/s41550-025-02595-7": "2508.02162",
+    "10.3847/2041-8213/ae3a75": "2505.15806",
 }
 
 
@@ -149,7 +158,7 @@ def main():
             "'stance' is our editorial reading of each abstract, not a label the authors chose. Say so on the site.",
             "Crossref citation counts undercount astronomy, which cites heavily through arXiv and NASA ADS. Use them as relative weight, not absolute impact.",
             "Every summary below was checked against the paper's own abstract (or full text) in October 2026, except where summary_checked_against_abstract is false.",
-            "This is a deliberately chosen ~26-paper sample of a literature with hundreds of entries. It is not a census, and counting stances here does not measure community opinion.",
+            "This is a deliberately chosen ~28-paper sample of a literature with hundreds of entries. It is not a census, and counting stances here does not measure community opinion.",
         ],
         "_stance_values": {
             "supports": "argues the clustering is real and a planet is the best explanation",

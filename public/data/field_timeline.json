@@ -1,0 +1,612 @@
+{
+ "_what": "Section 07: the argument over Planet Nine as a scroll-driven timeline. Major papers only. Support on the left, against on the right, new data across the spine, and what comes next at the bottom.",
+ "_caution": [
+  "'kind' is our editorial reading of what each entry does to the argument, like 'stance' in papers.json. Say so on the site.",
+  "Entries with a 'doi' take their title, authors, citation count and links from papers.json; the 'text' here is a plain-language retelling of that paper's abstract-checked summary.",
+  "Photos are Wikimedia Commons files. scripts/fetch_portraits.py downloads them, crops them square, and fills in 'credit', 'license' and 'source' from the Commons API, so nothing about licensing is typed by hand.",
+  "Where no freely licensed portrait exists, the card shows the instrument or institution behind the work, or a monogram.",
+  "'future' entries describe searches that are under way or proposed. They are not findings."
+ ],
+ "_kinds": {
+  "support": "argues the pattern is real and a planet is the best explanation",
+  "against": "argues the pattern is a selection effect, proposes something other than a planet, or rules out part of the predicted planet",
+  "data": "new observations or constraints that both sides use",
+  "future": "a search that is running or planned, and what it could settle"
+ },
+ "entries": [
+  {
+   "id": "trujillo-2014",
+   "year": 2014,
+   "order": 1,
+   "kind": "support",
+   "doi": "10.1038/nature13156",
+   "tag": "new object",
+   "who": "Chad Trujillo & Scott Sheppard",
+   "org": "Gemini Observatory · Carnegie Institution for Science",
+   "headline": "A second Sedna, and a hint of a pattern",
+   "text": "Announcing 2012 VP113, they point out that the most distant known objects all come closest to the Sun at a similar angle, and suggest an unseen super-Earth could be holding them there.",
+   "photos": [
+    {
+     "file": "trujillo",
+     "alt": "Chad Trujillo",
+     "commons": "File:Chad Aaron Trujillo.jpg",
+     "focus": [
+      0.38,
+      0.32
+     ],
+     "src": "/field/trujillo.jpg",
+     "credit": "Orion415",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Chad_Aaron_Trujillo.jpg",
+     "zoom": 0.6
+    }
+   ]
+  },
+  {
+   "id": "luhman-2014",
+   "year": 2014,
+   "order": 2,
+   "kind": "against",
+   "doi": "10.1088/0004-637X/781/1/4",
+   "tag": "all-sky search",
+   "who": "Kevin Luhman",
+   "org": "Penn State · NASA's WISE infrared survey",
+   "headline": "Nothing big is hiding nearby",
+   "text": "An infrared sweep of the whole sky reports no Saturn-mass body within 10,000 AU. A world a few times Earth's mass, cold and faint, would slip under this limit.",
+   "unverified": "The WISE mass limits are widely quoted; this paper has no preprint, so we could not check them against its abstract.",
+   "photos": [
+    {
+     "file": "wise",
+     "alt": "The WISE spacecraft (artist's concept)",
+     "commons": "File:WISE artist concept (PIA17254, crop).jpg",
+     "src": "/field/wise.jpg",
+     "credit": "NASA/JPL-Caltech",
+     "license": "Public domain",
+     "license_url": "",
+     "source": "https://commons.wikimedia.org/wiki/File:WISE_artist_concept_(PIA17254,_crop).jpg"
+    }
+   ]
+  },
+  {
+   "id": "batygin-brown-2016",
+   "year": 2016,
+   "order": 1,
+   "kind": "support",
+   "doi": "10.3847/0004-6256/151/2/22",
+   "tag": "the proposal",
+   "who": "Konstantin Batygin & Mike Brown",
+   "org": "Caltech",
+   "headline": "The founding paper",
+   "text": "Six distant objects share an orbital orientation. In simulations, a planet of roughly ten Earth masses on a wide orbit pointing the opposite way reproduces the pattern. They call it Planet Nine.",
+   "photos": [
+    {
+     "file": "batygin",
+     "alt": "Konstantin Batygin",
+     "commons": "File:Konstantin Batygin by Christopher Michel in 2022 01.jpg",
+     "focus": [
+      0.5,
+      0.3
+     ],
+     "src": "/field/batygin.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Konstantin_Batygin_by_Christopher_Michel_in_2022_01.jpg",
+     "zoom": 0.85
+    },
+    {
+     "file": "brown",
+     "alt": "Mike Brown",
+     "commons": "File:Mike Brown Caltech 2021 01.jpg",
+     "focus": [
+      0.5,
+      0.28
+     ],
+     "src": "/field/brown.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Mike_Brown_Caltech_2021_01.jpg",
+     "zoom": 0.72
+    }
+   ]
+  },
+  {
+   "id": "fienga-2016",
+   "year": 2016,
+   "order": 2,
+   "kind": "data",
+   "doi": "10.1051/0004-6361/201628227",
+   "tag": "constraint",
+   "who": "Agnès Fienga, Jacques Laskar & colleagues",
+   "org": "Observatoire de la Côte d'Azur · Paris Observatory · Cassini radio ranging",
+   "headline": "Saturn's position narrows the hiding places",
+   "text": "Cassini's measurements of Saturn's distance are precise enough that a massive planet in some directions would already have shown up as a tug on Saturn. Those directions are crossed off; others stay open.",
+   "photos": [
+    {
+     "file": "cassini",
+     "alt": "Cassini at Saturn (artist's concept)",
+     "commons": "File:Cassini Saturn Orbit Insertion.jpg",
+     "src": "/field/cassini.jpg",
+     "credit": "NASA/JPL",
+     "license": "Public domain",
+     "license_url": "",
+     "source": "https://commons.wikimedia.org/wiki/File:Cassini_Saturn_Orbit_Insertion.jpg"
+    }
+   ]
+  },
+  {
+   "id": "malhotra-2016",
+   "year": 2016,
+   "order": 3,
+   "kind": "support",
+   "doi": "10.3847/2041-8205/824/2/L22",
+   "tag": "independent route",
+   "who": "Renu Malhotra, Kathryn Volk & Xianyu Wang",
+   "org": "University of Arizona",
+   "headline": "The orbits beat in simple ratios",
+   "text": "The orbital periods of the most distant objects look like whole-number ratios of one period, as if locked in resonance with an unseen planet near 665 AU. A different argument that lands in the same place.",
+   "monogram": "RM"
+  },
+  {
+   "id": "ossos-2017",
+   "year": 2017,
+   "order": 1,
+   "kind": "against",
+   "doi": "10.3847/1538-3881/aa7aed",
+   "tag": "selection effect",
+   "who": "Cory Shankman, JJ Kavelaars, Michele Bannister & the OSSOS team",
+   "org": "Canada-France-Hawaii Telescope",
+   "headline": "Maybe we only found them where we looked",
+   "text": "A survey that recorded exactly where it pointed and how deep it saw finds striking, non-intuitive biases in which distant orbits get detected at all. Its own eight distant objects are consistent with orbits spread evenly around the sky.",
+   "photos": [
+    {
+     "file": "bannister",
+     "alt": "Michele Bannister",
+     "commons": "File:Michele Bannister in Hawai'i.jpg",
+     "focus": [
+      0.5,
+      0.62
+     ],
+     "zoom": 0.55,
+     "src": "/field/bannister.jpg",
+     "credit": "International Gemini Observatory/NSF’s NOIRLab/AURA/J. Pollard",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Michele_Bannister_in_Hawai%27i.jpg"
+    },
+    {
+     "file": "cfht",
+     "alt": "The Canada-France-Hawaii Telescope",
+     "commons": "File:Canada-France-Hawaii Telescope Sunset.jpg",
+     "src": "/field/cfht.jpg",
+     "credit": "Generic1139",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Canada-France-Hawaii_Telescope_Sunset.jpg"
+    }
+   ]
+  },
+  {
+   "id": "becker-2018",
+   "year": 2018,
+   "order": 1,
+   "kind": "support",
+   "doi": "10.3847/1538-3881/aad042",
+   "tag": "new object",
+   "who": "Juliette Becker & the Dark Energy Survey collaboration",
+   "org": "University of Michigan · Blanco 4-metre telescope, Chile",
+   "headline": "An orbit tilted 54 degrees",
+   "text": "2015 BP519 circles the Sun on an orbit tilted 54 degrees out of the plane of the planets, the most extreme such object then known. The authors judge that it adds to the circumstantial evidence for a planet: it would be the first of a predicted population of tilted, shepherded orbits.",
+   "photos": [
+    {
+     "file": "blanco",
+     "alt": "The Víctor M. Blanco 4-metre telescope under the Milky Way",
+     "commons": "File:Víctor M Blanco 4-meter Telescope (noirlab-tololo-02).jpg",
+     "src": "/field/blanco.jpg",
+     "credit": "CTIO/NOIRLab/NSF/AURA/D. Munizaga",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:V%C3%ADctor_M_Blanco_4-meter_Telescope_(noirlab-tololo-02).jpg"
+    }
+   ]
+  },
+  {
+   "id": "madigan-2018",
+   "year": 2018,
+   "order": 2,
+   "kind": "against",
+   "doi": "10.3847/1538-3881/aad95c",
+   "tag": "alternative explanation",
+   "who": "Ann-Marie Madigan & colleagues",
+   "org": "University of Colorado Boulder",
+   "headline": "No planet required",
+   "text": "A swarm of small, distant bodies with enough combined mass can tilt and align itself through its own gravity. The clustering becomes a collective effect, not the work of one hidden world.",
+   "monogram": "AM"
+  },
+  {
+   "id": "brown-batygin-2019",
+   "year": 2019,
+   "order": 1,
+   "kind": "support",
+   "doi": "10.3847/1538-3881/aaf051",
+   "also": [
+    "10.1016/j.physrep.2019.01.009"
+   ],
+   "tag": "the odds, redone",
+   "who": "Mike Brown, Konstantin Batygin, Fred Adams & Juliette Becker",
+   "org": "Caltech · University of Michigan",
+   "headline": "One in 500, after the biases",
+   "text": "Modelling how the known surveys could have shaped the sample, the clustering still comes out about 1-in-500 unlikely by chance. A long review the same year shrinks the planet to 5 to 10 Earth masses on a somewhat closer orbit.",
+   "photos": [
+    {
+     "file": "orbits",
+     "alt": "Batygin and Brown's diagram of the proposed orbit",
+     "commons": "File:Orbits 1280 PlanetX2.jpg",
+     "src": "/field/orbits.jpg",
+     "credit": "Konstantin Batygin and Mike Brown",
+     "license": "Public domain",
+     "license_url": "",
+     "source": "https://commons.wikimedia.org/wiki/File:Orbits_1280_PlanetX2.jpg"
+    }
+   ]
+  },
+  {
+   "id": "napier-2021",
+   "year": 2021,
+   "order": 1,
+   "kind": "against",
+   "doi": "10.3847/PSJ/abe53e",
+   "tag": "selection effect",
+   "who": "Kevin Napier, David Gerdes & colleagues",
+   "org": "University of Michigan · DES, OSSOS and the Sheppard–Trujillo survey",
+   "headline": "Three surveys, no significant clustering",
+   "text": "Pooling three surveys with published pointing histories and depths, the orientations of 14 distant objects are consistent with being spread evenly around the sky. The sample, they conclude, provides no evidence for clustering.",
+   "photos": [
+    {
+     "file": "decam",
+     "alt": "The Dark Energy Camera",
+     "commons": "File:Dark Energy Survey camera (DECam) (noirlab2118c).jpg",
+     "src": "/field/decam.jpg",
+     "credit": "DOE/FNAL/DECam/R. Hahn/CTIO/NOIRLab/NSF/AURA",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Dark_Energy_Survey_camera_(DECam)_(noirlab2118c).jpg"
+    }
+   ]
+  },
+  {
+   "id": "brown-batygin-2021",
+   "year": 2021,
+   "order": 2,
+   "kind": "support",
+   "doi": "10.3847/1538-3881/ac2056",
+   "tag": "the orbit",
+   "who": "Mike Brown & Konstantin Batygin",
+   "org": "Caltech",
+   "headline": "A map of where to look",
+   "text": "A redone bias analysis keeps the clustering significant at 99.6%, and a full orbital fit lands on a planet of about 6 Earth masses, closer and brighter than first proposed: around 380 AU out, a target a large telescope could find.",
+   "photos": [
+    {
+     "file": "batygin",
+     "alt": "Konstantin Batygin",
+     "commons": "File:Konstantin Batygin by Christopher Michel in 2022 01.jpg",
+     "focus": [
+      0.5,
+      0.3
+     ],
+     "src": "/field/batygin.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Konstantin_Batygin_by_Christopher_Michel_in_2022_01.jpg",
+     "zoom": 0.85
+    }
+   ]
+  },
+  {
+   "id": "act-2021",
+   "year": 2021,
+   "order": 3,
+   "kind": "data",
+   "doi": "10.3847/1538-4357/ac2307",
+   "tag": "a new kind of search",
+   "who": "Sigurd Naess & the Atacama Cosmology Telescope collaboration",
+   "org": "Cerro Toco, Chile",
+   "headline": "Listening for its warmth in the millimetre band",
+   "text": "A cold planet gives off its own faint heat. A blind search of a cosmology telescope's sky maps finds no clear signal, rules out roughly a tenth of the possible planets, and leaves ten weak candidates for follow-up.",
+   "photos": [
+    {
+     "file": "act",
+     "alt": "The Atacama Cosmology Telescope",
+     "commons": "File:Atacama cosmology telescope toco.jpg",
+     "src": "/field/act.jpg",
+     "credit": "The original uploader was Ahincks at English Wikipedia.",
+     "license": "CC BY 3.0",
+     "license_url": "https://creativecommons.org/licenses/by/3.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Atacama_cosmology_telescope_toco.jpg"
+    }
+   ]
+  },
+  {
+   "id": "ztf-2022",
+   "year": 2022,
+   "order": 1,
+   "kind": "against",
+   "doi": "10.3847/1538-3881/ac32dd",
+   "tag": "direct search",
+   "who": "Mike Brown & Konstantin Batygin",
+   "org": "Caltech · Zwicky Transient Facility, Palomar",
+   "headline": "The proponents start crossing off the sky",
+   "text": "A direct search of the ZTF archive finds no candidate down to V = 20.5. That rules out 56% of the planet's own predicted parameter space.",
+   "photos": [
+    {
+     "file": "brown",
+     "alt": "Mike Brown",
+     "commons": "File:Mike Brown Caltech 2021 01.jpg",
+     "focus": [
+      0.5,
+      0.28
+     ],
+     "src": "/field/brown.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Mike_Brown_Caltech_2021_01.jpg",
+     "zoom": 0.72
+    }
+   ]
+  },
+  {
+   "id": "ps1-2024",
+   "year": 2024,
+   "order": 1,
+   "kind": "against",
+   "doi": "10.3847/1538-3881/ad24e9",
+   "tag": "direct search",
+   "who": "Mike Brown, Matthew Holman & Konstantin Batygin",
+   "org": "Caltech · Harvard–Smithsonian CfA · Pan-STARRS1, Haleakalā",
+   "headline": "78% ruled out",
+   "text": "Pan-STARRS1 finds nothing to a depth of V = 21.5. With ZTF and DES, 78% of the predicted planets are now excluded. What remains is faint and near where the Milky Way's plane crosses the ecliptic.",
+   "photos": [
+    {
+     "file": "panstarrs",
+     "alt": "The Pan-STARRS observatory on Haleakalā",
+     "commons": "File:Pan-STARRS Observatory (2019-12-4315).jpg",
+     "src": "/field/panstarrs.jpg",
+     "credit": "R. Ratkowski",
+     "license": "Public domain",
+     "license_url": "",
+     "source": "https://commons.wikimedia.org/wiki/File:Pan-STARRS_Observatory_(2019-12-4315).jpg"
+    }
+   ]
+  },
+  {
+   "id": "phan-2025",
+   "year": 2025,
+   "order": 1,
+   "kind": "support",
+   "doi": "10.1017/pasa.2025.10024",
+   "tag": "candidate detection",
+   "who": "Terry Long Phan, Tomotsugu Goto & colleagues",
+   "org": "National Tsing Hua University, Taiwan · IRAS and AKARI infrared surveys",
+   "headline": "One candidate, 23 years apart",
+   "text": "Comparing two far-infrared all-sky surveys taken 23 years apart turns up one source that moved the right amount for a planet 500 to 700 AU away. Two detections cannot fix an orbit, so it stays a candidate until someone follows it up.",
+   "photos": [
+    {
+     "file": "iras",
+     "alt": "The IRAS satellite (artist's concept)",
+     "commons": "File:IRAS in orbit.jpg",
+     "src": "/field/iras.jpg",
+     "credit": "NASA/JPL",
+     "license": "Public domain",
+     "license_url": "",
+     "source": "https://commons.wikimedia.org/wiki/File:IRAS_in_orbit.jpg"
+    },
+    {
+     "file": "akari",
+     "alt": "The AKARI satellite (illustration)",
+     "commons": "File:ASTRO-F 'AKARI' illust.jpg",
+     "src": "/field/akari.jpg",
+     "credit": "宇宙航空研究開発機構・宇宙科学研究所(JAXA/ISAS)、https://www.isas.jaxa.jp/en/researchers/data-policy/ 、https://www.isas.jaxa.jp/researchers/data-policy/ 、Originally from NEC.",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:ASTRO-F_%27AKARI%27_illust.jpg"
+    }
+   ]
+  },
+  {
+   "id": "ammonite-2025",
+   "year": 2025,
+   "order": 2,
+   "kind": "against",
+   "doi": "10.1038/s41550-025-02595-7",
+   "tag": "new object",
+   "who": "Ying-Tung Chen & the FOSSIL survey team",
+   "org": "Academia Sinica · NAOJ · Subaru Telescope",
+   "headline": "A fossil orbit that points the wrong way",
+   "text": "2023 KQ14, nicknamed Ammonite, is only the fourth Sedna-like object known, and its orbit does not line up with the other three. Its stability over 4.5 billion years favours a large hypothetical planet on a wider orbit (about 500 AU) rather than a closer one.",
+   "photos": [
+    {
+     "file": "subaru",
+     "alt": "The Subaru Telescope on Mauna Kea",
+     "commons": "File:Subaru Telescope on Mauna Kea (geminiann12013b).jpg",
+     "src": "/field/subaru.jpg",
+     "credit": "International Gemini Observatory/NOIRLab/NSF/AURA/Subaru Observatory",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Subaru_Telescope_on_Mauna_Kea_(geminiann12013b).jpg"
+    }
+   ]
+  },
+  {
+   "id": "of201-2025",
+   "year": 2025,
+   "order": 3,
+   "kind": "against",
+   "doi": "10.3847/2041-8213/ae3a75",
+   "tag": "new object",
+   "who": "Sihao Cheng, Jiaxuan Li & Eritas Yang",
+   "org": "Institute for Advanced Study · Princeton",
+   "headline": "A new dwarf planet outside the cluster",
+   "text": "2017 OF201, roughly 700 km across on an 830 AU orbit, comes closest to the Sun in a direction outside the clustering the planet is meant to explain. The authors call that a challenge to the dynamical evidence.",
+   "note": "Posted May 2025; published in ApJ Letters in February 2026.",
+   "photos": [
+    {
+     "file": "ias",
+     "alt": "Fuld Hall, Institute for Advanced Study",
+     "commons": "File:2023-12-02 15 10 02 Front view of Fuld Hall at the Institute for Advanced Study in Princeton, Mercer County, New Jersey.jpg",
+     "src": "/field/ias.jpg",
+     "credit": "Famartin",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:2023-12-02_15_10_02_Front_view_of_Fuld_Hall_at_the_Institute_for_Advanced_Study_in_Princeton,_Mercer_County,_New_Jersey.jpg"
+    }
+   ]
+  },
+  {
+   "id": "rubin-2026",
+   "year": 2026,
+   "order": 1,
+   "kind": "data",
+   "tag": "new survey",
+   "who": "Vera C. Rubin Observatory",
+   "org": "NSF–DOE · Cerro Pachón, Chile",
+   "headline": "The survey that should settle it begins",
+   "text": "On the night of 29 June 2026, Rubin's ten-year Legacy Survey of Space and Time starts. By October its pipelines have already turned up 2026 ED138, a probable dwarf planet 600 to 1,500 km across, in images taken before the survey formally began.",
+   "links": [
+    {
+     "label": "Rubin: start of LSST (10 July 2026)",
+     "url": "https://www.rubin.community/t/2026-07-10-early-operations-update-start-of-lsst/12280"
+    },
+    {
+     "label": "SLAC: first dwarf planet candidate (27 Oct 2026)",
+     "url": "https://www6.slac.stanford.edu/news/2026-10-27-nsf-doe-vera-c-rubin-observatory-reveals-its-first-dwarf-planet-candidate-our-solar"
+    }
+   ],
+   "photos": [
+    {
+     "file": "rubin",
+     "alt": "Vera C. Rubin Observatory",
+     "commons": "File:Vera C Rubin Observatory in the Snow (IMG 0315-CC).jpg",
+     "src": "/field/rubin.jpg",
+     "credit": "NOIRLab/NSF/AURA/C. Corco",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Vera_C_Rubin_Observatory_in_the_Snow_(IMG_0315-CC).jpg"
+    }
+   ]
+  },
+  {
+   "id": "future-rubin",
+   "kind": "future",
+   "order": 1,
+   "when": "2026 – 2029",
+   "who": "Rubin Observatory's first years",
+   "org": "Legacy Survey of Space and Time",
+   "headline": "Find it, or close most of the remaining space",
+   "text": "Brown & Batygin's 2021 fit puts most of the predicted brightness within reach of a single Rubin image, though the planned survey does not cover the whole predicted path. A planet would show up as a slow mover crossing successive images; a few years of data will either find one or empty most of the space that is left.",
+   "links": [
+    {
+     "label": "Brown & Batygin 2021",
+     "url": "https://arxiv.org/abs/2108.09868"
+    }
+   ],
+   "photos": [
+    {
+     "file": "lsstcam",
+     "alt": "The LSST Camera arriving at Rubin Observatory",
+     "commons": "File:LSST Camera Arrives at Rubin Observatory (rubin-2024 0517 RUBIN CAMERA Bonin AR307394).jpg",
+     "src": "/field/lsstcam.jpg",
+     "credit": "Olivier Bonin/SLAC National Accelerator Laboratory",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:LSST_Camera_Arrives_at_Rubin_Observatory_(rubin-2024_0517_RUBIN_CAMERA_Bonin_AR307394).jpg"
+    }
+   ]
+  },
+  {
+   "id": "future-infrared",
+   "kind": "future",
+   "order": 2,
+   "when": "next",
+   "who": "Following up the infrared candidates",
+   "org": "DECam · Subaru Hyper Suprime-Cam",
+   "headline": "A few deep images could end it",
+   "text": "The IRAS–AKARI candidate, and two more from AKARI alone, each need a handful of deep optical pointings along their predicted tracks to be confirmed or dismissed. The teams name DECam and Subaru's Hyper Suprime-Cam as the instruments for the job.",
+   "links": [
+    {
+     "label": "Phan et al. 2025",
+     "url": "https://arxiv.org/abs/2504.17288"
+    },
+    {
+     "label": "Chen, Goto, Phan et al. 2025 (AKARI)",
+     "url": "https://arxiv.org/abs/2506.12854"
+    }
+   ],
+   "photos": [
+    {
+     "file": "akari",
+     "alt": "The AKARI satellite (illustration)",
+     "commons": "File:ASTRO-F 'AKARI' illust.jpg",
+     "src": "/field/akari.jpg",
+     "credit": "宇宙航空研究開発機構・宇宙科学研究所(JAXA/ISAS)、https://www.isas.jaxa.jp/en/researchers/data-policy/ 、https://www.isas.jaxa.jp/researchers/data-policy/ 、Originally from NEC.",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:ASTRO-F_%27AKARI%27_illust.jpg"
+    }
+   ]
+  },
+  {
+   "id": "future-mm",
+   "kind": "future",
+   "order": 3,
+   "when": "ongoing",
+   "who": "Millimetre-wave searches",
+   "org": "Simons Observatory, Cerro Toco",
+   "headline": "Hearing its warmth, not its reflection",
+   "text": "The Simons Observatory's large telescope saw first light in 2025 on the same Chilean plateau as ACT, with far more sensitivity. Repeating ACT's shift-and-stack search there would test for the planet's own heat, independent of how much sunlight it reflects.",
+   "links": [
+    {
+     "label": "Naess et al. 2021 (ACT)",
+     "url": "https://arxiv.org/abs/2104.10264"
+    },
+    {
+     "label": "Cowan et al. 2016",
+     "url": "https://arxiv.org/abs/1602.05963"
+    }
+   ],
+   "photos": [
+    {
+     "file": "simons",
+     "alt": "The Simons Observatory Large Aperture Telescope",
+     "commons": "File:LAT SO.jpg",
+     "src": "/field/simons.jpg",
+     "credit": "Flucerod",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:LAT_SO.jpg"
+    }
+   ]
+  },
+  {
+   "id": "future-objects",
+   "kind": "future",
+   "order": 4,
+   "when": "ongoing",
+   "who": "More extreme objects",
+   "org": "Rubin · Subaru · DECam",
+   "headline": "Every new orbit is a vote",
+   "text": "Rubin is predicted to find tens of thousands of trans-Neptunian objects, among them the rare distant ones this whole argument rests on. If the newcomers cluster, the case strengthens. If they scatter like Ammonite and 2017 OF201, it fades, planet or no planet.",
+   "links": [
+    {
+     "label": "LSST Solar System Science Collaboration (2020)",
+     "url": "https://arxiv.org/abs/2009.07653"
+    }
+   ],
+   "art": "tno-1"
+  }
+ ],
+ "_photos_fetched": "2026-10-28"
+}

@@ -3,9 +3,9 @@
 //
 // Each row is one claim: a title that says what the paper did to the question,
 // one line of context, a small drawing of the point, and a link. The lane is
-// said three ways at once: colour, icon, and which edge the drawing and the
-// accent sit on (arguments for a planet open from the left, arguments against
-// one from the right, data and searches are boxed and centred). A data row
+// said three ways at once: colour, a large icon, and placement (arguments for
+// a planet sit as a box shifted left, arguments against one shifted right, data
+// and searches centred with their text centred). A data row
 // that ends in a conclusion grows a branch beneath it, in that side's colour.
 //
 // Content comes from field_timeline.json; titles, journals, citation counts
@@ -65,10 +65,9 @@ function row (e, byDoi) {
     <div class="fr-body">
       <h4 class="fr-title">${esc(e.title)}</h4>
       <p class="fr-line">${avatars(e)}${esc(e.line)}</p>
-      ${bar(e)}
-      ${foot ? `<div class="fr-foot">${foot}</div>` : ''}
     </div>
     <div class="fr-art">${e.diagram ? diagram(e.diagram, e.id) : ''}</div>
+    <div class="fr-meta">${bar(e)}${foot ? `<div class="fr-foot">${foot}</div>` : ''}</div>
     ${b ? `<div class="fr-branch ${b.cls}" aria-label="${esc(b.word)}">
       <span class="fr-turn" aria-hidden="true">↳</span>
       <span class="fr-bicon">${icon(b.icon)}</span>

@@ -1,8 +1,9 @@
 /* ---------------------------------------------------------------------------
    Section 07 — the field as a ledger (charts/field.js). One full-width row per
-   paper. The year rides in a gutter on the left. A row's lane is said three
-   ways: colour, icon, and which edge its accent and drawing sit on. Loaded by
-   field.js.
+   paper, the year in a gutter on the left. A row's lane is said three ways:
+   its background tint, a large icon, and its placement: rows for a planet are
+   boxes shifted left, rows against one shifted right, data and searches are
+   centred with centred text. Loaded by field.js.
    --------------------------------------------------------------------------- */
 
 :root {
@@ -10,7 +11,8 @@
   --fl-against: #d95926; --fl-against-ink: #eba181;
   --fl-data: #3987e5;    --fl-data-ink: #8fbdf0;     /* the colour of the objects elsewhere on the page */
   --fl-next: #f08bb4;    --fl-next-ink: #f5a8c6;     /* Rubin's colour on the sky map */
-  --fl-art: 236px;                                   /* the drawing's width */
+  --fl-art: 236px;                                   /* the drawing's width in a side row */
+  --fl-icon: 64px;
 }
 
 .k-for { color: var(--fl-for-ink); font-weight: 600; }
@@ -20,10 +22,10 @@
 #field .sec-head p { max-width: 78ch; }
 
 /* legend: the icons, in their colours */
-.fl-legend { gap: 8px 24px; margin: 2px 0 22px; align-items: center; }
-.fl-legend .legend-item { font-size: .86rem; gap: 7px; }
+.fl-legend { gap: 8px 26px; margin: 2px 0 22px; align-items: center; }
+.fl-legend .legend-item { font-size: .88rem; gap: 8px; }
 .fl-legend .legend-item.is-muted { color: var(--text-muted); }
-.fl-legend .fr-icon { width: 20px; height: 20px; }
+.fl-legend .fr-icon { width: 28px; height: 28px; }
 .fl-legend .is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); }
 .fl-legend .is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); }
 .fl-legend .is-data { --lane: var(--fl-data); --ink: var(--fl-data-ink); }
@@ -32,85 +34,109 @@
 /* --- a year: a gutter label that sticks, and its rows ---------------------- */
 
 .fl { position: relative; max-width: 1180px; margin: 0 auto; }
-.fy { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 0 18px; padding: 18px 0 22px; border-top: 1px solid var(--rule); }
+.fy { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 0 18px; padding: 18px 0 24px; border-top: 1px solid var(--rule); }
 .fy-year { align-self: start; position: sticky; top: 16px; }
 .fy-year span {
   display: inline-block; font: 700 .9rem/1 var(--font-mono); letter-spacing: .1em;
   color: var(--text-secondary); padding: 6px 0 8px; font-variant-numeric: tabular-nums;
 }
 .fy-next .fy-year span { color: var(--fl-next-ink); }
-.fy-rows { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.fy-rows { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 
 /* --- a row ----------------------------------------------------------------- */
 
-.fr {
-  position: relative; display: grid; align-items: center;
-  grid-template-columns: 30px minmax(0, 1fr) var(--fl-art); gap: 10px 20px;
-  padding: 14px 18px 14px 16px; border-radius: 12px;
+.fr { position: relative; border-radius: 14px; }
+/* every icon sits in a badge tinted with its lane, so colour and shape arrive together */
+.fr-icon {
+  width: var(--fl-icon); height: var(--fl-icon); color: var(--ink); display: grid; place-items: center;
+  border-radius: 50%; background: color-mix(in srgb, var(--lane) 26%, transparent);
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--lane) 55%, transparent);
 }
-.fr.is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); box-shadow: inset 3px 0 0 var(--lane); }
+.fr-icon .fi { display: block; width: 62%; height: 62%; }
+.fr-bicon .fi { display: block; width: 100%; height: 100%; }
+.fl-legend .fr-icon .fi { width: 64%; height: 64%; }
+.fr-body { min-width: 0; }
+.fr-art { color: var(--ink); min-width: 0; }
+.fr-art .fd { display: block; width: 100%; height: auto; overflow: hidden; }
+
+/* for a planet: a green box shifted left, the drawing after the words */
+.fr.is-for, .fr.is-against {
+  display: grid; align-items: center; gap: 4px 22px;
+  grid-template-columns: var(--fl-icon) minmax(0, 1fr) var(--fl-art);
+  grid-template-areas: "icon body art" "icon meta art";
+  padding: 18px 24px 18px 20px;
+}
+.fr.is-for {
+  --lane: var(--fl-for); --ink: var(--fl-for-ink);
+  margin-right: 9%; background: #199e7016; box-shadow: inset 4px 0 0 var(--lane);
+}
+/* against a planet: the mirror image, shifted right */
 .fr.is-against {
   --lane: var(--fl-against); --ink: var(--fl-against-ink);
-  grid-template-columns: var(--fl-art) minmax(0, 1fr) 30px; text-align: right;
-  padding: 14px 16px 14px 18px; box-shadow: inset -3px 0 0 var(--lane);
+  grid-template-columns: var(--fl-art) minmax(0, 1fr) var(--fl-icon);
+  grid-template-areas: "art body icon" "art meta icon";
+  margin-left: 9%; background: #d9592616; box-shadow: inset -4px 0 0 var(--lane);
+  padding: 18px 20px 18px 24px; text-align: right;
 }
-.fr.is-against .fr-art { order: 1; }
-.fr.is-against .fr-body { order: 2; }
-.fr.is-against .fr-icon { order: 3; }
-.fr.is-data {
-  --lane: var(--fl-data); --ink: var(--fl-data-ink);
-  background: var(--surface-1); border: 1px solid var(--rule); box-shadow: inset 0 3px 0 var(--lane);
-  padding-top: 16px;
-}
-.fr.is-next {
-  --lane: var(--fl-next); --ink: var(--fl-next-ink);
-  border: 1px dashed #f08bb480; background: #f08bb408;
-}
-/* key papers: larger title and drawing, a lit surface */
-.fr.is-key { --fl-art: 300px; padding: 20px 22px 20px 18px; background: #ffffff06; }
-.fr.is-key.is-against { padding: 20px 18px 20px 22px; }
-.fr.is-key.is-data { background: var(--surface-2); border-color: var(--text-muted); }
+.fr-icon { grid-area: icon; }
+.fr-body { grid-area: body; }
+.fr-art { grid-area: art; }
+.fr-meta { grid-area: meta; }
+.fr.is-for .fr-icon, .fr.is-against .fr-icon { align-self: center; }
 
-/* icon */
-.fr-icon { width: 30px; height: 30px; color: var(--ink); display: grid; place-items: center; }
-.fr-icon .fi, .fr-bicon .fi { display: block; width: 100%; height: 100%; }
-.fr-bicon { width: 22px; height: 22px; flex: none; color: var(--ink); }
+/* data and searches: centred, the big icon on top, the drawing under the words */
+.fr.is-data, .fr.is-next {
+  display: flex; flex-direction: column; align-items: center; text-align: center;
+  padding: 22px 28px 18px;
+}
+.fr.is-data { --lane: var(--fl-data); --ink: var(--fl-data-ink); background: #3987e516; border: 1px solid #3987e548; }
+.fr.is-next { --lane: var(--fl-next); --ink: var(--fl-next-ink); background: #f08bb412; border: 1px dashed #f08bb470; }
+.fr.is-data .fr-icon, .fr.is-next .fr-icon { margin-bottom: 8px; }
+.fr.is-data .fr-body, .fr.is-next .fr-body { max-width: 70ch; }
+.fr.is-data .fr-art, .fr.is-next .fr-art { width: min(100%, 300px); margin: 10px 0 4px; }
+.fr.is-data .fr-meta, .fr.is-next .fr-meta { display: flex; flex-direction: column; align-items: center; }
+
+/* key papers: a stronger tint, a border, larger type and drawing */
+.fr.is-key { --fl-art: 320px; }
+.fr.is-key.is-for { background: #199e7028; border: 1px solid #199e7060; padding: 24px 28px 24px 22px; }
+.fr.is-key.is-against { background: #d9592628; border: 1px solid #d9592660; padding: 24px 22px 24px 28px; }
+.fr.is-key.is-data { background: #3987e528; border-color: #3987e590; }
+.fr.is-key.is-data .fr-art { width: min(100%, 360px); }
 
 /* words */
-.fr-body { min-width: 0; }
-.fr-title { font-size: 1.14rem; line-height: 1.3; margin: 0 0 6px; letter-spacing: -.01em; }
-.fr.is-key .fr-title { font-size: 1.5rem; letter-spacing: -.02em; margin-bottom: 8px; }
-.fr-line { margin: 0; font-size: .92rem; line-height: 1.5; color: var(--text-secondary); max-width: none; }
-.fr.is-key .fr-line { font-size: 1rem; }
+.fr-title { font-size: 1.18rem; line-height: 1.3; margin: 0 0 6px; letter-spacing: -.01em; }
+.fr.is-key .fr-title { font-size: 1.55rem; letter-spacing: -.02em; margin-bottom: 8px; }
+.fr-line { margin: 0; font-size: .94rem; line-height: 1.5; color: var(--text-secondary); max-width: none; }
+.fr.is-key .fr-line { font-size: 1.02rem; }
 .fr-avatar {
   width: 22px; height: 22px; border-radius: 50%; object-fit: cover; vertical-align: -5px;
   margin-right: 4px; border: 1px solid var(--surface-3);
 }
 .fr-avatar + .fr-avatar { margin-left: -8px; }
+.fr-meta:empty { display: none; }
 .fr-foot { margin-top: 8px; font-size: .78rem; color: var(--text-muted); display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; }
 .fr.is-against .fr-foot { justify-content: flex-end; }
+.fr.is-data .fr-foot, .fr.is-next .fr-foot { justify-content: center; }
 .fr-sep { color: var(--rule); margin: 0 5px; }
 
 /* an empty search: how much of the predicted planet it ruled out */
-.fr-bar { display: flex; align-items: center; gap: 12px; margin-top: 10px; font-size: .82rem; color: var(--text-muted); }
-.fr-bar-track { flex: 0 0 160px; height: 7px; border-radius: 4px; background: var(--surface-3); overflow: hidden; }
+.fr-bar { display: flex; align-items: center; gap: 12px; margin-top: 8px; font-size: .84rem; color: var(--text-muted); }
+.fr-bar-track { flex: 0 0 180px; height: 8px; border-radius: 4px; background: #ffffff14; overflow: hidden; }
 .fr-bar-track b { display: block; height: 100%; border-radius: 4px; background: var(--ink); }
 .fr-bar strong { color: var(--text-primary); font-variant-numeric: tabular-nums; }
 
-/* the drawing */
-.fr-art { color: var(--ink); min-width: 0; }
-.fr-art .fd { display: block; width: 100%; height: auto; overflow: hidden; }
-
-/* a branch: what the finders concluded, rising from under the data card */
+/* a branch: what the finders concluded, rising from under the data card,
+   in its side's colour and leaning to its side */
 .fr-branch {
-  grid-column: 1 / -1; display: flex; align-items: flex-start; gap: 10px;
-  margin: 2px 0 0; padding: 12px 0 0; border-top: 1px dashed var(--rule);
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  margin-top: 16px; padding: 12px 16px; border-radius: 10px; text-align: left;
 }
-.fr-branch.is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); }
-.fr-branch.is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); flex-direction: row-reverse; text-align: right; }
-.fr-turn { color: var(--ink); font-size: 1.1rem; line-height: 1.2; flex: none; }
+.fr-branch.is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); background: #199e701e; margin-right: auto; }
+.fr-branch.is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); background: #d959261e; flex-direction: row-reverse; text-align: right; }
+.fr-bicon { width: 36px; height: 36px; flex: none; color: var(--ink); }
+.fr-turn { color: var(--ink); font-size: 1.3rem; line-height: 1; flex: none; }
 .fr-branch.is-against .fr-turn { transform: scaleX(-1); }
-.fr-branch p { margin: 0; font-size: .95rem; line-height: 1.5; color: var(--text-primary); max-width: none; }
+.fr-branch p { margin: 0; font-size: .98rem; line-height: 1.5; color: var(--text-primary); max-width: none; }
 
 /* --- credits --------------------------------------------------------------- */
 
@@ -138,26 +164,30 @@ html.has-reveal .fr:focus-within, html.has-reveal .fr:focus-within .fr-branch { 
 /* --- narrower screens ------------------------------------------------------ */
 
 @media (max-width: 1100px) {
-  :root { --fl-art: 200px; }
+  :root { --fl-art: 200px; --fl-icon: 52px; }
   .fr.is-key { --fl-art: 240px; }
+  .fr.is-for { margin-right: 5%; }
+  .fr.is-against { margin-left: 5%; }
 }
 @media (max-width: 900px) {
+  :root { --fl-icon: 48px; }
   .fy { grid-template-columns: 1fr; gap: 10px 0; padding: 14px 0 18px; }
   .fy-year { position: static; }
-  .fr, .fr.is-against, .fr.is-key, .fr.is-key.is-against {
-    grid-template-columns: 26px minmax(0, 1fr); padding: 14px 16px; text-align: left;
+  .fr.is-for, .fr.is-against, .fr.is-key.is-for, .fr.is-key.is-against {
+    margin: 0; grid-template-columns: var(--fl-icon) minmax(0, 1fr);
+    grid-template-areas: "icon body" "art art" "meta meta"; gap: 10px 14px;
+    padding: 16px; text-align: left;
   }
-  .fr.is-against { box-shadow: inset 3px 0 0 var(--lane); }
-  .fr.is-against .fr-icon { order: 0; }
-  .fr.is-against .fr-body { order: 1; }
-  .fr-art, .fr.is-against .fr-art { order: 2; grid-column: 2; max-width: 260px; }
+  .fr.is-against { box-shadow: inset 4px 0 0 var(--lane); }
+  .fr-art { max-width: 260px; }
   .fr.is-against .fr-foot { justify-content: flex-start; }
   .fr-branch.is-against { flex-direction: row; text-align: left; }
   .fr-branch.is-against .fr-turn { transform: none; }
-  .fr.is-key .fr-title { font-size: 1.25rem; }
-  .fr-icon { width: 26px; height: 26px; }
+  .fr.is-key .fr-title { font-size: 1.28rem; }
+  .fr.is-data, .fr.is-next { padding: 18px 16px 16px; }
 }
 @media (max-width: 560px) {
-  .fr-bar-track { flex-basis: 110px; }
-  .fr-art { max-width: 200px; }
+  .fr-bar { flex-wrap: wrap; justify-content: center; }
+  .fr-bar-track { flex-basis: 140px; }
+  .fr-art { max-width: 220px; }
 }

@@ -23,14 +23,15 @@ npm run preview    # serve the built bundle on :4173
 ## The pages
 
 An intro screen (the title, a telescope aimed at Planet Nine, shooting stars, a
-Start button, skip-ahead links, and a picker for what the planet is made of),
-then three parts:
+Start button, three part buttons, and a carousel for what the planet is made
+of), then three parts, with a credits page outside the walkthrough:
 
 | Part | Page | What it holds | Data |
 |---|---|---|---|
-| 1 · The setting | `setting/planets.html` | Nine planets → eight → nine?: the lineup, Pluto's reclassification, the IAU definition scored on familiar objects | `planets.json` |
-| | `setting/distance.html` | A zoom-out from Earth to the farthest orbit (extreme objects as range bars with a "where it is now" dot); real discovery frames of Pluto, Sedna, 2012 VP113 and 2015 BP519 in blink players; arc length vs catalogue disagreement; JPL and Minor Planet Center records for Sedna; a grid of all 8,079 catalogued bodies with the 90, 44 and 6 that matter lit up | `etnos.json`, `planets.json`, `planet_nine_predictions.json`, `catalogue_samples.json`, `tno_summary.json`, `tracking/credits.json` |
-| 2 · The insight | `insights/clustering.html` | The orbits lean the same way, built up from one orbit to a compass arrow; filters for which objects count; the herding exhibit: place a planet and watch random orbits sort themselves | `etnos.json` |
+| 1 · Background | `setting/planets.html` | Nine planets → eight → nine?: three beats, the lineup, Pluto's reclassification, the IAU's three requirements with drawings, scored on familiar objects | `planets.json` |
+| | `setting/distance.html` | A zoom-out from Earth to the farthest orbit (extreme objects as range bars with a "where it is now" dot) | `etnos.json`, `planets.json`, `planet_nine_predictions.json` |
+| | `setting/data.html` | Real discovery frames of Pluto, Sedna, 2012 VP113 and 2015 BP519 in blink players; arc length vs catalogue disagreement; JPL and Minor Planet Center records for Sedna; a grid of all 8,079 catalogued bodies with the 90, 44 and 6 that matter lit up | `etnos.json`, `catalogue_samples.json`, `tno_summary.json`, `tracking/credits.json` |
+| 2 · Evidence | `insights/clustering.html` | The orbits lean the same way, built up from one orbit to a compass arrow; filters for which objects count; the herding exhibit: place a planet and watch random orbits sort themselves | `etnos.json` |
 | | `insights/probability.html` | Could it be luck: 4,000 fake solar systems; the sample-dependence catch; the streetlight exhibit (where telescopes looked); every paper's odds on one axis | `etnos.json`, `clustering_null.json` |
 | 3 · The search | `search/how.html` | Sky map of coverage and depth with Planet Nine's predicted path; the searches so far and what each ruled out; put a planet out there and score it | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json`, `planet_nine_predictions.json`, `field_timeline.json`, `papers.json` |
 | | `search/alternatives.html` | Eight explanations against four tests; the case against, paper by paper | `alternatives.json`, `papers.json`, `field_timeline.json` |
@@ -39,7 +40,9 @@ then three parts:
 
 The Planet Nine drawing comes in seven skins (ice giant, rocky super-Earth,
 ocean world, iron world, primordial black hole, cheese, nine-ball). The reader
-picks one on the intro screen and every page draws the planet that way.
+picks one on the intro screen; every page draws the planet that way, and
+everything that stands for it, down to the words "Planet Nine", takes that
+skin's colour.
 
 ## The thing worth demoing
 

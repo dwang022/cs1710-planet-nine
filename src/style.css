@@ -401,7 +401,7 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .criteria-wrap { overflow-x: auto; margin-top: 16px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-1); }
 .criteria { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 760px; }
 .criteria th, .criteria td { padding: 13px 16px; text-align: left; vertical-align: top; border-top: 1px solid var(--rule); }
-.criteria thead th { border-top: 0; font: 600 .7rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.criteria thead th { border-top: 0; border-bottom: 1px solid #4a4a52; font: 600 .76rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-primary); }
 .criteria tbody th { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
 .criteria tbody th .art { width: 2.3em; height: 2.3em; vertical-align: middle; margin-right: 10px; }
 .criteria tbody th small { display: block; font-weight: 400; color: var(--text-muted); font-size: .78rem; white-space: normal; max-width: 22ch; margin-left: calc(2.3em + 10px); line-height: 1.35; }
@@ -413,6 +413,12 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .criteria td.verdict { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
 .criteria td.verdict small { white-space: normal; font-weight: 400; }
 .criteria tr.p9 th, .criteria tr.p9 td { background: color-mix(in srgb, var(--p9) 6%, transparent); }
+/* the section head with the Union's mark at the right, inside the head's own height */
+.sec-head.with-logo { display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+.sec-head.with-logo > div p { margin-bottom: 0; }
+.iau-logo { flex: none; height: 74px; width: auto; filter: invert(1) grayscale(1) brightness(.92); opacity: .85; }
+@media (max-width: 760px) { .iau-logo { height: 56px; } }
+
 /* the definition: three requirements side by side, each with a drawing, numbered to match the table */
 .definition {
   list-style: none; margin: 18px 0 30px; padding: 0;

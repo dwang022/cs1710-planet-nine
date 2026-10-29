@@ -22,6 +22,7 @@
 }
 .nav-home .art { width: 26px; height: 26px; }
 .nav-home b { color: var(--text-primary); font-weight: 600; }
+.p9-name { color: var(--p9-ink); }
 .nav-home:hover { color: var(--text-primary); }
 
 .nav-menu summary { list-style: none; cursor: pointer; display: none; }
@@ -100,19 +101,18 @@
 
 .site-foot { position: relative; padding-block: 40px 72px; border-top: var(--divider); margin-top: 48px; }
 .continue { display: flex; justify-content: center; }
-/* one wide button, the way an article ends: "Continue" at the left, where it leads at the right */
+/* one wide, quiet button, the way an article ends */
 .btn-continue {
-  display: flex; align-items: center; justify-content: space-between; gap: 18px; width: min(100%, 780px);
-  padding: 20px 28px; border-radius: 14px; background: var(--accent); color: #15121f; text-decoration: none;
-  font-weight: 700; font-size: 1.12rem; box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 30%, transparent);
-  transition: filter .15s ease, translate .15s ease;
+  display: flex; align-items: center; justify-content: center; gap: 12px; width: min(100%, 780px);
+  padding: 18px 28px; border-radius: 14px; text-decoration: none; font-weight: 600; font-size: 1.08rem;
+  color: var(--text-primary); background: color-mix(in srgb, var(--accent) 14%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  transition: background-color .15s ease, border-color .15s ease, translate .15s ease;
 }
-.btn-continue .to { font-weight: 500; font-size: .98rem; opacity: .85; text-align: right; }
-.btn-continue:hover { filter: brightness(1.08); translate: 0 -1px; }
+.btn-continue:hover { background: color-mix(in srgb, var(--accent) 24%, var(--surface-2)); border-color: color-mix(in srgb, var(--accent) 65%, transparent); translate: 0 -1px; }
 /* the credits sit in the bottom corner, out of the reading line */
 .foot-credits { position: absolute; right: var(--gutter); bottom: 22px; font-size: .78rem; color: var(--text-muted); text-decoration: none; }
 .foot-credits:hover { color: var(--text-secondary); text-decoration: underline; }
-@media (max-width: 640px) { .btn-continue { flex-direction: column; align-items: flex-start; gap: 6px; padding: 18px 22px; } }
 
 /* the credits page */
 .credits-list { list-style: none; margin: 0; padding: 0; }
@@ -216,7 +216,7 @@ body.intro { overflow-x: hidden; }
   position: relative; z-index: 1; font-size: clamp(2.2rem, 7vw, 4.8rem); letter-spacing: -0.035em; line-height: 1.02;
   margin: 0 0 26px; font-weight: 700;
 }
-.sky h1 em { font-style: normal; color: var(--accent); }
+.sky h1 em { font-style: normal; color: var(--p9); }
 .sky-actions { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 18px; }
 .btn-start {
   display: inline-flex; align-items: center; gap: 12px; background: var(--accent); color: #15121f; text-decoration: none;

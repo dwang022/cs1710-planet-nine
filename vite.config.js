@@ -7,6 +7,7 @@ const pages = {
   index: 'index.html',
   planets: 'setting/planets.html',
   distance: 'setting/distance.html',
+  data: 'setting/data.html',
   clustering: 'insights/clustering.html',
   probability: 'insights/probability.html',
   search: 'search/how.html',

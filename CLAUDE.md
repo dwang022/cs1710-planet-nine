@@ -22,11 +22,11 @@ non-ASCII.
 
 ## The pages
 
-Nine pages in three parts, plus a credits page outside the walkthrough. Each
+Ten pages in three parts (Background, Evidence, The search), plus a credits page outside the walkthrough. Each
 page is one HTML file at the repo root plus one module in `src/pages/`; the
 shared chrome comes from `src/site.js`.
 `src/site.js` exports `PAGES`, the single source of truth for titles, order and
-groups: the top bar, the footer's Continue button and the intro's skip-ahead
+groups: the top bar, the footer's Continue button and the intro's three part
 links are all generated from it. The footer carries no colophon; credits,
 sources and the inference-not-observation note live on `credits.html`.
 
@@ -34,7 +34,8 @@ sources and the inference-not-observation note live on `credits.html`.
 |---|---|---|
 | `index.html` | `pages/intro.js` | Title, telescope aimed at Planet Nine, shooting stars, Start, three part buttons, the skin carousel on the planet (arrows either side, name beneath) |
 | `setting/planets.html` | `pages/planets.js` | Three beats, lineup scrolly (9 → 8 → 9?), Pluto's reclassification with the sad-face callout, the three requirements with drawings (`charts/rulesart.js`) and the scorecard table |
-| `setting/distance.html` | `pages/distance.js` | Zoom-out scrolly (planets on arcs, extreme objects as range bars with a "now" dot), real discovery frames in blink players, arc-vs-disagreement chart, JPL and MPC cards with Sedna's raw records, the grid of all 8,079 bodies |
+| `setting/distance.html` | `pages/distance.js` | Zoom-out scrolly (planets on arcs, extreme objects as range bars with a "now" dot), the AU primer |
+| `setting/data.html` | `pages/data.js` | Real discovery frames in blink players, arc-vs-disagreement chart, JPL and MPC cards with Sedna's raw records, the grid of all 8,079 bodies |
 | `insights/clustering.html` | `pages/clustering.js` | Lean scrolly (one orbit → compass → arrow → Planet Nine), filters in the last card, brush-to-select scatter and table, the herding exhibit |
 | `insights/probability.html` | `pages/probability.js` | Luck scrolly (build the null distribution), filters, the streetlight exhibit, published odds on one axis |
 | `search/how.html` | `pages/search.js` | Sky-map scrolly (coverage → depth → Rubin), search stats, ledger of searches, put-a-planet-out-there |
@@ -51,7 +52,7 @@ in `PAGES` in `src/site.js` and in `pages` in `vite.config.js`.
 ## Layout
 
 ```
-index.html, setting/, insights/, search/   the nine pages (Vite MPA inputs in vite.config.js); credits.html sits outside the walkthrough
+index.html, setting/, insights/, search/   the ten pages (Vite MPA inputs in vite.config.js); credits.html sits outside the walkthrough
 src/
   site.js        shared chrome: sprite injection, skin persistence, nav, page head, footer, base-URL link fix-up
   site.css       nav, page head, footer, intro screen, catalogue cards
@@ -72,6 +73,7 @@ public/data/     processed datasets the pages fetch (copies of data/processed/)
 public/art/      the drawings as standalone SVG/PNG with a contact sheet (node scripts/export_art.mjs)
 public/field/    portraits for the ledger (scripts/fetch_portraits.py), credits in CREDITS.md
 public/tracking/ real discovery photographs for the tracking exhibit (scripts/fetch_tracking_images.py), credits.json
+public/logos/    the IAU's mark (scripts/fetch_logos.py), credits.json; shown in monochrome beside the planet definition
 data/            processed datasets, README.md (what each file is, what was verified), SOURCES.md (every source)
 scripts/         the Python pipeline; scripts/exploration/ holds teammates' one-off plots
 papers/          README.md indexes every paper read; the PDFs are gitignored
@@ -121,7 +123,10 @@ from there, falling back to `data/raw/`.
   mark and word that stands for it (its orbit, its band, its label, `.k-p9`,
   `.k-ninth`) uses `--p9`, which `site.js` sets to the chosen skin's `colour`,
   so the copy never names Planet Nine's colour ("this line", not "the green
-  line"). `-ink` variants are the same
+  line"). `site.js` also tints the words "Planet Nine" wherever they are
+  written (title, top bar, headings, running text) by wrapping them in
+  `.p9-name`; chart text is left to the charts. Add `data-no-tint` to an
+  element to opt out. `-ink` variants are the same
   hues lifted for small text. The Sun keeps its gold and the planets their
   natural colours. **No blue accents**: the user dislikes blue; blue appears
   only as Earth's and Neptune's own colour in the art. Colour follows the
@@ -138,6 +143,8 @@ from there, falling back to `data/raw/`.
 - **The intro** holds only the title, Start, three part buttons, and the skin
   carousel: the planet the telescope points at, an arrow either side, the
   skin's name beneath. No label, no explanation.
+- **Group names** are "Background", "Evidence" and "The search": drop "the"
+  where it adds nothing.
 - **Links.** Write root-relative hrefs (`/setting/planets.html`); `site.js`
   rewrites them if `BASE_URL` is not `/`. Data and asset URLs go through
   `url()` in `data.js`.

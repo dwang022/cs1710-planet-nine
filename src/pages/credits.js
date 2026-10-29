@@ -12,11 +12,13 @@ const PORTRAITS = { bannister: 'Michele Bannister', batygin: 'Konstantin Batygin
 async function photos () {
   const root = document.getElementById('photoCredits')
   try {
-    const [tracking, portraits] = await Promise.all([
+    const [tracking, portraits, logos] = await Promise.all([
       fetch(url('tracking/credits.json')).then(r => r.json()),
       fetch(url('field/CREDITS.md')).then(r => r.text()),
+      fetch(url('logos/credits.json')).then(r => r.json()),
     ])
     const rows = tracking.images.map(im => ({ what: im.caption, credit: im.credit, license: im.license, href: im.source }))
+    for (const l of logos.logos) rows.push({ what: l.what, credit: l.credit, license: l.license + (l.restrictions ? `, ${l.restrictions}` : ''), href: l.source })
     // CREDITS.md lines read: - `file.jpg` — credit · licence · url
     for (const m of portraits.matchAll(/^- `([^`]+)` — (.+?) · (.+?) · (\S+)$/gm)) {
       const stem = m[1].replace(/\.\w+$/, '')
@@ -25,7 +27,7 @@ async function photos () {
     root.innerHTML = rows.map(r =>
       `<li><span>${r.what}</span><span class="muted">${r.credit} · ${r.license} · <a href="${r.href}">source</a></span></li>`).join('')
   } catch {
-    root.innerHTML = '<li><span>The photograph credits could not be loaded.</span><span class="muted">See public/tracking/credits.json and public/field/CREDITS.md in the repository.</span></li>'
+    root.innerHTML = '<li><span>The credits could not be loaded.</span><span class="muted">See credits.json in public/tracking and public/logos, and public/field/CREDITS.md.</span></li>'
   }
 }
 

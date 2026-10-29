@@ -13,10 +13,11 @@ import { url } from './data.js'
 
 export const PAGES = [
   { id: 'intro', path: 'index.html', title: 'The search for Planet Nine', short: 'Start' },
-  { id: 'planets', path: 'setting/planets.html', group: 'The setting', title: 'Nine, eight, nine?', short: 'Planets' },
-  { id: 'distance', path: 'setting/distance.html', group: 'The setting', title: 'How far, and how we know', short: 'Distance' },
-  { id: 'clustering', path: 'insights/clustering.html', group: 'The insight', title: 'The orbits lean the same way', short: 'Clustering' },
-  { id: 'probability', path: 'insights/probability.html', group: 'The insight', title: 'Could it just be luck?', short: 'Probability' },
+  { id: 'planets', path: 'setting/planets.html', group: 'Background', title: 'Nine, eight, nine?', short: 'Planets' },
+  { id: 'distance', path: 'setting/distance.html', group: 'Background', title: 'How far away', short: 'Distance' },
+  { id: 'data', path: 'setting/data.html', group: 'Background', title: 'The data', short: 'Data' },
+  { id: 'clustering', path: 'insights/clustering.html', group: 'Evidence', title: 'The orbits lean the same way', short: 'Clustering' },
+  { id: 'probability', path: 'insights/probability.html', group: 'Evidence', title: 'Could it just be luck?', short: 'Probability' },
   { id: 'search', path: 'search/how.html', group: 'The search', title: 'Why nobody has found it', short: 'The search' },
   { id: 'alternatives', path: 'search/alternatives.html', group: 'The search', title: 'What else could explain it', short: 'Alternatives' },
   { id: 'timeline', path: 'search/timeline.html', group: 'The search', title: 'Ten years of argument', short: 'Timeline' },
@@ -24,7 +25,7 @@ export const PAGES = [
   // Outside the walkthrough: no group, no Continue leads to it, the nav sets it apart.
   { id: 'credits', path: 'credits.html', title: 'Credits', short: 'Credits', aside: true },
 ]
-export const GROUPS = ['The setting', 'The insight', 'The search']
+export const GROUPS = ['Background', 'Evidence', 'The search']
 
 const SKIN_KEY = 'p9-skin'
 
@@ -127,13 +128,46 @@ function footer () {
   const main = PAGES.filter(p => !p.aside)
   const next = cur.aside ? null : main[main.indexOf(cur) + 1]
   const go = next
-    ? `<a class="btn-continue" href="${url(next.path)}"><span>Continue</span><span class="to">${next.title} <span aria-hidden="true">→</span></span></a>`
-    : `<a class="btn-continue" href="${url('index.html')}"><span>Back to the start</span><span class="to" aria-hidden="true">→</span></a>`
+    ? `<a class="btn-continue" href="${url(next.path)}">Continue <span aria-hidden="true">→</span></a>`
+    : `<a class="btn-continue" href="${url('index.html')}">Back to the start</a>`
   const credits = cur.aside ? '' : `<a class="foot-credits" href="${url('credits.html')}">Credits and sources</a>`
   const el = document.createElement('footer')
   el.className = 'site-foot wrap'
   el.innerHTML = `<nav class="continue" aria-label="Continue">${go}</nav>${credits}`
   document.body.append(el)
+}
+
+// --- the name --------------------------------------------------------------------
+
+// Wherever the words "Planet Nine" are written, they take the planet's colour
+// (--p9, the chosen skin's), in the title, the top bar, headings and running
+// text alike. Chart text is left alone: the charts colour their own labels.
+const NAME = /Planet Nine/
+const LEAVE = 'svg, script, style, textarea, option, .p9-name, .k-p9, [data-no-tint]'
+
+function tintName (root) {
+  if (!root || root.nodeType !== 1) return
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: n => NAME.test(n.nodeValue) && !n.parentElement?.closest(LEAVE) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
+  })
+  const nodes = []
+  while (walker.nextNode()) nodes.push(walker.currentNode)
+  for (const n of nodes) {
+    const frag = document.createDocumentFragment()
+    const parts = n.nodeValue.split('Planet Nine')
+    parts.forEach((t, i) => {
+      if (t) frag.append(t)
+      if (i < parts.length - 1) { const s = document.createElement('span'); s.className = 'p9-name'; s.textContent = 'Planet Nine'; frag.append(s) }
+    })
+    n.replaceWith(frag)
+  }
+}
+
+function watchName () {
+  tintName(document.body)
+  new MutationObserver(muts => {
+    for (const m of muts) for (const n of m.addedNodes) tintName(n.nodeType === 3 ? n.parentElement : n)
+  }).observe(document.body, { childList: true, subtree: true })
 }
 
 /** Root-relative links written in the HTML ("/setting/planets.html") follow the deployment base. */
@@ -155,4 +189,5 @@ stars()
 injectSprite()
 nav()
 footer()
+watchName()
 fixLinks()

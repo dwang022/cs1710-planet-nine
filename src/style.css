@@ -5,7 +5,9 @@
    meaning across every page and chart:
      violet  --series-1  the objects we are talking about; links and the current page
      ember   --series-2  the comparison, a warning, the case against a planet
-     aurora  --series-3  Planet Nine, the prediction, the case for a planet
+     aurora  --series-3  the case for a planet (ledger lane, checks, "passes the bar")
+   Planet Nine itself is not in the palette: everything that stands for it uses
+   --p9, which site.js sets to the chosen skin's colour.
      rose    --series-4  what comes next: the Rubin Observatory and proposed searches
    The Sun keeps its gold; the planets keep their own colours in src/art.js.
    No blue accents: blue only ever appears as Earth's and Neptune's natural colour.
@@ -40,7 +42,10 @@
   --accent-ink: var(--series-1-ink);
 
   --sun: #e8c46a;
-  --p9-ink: var(--series-3);          /* site.js sets this to the chosen skin's ink */
+  /* Planet Nine's colour: site.js overrides these with the chosen skin's colour */
+  --p9: var(--series-3);
+  --p9-ink: var(--series-3-ink);
+  --p9-dim: color-mix(in srgb, var(--p9) 14%, transparent);
   --neptune: #8d93a8;
 
   --font-sans: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", Inter, system-ui, sans-serif;
@@ -349,7 +354,7 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .dist-lbl.muted { fill: var(--text-muted); }
 .dist-lbl.small { font-size: 11.5px; }
 .dist-lbl.focus { font-size: 15px; font-weight: 600; fill: var(--text-primary); }
-.dist-lbl.focus.p9 { fill: #6ee7b7; }
+.dist-lbl.focus.p9 { fill: var(--p9-ink); }
 .dist-lbl.focus-v { font-size: 13px; fill: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .dist-orbit { fill: none; stroke: #ffffff; stroke-opacity: .16; stroke-width: 1; stroke-dasharray: 3 5; }
 .dist-orbit.dwarf { stroke: #c8ad94; stroke-opacity: .3; }
@@ -362,12 +367,12 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .dist-body.etno { opacity: .85; cursor: pointer; }
 .dist-body.etno.hot { opacity: 1; }
 .dist-band.kuiper { fill: #ffffff; fill-opacity: .035; }
-.dist-band.p9 { fill: var(--series-3); fill-opacity: .16; }
+.dist-band.p9 { fill: var(--p9); fill-opacity: .16; }
 .dist-band.p9.wide { fill-opacity: .06; }
-.dist-edge { fill: none; stroke: var(--series-3); stroke-opacity: .55; stroke-width: 1; stroke-dasharray: 4 4; }
+.dist-edge { fill: none; stroke: var(--p9); stroke-opacity: .55; stroke-width: 1; stroke-dasharray: 4 4; }
 .dist-edge.wide { stroke-opacity: .22; }
 .dist-focus { fill: none; stroke: #ffffff; stroke-opacity: .6; stroke-width: 1.4; }
-.dist-focus.dashed { stroke: var(--series-3); stroke-dasharray: 3 4; stroke-opacity: .9; }
+.dist-focus.dashed { stroke: var(--p9); stroke-dasharray: 3 4; stroke-opacity: .9; }
 .voy path { fill: var(--text-muted); }
 .voy .hit { fill: #ffffff; fill-opacity: 0; pointer-events: all; cursor: help; }
 .dist-ruler line { stroke: var(--text-muted); stroke-width: 1.5; }
@@ -379,17 +384,17 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .lu-lbl { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; fill: var(--text-secondary);
   paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
 .lu-lbl.sub { font-size: 11px; font-weight: 400; letter-spacing: .02em; text-transform: none; fill: var(--text-muted); }
-.lu-lbl.p9 { fill: #6ee7b7; }
+.lu-lbl.p9 { fill: var(--p9-ink); }
 .lu-arc { fill: none; stroke-width: 1.2; stroke-opacity: .35; }
 .lu-arc.dashed { stroke-dasharray: 4 5; stroke-opacity: .55; }
 .lu-halo { fill: none; stroke: #ffffff; stroke-opacity: .42; stroke-width: 1.3; }
-.lu-halo.dashed { stroke: var(--series-3); stroke-dasharray: 3 4; stroke-opacity: .8; }
+.lu-halo.dashed { stroke: var(--p9); stroke-dasharray: 3 4; stroke-opacity: .8; }
 .lu-body { cursor: pointer; }
 .lu-kbo { fill: #9fb0bf; fill-opacity: .7; }
 .lu-note { font-size: 12.5px; fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
 .lu-note.bad { fill: var(--series-2); font-weight: 600; }
 .lu-note.good { fill: #6ee7b7; font-weight: 600; }
-.lu-note.p9 { fill: #6ee7b7; }
+.lu-note.p9 { fill: var(--p9-ink); }
 
 /* the three-test table */
 .sub-title { margin: 30px 0 8px; font-size: 1.3rem; }
@@ -407,17 +412,19 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .criteria td small { display: block; color: var(--text-muted); font-size: .8rem; line-height: 1.4; max-width: 26ch; margin-top: 2px; }
 .criteria td.verdict { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
 .criteria td.verdict small { white-space: normal; font-weight: 400; }
-.criteria tr.p9 th, .criteria tr.p9 td { background: #34d3990d; }
-/* the definition: three requirements side by side, numbered to match the table's columns */
+.criteria tr.p9 th, .criteria tr.p9 td { background: color-mix(in srgb, var(--p9) 6%, transparent); }
+/* the definition: three requirements side by side, each with a drawing, numbered to match the table */
 .definition {
-  list-style: none; margin: 18px 0 26px; padding: 0;
+  list-style: none; margin: 18px 0 30px; padding: 0;
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px;
 }
 .definition li {
-  display: grid; grid-template-rows: auto auto; row-gap: 16px; align-content: start;
+  display: grid; grid-template-rows: auto auto auto; row-gap: 16px; align-content: start;
   padding: 24px 0 28px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
   font-size: clamp(1.02rem, 1.35vw, 1.2rem); line-height: 1.5; color: var(--text-secondary);
 }
+.rule-fig { margin: 0; background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
+.rule-fig svg { display: block; width: 100%; height: auto; }
 .definition .n {
   width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--text-muted);
   display: inline-flex; align-items: center; justify-content: center; font: 600 1rem var(--font-mono); color: var(--text-primary);
@@ -425,7 +432,7 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .definition b { display: block; color: var(--text-primary); font-size: 1.2em; letter-spacing: -0.01em; margin-bottom: 6px; }
 @media (max-width: 760px) {
   .definition { grid-template-columns: 1fr; gap: 0; }
-  .definition li { grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto; column-gap: 16px; padding: 16px 0; border-bottom: 0; }
+  .definition li { padding: 18px 0 22px; border-bottom: 0; row-gap: 12px; }
   .definition li:last-child { border-bottom: 1px solid var(--rule); }
 }
 
@@ -576,8 +583,8 @@ section.story { padding-bottom: 24px; }
 /* the three counts on the planets page, one colour each wherever they appear */
 .k-nine { color: var(--series-1); font-weight: 600; }
 .k-eight { color: var(--series-2); font-weight: 600; }
-.k-ninth { color: var(--p9-ink); font-weight: 600; }   /* follows the chosen skin */
-.k-p9 { color: #6ee7b7; font-weight: 600; }
+/* Planet Nine, and the word "ninth" when it means Planet Nine: the chosen skin's colour */
+.k-ninth, .k-p9 { color: var(--p9-ink); font-weight: 600; }
 .k-warn { color: #ffa07a; font-weight: 600; }
 .k-lsst { color: #f472b6; font-weight: 600; }
 
@@ -633,7 +640,7 @@ details.more > summary { font-size: .95rem; }
 .lu-callout-s { font-size: 13px; fill: var(--text-secondary); }
 
 /* --- the distance chart's stack of extreme objects (charts/distance.js) --- */
-.dist-lbl.p9 { fill: #6ee7b7; }
+.dist-lbl.p9 { fill: var(--p9-ink); }
 #chartDist .row .hit { fill: transparent; pointer-events: all; cursor: pointer; }
 #chartDist .row .range { fill: var(--series-1); fill-opacity: .38; }
 #chartDist .row.ali .range { fill: var(--series-2); }
@@ -644,7 +651,7 @@ details.more > summary { font-size: .95rem; }
 #chartDist .row.hot .range { fill-opacity: .95; }
 #chartDist .row.hot .now { fill: #ffffff; stroke: #ffffff; }
 #chartDist rect.dist-band.kuiper { fill: #ffffff; fill-opacity: .035; }
-#chartDist rect.dist-band.p9 { fill: var(--series-3); fill-opacity: .14; }
+#chartDist rect.dist-band.p9 { fill: var(--p9); fill-opacity: .14; }
 #chartDist rect.dist-band.p9.wide { fill-opacity: .05; }
 
 /* --- the tracking exhibit (charts/tracking.js) ---------------------------- */

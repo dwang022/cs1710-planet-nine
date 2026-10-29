@@ -72,7 +72,7 @@ export function makeHerd ({ view, controls, result }) {
   }
   const gOrbits = gView.append('g')
   const gPlanet = gView.append('g')
-  gPlanet.append('path').attr('class', 'herd-p9orbit').attr('fill', 'none').attr('stroke', 'var(--series-3)').attr('stroke-width', 2.2).attr('stroke-dasharray', '6 5')
+  gPlanet.append('path').attr('class', 'herd-p9orbit').attr('fill', 'none').attr('stroke', 'var(--p9)').attr('stroke-width', 2.2).attr('stroke-dasharray', '6 5')
   gPlanet.append('use').attr('href', '#art-planet-nine').attr('width', 34).attr('height', 34)
   gView.append('use').attr('href', '#art-sun').attr('x', VIEW.cx - 11).attr('y', VIEW.cy - 11).attr('width', 22).attr('height', 22)
   svg.append('circle').attr('cx', VIEW.cx).attr('cy', VIEW.cy).attr('r', VIEW.r).attr('fill', 'none').attr('stroke', 'var(--text-muted)').attr('stroke-opacity', .5)
@@ -90,12 +90,12 @@ export function makeHerd ({ view, controls, result }) {
     .attr('x', d => RING.cx + (RING.r + 16) * Math.cos(d * RAD)).attr('y', d => RING.cy - (RING.r + 16) * Math.sin(d * RAD) + 4)
     .attr('text-anchor', 'middle').text(d => `${d}°`)
   gRing.append('circle').attr('cx', RING.cx).attr('cy', RING.cy).attr('r', 3.5).attr('fill', 'var(--sun)')
-  const spoke = gRing.append('line').attr('stroke', 'var(--series-3)').attr('stroke-width', 3).attr('stroke-dasharray', '2 6').attr('stroke-linecap', 'round')
+  const spoke = gRing.append('line').attr('stroke', 'var(--p9)').attr('stroke-width', 3).attr('stroke-dasharray', '2 6').attr('stroke-linecap', 'round')
   const gDots = gRing.append('g')
   const arrow = gRing.append('line').attr('stroke', 'var(--text-primary)').attr('stroke-width', 4).attr('stroke-linecap', 'round').attr('marker-end', 'url(#herd-head)')
   const ringFoot = gRing.append('text').attr('x', RING.cx).attr('y', RING.cy + RING.r + 44).attr('text-anchor', 'middle').attr('font-size', 14).attr('fill', 'var(--text-secondary)')
   const ringFoot2 = gRing.append('text').attr('x', RING.cx).attr('y', RING.cy + RING.r + 66).attr('text-anchor', 'middle').attr('font-size', 14).attr('fill', 'var(--text-secondary)')
-  const spokeLabel = gRing.append('text').attr('class', 'halo').attr('font-size', 12.5).attr('font-weight', 600).attr('fill', 'var(--series-3-ink)')
+  const spokeLabel = gRing.append('text').attr('class', 'halo').attr('font-size', 12.5).attr('font-weight', 600).attr('fill', 'var(--p9-ink)')
 
   // --- the population --------------------------------------------------------
   const seed = () => 1710 + state.dir * 31 + state.massIdx * 7
@@ -198,7 +198,7 @@ export function makeHerd ({ view, controls, result }) {
       return
     }
     const sep = Math.abs(wrap180(st.meanDeg - state.dir))
-    result.innerHTML = `<div class="note" style="border-left-color:var(--series-3);background:color-mix(in srgb, var(--series-3) 7%, transparent)"><div class="note-k" style="color:var(--series-3-ink)">What happened</div>
+    result.innerHTML = `<div class="note" style="border-left-color:var(--p9);background:color-mix(in srgb, var(--p9) 7%, transparent)"><div class="note-k" style="color:var(--series-3-ink)">What happened</div>
       <p><strong>${N - alive.length} of ${N} orbits were thrown out</strong>, nearly all of them ones that pointed the planet's way.
       The ${alive.length} that remain swing about a direction <strong>${sep.toFixed(0)}° from the planet's</strong>, close to opposite:
       arrow length ${st.R.toFixed(2)}, which luck alone produces ${oddsText(p)}.

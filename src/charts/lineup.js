@@ -73,7 +73,7 @@ export function makeLineup (root, { planets }) {
   gArcs.selectAll('circle').data([...slots, p9], d => d.name).join('circle')
     .attr('class', d => `lu-arc${d.p9 ? ' dashed' : ''}`)
     .attr('cx', SUN.x).attr('cy', SUN.y).attr('r', dist)
-    .attr('stroke', d => d.p9 ? 'var(--series-3)' : colour[d.name])
+    .attr('stroke', d => d.p9 ? 'var(--p9)' : colour[d.name])
     .attr('opacity', d => d.p9 ? 0 : 1)
 
   // Pluto's neighbours: a speckle along its arc.

@@ -35,7 +35,7 @@ async function main () {
     const [gRa, gDec] = galacticPoint(150, 0)
     const tp = nom[Math.floor(nom.length * 0.62)]
     const ecl = at(eRa, eDec, 'the ecliptic: where the planets travel', { dy: 24, colour: 'var(--text-secondary)', size: 14 })
-    const trk = at(tp.ra_deg, tp.dec_deg, 'Planet Nine’s predicted path', { dy: -18, colour: '#6ee7b7', size: 16 })
+    const trk = at(tp.ra_deg, tp.dec_deg, 'Planet Nine’s predicted path', { dy: -18, colour: 'var(--p9-ink)', size: 16 })
     const mw = at(gRa, gDec, 'Milky Way', { dy: -18, colour: '#dcc48a', size: 16 })
     const des = at(15, -52, 'Dark Energy Survey', { colour: '#ece6d8', size: 14 })
     const hsc = at(180, 19, 'Subaru (HSC)', { dy: -16, colour: '#ece6d8', size: 14 })
@@ -58,7 +58,7 @@ async function main () {
     const sw = (bg, extra = '') => `<span class="legend-swatch" style="background:${bg};${extra}"></span>`
     const ramp = `linear-gradient(90deg, ${d3.range(0, 1.01, 0.1).map(t => depthColour(20 + t * 6)).join(',')})`
     const items = []
-    if (L.track) items.push(`${sw('var(--series-3)')}Planet Nine’s predicted path`)
+    if (L.track) items.push(`${sw('var(--p9)')}Planet Nine’s predicted path`)
     if (L.surveys === 'coverage') items.push(`${sw('#4a4852')}photographed by a sky survey`)
     if (L.surveys === 'depth' || L.surveys === 'deep') items.push(`<span style="width:110px;height:11px;border-radius:3px;background:${ramp};border:1px solid var(--rule)"></span> how faint the photos reach: shallow → <b style="color:#ece6d8">deep</b>`)
     if (L.unsearched) items.push(`${sw('var(--series-2)')}path not yet searched deeply`)

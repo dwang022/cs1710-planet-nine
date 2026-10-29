@@ -46,7 +46,14 @@ export function applySkin (id) {
   if (!holder) return
   holder.innerHTML = sprite(NAMES, { skin: id })
   document.documentElement.dataset.skin = id
-  document.documentElement.style.setProperty('--p9-ink', skinFor(id).ink)
+  publishColour(skinFor(id).colour)
+}
+
+/** Planet Nine's colour everywhere on the page is the chosen skin's. */
+function publishColour (c) {
+  const st = document.documentElement.style
+  st.setProperty('--p9', c)
+  st.setProperty('--p9-ink', c)
 }
 
 const pageId = () => document.body.dataset.page || 'intro'
@@ -58,7 +65,7 @@ function injectSprite () {
   div.innerHTML = sprite(NAMES, { skin: currentSkin() })
   document.body.prepend(div)
   document.documentElement.dataset.skin = currentSkin()
-  document.documentElement.style.setProperty('--p9-ink', skinFor(currentSkin()).ink)
+  publishColour(skinFor(currentSkin()).colour)
 }
 
 function stars () {
@@ -120,12 +127,12 @@ function footer () {
   const main = PAGES.filter(p => !p.aside)
   const next = cur.aside ? null : main[main.indexOf(cur) + 1]
   const go = next
-    ? `<a class="btn-continue" href="${url(next.path)}">Continue <span aria-hidden="true">→</span></a>`
-    : `<a class="btn-continue" href="${url('index.html')}">Back to the start</a>`
+    ? `<a class="btn-continue" href="${url(next.path)}"><span>Continue</span><span class="to">${next.title} <span aria-hidden="true">→</span></span></a>`
+    : `<a class="btn-continue" href="${url('index.html')}"><span>Back to the start</span><span class="to" aria-hidden="true">→</span></a>`
   const credits = cur.aside ? '' : `<a class="foot-credits" href="${url('credits.html')}">Credits and sources</a>`
   const el = document.createElement('footer')
   el.className = 'site-foot wrap'
-  el.innerHTML = `<nav class="continue" aria-label="Continue">${go}${credits}</nav>`
+  el.innerHTML = `<nav class="continue" aria-label="Continue">${go}</nav>${credits}`
   document.body.append(el)
 }
 

@@ -47,7 +47,7 @@ export function drawProposals (root, predictions) {
   xa.selectAll('text').attr('class', 'axis-label').attr('font-size', 12)
   xa.selectAll('line, path').attr('stroke', 'var(--rule)')
 
-  const colour = p => p.candidate ? '#ffa07a' : 'var(--series-3)'
+  const colour = p => p.candidate ? '#ffa07a' : 'var(--p9)'
   const strip = (y, key, mid, open) => {
     const g = svg.append('g')
     const r = g.selectAll('g').data(rows.filter(p => p[key])).join('g')

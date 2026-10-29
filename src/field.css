@@ -7,7 +7,7 @@
    --------------------------------------------------------------------------- */
 
 :root {
-  --fl-for: #34d399;     --fl-for-ink: #6ee7b7;      /* the Planet Nine green */
+  --fl-for: #34d399;     --fl-for-ink: #6ee7b7;      /* the case-for green; Planet Nine itself uses --p9 */
   --fl-against: #ff6a3d; --fl-against-ink: #ffa07a;
   --fl-data: #a78bfa;    --fl-data-ink: #c4b5fd;     /* the colour of the objects elsewhere on the page */
   --fl-next: #f472b6;    --fl-next-ink: #f9a8d4;     /* Rubin's colour on the sky map */

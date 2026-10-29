@@ -16,8 +16,8 @@ function drawDepth (root, surveys, p9) {
   const x = d3.scaleLinear().domain([19, 26.5]).range([M.left, W - M.right])
   const y = 150
   svg.append('rect').attr('x', x(p9.min)).attr('width', x(p9.max) - x(p9.min)).attr('y', y - 24).attr('height', 48).attr('rx', 8)
-    .attr('fill', 'var(--series-3)').attr('opacity', .18)
-  svg.append('text').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('y', y + 72).attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 600).attr('fill', '#6ee7b7')
+    .attr('fill', 'var(--p9)').attr('opacity', .18)
+  svg.append('text').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('y', y + 72).attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 600).attr('fill', 'var(--p9-ink)')
     .text(`green band: Planet Nine's predicted brightness, magnitude ${p9.min} to ${p9.max}`)
   svg.append('line').attr('x1', x(19)).attr('x2', x(26.5)).attr('y1', y).attr('y2', y).attr('stroke', 'var(--text-muted)').attr('stroke-width', 1.5)
   svg.selectAll('text.t').data(d3.range(19, 27)).join('text').attr('class', 't axis-label').attr('x', d => x(d)).attr('y', y + 22).attr('text-anchor', 'middle').text(d => d)

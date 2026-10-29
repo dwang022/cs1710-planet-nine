@@ -35,7 +35,7 @@ export function makeLean (root) {
   const defs = svg.append('defs')
   defs.append('clipPath').attr('id', 'lean-clip')
     .append('circle').attr('cx', cx).attr('cy', cy).attr('r', PLOT_R)
-  for (const [id, fill] of [['lean-head', 'var(--text-primary)'], ['lean-head-p9', 'var(--series-3)']]) {
+  for (const [id, fill] of [['lean-head', 'var(--text-primary)'], ['lean-head-p9', 'var(--p9)']]) {
     defs.append('marker').attr('id', id).attr('viewBox', '0 0 10 10')
       .attr('refX', 7).attr('refY', 5).attr('markerWidth', 16).attr('markerHeight', 16)
       .attr('markerUnits', 'userSpaceOnUse')
@@ -74,13 +74,13 @@ export function makeLean (root) {
 
   // --- Planet Nine: an arc in the orbit view, a spoke on the compass -------
   gP9.append('path').attr('class', 'p9arc').attr('fill', 'none')
-    .attr('stroke', 'var(--series-3)').attr('stroke-width', 3)
+    .attr('stroke', 'var(--p9)').attr('stroke-width', 3)
   gP9.append('circle').attr('class', 'p9dot').attr('r', 8)
-    .attr('fill', 'var(--series-3)').attr('stroke', 'var(--surface-1)').attr('stroke-width', 2)
+    .attr('fill', 'var(--p9)').attr('stroke', 'var(--surface-1)').attr('stroke-width', 2)
   gP9.append('use').attr('class', 'p9icon').attr('href', '#art-planet-nine')
     .attr('width', 28).attr('height', 28).attr('opacity', 0)
   const p9Spoke = svg.insert('line', () => gMean.node())
-    .attr('stroke', 'var(--series-3)').attr('stroke-width', 3)
+    .attr('stroke', 'var(--p9)').attr('stroke-width', 3)
     .attr('stroke-dasharray', '2 6').attr('stroke-linecap', 'round')
     .attr('x1', cx).attr('y1', cy)
     .attr('x2', ax(PLANET_NINE.varpi_deg, RING_R)).attr('y2', ay(PLANET_NINE.varpi_deg, RING_R))
@@ -279,10 +279,10 @@ export function makeLean (root) {
     }
     if (s.labels?.p9 && s.p9) {
       if (!ring) {
-        L('p9', cx + r(p9pt[0]), cy - r(p9pt[1]) + 28, 'Planet Nine (predicted)', { size: 15, colour: 'var(--series-3)', anchor: 'middle' })
+        L('p9', cx + r(p9pt[0]), cy - r(p9pt[1]) + 28, 'Planet Nine (predicted)', { size: 15, colour: 'var(--p9)', anchor: 'middle' })
       }
       const a = PLANET_NINE.varpi_deg
-      L('p9s', ax(a, RING_R * 0.55) - 12, ay(a, RING_R * 0.55), 'Planet Nine points this way', { size: 13, colour: 'var(--series-3)', anchor: 'end' })
+      L('p9s', ax(a, RING_R * 0.55) - 12, ay(a, RING_R * 0.55), 'Planet Nine points this way', { size: 13, colour: 'var(--p9)', anchor: 'end' })
     }
 
     const t = gNotes.selectAll('text').data(list, d => d.key)

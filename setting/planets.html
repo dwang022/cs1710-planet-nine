@@ -18,7 +18,7 @@
       <li><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-pluto"/></svg>
         <span class="beat-y">1930</span><p>Pluto is found. The solar system has <strong class="k-nine">nine</strong> planets.</p></li>
       <li><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-pluto-sad"/></svg>
-        <span class="beat-y">2006</span><p>Astronomers define the word. Pluto no longer qualifies, leaving <strong class="k-eight">eight</strong>.</p></li>
+        <span class="beat-y">2006</span><p>Astronomers define what a planet is. Pluto no longer qualifies, leaving <strong class="k-eight">eight</strong>.</p></li>
       <li><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg>
         <span class="beat-y">2016</span><p>A <strong class="k-ninth">ninth</strong> planet, far beyond Neptune, is proposed.</p></li>
     </ol>
@@ -89,12 +89,12 @@
       <h2>What counts as a planet</h2>
       <p>The International Astronomical Union has three requirements:</p>
     </div>
+    <!-- pages/planets.js draws a diagram into each item from charts/rulesart.js -->
     <ol class="definition">
-      <li><span class="n">1</span><div><b>Orbits the Sun</b>Moons orbit a planet instead.</div></li>
-      <li><span class="n">2</span><div><b>Is round</b>Heavy enough for its own gravity to pull it into a ball.</div></li>
-      <li><span class="n">3</span><div><b>Has cleared its orbit</b>Nothing of comparable size shares its path.</div></li>
+      <li data-rule="orbit"><span class="n">1</span><div><b>Orbits the Sun</b>Moons orbit a planet instead.</div></li>
+      <li data-rule="round"><span class="n">2</span><div><b>Is round</b>Heavy enough for its own gravity to pull it into a ball.</div></li>
+      <li data-rule="cleared"><span class="n">3</span><div><b>Has cleared its orbit</b>Nothing of comparable size shares its path.</div></li>
     </ol>
-    <p>Pass the first two but not the third, and you are a dwarf planet. Here is how some familiar objects score.</p>
     <div class="criteria-wrap">
       <table class="criteria">
         <thead><tr>

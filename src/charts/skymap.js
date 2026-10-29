@@ -290,7 +290,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .merge(tk)
     .attr('d', d => segmentedPath(d.points.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none')
-    .attr('stroke', 'var(--series-3)')
+    .attr('stroke', 'var(--p9)')
     .attr('stroke-width', d => d.label === 'nominal' ? 2.6 : 1.1)
     .attr('stroke-opacity', d => d.label === 'nominal' ? 1 : 0.4)
 

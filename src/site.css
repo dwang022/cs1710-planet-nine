@@ -98,10 +98,21 @@
 
 /* --- footer -------------------------------------------------------------- */
 
-.site-foot { padding-block: 40px 72px; border-top: var(--divider); margin-top: 48px; }
-.continue { display: flex; flex-direction: column; align-items: center; gap: 18px; }
-.foot-credits { font-size: .8rem; color: var(--text-muted); text-decoration: none; }
+.site-foot { position: relative; padding-block: 40px 72px; border-top: var(--divider); margin-top: 48px; }
+.continue { display: flex; justify-content: center; }
+/* one wide button, the way an article ends: "Continue" at the left, where it leads at the right */
+.btn-continue {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px; width: min(100%, 780px);
+  padding: 20px 28px; border-radius: 14px; background: var(--accent); color: #15121f; text-decoration: none;
+  font-weight: 700; font-size: 1.12rem; box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 30%, transparent);
+  transition: filter .15s ease, translate .15s ease;
+}
+.btn-continue .to { font-weight: 500; font-size: .98rem; opacity: .85; text-align: right; }
+.btn-continue:hover { filter: brightness(1.08); translate: 0 -1px; }
+/* the credits sit in the bottom corner, out of the reading line */
+.foot-credits { position: absolute; right: var(--gutter); bottom: 22px; font-size: .78rem; color: var(--text-muted); text-decoration: none; }
 .foot-credits:hover { color: var(--text-secondary); text-decoration: underline; }
+@media (max-width: 640px) { .btn-continue { flex-direction: column; align-items: flex-start; gap: 6px; padding: 18px 22px; } }
 
 /* the credits page */
 .credits-list { list-style: none; margin: 0; padding: 0; }
@@ -174,7 +185,7 @@ body.intro { overflow-x: hidden; }
 /* the scene: an SVG box with the skin carousel laid over the planet */
 .sky-scene { position: relative; z-index: 1; width: min(880px, 100%); aspect-ratio: 880 / 420; margin: 0 auto 4px; }
 #scene svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.sight { stroke: var(--series-3); stroke-opacity: .5; stroke-width: 1.4; stroke-dasharray: 4 8; fill: none; }
+.sight { stroke: var(--p9); stroke-opacity: .5; stroke-width: 1.4; stroke-dasharray: 4 8; fill: none; }
 .p9-float { transform-box: fill-box; transform-origin: center; animation: float 7s ease-in-out infinite; }
 @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
 @keyframes swap { 0% { scale: .9; opacity: .3; } 100% { scale: 1; opacity: 1; } }
@@ -194,8 +205,8 @@ body.intro { overflow-x: hidden; }
 .skin-arrow svg { width: 20px; height: 20px; }
 .skin-arrow.prev { right: calc(100% + 14px); }
 .skin-arrow.next { left: calc(100% + 14px); }
-.skin-arrow:hover { color: var(--text-primary); border-color: var(--series-3); background: color-mix(in srgb, var(--series-3) 14%, transparent); }
-.skin-arrow:focus-visible { outline: 2px solid var(--series-3); outline-offset: 2px; }
+.skin-arrow:hover { color: var(--text-primary); border-color: var(--p9); background: color-mix(in srgb, var(--p9) 14%, transparent); }
+.skin-arrow:focus-visible { outline: 2px solid var(--p9); outline-offset: 2px; }
 .skin-name {
   position: absolute; top: calc(100% + 4px); left: 50%; translate: -50% 0; white-space: nowrap;
   font-size: clamp(.8rem, 2.2vw, .98rem); color: var(--text-secondary); letter-spacing: .01em;
@@ -207,12 +218,12 @@ body.intro { overflow-x: hidden; }
 }
 .sky h1 em { font-style: normal; color: var(--accent); }
 .sky-actions { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 18px; }
-.btn-start, .btn-continue {
+.btn-start {
   display: inline-flex; align-items: center; gap: 12px; background: var(--accent); color: #15121f; text-decoration: none;
   font-weight: 700; font-size: 1.05rem; padding: 14px 28px; border-radius: 12px; min-height: 52px;
   box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 30%, transparent);
 }
-.btn-start:hover, .btn-continue:hover { filter: brightness(1.08); }
+.btn-start:hover { filter: brightness(1.08); }
 .parts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .btn-part {
   display: inline-flex; align-items: center; padding: 9px 16px; border-radius: 999px; border: 1px solid var(--rule);

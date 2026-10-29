@@ -33,7 +33,7 @@ sources and the inference-not-observation note live on `credits.html`.
 | Page | Module | What it holds |
 |---|---|---|
 | `index.html` | `pages/intro.js` | Title, telescope aimed at Planet Nine, shooting stars, Start, three part buttons, the skin carousel on the planet (arrows either side, name beneath) |
-| `setting/planets.html` | `pages/planets.js` | Lineup scrolly (9 → 8 → 9?), Pluto's reclassification with the sad-face callout, the IAU definition and scorecard table |
+| `setting/planets.html` | `pages/planets.js` | Three beats, lineup scrolly (9 → 8 → 9?), Pluto's reclassification with the sad-face callout, the three requirements with drawings (`charts/rulesart.js`) and the scorecard table |
 | `setting/distance.html` | `pages/distance.js` | Zoom-out scrolly (planets on arcs, extreme objects as range bars with a "now" dot), real discovery frames in blink players, arc-vs-disagreement chart, JPL and MPC cards with Sedna's raw records, the grid of all 8,079 bodies |
 | `insights/clustering.html` | `pages/clustering.js` | Lean scrolly (one orbit → compass → arrow → Planet Nine), filters in the last card, brush-to-select scatter and table, the herding exhibit |
 | `insights/probability.html` | `pages/probability.js` | Luck scrolly (build the null distribution), filters, the streetlight exhibit, published odds on one axis |
@@ -94,8 +94,8 @@ from there, falling back to `data/raw/`.
   ocean world, iron world, primordial black hole, cheese, nine-ball). The
   choice is stored in `localStorage` under `p9-skin`; `site.js` rebuilds the
   sprite's Planet Nine symbols, so every `<use href="#art-planet-nine">`
-  follows it, and publishes the skin's `ink` as `--p9-ink` for text. Chart
-  code never hard-codes a skin.
+  follows it, and publishes the skin's `colour` as `--p9` and `--p9-ink`.
+  Chart code never hard-codes a skin.
 - **Data.** Charts read `public/data/*.json` through `loadData()`. Never
   invent a number: every quoted value is computed from the data on load or
   carries a `src` tag in its JSON. Values tagged `ours` are presented as our
@@ -115,16 +115,20 @@ from there, falling back to `data/raw/`.
   Zinc surfaces and four accents, each with one meaning everywhere:
   `--series-1` violet is the objects we talk about (and links, the current
   page); `--series-2` ember is the comparison, a warning, the case against;
-  `--series-3` aurora green is Planet Nine and the case for; `--series-4` rose
-  is what comes next (Rubin, proposed searches). `-ink` variants are the same
+  `--series-3` aurora green is the case for a planet (ledger lane, check
+  marks, "passes the bar"); `--series-4` rose is what comes next (Rubin,
+  proposed searches). **Planet Nine itself is not in the palette**: every
+  mark and word that stands for it (its orbit, its band, its label, `.k-p9`,
+  `.k-ninth`) uses `--p9`, which `site.js` sets to the chosen skin's `colour`,
+  so the copy never names Planet Nine's colour ("this line", not "the green
+  line"). `-ink` variants are the same
   hues lifted for small text. The Sun keeps its gold and the planets their
   natural colours. **No blue accents**: the user dislikes blue; blue appears
   only as Earth's and Neptune's own colour in the art. Colour follows the
   entity, never its rank, and nothing is encoded in colour alone. On the
   planets page the three counts keep one colour each wherever they appear:
-  the first nine violet, eight ember, and the proposed ninth in the chosen
-  skin's own `ink` colour (`--p9-ink`, set by `site.js`), via `.k-nine`,
-  `.k-eight`, `.k-ninth`.
+  the first nine violet, eight ember, and the proposed ninth in `--p9`, via
+  `.k-nine`, `.k-eight`, `.k-ninth`.
 - **No descriptors a reader can work out.** No "Part 3 · The search · page 2
   of 4" eyebrows, no "scroll slowly" hints, no "pick a look" explanations on
   the intro; the nav, the step counters and the controls carry that. Titles

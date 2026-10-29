@@ -47,14 +47,16 @@ export function applySkin (id) {
   if (!holder) return
   holder.innerHTML = sprite(NAMES, { skin: id })
   document.documentElement.dataset.skin = id
-  publishColour(skinFor(id).colour)
+  publishColour(skinFor(id))
 }
 
-/** Planet Nine's colour everywhere on the page is the chosen skin's. */
-function publishColour (c) {
+/** Planet Nine's colour everywhere on the page is the chosen skin's; some skins paint the lettering. */
+function publishColour (sk) {
   const st = document.documentElement.style
-  st.setProperty('--p9', c)
-  st.setProperty('--p9-ink', c)
+  st.setProperty('--p9', sk.colour)
+  st.setProperty('--p9-ink', sk.colour)
+  st.setProperty('--p9-text', sk.text || sk.colour)
+  document.documentElement.toggleAttribute('data-skin-text', !!sk.text)
 }
 
 const pageId = () => document.body.dataset.page || 'intro'
@@ -66,7 +68,7 @@ function injectSprite () {
   div.innerHTML = sprite(NAMES, { skin: currentSkin() })
   document.body.prepend(div)
   document.documentElement.dataset.skin = currentSkin()
-  publishColour(skinFor(currentSkin()).colour)
+  publishColour(skinFor(currentSkin()))
 }
 
 function stars () {

@@ -590,6 +590,10 @@ section.story { padding-bottom: 24px; }
 .k-eight { color: var(--series-2); font-weight: 600; }
 /* Planet Nine, and the word "ninth" when it means Planet Nine: the chosen skin's colour */
 .k-ninth, .k-p9 { color: var(--p9-ink); font-weight: 600; }
+/* skins with patterned lettering (the black hole's glow, the nine-ball's stripes) paint it through --p9-text */
+html[data-skin-text] :is(.p9-name, .k-p9, .k-ninth) {
+  background: var(--p9-text); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
 .k-warn { color: #ffa07a; font-weight: 600; }
 .k-lsst { color: #f472b6; font-weight: 600; }
 

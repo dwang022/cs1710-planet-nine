@@ -12,6 +12,9 @@
 // is the skin's hue lifted to read on the dark surfaces. site.js publishes it as
 // --p9 (and --p9-ink), so everything that stands for Planet Nine, from the
 // orbit in a chart to the word "ninth" in a sentence, follows the chosen skin.
+// `text`, when present, is a CSS background painted through the lettering
+// instead of the flat colour (the black hole's glow, the nine-ball's stripes).
+// The ocean world is the one blue on the site, by request: its own colour.
 
 const R = 40
 
@@ -52,13 +55,13 @@ export const SKINS = {
   },
   ocean: {
     name: 'Ocean world',
-    colour: '#2ec4b6',
+    colour: '#4a8ee6',
     blurb: 'Water ice and a deep ocean under a thin, hazy sky, far too cold to be liquid at the surface.',
     source: 'a water-rich composition, as in Linder & Mordasini 2016',
-    outline: '#143f3a',
-    paint: () => `${disc('#2a7f72')}
-      ${band(34, 7, '#4a9d8e', 0.75, 1.6)}
-      ${band(58, 9, '#1f6459', 0.85, 1.6)}
+    outline: '#0f2d5c',
+    paint: () => `${disc('#1d4f96')}
+      ${band(34, 7, '#2d6cc0', 0.75, 1.6)}
+      ${band(58, 9, '#163e7a', 0.85, 1.6)}
       <path d="M26,46 C34,40 42,44 48,40" fill="none" stroke="#dbe9f7" stroke-width="3.2" stroke-linecap="round" opacity=".7"/>
       <path d="M56,70 C62,66 70,68 76,64" fill="none" stroke="#dbe9f7" stroke-width="3" stroke-linecap="round" opacity=".6"/>
       <ellipse cx="50" cy="14" rx="14" ry="5" fill="#eef5fb" opacity=".8"/>
@@ -66,20 +69,21 @@ export const SKINS = {
   },
   iron: {
     name: 'Iron world',
-    colour: '#d4836a',
-    blurb: 'Mostly metal, like a giant Mercury: dense, dark and dull, with rust-coloured plains.',
+    colour: '#e8414b',
+    blurb: 'Mostly metal, like a giant Mercury: dense, dark and dull, with rust-red plains.',
     source: 'a dense composition the mass estimates do not rule out',
-    outline: '#2c2a2e',
-    paint: () => `${disc('#5d5a62')}
-      ${band(40, 6, '#746f75', 0.8, 1.4)}
-      <path d="M22,62 C34,54 50,58 62,52 C72,48 82,54 90,50 L90,70 L22,70 Z" fill="#8a4a3a" opacity=".55"/>
-      <circle cx="40" cy="30" r="5" fill="#49464d"/><circle cx="64" cy="36" r="3" fill="#49464d"/>
-      <ellipse cx="36" cy="22" rx="9" ry="4" fill="#9b98a0" opacity=".35"/>
+    outline: '#3a1814',
+    paint: () => `${disc('#7b3a31')}
+      ${band(40, 6, '#95483c', 0.8, 1.4)}
+      <path d="M22,62 C34,54 50,58 62,52 C72,48 82,54 90,50 L90,70 L22,70 Z" fill="#c0563e" opacity=".6"/>
+      <circle cx="40" cy="30" r="5" fill="#5a2620"/><circle cx="64" cy="36" r="3" fill="#5a2620"/>
+      <ellipse cx="36" cy="22" rx="9" ry="4" fill="#d09a8a" opacity=".3"/>
       ${shade(0.38)}`,
   },
   'black-hole': {
     name: 'Primordial black hole',
-    colour: '#f29b38',
+    colour: '#ffa149',
+    text: 'linear-gradient(90deg, #ff8a2a 0%, #ffe3b0 42%, #ffffff 52%, #ffb55c 70%, #ff8a2a 100%)',
     blurb: 'Same mass, same orbit, but a black hole the size of a grapefruit instead of a planet.',
     source: 'Scholtz & Unwin 2020',
     outline: '#000000',
@@ -92,7 +96,7 @@ export const SKINS = {
   },
   cheese: {
     name: 'Cheese',
-    colour: '#e9b83f',
+    colour: '#f2cf3a',
     blurb: 'Not a serious proposal. But nobody can prove otherwise until someone sees it.',
     source: 'folklore',
     outline: '#8c6a1a',
@@ -107,6 +111,7 @@ export const SKINS = {
   'nine-ball': {
     name: 'Nine-ball',
     colour: '#f3dc4e',
+    text: 'repeating-linear-gradient(90deg, #faf6e8 0 .55em, #f3dc4e .55em 1.1em)',
     blurb: 'The ninth ball on the table. Also not a serious proposal.',
     source: 'the game of nine-ball',
     outline: '#7a6a10',

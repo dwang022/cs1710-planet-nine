@@ -96,8 +96,10 @@ from there, falling back to `data/raw/`.
   ocean world, iron world, primordial black hole, cheese, nine-ball). The
   choice is stored in `localStorage` under `p9-skin`; `site.js` rebuilds the
   sprite's Planet Nine symbols, so every `<use href="#art-planet-nine">`
-  follows it, and publishes the skin's `colour` as `--p9` and `--p9-ink`.
-  Chart code never hard-codes a skin.
+  follows it, and publishes the skin's `colour` as `--p9` and `--p9-ink`. A
+  skin may also give `text`, a CSS background painted through the lettering
+  (`--p9-text`; the black hole glows, the nine-ball is striped white and
+  yellow). Chart code never hard-codes a skin.
 - **Data.** Charts read `public/data/*.json` through `loadData()`. Never
   invent a number: every quoted value is computed from the data on load or
   carries a `src` tag in its JSON. Values tagged `ours` are presented as our
@@ -129,7 +131,8 @@ from there, falling back to `data/raw/`.
   element to opt out. `-ink` variants are the same
   hues lifted for small text. The Sun keeps its gold and the planets their
   natural colours. **No blue accents**: the user dislikes blue; blue appears
-  only as Earth's and Neptune's own colour in the art. Colour follows the
+  only as Earth's and Neptune's own colour in the art, and as the ocean-world
+  skin, which the user asked to be deep blue (image and lettering). Colour follows the
   entity, never its rank, and nothing is encoded in colour alone. On the
   planets page the three counts keep one colour each wherever they appear:
   the first nine violet, eight ember, and the proposed ninth in `--p9`, via

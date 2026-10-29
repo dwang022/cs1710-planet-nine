@@ -53,10 +53,10 @@ export const RULE_ART = {
     const dots = []
     while (dots.length < 120) {
       const x = rnd() * 300, y = rnd() * 170
-      if (Math.abs(Math.hypot(x - cx, y - cy) - R) > 24) dots.push({ x, y, r: 1 + rnd() * 1.6 })
+      if (Math.abs(Math.hypot(x - cx, y - cy) - R) > 50) dots.push({ x, y, r: 1 + rnd() * 1.6 })
     }
     return `${open}
-      <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#ffffff" stroke-opacity=".035" stroke-width="46"/>
+      <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#ffffff" stroke-opacity=".035" stroke-width="98"/>
       <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#5a5a64" stroke-width="1.5"/>
       ${dots.map(d => `<circle cx="${d.x.toFixed(1)}" cy="${d.y.toFixed(1)}" r="${d.r.toFixed(1)}" fill="#8c8b83"/>`).join('')}
       ${body('jupiter', 150, 85, 44)}

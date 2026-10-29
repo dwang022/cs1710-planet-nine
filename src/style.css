@@ -374,8 +374,7 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 /* --- 00: the planet lineup (charts/lineup.js) ------------------------------ */
 .viz-note { font-size: .8rem; color: var(--text-muted); }
 .viz-head > .viz-note:only-child { margin-left: auto; }
-.lu-title { font-size: 19px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; fill: var(--text-primary); }
-.lu-sub { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; fill: var(--text-muted); }
+.lu-title { font-size: 19px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; fill: var(--text-primary); }
 .lu-lbl { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; fill: var(--text-secondary);
   paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
 .lu-lbl.sub { font-size: 11px; font-weight: 400; letter-spacing: .02em; text-transform: none; fill: var(--text-muted); }
@@ -542,7 +541,6 @@ section.story { padding-bottom: 24px; }
 }
 .step.is-active .step-card { opacity: 1; border-color: var(--text-muted); cursor: default; }
 .step-card h3 { font-size: 1.3rem; margin-bottom: 12px; }
-.step-card h3 em { font-style: normal; color: var(--series-1); }
 .step-card p { font-size: 1.02rem; margin: 0 0 12px; }
 .step-card p:last-child { margin-bottom: 0; }
 .step-card ul { margin: 0 0 12px; padding-left: 20px; color: var(--text-secondary); font-size: 1.02rem; line-height: 1.5; }
@@ -563,6 +561,10 @@ section.story { padding-bottom: 24px; }
 .k-sun { color: var(--sun); font-weight: 600; }
 .k-nep { color: #aab0c4; font-weight: 600; }
 .k-obj { color: #c4b5fd; font-weight: 600; }
+/* the three counts on the planets page, one colour each wherever they appear */
+.k-nine { color: var(--series-1); font-weight: 600; }
+.k-eight { color: var(--series-2); font-weight: 600; }
+.k-ninth { color: var(--series-3); font-weight: 600; }
 .k-p9 { color: #6ee7b7; font-weight: 600; }
 .k-warn { color: #ffa07a; font-weight: 600; }
 .k-lsst { color: #f472b6; font-weight: 600; }

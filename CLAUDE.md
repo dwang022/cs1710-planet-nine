@@ -25,7 +25,7 @@ non-ASCII.
 Nine pages in three parts. Each page is one HTML file at the repo root plus
 one module in `src/pages/`; the shared chrome comes from `src/site.js`.
 `src/site.js` exports `PAGES`, the single source of truth for titles, order and
-groups: the top bar, the previous/next footer and the intro's skip-ahead
+groups: the top bar, the footer's Continue button and the intro's skip-ahead
 links are all generated from it.
 
 | Page | Module | What it holds |
@@ -85,8 +85,8 @@ from there, falling back to `data/raw/`.
 - **Art.** Add bodies to `src/art.js` as pure markup functions and re-export
   with `node scripts/export_art.mjs`. Flat shapes, same-hue outline, soft
   bands, thin halo (dashed for Planet Nine). Planet Nine always keeps its
-  question mark, in every skin. The sad Pluto appears only in the callout at
-  the moment of reclassification.
+  question mark, in every skin. The sad Pluto appears only at the moment of reclassification: the 2006
+  beat on the planets page and the callout in the lineup.
 - **Skins.** `src/skins.js` holds the seven skins (ice giant, rocky super-Earth,
   ocean world, iron world, primordial black hole, cheese, nine-ball). The
   choice is stored in `localStorage` under `p9-skin`; `site.js` rebuilds the
@@ -104,7 +104,9 @@ from there, falling back to `data/raw/`.
   Prefer short bullets (one idea each) to paragraphs in step cards, and a
   `.beats` row (year, drawing, one line) to a lede paragraph when a page's
   story has beats. Never say in the text what the picture already shows, or
-  label in the picture what the card beside it says.
+  label in the picture what the card beside it says. Science communication,
+  not a textbook: no resolution numbers, no formal names where a plain word
+  does, and no sentence that states what the reader already knows.
 - **Colour: the "Deep Field" palette** (tokens at the top of `src/style.css`).
   Zinc surfaces and four accents, each with one meaning everywhere:
   `--series-1` violet is the objects we talk about (and links, the current
@@ -114,7 +116,10 @@ from there, falling back to `data/raw/`.
   hues lifted for small text. The Sun keeps its gold and the planets their
   natural colours. **No blue accents**: the user dislikes blue; blue appears
   only as Earth's and Neptune's own colour in the art. Colour follows the
-  entity, never its rank, and nothing is encoded in colour alone.
+  entity, never its rank, and nothing is encoded in colour alone. On the
+  planets page the three counts keep one colour each wherever they appear:
+  the first nine violet, eight ember, the proposed ninth aurora (`.k-nine`,
+  `.k-eight`, `.k-ninth`).
 - **No descriptors a reader can work out.** No "Part 3 · The search · page 2
   of 4" eyebrows, no "scroll slowly" hints, no "pick a look" explanations on
   the intro; the nav, the step counters and the controls carry that. Titles

@@ -1,5 +1,5 @@
 // The chrome every page shares: the art sprite (in the reader's chosen Planet
-// Nine skin), the top navigation, the footer with previous/next links, the
+// Nine skin), the top navigation, the footer with its Continue button, the
 // starfield, and the base-URL fix-up for root-relative links.
 //
 // Each page's HTML sets <body data-page="ID"> and imports its own module from
@@ -109,15 +109,15 @@ function nav () {
 function footer () {
   const cur = here()
   if (cur.id === 'intro') return
-  const i = PAGES.indexOf(cur)
-  const prev = PAGES[i - 1], next = PAGES[i + 1]
-  const card = (p, dir) => p ? `<a class="pager ${dir}" href="${url(p.path)}">
-      <span class="pager-k">${dir === 'prev' ? '← Previous' : 'Next →'}</span>
-      <span class="pager-t">${p.title}</span></a>` : '<span></span>'
+  const next = PAGES[PAGES.indexOf(cur) + 1]
+  // One button. The walkthrough reads in order; the nav is there for jumping about.
+  const go = next
+    ? `<a class="btn-continue" href="${url(next.path)}">Continue <span aria-hidden="true">→</span></a>`
+    : `<a class="btn-continue" href="${url('index.html')}">Back to the start</a>`
   const el = document.createElement('footer')
   el.className = 'site-foot wrap'
   el.innerHTML = `
-    <nav class="pagers" aria-label="Previous and next">${card(prev, 'prev')}${card(next, 'next')}</nav>
+    <nav class="continue" aria-label="Continue">${go}</nav>
     <p class="colophon">Daniel Wang · Gabriel Gonzalez · Russell Rui Luo — CS 1710, Harvard. Data fetched October 2026 from the
       <a href="https://ssd.jpl.nasa.gov/tools/sbdb_query.html">JPL Small-Body Database</a> and the
       <a href="https://www.minorplanetcenter.net/data">Minor Planet Center</a>. Planet Nine has never been seen; everything here describes an inference, not an observation.

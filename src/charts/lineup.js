@@ -29,14 +29,14 @@ const FACTS = {
   Neptune: 'Found in 1846, on paper before in the sky: its pull on Uranus gave it away.',
   Pluto: 'Found in 1930. A planet until 24 August 2006; a dwarf planet since.',
 }
-// The chart's subtitle carries only the edition date: what each edition
-// means is in the step card beside it, and the planets themselves are drawn.
-const EDITION = {
-  nine: '1930 – 2006 edition',
-  neighbours: '1992 – 2005 edition',
-  rules: '2006 edition',
-  eight: '2006 edition',
-  'nine-again': '2016 edition',
+// The years in the chart's title: what each edition means is in the step
+// card beside it, and the planets themselves are drawn.
+const YEARS = {
+  nine: '1930 – 2006',
+  neighbours: '1992 – 2005',
+  rules: '2006',
+  eight: '2006',
+  'nine-again': '2016',
 }
 
 // A small seeded generator so the Kuiper belt speckle is the same on every visit.
@@ -51,9 +51,7 @@ export function makeLineup (root, { planets }) {
   const g = svg.append('g').attr('clip-path', 'url(#lu-clip)')
 
   // --- title -----------------------------------------------------------------
-  svg.append('text').attr('class', 'lu-title').attr('x', W / 2).attr('y', 36).attr('text-anchor', 'middle')
-    .text('Planetary chart of the Solar System')
-  const sub = svg.append('text').attr('class', 'lu-sub').attr('x', W / 2).attr('y', 58).attr('text-anchor', 'middle')
+  const title = svg.append('text').attr('class', 'lu-title').attr('x', W / 2).attr('y', 40).attr('text-anchor', 'middle')
 
   // --- bodies ------------------------------------------------------------------
   const slots = SLOTS.map((s, i) => ({ ...s, x: X0 + i * DX, y: SUN.y + s.dy, art: PLANET_ART[s.name] }))
@@ -125,7 +123,7 @@ export function makeLineup (root, { planets }) {
     const crowded = step !== 'nine'
     const showP9 = step === 'nine-again'
 
-    sub.text(EDITION[step])
+    title.text(`Planetary chart of the Solar System (${YEARS[step]})`)
 
     gKbo.transition().duration(T).attr('opacity', crowded ? (dropped ? 0.55 : 1) : 0)
     body.transition().duration(T)

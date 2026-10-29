@@ -93,7 +93,7 @@ async function main () {
     scatter.update(state.quality ? etnos.filter(o => o.well_determined) : etnos, o => ids.has(o.id))
     scatter.setSelection(isBoxed(state) ? state : null)
     $('#selChip').innerHTML = isBoxed(state)
-      ? `<span style="display:inline-flex;align-items:center;gap:10px;background:#199e7022;border:1px solid var(--series-3);border-radius:999px;padding:6px 14px;font-size:.82rem">
+      ? `<span style="display:inline-flex;align-items:center;gap:10px;background:#34d39922;border:1px solid var(--series-3);border-radius:999px;padding:6px 14px;font-size:.82rem">
            Showing reach ${fmt(state.aMin)}–${fmt(state.aMax)} AU, closest ${state.qMin.toFixed(0)}–${state.qMax.toFixed(0)} AU
            <button id="clearBox" style="background:none;border:0;color:var(--series-3);cursor:pointer;font:inherit;padding:0">clear ✕</button></span>`
       : `<span style="font-size:.82rem;color:var(--text-muted)">No box drawn: showing everything the filters allow.</span>`

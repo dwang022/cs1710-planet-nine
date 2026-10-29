@@ -10,12 +10,11 @@
 <body data-page="search">
 <main>
   <header class="page-head wrap">
-    <div data-page-head></div>
-    <h1>So why hasn't <em>anyone found it?</em></h1>
+    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
+    <h1>Why hasn't <em>anyone found it?</em></h1>
     <p class="lede">Telescopes have photographed almost the entire sky, but only about <span data-n="deepPct">—</span>% of
     it deeply enough to see something as faint as Planet Nine, and <span data-n="thinPct">—</span>% of its predicted path
-    lies outside that small, deep part. This page shows where the searches have looked, what they have ruled out, and
-    lets you test a planet of your own against them.</p>
+    lies outside that deep part.</p>
   </header>
 
   <!-- the sky -->
@@ -23,7 +22,6 @@
     <div class="wrap">
       <div class="sec-head">
         <h2>Where the telescopes have looked</h2>
-        <p class="scroll-hint">Scroll slowly. The map changes with each card.</p>
       </div>
     </div>
     <div class="scrolly wrap wide" id="skyStory">
@@ -95,7 +93,7 @@
           <ul>
             <li><strong>Point at</strong> any shaded area to see which survey took it and how deep it went.</li>
             <li><strong>Click a survey name</strong> above the map to outline just its area.</li>
-            <li>The <span class="k-obj">blue dots</span> are the directions the objects from part 2 point, now placed on the sky.</li>
+            <li>The <span class="k-obj">violet dots</span> are the directions the objects from part 2 point, now placed on the sky.</li>
           </ul>
         </div></div>
       </div>
@@ -112,8 +110,8 @@
   <section class="part wrap" id="searches">
     <div class="sec-head">
       <h2>The searches so far</h2>
-      <p>Every direct search for the planet, and every survey that set a limit on it, in order. An empty search
-      is not nothing: each one rules out part of the predicted range, and the bars say how much.</p>
+      <p>Every direct search, and every survey that set a limit, in order. An empty search still rules out part of
+      the predicted range; the bars say how much.</p>
     </div>
     <div class="legend fl-legend" id="searchLegend" aria-hidden="true"></div>
     <div class="fl" id="searchLedger"></div>
@@ -122,14 +120,14 @@
   <!-- put a planet out there -->
   <section class="part wrap" id="build">
     <div class="sec-head">
-      <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Could a planet still be hiding? Put one out there</h2>
-      <p>Drag the dials. Your planet is scored against what the real objects do and what the real searches have
-      already ruled out. It starts at the published best fit.</p>
+      <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Put a planet out there</h2>
+      <p>Your planet is scored against what the real objects do and what the searches have already ruled out.
+      It starts at the published best fit.</p>
     </div>
     <div class="grid-2">
       <div class="card">
         <h3>Your planet, against the real orbits</h3>
-        <div class="sub">Orange is yours. Blue are the well-measured extreme objects.</div>
+        <div class="sub">Orange is yours. Violet are the well-measured extreme objects.</div>
         <div id="chartPlace"></div>
       </div>
       <div class="card">

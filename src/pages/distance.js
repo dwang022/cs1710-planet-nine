@@ -123,9 +123,9 @@ async function main () {
   const tiers = [
     { n: summary.n_objects_a_gt_30, label: 'bodies with an average distance beyond 30 AU (the JPL query)', colour: '#3a3a36' },
     { n: summary.n_a_gt_100, label: 'of them reach beyond 100 AU', colour: '#5a5a54' },
-    { n: summary.n_etno_a150_q30, label: 'are "extreme": beyond 150 AU, never closer than 30 AU', colour: '#3987e5', opacity: 0.45 },
-    { n: summary.n_etno_well_determined, label: 'of those have well-measured orbits: the sample this site trusts', colour: '#3987e5' },
-    { n: six, label: 'were the six orbits the 2016 proposal was built on', colour: '#199e70' },
+    { n: summary.n_etno_a150_q30, label: 'are "extreme": beyond 150 AU, never closer than 30 AU', colour: '#a78bfa', opacity: 0.45 },
+    { n: summary.n_etno_well_determined, label: 'of those have well-measured orbits: the sample this site trusts', colour: '#a78bfa' },
+    { n: six, label: 'were the six orbits the 2016 proposal was built on', colour: '#34d399' },
   ]
   drawGrid($('#chartGrid'), { tiers })
   $('#gridLegend').innerHTML = tiers.map(t => `<li><i style="background:${t.colour};opacity:${t.opacity ?? 1}"></i><span><b>${t.n.toLocaleString()}</b> ${t.label}</span></li>`).join('')

@@ -13,11 +13,11 @@ import { url } from './data.js'
 
 export const PAGES = [
   { id: 'intro', path: 'index.html', title: 'The search for Planet Nine', short: 'Start' },
-  { id: 'planets', path: 'setting/planets.html', group: 'The setting', title: 'Nine planets, then eight, now perhaps nine', short: 'Planets' },
-  { id: 'distance', path: 'setting/distance.html', group: 'The setting', title: 'How far away, and how we know', short: 'Distance' },
+  { id: 'planets', path: 'setting/planets.html', group: 'The setting', title: 'Nine, eight, nine?', short: 'Planets' },
+  { id: 'distance', path: 'setting/distance.html', group: 'The setting', title: 'How far, and how we know', short: 'Distance' },
   { id: 'clustering', path: 'insights/clustering.html', group: 'The insight', title: 'The orbits lean the same way', short: 'Clustering' },
   { id: 'probability', path: 'insights/probability.html', group: 'The insight', title: 'Could it just be luck?', short: 'Probability' },
-  { id: 'search', path: 'search/how.html', group: 'The search', title: 'How the search is done', short: 'The search' },
+  { id: 'search', path: 'search/how.html', group: 'The search', title: 'Why nobody has found it', short: 'The search' },
   { id: 'alternatives', path: 'search/alternatives.html', group: 'The search', title: 'What else could explain it', short: 'Alternatives' },
   { id: 'timeline', path: 'search/timeline.html', group: 'The search', title: 'Ten years of argument', short: 'Timeline' },
   { id: 'future', path: 'search/future.html', group: 'The search', title: 'What comes next', short: 'Future' },
@@ -100,16 +100,10 @@ function nav () {
   setH(); window.addEventListener('resize', setH)
 }
 
-/** Above the content: which part this is, its title, and where it sits in the sequence. */
-function pageHead () {
-  const cur = here()
-  const slot = document.querySelector('[data-page-head]')
-  if (!slot || cur.id === 'intro') return
-  const siblings = PAGES.filter(p => p.group === cur.group)
-  const k = siblings.indexOf(cur) + 1
-  const part = GROUPS.indexOf(cur.group) + 1
-  slot.innerHTML = `<div class="eyebrow">Part ${part} · ${cur.group} · page ${k} of ${siblings.length}</div>`
-}
+// Pages carry no "Part 3 · The search · page 2 of 4" eyebrow: the nav bar
+// already says where the reader is, and the user asked for no descriptors a
+// reader can work out alone. The part and position live in PAGES for anyone
+// who needs them (the nav, the footer, the intro's three part buttons).
 
 /** Below the content: where to go next, and the credits. */
 function footer () {
@@ -118,7 +112,7 @@ function footer () {
   const i = PAGES.indexOf(cur)
   const prev = PAGES[i - 1], next = PAGES[i + 1]
   const card = (p, dir) => p ? `<a class="pager ${dir}" href="${url(p.path)}">
-      <span class="pager-k">${dir === 'prev' ? '← Previous' : 'Next →'}${p.group ? ` · ${p.group}` : ''}</span>
+      <span class="pager-k">${dir === 'prev' ? '← Previous' : 'Next →'}</span>
       <span class="pager-t">${p.title}</span></a>` : '<span></span>'
   const el = document.createElement('footer')
   el.className = 'site-foot wrap'
@@ -149,6 +143,5 @@ export const skinInfo = () => ({ id: currentSkin(), ...skinFor(currentSkin()) })
 stars()
 injectSprite()
 nav()
-pageHead()
 footer()
 fixLinks()

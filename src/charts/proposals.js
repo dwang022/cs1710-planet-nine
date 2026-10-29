@@ -47,7 +47,7 @@ export function drawProposals (root, predictions) {
   xa.selectAll('text').attr('class', 'axis-label').attr('font-size', 12)
   xa.selectAll('line, path').attr('stroke', 'var(--rule)')
 
-  const colour = p => p.candidate ? '#eba181' : 'var(--series-3)'
+  const colour = p => p.candidate ? '#ffa07a' : 'var(--series-3)'
   const strip = (y, key, mid, open) => {
     const g = svg.append('g')
     const r = g.selectAll('g').data(rows.filter(p => p[key])).join('g')
@@ -70,7 +70,7 @@ export function drawProposals (root, predictions) {
   lab.append('line').attr('x1', p => x(p.xy)).attr('x2', p => x(p.xy)).attr('y1', (p, i) => row(i) + 4).attr('y2', p => yA(Math.min(1050, p.a ? p.a[1] : 0)) - 6)
     .attr('stroke', 'var(--rule)').attr('stroke-dasharray', '2 3')
   lab.append('text').attr('class', 'halo').attr('x', p => x(p.xy) + (anchor(p) === 'start' ? -6 : anchor(p) === 'end' ? 6 : 0)).attr('y', (p, i) => row(i)).attr('text-anchor', anchor)
-    .attr('font-size', 11.5).attr('font-weight', 600).attr('fill', p => p.candidate ? '#eba181' : 'var(--text-secondary)')
+    .attr('font-size', 11.5).attr('font-weight', 600).attr('fill', p => p.candidate ? '#ffa07a' : 'var(--text-secondary)')
     .each(function (p) {
       const t = d3.select(this)
       const short = p.label.replace('Batygin, Adams, Brown & Becker 2019 (review)', 'Batygin et al. 2019').replace(' (observational constraints)', '')

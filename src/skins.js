@@ -49,10 +49,10 @@ export const SKINS = {
     name: 'Ocean world',
     blurb: 'Water ice and a deep ocean under a thin, hazy sky, far too cold to be liquid at the surface.',
     source: 'a water-rich composition, as in Linder & Mordasini 2016',
-    outline: '#1f3f6b',
-    paint: () => `${disc('#3a6fb3')}
-      ${band(34, 7, '#5f8fcc', 0.75, 1.6)}
-      ${band(58, 9, '#2e5a98', 0.85, 1.6)}
+    outline: '#143f3a',
+    paint: () => `${disc('#2a7f72')}
+      ${band(34, 7, '#4a9d8e', 0.75, 1.6)}
+      ${band(58, 9, '#1f6459', 0.85, 1.6)}
       <path d="M26,46 C34,40 42,44 48,40" fill="none" stroke="#dbe9f7" stroke-width="3.2" stroke-linecap="round" opacity=".7"/>
       <path d="M56,70 C62,66 70,68 76,64" fill="none" stroke="#dbe9f7" stroke-width="3" stroke-linecap="round" opacity=".6"/>
       <ellipse cx="50" cy="14" rx="14" ry="5" fill="#eef5fb" opacity=".8"/>
@@ -100,11 +100,11 @@ export const SKINS = {
     blurb: 'The ninth ball on the table. Also not a serious proposal.',
     source: 'the game of nine-ball',
     outline: '#7a6a10',
-    q: { fill: '#1a1a19', stroke: '#ffffff', x: 61, size: 34, y: 62 },
+    q: { fill: '#161618', stroke: '#ffffff', x: 61, size: 34, y: 62 },
     paint: () => `${disc('#f6f0dc')}
       <path d="M0,34 L100,34 L100,66 L0,66 Z" fill="#e8c21c"/>
       <ellipse cx="50" cy="50" rx="27" ry="20" fill="#fbf7ea" stroke="#d9cfa8" stroke-width="1"/>
-      <text x="39" y="62" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Inter, system-ui, sans-serif" font-size="34" font-weight="800" fill="#1a1a19">9</text>
+      <text x="39" y="62" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Inter, system-ui, sans-serif" font-size="34" font-weight="800" fill="#161618">9</text>
       <ellipse cx="38" cy="24" rx="11" ry="4" fill="#ffffff" opacity=".7"/>
       ${shade(0.28)}`,
   },

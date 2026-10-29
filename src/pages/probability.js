@@ -72,8 +72,8 @@ async function main () {
       ? `Random data lines up this well only ${f.odds}. Something is organising these orbits, though "something" need not be a planet.`
       : p < 0.05 ? `Random data reaches this level ${f.odds}. Interesting, and well short of what astronomers usually demand.`
         : `Random data is this aligned ${f.odds}. With this sample there is no signal to explain.`
-    el.innerHTML = `<div class="note" style="border-left-color:${good ? 'var(--series-3)' : 'var(--series-2)'};background:${good ? '#199e7010' : '#d9592610'}">
-      <div class="note-k" style="color:${good ? '#5cc79c' : '#eba181'}">What this sample says</div><p><strong>${headline}</strong> ${body}</p></div>`
+    el.innerHTML = `<div class="note" style="border-left-color:${good ? 'var(--series-3)' : 'var(--series-2)'};background:${good ? '#34d39910' : '#ff6a3d10'}">
+      <div class="note-k" style="color:${good ? '#6ee7b7' : '#ffa07a'}">What this sample says</div><p><strong>${headline}</strong> ${body}</p></div>`
   }
 
   // --- numbers quoted in the text ---------------------------------------------------

@@ -19,7 +19,9 @@ const PLANET_DEFAULTS = { a: 460, e: 0.30, i: 16, varpi: 247, node: 97, mass: 6.
 async function main () {
   const { etnos, surveys: sv, p9_sky_track: SKY, etno_perihelion_sky: peri, planet_nine_predictions: PREDICTIONS, field_timeline: FIELD, papers: PAPERS } =
     await loadData('etnos', 'surveys', 'p9_sky_track', 'etno_perihelion_sky', 'planet_nine_predictions', 'field_timeline', 'papers')
-  const SURVEYS = sv.surveys
+  // Survey identity colours from the palette (the data file's own hexes include blues).
+  const SURVEY_COLOURS = ['#a78bfa', '#ff6a3d', '#e8c46a', '#34d399', '#f472b6', '#c4b5fd', '#ffa07a', '#ece6d8', '#f9a8d4']
+  const SURVEYS = sv.surveys.map((s, i) => ({ ...s, color_hex: s.future ? '#f472b6' : SURVEY_COLOURS[i % SURVEY_COLOURS.length] }))
   const PERIHELIA = peri.objects
   const objs = withAlignment(selected(etnos, loadSample()))
   const visibleIds = new Set(objs.map(o => o.id))
@@ -33,11 +35,11 @@ async function main () {
     const [gRa, gDec] = galacticPoint(150, 0)
     const tp = nom[Math.floor(nom.length * 0.62)]
     const ecl = at(eRa, eDec, 'the ecliptic: where the planets travel', { dy: 24, colour: 'var(--text-secondary)', size: 14 })
-    const trk = at(tp.ra_deg, tp.dec_deg, 'Planet Nine’s predicted path', { dy: -18, colour: '#5cc79c', size: 16 })
-    const mw = at(gRa, gDec, 'Milky Way', { dy: -18, colour: '#e8dcc0', size: 16 })
-    const des = at(15, -52, 'Dark Energy Survey', { colour: '#cfeef5', size: 14 })
-    const hsc = at(180, 19, 'Subaru (HSC)', { dy: -16, colour: '#cfeef5', size: 14 })
-    const lsst = at(110, -40, 'Rubin Observatory, 2026–2036', { colour: '#F08BB4', size: 15 })
+    const trk = at(tp.ra_deg, tp.dec_deg, 'Planet Nine’s predicted path', { dy: -18, colour: '#6ee7b7', size: 16 })
+    const mw = at(gRa, gDec, 'Milky Way', { dy: -18, colour: '#dcc48a', size: 16 })
+    const des = at(15, -52, 'Dark Energy Survey', { colour: '#ece6d8', size: 14 })
+    const hsc = at(180, 19, 'Subaru (HSC)', { dy: -16, colour: '#ece6d8', size: 14 })
+    const lsst = at(110, -40, 'Rubin Observatory, 2026–2036', { colour: '#f472b6', size: 15 })
     const off = { surveys: 'none', track: false, unsearched: false, milky: false, perihelia: false, future: false, notes: [] }
     const scenes = {
       sky: { notes: [ecl] },
@@ -57,11 +59,11 @@ async function main () {
     const ramp = `linear-gradient(90deg, ${d3.range(0, 1.01, 0.1).map(t => depthColour(20 + t * 6)).join(',')})`
     const items = []
     if (L.track) items.push(`${sw('var(--series-3)')}Planet Nine’s predicted path`)
-    if (L.surveys === 'coverage') items.push(`${sw('#556b77')}photographed by a sky survey`)
-    if (L.surveys === 'depth' || L.surveys === 'deep') items.push(`<span style="width:110px;height:11px;border-radius:3px;background:${ramp};border:1px solid var(--rule)"></span> how faint the photos reach: shallow → <b style="color:#8fd3e2">deep</b>`)
+    if (L.surveys === 'coverage') items.push(`${sw('#4a4852')}photographed by a sky survey`)
+    if (L.surveys === 'depth' || L.surveys === 'deep') items.push(`<span style="width:110px;height:11px;border-radius:3px;background:${ramp};border:1px solid var(--rule)"></span> how faint the photos reach: shallow → <b style="color:#ece6d8">deep</b>`)
     if (L.unsearched) items.push(`${sw('var(--series-2)')}path not yet searched deeply`)
-    if (L.milky) items.push(`${sw('#e8dcc0')}Milky Way`)
-    if (L.future) items.push(`${sw('transparent', 'border:2px dashed #F08BB4')}Rubin Observatory (2026–2036)`)
+    if (L.milky) items.push(`${sw('#dcc48a')}Milky Way`)
+    if (L.future) items.push(`${sw('transparent', 'border:2px dashed #f472b6')}Rubin Observatory (2026–2036)`)
     if (L.perihelia) items.push(`${sw('var(--series-1)', 'border-radius:50%')}direction each object points`)
     $('#skyLegend').innerHTML = items.map(i => `<div class="legend-item">${i}</div>`).join('')
   }

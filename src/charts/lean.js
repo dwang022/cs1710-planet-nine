@@ -257,7 +257,7 @@ export function makeLean (root) {
     const L = (key, x, y, text, opts = {}) => list.push({ key, x, y, text, ...opts })
     if (s.labels?.sun) L('sun', cx + 12, cy + 22, 'the Sun', { anchor: 'start', colour: 'var(--sun)' })
     if (s.labels?.neptune && !ring) {
-      L('nep', cx - r(30) * 0.72 - 6, cy + r(30) * 0.72 + 18, 'Neptune’s orbit', { anchor: 'end', colour: '#8ea8d8' })
+      L('nep', cx - r(30) * 0.72 - 6, cy + r(30) * 0.72 + 18, 'Neptune’s orbit', { anchor: 'end', colour: '#aab0c4' })
     }
     if (s.labels?.closest && focus && !ring) {
       const p = perihelionPoint(focus)
@@ -266,7 +266,7 @@ export function makeLean (root) {
     if (s.labels?.half && stats.n >= 3) {
       const ang = stats.meanDeg
       L('half', ax(ang, PLOT_R * 0.72), ay(ang, PLOT_R * 0.72),
-        `${s.halfCount} of ${stats.n} dots in this half`, { size: 17, colour: '#9cc4f2' })
+        `${s.halfCount} of ${stats.n} dots in this half`, { size: 17, colour: '#c4b5fd' })
       L('half2', ax(ang + 180, PLOT_R * 0.62), ay(ang + 180, PLOT_R * 0.62),
         `only ${stats.n - s.halfCount} in this half`, { size: 15, colour: 'var(--text-muted)' })
     }

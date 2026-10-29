@@ -20,7 +20,7 @@ export function drawOdds (root, rows) {
   const iw = W - M.left - M.right
   const x = d3.scaleLog().domain([1, 100000]).range([M.left, M.left + iw]).clamp(true)
   const colour = { for: 'var(--series-3)', against: 'var(--series-2)', ours: 'var(--series-1)' }
-  const ink = { for: '#5cc79c', against: '#eba181', ours: '#8fbdf0' }
+  const ink = { for: '#6ee7b7', against: '#ffa07a', ours: '#c4b5fd' }
 
   svg.selectAll('*').remove()
   // the usual bar: 1 in 20
@@ -28,7 +28,7 @@ export function drawOdds (root, rows) {
     .attr('fill', 'var(--series-3)').attr('opacity', 0.06)
   svg.append('line').attr('x1', x(20)).attr('x2', x(20)).attr('y1', M.top - 24).attr('y2', M.top + rows.length * ROW - 12)
     .attr('stroke', 'var(--series-3)').attr('stroke-width', 1.5)
-  svg.append('text').attr('x', x(20) + 8).attr('y', M.top - 30).attr('font-size', 12.5).attr('font-weight', 600).attr('fill', '#5cc79c')
+  svg.append('text').attr('x', x(20) + 8).attr('y', M.top - 30).attr('font-size', 12.5).attr('font-weight', 600).attr('fill', '#6ee7b7')
     .text('past the usual bar (1 in 20): probably not luck')
   svg.append('text').attr('x', x(20) - 8).attr('y', M.top - 30).attr('font-size', 12.5).attr('font-weight', 600).attr('fill', 'var(--text-muted)').attr('text-anchor', 'end')
     .text('could easily be luck')

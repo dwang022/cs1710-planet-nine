@@ -68,10 +68,10 @@ export function makeBias ({ view, controls, result }) {
     gWedges.selectAll('path').data(ws).join('path')
       .attr('transform', `translate(${RING.cx},${RING.cy})`)
       .attr('d', w => arc({ startAngle: (90 - w.a1) * RAD, endAngle: (90 - w.a0) * RAD }))
-      .attr('fill', '#8fd3e2').attr('opacity', 0.13)
+      .attr('fill', '#ece6d8').attr('opacity', 0.13)
     gWedges.selectAll('text').data(ws).join('text').attr('class', 'halo')
       .attr('x', w => RING.cx + (RING.r * 0.55) * Math.cos(w.c * RAD)).attr('y', w => RING.cy - (RING.r * 0.55) * Math.sin(w.c * RAD) + 4)
-      .attr('text-anchor', 'middle').attr('font-size', 11.5).attr('font-weight', 600).attr('fill', '#8fd3e2').text('surveyed')
+      .attr('text-anchor', 'middle').attr('font-size', 11.5).attr('font-weight', 600).attr('fill', '#ece6d8').text('surveyed')
 
     const tagged = angles.map(a => ({ ...a, found: inside(a.deg, ws) }))
     const bins = d3.group(tagged.slice().sort((a, b) => a.deg - b.deg), a => Math.floor(a.deg / 8))

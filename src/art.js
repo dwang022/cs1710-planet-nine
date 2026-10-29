@@ -317,9 +317,9 @@ export function svgMarkup (name, { size = 64, bg = 'none', halo: ring = false, c
   if (!a) throw new Error(`unknown art: ${name}`)
   const [bw, bh] = box(name)
   const id = uid()
-  const fg = color || (bg === 'light' ? '#1a1a19' : '#ffffff')
+  const fg = color || (bg === 'light' ? '#161618' : '#ffffff')
   const tile = bg === 'none' ? ''
-    : `<rect width="${bw}" height="${bh}" rx="${Math.min(bw, bh) * 0.16}" fill="${bg === 'light' ? '#f4f2ec' : '#121211'}"/>`
+    : `<rect width="${bw}" height="${bh}" rx="${Math.min(bw, bh) * 0.16}" fill="${bg === 'light' ? '#f4f2ec' : '#0f0f11'}"/>`
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${bw} ${bh}" width="${size}" height="${Math.round(size * bh / bw)}" role="img" aria-label="${a.label}" style="color:${fg}">` +
     `${tile}<defs>${a.defs?.(id) ?? ''}</defs>${a.body(id, { skin })}${ring && bw === 100 ? halo(false) : ''}</svg>`
 }

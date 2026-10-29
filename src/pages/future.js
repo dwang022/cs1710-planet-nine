@@ -17,7 +17,7 @@ function drawDepth (root, surveys, p9) {
   const y = 150
   svg.append('rect').attr('x', x(p9.min)).attr('width', x(p9.max) - x(p9.min)).attr('y', y - 24).attr('height', 48).attr('rx', 8)
     .attr('fill', 'var(--series-3)').attr('opacity', .18)
-  svg.append('text').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('y', y + 72).attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 600).attr('fill', '#5cc79c')
+  svg.append('text').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('y', y + 72).attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 600).attr('fill', '#6ee7b7')
     .text(`green band: Planet Nine's predicted brightness, magnitude ${p9.min} to ${p9.max}`)
   svg.append('line').attr('x1', x(19)).attr('x2', x(26.5)).attr('y1', y).attr('y2', y).attr('stroke', 'var(--text-muted)').attr('stroke-width', 1.5)
   svg.selectAll('text.t').data(d3.range(19, 27)).join('text').attr('class', 't axis-label').attr('x', d => x(d)).attr('y', y + 22).attr('text-anchor', 'middle').text(d => d)
@@ -29,10 +29,10 @@ function drawDepth (root, surveys, p9) {
   const rows = surveys.slice().sort((a, b) => a.depth_mag - b.depth_mag)
   const g = svg.selectAll('g.s').data(rows).join('g').attr('class', 's')
   g.append('line').attr('x1', d => x(d.depth_mag)).attr('x2', d => x(d.depth_mag)).attr('y1', (d, i) => y - 34 - (i % 4) * 26).attr('y2', y)
-    .attr('stroke', d => d.future ? '#F08BB4' : d.depth_mag >= p9.min ? '#8fd3e2' : 'var(--text-secondary)').attr('stroke-width', 2).attr('stroke-dasharray', d => d.future ? '4 3' : null)
-  g.append('circle').attr('cx', d => x(d.depth_mag)).attr('cy', y).attr('r', 5).attr('fill', d => d.future ? '#F08BB4' : d.depth_mag >= p9.min ? '#8fd3e2' : 'var(--text-secondary)')
+    .attr('stroke', d => d.future ? '#f472b6' : d.depth_mag >= p9.min ? '#ece6d8' : 'var(--text-secondary)').attr('stroke-width', 2).attr('stroke-dasharray', d => d.future ? '4 3' : null)
+  g.append('circle').attr('cx', d => x(d.depth_mag)).attr('cy', y).attr('r', 5).attr('fill', d => d.future ? '#f472b6' : d.depth_mag >= p9.min ? '#ece6d8' : 'var(--text-secondary)')
   g.append('text').attr('class', 'halo').attr('x', d => x(d.depth_mag)).attr('y', (d, i) => y - 40 - (i % 4) * 26).attr('text-anchor', 'middle')
-    .attr('font-size', 12).attr('font-weight', 600).attr('fill', d => d.future ? '#F08BB4' : 'var(--text-primary)')
+    .attr('font-size', 12).attr('font-weight', 600).attr('fill', d => d.future ? '#f472b6' : 'var(--text-primary)')
     .text(d => `${d.short} · ${d.depth_mag}`)
 }
 

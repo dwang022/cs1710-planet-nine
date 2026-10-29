@@ -8,33 +8,25 @@
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body class="intro" data-page="intro">
+<!--
+  The intro says as little as possible: the title, the Start button, three part
+  buttons, and the skin picker beside the planet (one word of context, the skin
+  names). Explanations belong on the pages, not here.
+-->
 <main class="sky">
   <div class="sky-canvas" id="skyCanvas" aria-hidden="true"></div>
 
-  <div class="sky-scene" id="scene" role="img" aria-label="A telescope on a tripod points up at Planet Nine, drawn with a question mark and a dashed ring."></div>
+  <div class="sky-scene">
+    <div id="scene" role="img" aria-label="A telescope on a tripod points up at Planet Nine, drawn with a question mark and a dashed ring."></div>
+    <div class="skin-pick" id="skinPick" role="group" aria-label="What Planet Nine is made of"></div>
+  </div>
 
   <h1>The search for <em>Planet Nine</em></h1>
 
   <div class="sky-actions">
     <a class="btn-start" href="/setting/planets.html">Start <span aria-hidden="true">→</span></a>
-    <p class="sky-hint">Nine short pages in three parts. No astronomy needed.</p>
+    <nav class="parts" id="parts" aria-label="Skip to a part"></nav>
   </div>
-
-  <section class="skins" aria-labelledby="skinsTitle">
-    <div class="skins-head">
-      <div class="eyebrow" id="skinsTitle">What is Planet Nine made of? Pick a look</div>
-      <p>Nobody knows. The one you choose follows you through every page.</p>
-    </div>
-    <ul class="skin-list" id="skinList"></ul>
-    <p class="skin-blurb" id="skinBlurb"></p>
-  </section>
-
-  <section class="skip" aria-labelledby="skipTitle">
-    <div class="eyebrow" id="skipTitle">Or skip ahead</div>
-    <div class="skip-groups" id="skipGroups"></div>
-  </section>
-
-  <p class="sky-byline">Daniel Wang · Gabriel Gonzalez · Russell Rui Luo · CS 1710</p>
 </main>
 <script type="module" src="/src/pages/intro.js"></script>
 </body>

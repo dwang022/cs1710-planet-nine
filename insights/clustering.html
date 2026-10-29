@@ -10,20 +10,18 @@
 <body data-page="clustering">
 <main>
   <header class="page-head wrap">
-    <div data-page-head></div>
+    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
     <h1>The orbits <em>lean the same way</em></h1>
-    <p class="lede">The far ends of the solar system are full of small icy objects on long, oval orbits. Their
-    orbits nearly all swing closest to the Sun on the same side. If nothing were steering them, they would be
-    spread evenly all the way around. This page shows the pattern, then what a planet would do to a crowd of
-    orbits, and why that matters.</p>
+    <p class="lede">The far ends of the solar system are full of small icy objects on long, oval orbits, and
+    nearly all of them swing closest to the Sun on the same side. If nothing were steering them, they would be
+    spread evenly all the way around.</p>
   </header>
 
   <!-- the pattern, built up -->
   <section class="part story" id="lean">
     <div class="wrap">
       <div class="sec-head">
-        <h2>See the pattern build up</h2>
-        <p class="scroll-hint">Scroll slowly. The picture changes with each card.</p>
+        <h2>The pattern</h2>
       </div>
     </div>
     <div class="scrolly wrap wide" id="leanStory">
@@ -35,9 +33,9 @@
         <div class="step" data-step="one"><div class="step-card">
           <div class="step-n">1 / 8</div>
           <h3>Start with one object: Sedna</h3>
-          <p>The <span class="k-sun">yellow dot</span> is the Sun. The small <span class="k-nep">blue loop</span>
+          <p>The <span class="k-sun">yellow dot</span> is the Sun. The small <span class="k-nep">grey loop</span>
           around it is Neptune's orbit, the outermost planet.</p>
-          <p>The long <span class="k-obj">blue curve</span> is Sedna's orbit. It swings in to the
+          <p>The long <span class="k-obj">violet curve</span> is Sedna's orbit. It swings in to the
           <strong>dot</strong>, its closest point to the Sun, then heads back out far past the edge of this picture.</p>
         </div></div>
         <div class="step" data-step="point"><div class="step-card">
@@ -52,7 +50,7 @@
           <div class="step-n">3 / 8</div>
           <h3>Now add the rest</h3>
           <p>Here are all <strong><span data-n="strictN">—</span> objects</strong> whose orbits have been
-          measured well (the ones the previous page's grid lit up in blue).</p>
+          measured well (the ones the previous page's grid lit up in violet).</p>
           <p class="step-key">Ignore the curves. Just look at where the dots are.</p>
         </div></div>
         <div class="step" data-step="half"><div class="step-card">
@@ -128,11 +126,10 @@
   <!-- the mechanism -->
   <section class="part wrap" id="herd">
     <div class="sec-head">
-      <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Why a planet would do this: herd the orbits yourself</h2>
+      <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Herd the orbits</h2>
       <p>Thirty-six orbits start out pointing at random. Place a planet, choose how heavy it is, and run four
-      billion years. Two things happen in the model: the planet slowly turns every orbit to point away from its
-      own, and any orbit that ends up pointing the planet's way crosses its path and is eventually thrown out.
-      What survives is the pattern on the real sky.</p>
+      billion years. The planet turns every orbit to swing about the direction opposite its own, and any orbit
+      that points the planet's way crosses its path and is eventually thrown out.</p>
     </div>
     <div class="exhibit">
       <div>
@@ -141,10 +138,10 @@
       </div>
       <div class="viz-static" id="herdView"></div>
     </div>
-    <p class="caption">A cartoon of the mechanism described in Batygin &amp; Brown (2016), not a simulation of gravity.
-    In the real dynamics the surviving orbits are protected by resonances with the planet, and the turning takes
-    hundreds of millions of years per cycle. The planet here sits at 460 AU with the published eccentricity;
-    only its direction and mass are yours to set. Each setting is seeded, so re-running it gives the same result.</p>
+    <p class="caption">A cartoon of the mechanism in Batygin &amp; Brown (2016), not a simulation of gravity. In the
+    real dynamics the surviving orbits are protected by resonances with the planet and swing about anti-alignment
+    over hundreds of millions of years. The planet sits at 460 AU with the published eccentricity; only its direction
+    and mass are yours. Each setting is seeded, so re-running it gives the same result.</p>
   </section>
 
   <section class="part wrap">

@@ -121,7 +121,7 @@ export function drawArcChart (root, etnos, { highlight = ['90377', '2020 MQ53', 
     .attr('x', 0).attr('y', 0).attr('width', x(365)).attr('height', ih)
     .attr('fill', 'var(--series-2)').attr('opacity', 0.06)
   g.selectAll('text.shortl').data([0]).join('text').attr('class', 'shortl axis-label halo')
-    .attr('x', x(365) - 8).attr('y', ih - 10).attr('text-anchor', 'end').attr('fill', '#eba181').attr('font-weight', 600)
+    .attr('x', x(365) - 8).attr('y', ih - 10).attr('text-anchor', 'end').attr('fill', '#ffa07a').attr('font-weight', 600)
     .text('under a year: not trusted on this site')
 
   const dots = g.selectAll('circle.o').data(data, d => d.id).join('circle').attr('class', 'o')

@@ -1,36 +1,46 @@
 /* ---------------------------------------------------------------------------
-   The search for Planet Nine: design tokens and the components every page shares.
-   Palette: validated categorical slots 1-3 on the dark surface #1a1a19
-   (all-pairs CVD dE 9.4, normal-vision dE 20.9, contrast >= 3:1).
-   Colour follows the entity (alignment group), never its rank, so filtering
-   never repaints a surviving series.
+   The search for Planet Nine: design tokens and the components every page share.
+
+   Palette "Deep Field": zinc surfaces with four accents, each tied to one
+   meaning across every page and chart:
+     violet  --series-1  the objects we are talking about; links and the current page
+     ember   --series-2  the comparison, a warning, the case against a planet
+     aurora  --series-3  Planet Nine, the prediction, the case for a planet
+     rose    --series-4  what comes next: the Rubin Observatory and proposed searches
+   The Sun keeps its gold; the planets keep their own colours in src/art.js.
+   No blue accents: blue only ever appears as Earth's and Neptune's natural colour.
+   Colour follows the entity, never its rank, so filtering never repaints a series.
    --------------------------------------------------------------------------- */
 
 :root {
   color-scheme: dark;
 
-  --surface-0: #121211;        /* page */
-  --surface-1: #1a1a19;        /* chart surface — the validated surface */
-  --surface-2: #232321;        /* raised card */
-  --surface-3: #2e2e2b;        /* control track */
+  --surface-0: #0f0f11;        /* page */
+  --surface-1: #161618;        /* chart surface — the validated surface */
+  --surface-2: #1e1e22;        /* raised card */
+  --surface-3: #2a2a30;        /* control track */
 
   --text-primary:   #ffffff;
-  --text-secondary: #c3c2b7;
-  --text-muted:     #8a8a80;
+  --text-secondary: #c7c5bc;
+  --text-muted:     #8c8b83;
 
-  --rule: #34342f;
+  --rule: #2f2f36;
   --grid: #26262300;
 
-  /* Categorical — identity, fixed order, never cycled */
-  --series-1: #3987e5;         /* anti-aligned: the clustered group */
-  --series-2: #d95926;         /* aligned */
-  --series-3: #199e70;         /* Planet Nine */
+  /* Categorical: identity, fixed order, never cycled. The -ink variants are
+     the same hues lifted for small text on the dark surfaces. */
+  --series-1: #a78bfa;  --series-1-ink: #c4b5fd;   /* violet: the objects */
+  --series-2: #ff6a3d;  --series-2-ink: #ffa07a;   /* ember: comparison, warning, against */
+  --series-3: #34d399;  --series-3-ink: #6ee7b7;   /* aurora: Planet Nine, for */
+  --series-4: #f472b6;  --series-4-ink: #f9a8d4;   /* rose: what comes next */
 
-  --series-1-dim: #3987e544;
-  --series-2-dim: #d9592644;
+  --series-1-dim: #a78bfa44;
+  --series-2-dim: #ff6a3d44;
+  --accent: var(--series-1);
+  --accent-ink: var(--series-1-ink);
 
   --sun: #e8c46a;
-  --neptune: #5f7fb8;
+  --neptune: #8d93a8;
 
   --font-sans: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", Inter, system-ui, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
@@ -88,7 +98,7 @@ h3 { font-size: 1.05rem; font-weight: 600; }
 p { margin: 0 0 1rem; max-width: 68ch; color: var(--text-secondary); }
 p strong { color: var(--text-primary); font-weight: 600; }
 
-a { color: var(--series-1); text-decoration-color: #3987e566; text-underline-offset: 3px; }
+a { color: var(--series-1); text-decoration-color: #a78bfa66; text-underline-offset: 3px; }
 a:hover { text-decoration-color: currentColor; }
 
 .eyebrow {
@@ -144,9 +154,9 @@ section { padding-block: 56px; border-top: var(--divider); }
 .filter input[type="range"]::-webkit-slider-thumb { transition: box-shadow .15s ease; }
 .filter input[type="range"]:hover::-webkit-slider-runnable-track { background: #3c3c38; }
 .filter input[type="range"]:hover::-webkit-slider-thumb,
-.filter input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 1px #0006, 0 0 0 5px #3987e533; }
+.filter input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 1px #0006, 0 0 0 5px #a78bfa33; }
 .filter .toggle .box { transition: background .16s ease, box-shadow .15s ease; }
-.filter .toggle:hover .box { box-shadow: 0 0 0 4px #3987e526; }
+.filter .toggle:hover .box { box-shadow: 0 0 0 4px #a78bfa26; }
 .filter .toggle:hover .state { color: var(--text-secondary); }
 
 .ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 190px; }
@@ -281,19 +291,19 @@ tbody td { padding: 8px 12px; border-bottom: 1px solid #26262b55; color: var(--t
 tbody tr:hover td { background: #ffffff06; }
 td.num { text-align: right; }
 .tag { font-size: 0.7rem; padding: 2px 7px; border-radius: 5px; white-space: nowrap; }
-.tag.anti { background: #3987e526; color: #8fbdf0; }
-.tag.ali  { background: #d9592626; color: #eba181; }
+.tag.anti { background: #a78bfa26; color: #c4b5fd; }
+.tag.ali  { background: #ff6a3d26; color: #ffa07a; }
 
 /* --- callouts ------------------------------------------------------------ */
 
 .note {
-  border-left: 2px solid var(--series-2); background: #d9592610;
+  border-left: 2px solid var(--series-2); background: #ff6a3d10;
   padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 22px 0;
 }
 .note p { margin: 0; font-size: 0.9rem; }
 .note .note-k {
   font: 600 0.68rem/1 var(--font-mono); letter-spacing: 0.1em;
-  text-transform: uppercase; color: #eba181; margin-bottom: 7px;
+  text-transform: uppercase; color: #ffa07a; margin-bottom: 7px;
 }
 
 /* --- responsive ---------------------------------------------------------- */
@@ -338,7 +348,7 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .dist-lbl.muted { fill: var(--text-muted); }
 .dist-lbl.small { font-size: 11.5px; }
 .dist-lbl.focus { font-size: 15px; font-weight: 600; fill: var(--text-primary); }
-.dist-lbl.focus.p9 { fill: #5cc79c; }
+.dist-lbl.focus.p9 { fill: #6ee7b7; }
 .dist-lbl.focus-v { font-size: 13px; fill: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .dist-orbit { fill: none; stroke: #ffffff; stroke-opacity: .16; stroke-width: 1; stroke-dasharray: 3 5; }
 .dist-orbit.dwarf { stroke: #c8ad94; stroke-opacity: .3; }
@@ -368,7 +378,7 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .lu-lbl { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; fill: var(--text-secondary);
   paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
 .lu-lbl.sub { font-size: 11px; font-weight: 400; letter-spacing: .02em; text-transform: none; fill: var(--text-muted); }
-.lu-lbl.p9 { fill: #5cc79c; }
+.lu-lbl.p9 { fill: #6ee7b7; }
 .lu-arc { fill: none; stroke-width: 1.2; stroke-opacity: .35; }
 .lu-arc.dashed { stroke-dasharray: 4 5; stroke-opacity: .55; }
 .lu-halo { fill: none; stroke: #ffffff; stroke-opacity: .42; stroke-width: 1.3; }
@@ -377,8 +387,8 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .lu-kbo { fill: #9fb0bf; fill-opacity: .7; }
 .lu-note { font-size: 12.5px; fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
 .lu-note.bad { fill: var(--series-2); font-weight: 600; }
-.lu-note.good { fill: #5cc79c; font-weight: 600; }
-.lu-note.p9 { fill: #5cc79c; }
+.lu-note.good { fill: #6ee7b7; font-weight: 600; }
+.lu-note.p9 { fill: #6ee7b7; }
 
 /* the three-test table */
 .sub-title { margin: 30px 0 8px; font-size: 1.3rem; }
@@ -390,13 +400,13 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .criteria tbody th .art { width: 2.3em; height: 2.3em; vertical-align: middle; margin-right: 10px; }
 .criteria tbody th small { display: block; font-weight: 400; color: var(--text-muted); font-size: .78rem; white-space: normal; max-width: 22ch; margin-left: calc(2.3em + 10px); line-height: 1.35; }
 .criteria td .mark { font-weight: 700; font-size: 1.1rem; display: inline-block; min-width: 1.3em; line-height: 1.2; }
-.criteria td.ok .mark, .criteria td.maybe .mark { color: #5cc79c; }
+.criteria td.ok .mark, .criteria td.maybe .mark { color: #6ee7b7; }
 .criteria td.no .mark { color: var(--series-2); }
 .criteria td.na .mark { color: var(--text-muted); }
 .criteria td small { display: block; color: var(--text-muted); font-size: .8rem; line-height: 1.4; max-width: 26ch; margin-top: 2px; }
 .criteria td.verdict { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
 .criteria td.verdict small { white-space: normal; font-weight: 400; }
-.criteria tr.p9 th, .criteria tr.p9 td { background: #199e700d; }
+.criteria tr.p9 th, .criteria tr.p9 td { background: #34d3990d; }
 /* the definition: a full-width list, numbered to match the table's columns */
 #rules .sec-head p, #rules > p { max-width: none; }
 .definition { list-style: none; margin: 12px 0 18px; padding: 0; }
@@ -473,7 +483,7 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .mx .chev { fill: var(--text-muted); font-size: 15px; }
 .mx .row:hover .rowbg { fill: #ffffff09; }
 .mx .row:hover .rowlabel, .mx .row:hover .chev { fill: var(--text-primary); }
-.mx .row.is-selected .rowbg { fill: #3987e514; }
+.mx .row.is-selected .rowbg { fill: #a78bfa14; }
 .mx .row.is-selected .rowbar { fill: var(--series-1); }
 .mx .row.is-selected .rowlabel { fill: var(--text-primary); font-weight: 600; }
 .mx .row.is-selected .chev { fill: var(--series-1); }
@@ -547,17 +557,17 @@ section.story { padding-bottom: 24px; }
 
 /* inline colour keys that match the marks they name */
 .k-sun { color: var(--sun); font-weight: 600; }
-.k-nep { color: #8ea8d8; font-weight: 600; }
-.k-obj { color: #8fbdf0; font-weight: 600; }
-.k-p9 { color: #5cc79c; font-weight: 600; }
-.k-warn { color: #eba181; font-weight: 600; }
-.k-lsst { color: #F08BB4; font-weight: 600; }
+.k-nep { color: #aab0c4; font-weight: 600; }
+.k-obj { color: #c4b5fd; font-weight: 600; }
+.k-p9 { color: #6ee7b7; font-weight: 600; }
+.k-warn { color: #ffa07a; font-weight: 600; }
+.k-lsst { color: #f472b6; font-weight: 600; }
 
 .takeaway {
-  border-left: 3px solid var(--series-3); background: #199e700f;
+  border-left: 3px solid var(--series-3); background: #34d3990f;
   border-radius: 0 var(--radius) var(--radius) 0; padding: 18px 22px; margin: 8px 0 22px; max-width: 900px;
 }
-.takeaway .takeaway-k { color: #5cc79c; }
+.takeaway .takeaway-k { color: #6ee7b7; }
 .takeaway p { margin: 0; font-size: 1.08rem; max-width: none; }
 
 details.more > summary { font-size: .95rem; }
@@ -605,7 +615,7 @@ details.more > summary { font-size: .95rem; }
 .lu-callout-s { font-size: 13px; fill: var(--text-secondary); }
 
 /* --- the distance chart's stack of extreme objects (charts/distance.js) --- */
-.dist-lbl.p9 { fill: #5cc79c; }
+.dist-lbl.p9 { fill: #6ee7b7; }
 #chartDist .row .hit { fill: transparent; pointer-events: all; cursor: pointer; }
 #chartDist .row .range { fill: var(--series-1); fill-opacity: .38; }
 #chartDist .row.ali .range { fill: var(--series-2); }
@@ -684,6 +694,6 @@ figure.blink figcaption { padding: 10px 14px 12px; font-size: .84rem; line-heigh
 .when li { display: grid; grid-template-columns: 150px 1fr; gap: 18px; padding: 16px 0; border-top: 1px solid var(--rule); font-size: .98rem; line-height: 1.55; color: var(--text-secondary); }
 .when li:last-child { border-bottom: 1px solid var(--rule); }
 .when li b { color: var(--text-primary); }
-.when-y { font: 700 .82rem/1.5 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: #f5a8c6; }
+.when-y { font: 700 .82rem/1.5 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: #f9a8d4; }
 @media (max-width: 700px) { .when li { grid-template-columns: 1fr; gap: 6px; } }
 #chartDepth svg { max-height: 40vh; }

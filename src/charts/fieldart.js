@@ -5,7 +5,7 @@
 // function returns a markup string; the lane colour comes in as currentColor.
 
 const W = 240, H = 120
-const MUTED = '#8a8a80'
+const MUTED = '#8c8b83'
 const SUN = '#e8c46a'
 
 const svg = inner => `<svg class="fd" viewBox="0 0 ${W} ${H}" aria-hidden="true">${inner}</svg>`

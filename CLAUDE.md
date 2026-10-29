@@ -30,7 +30,7 @@ links are all generated from it.
 
 | Page | Module | What it holds |
 |---|---|---|
-| `index.html` | `pages/intro.js` | Title, telescope aimed at Planet Nine, shooting stars, Start, the skin picker, skip-ahead links |
+| `index.html` | `pages/intro.js` | Title, telescope aimed at Planet Nine, shooting stars, Start, three part buttons, the skin picker beside the planet |
 | `setting/planets.html` | `pages/planets.js` | Lineup scrolly (9 → 8 → 9?), Pluto's reclassification with the sad-face callout, the IAU definition and scorecard table |
 | `setting/distance.html` | `pages/distance.js` | Zoom-out scrolly (planets on arcs, extreme objects as range bars with a "now" dot), real discovery frames in blink players, arc-vs-disagreement chart, JPL and MPC cards with Sedna's raw records, the grid of all 8,079 bodies |
 | `insights/clustering.html` | `pages/clustering.js` | Lean scrolly (one orbit → compass → arrow → Planet Nine), filters in the last card, brush-to-select scatter and table, the herding exhibit |
@@ -101,10 +101,24 @@ from there, falling back to `data/raw/`.
   point to the Sun", not perihelion, on first use; define AU once per page.
   Never refer to controls the reader has not reached yet. One claim per
   ledger row. Stances and lanes are *our* reading of abstracts; say so.
-- **Colour.** `--series-1` blue is the objects, `--series-2` orange is the
-  comparison or warning, `--series-3` green is Planet Nine. Colour follows
-  the entity, never its rank. Nothing is encoded in colour alone (shape, text
-  or a table always carries the same meaning).
+- **Colour: the "Deep Field" palette** (tokens at the top of `src/style.css`).
+  Zinc surfaces and four accents, each with one meaning everywhere:
+  `--series-1` violet is the objects we talk about (and links, the current
+  page); `--series-2` ember is the comparison, a warning, the case against;
+  `--series-3` aurora green is Planet Nine and the case for; `--series-4` rose
+  is what comes next (Rubin, proposed searches). `-ink` variants are the same
+  hues lifted for small text. The Sun keeps its gold and the planets their
+  natural colours. **No blue accents**: the user dislikes blue; blue appears
+  only as Earth's and Neptune's own colour in the art. Colour follows the
+  entity, never its rank, and nothing is encoded in colour alone.
+- **No descriptors a reader can work out.** No "Part 3 · The search · page 2
+  of 4" eyebrows, no "scroll slowly" hints, no "pick a look" explanations on
+  the intro; the nav, the step counters and the controls carry that. Titles
+  are short and direct ("Herd the orbits", not "Why a planet would do this:
+  herd the orbits yourself"). Put orientation for future work in HTML or JS
+  comments, not on the page.
+- **The intro** holds only the title, Start, three part buttons, and the skin
+  picker beside the planet (one word of context plus the skin names).
 - **Links.** Write root-relative hrefs (`/setting/planets.html`); `site.js`
   rewrites them if `BASE_URL` is not `/`. Data and asset URLs go through
   `url()` in `data.js`.

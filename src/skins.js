@@ -13,7 +13,9 @@
 // --p9 (and --p9-ink), so everything that stands for Planet Nine, from the
 // orbit in a chart to the word "ninth" in a sentence, follows the chosen skin.
 // `text`, when present, is a CSS background painted through the lettering
-// instead of the flat colour (the black hole's glow, the nine-ball's stripes).
+// instead of the flat colour: icy bands, stone speckle, cheese holes, the
+// black hole's glow, the nine-ball's stripes. Layers may carry their own
+// position / size, since the whole value lands in one `background`.
 // The ocean world is the one blue on the site, by request: its own colour.
 
 const R = 40
@@ -31,6 +33,7 @@ export const SKINS = {
   'ice-giant': {
     name: 'Ice giant',
     colour: '#7fc8ad',
+    text: 'linear-gradient(180deg, #c6f1de 0%, #93d8bd 34%, #58ad90 50%, #93d8bd 66%, #c6f1de 100%)',
     blurb: 'The mainstream guess: a small Neptune, ice and rock wrapped in hydrogen and helium.',
     source: 'Batygin et al. 2019; Brown & Batygin 2021',
     outline: '#1b3a32',
@@ -42,9 +45,12 @@ export const SKINS = {
       ${shade(0.36)}`,
   },
   rock: {
-    name: 'Rocky super-Earth',
+    name: 'Rock world',
     colour: '#d9a876',
-    blurb: 'A bare rock-and-ice world a few times Earth’s mass, with at most a thin atmosphere.',
+    text: 'radial-gradient(circle at 40% 55%, #7d5a46 0 .085em, transparent .095em) 0 0 / 1em .85em, ' +
+          'radial-gradient(circle at 72% 28%, #9a7259 0 .055em, transparent .065em) .35em .25em / 1.25em 1.05em, ' +
+          'linear-gradient(180deg, #e6c096, #c8966c)',
+    blurb: 'A bare world of rock and ice, a few times heavier than Earth, with at most a thin atmosphere.',
     source: 'one of the compositions Brown & Batygin 2021 allow',
     outline: '#4a3a30',
     paint: () => `${disc('#8c7366')}
@@ -97,6 +103,9 @@ export const SKINS = {
   cheese: {
     name: 'Cheese',
     colour: '#f2cf3a',
+    text: 'radial-gradient(circle at 38% 58%, #c9981f 0 .1em, transparent .11em) 0 0 / 1.05em .9em, ' +
+          'radial-gradient(circle at 76% 26%, #c9981f 0 .065em, transparent .075em) .3em .2em / 1.3em 1.1em, ' +
+          'linear-gradient(90deg, #f4d23c, #f9e070 50%, #f1c93a)',
     blurb: 'Not a serious proposal. But nobody can prove otherwise until someone sees it.',
     source: 'folklore',
     outline: '#8c6a1a',

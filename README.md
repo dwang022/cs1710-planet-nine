@@ -38,7 +38,7 @@ of), then three parts, with a credits page outside the walkthrough:
 | | `search/timeline.html` | Ten years of argument in a compact ledger; how the proposed planet changed | `field_timeline.json`, `papers.json`, `planet_nine_predictions.json` |
 | | `search/future.html` | Survey depths vs predicted brightness; what to watch; when we might know; what would confirm or end it | `surveys.json`, `planet_nine_predictions.json`, `field_timeline.json` |
 
-The Planet Nine drawing comes in seven skins (ice giant, rocky super-Earth,
+The Planet Nine drawing comes in seven skins (ice giant, rock world,
 ocean world, iron world, primordial black hole, cheese, nine-ball). The reader
 picks one on the intro screen; every page draws the planet that way, and
 everything that stands for it, down to the words "Planet Nine", takes that

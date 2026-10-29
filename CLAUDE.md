@@ -92,7 +92,7 @@ from there, falling back to `data/raw/`.
   bands, thin halo (dashed for Planet Nine). Planet Nine always keeps its
   question mark, in every skin. The sad Pluto appears only at the moment of reclassification: the 2006
   beat on the planets page and the callout in the lineup.
-- **Skins.** `src/skins.js` holds the seven skins (ice giant, rocky super-Earth,
+- **Skins.** `src/skins.js` holds the seven skins (ice giant, rock world,
   ocean world, iron world, primordial black hole, cheese, nine-ball). The
   choice is stored in `localStorage` under `p9-skin`; `site.js` rebuilds the
   sprite's Planet Nine symbols, so every `<use href="#art-planet-nine">`

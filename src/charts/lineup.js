@@ -112,13 +112,11 @@ export function makeLineup (root, { planets }) {
   gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 68).text('as a dwarf planet')
 
   // The same bubble beside Planet Nine once it is pencilled in: a search, not a sighting.
-  const CO2 = { w: 200, h: 84 }
+  const CO2 = { w: 214, h: 62 }
   const gCallout2 = g.append('g').attr('class', 'lu-callout p9').attr('opacity', 0).style('pointer-events', 'none')
   gCallout2.append('path').attr('class', 'lu-callout-box').attr('d', bubble(CO2.w, CO2.h, CO2.w - 40, 6))
-  gCallout2.append('use').attr('href', '#art-planet-nine').attr('x', 8).attr('y', 16).attr('width', 52).attr('height', 52)
-  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 30).text('Astronomers begin')
-  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 48).text('searching for a')
-  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 66).html('possible <tspan class="p9">ninth planet</tspan>')
+  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 14).attr('y', 27).text('Astronomers begin searching')
+  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 14).attr('y', 47).html('for a possible <tspan class="p9">ninth planet</tspan>')
 
   function hover (ev, d) {
     showTip(ev, d.p9

@@ -16,6 +16,10 @@
 // instead of the flat colour: icy bands, rock strata, glossy cheese, the
 // black hole's glow, the nine-ball's stripes. Keep patterns to gradients and
 // bands: spots are chopped up by the thin strokes of the letters.
+// `counts`, when present, recolours the planets page's other two counts (the
+// first nine, violet by default; eight, ember by default) where the skin's own
+// colour would be confused with them: ocean blue beside violet, iron red and
+// black-hole orange beside ember.
 // The ocean world is the one blue on the site, by request: its own colour.
 
 const R = 40
@@ -32,8 +36,8 @@ function band (y, h, fill, opacity = 1, amp = 2.2) {
 export const SKINS = {
   'ice-giant': {
     name: 'Ice giant',
-    colour: '#7fc8ad',
-    text: 'linear-gradient(180deg, #c6f1de 0%, #93d8bd 34%, #58ad90 50%, #93d8bd 66%, #c6f1de 100%)',
+    colour: '#62e2c2',
+    text: 'linear-gradient(180deg, #e9fff8 0%, #86f2d4 34%, #22b899 50%, #86f2d4 66%, #e9fff8 100%)',
     blurb: 'The mainstream guess: a small Neptune, ice and rock wrapped in hydrogen and helium.',
     source: 'Batygin et al. 2019; Brown & Batygin 2021',
     outline: '#1b3a32',
@@ -60,6 +64,7 @@ export const SKINS = {
   ocean: {
     name: 'Ocean world',
     colour: '#4a8ee6',
+    counts: { nine: '#e8c46a' },
     blurb: 'Water ice and a deep ocean under a thin, hazy sky, far too cold to be liquid at the surface.',
     source: 'a water-rich composition, as in Linder & Mordasini 2016',
     outline: '#0f2d5c',
@@ -74,6 +79,7 @@ export const SKINS = {
   iron: {
     name: 'Iron world',
     colour: '#e8414b',
+    counts: { eight: '#f472b6' },
     blurb: 'Mostly metal, like a giant Mercury: dense, dark and dull, with rust-red plains.',
     source: 'a dense composition the mass estimates do not rule out',
     outline: '#3a1814',
@@ -86,8 +92,9 @@ export const SKINS = {
   },
   'black-hole': {
     name: 'Primordial black hole',
-    colour: '#ffa149',
-    text: 'linear-gradient(90deg, #ff8a2a 0%, #ffe3b0 42%, #ffffff 52%, #ffb55c 70%, #ff8a2a 100%)',
+    colour: '#ff9336',
+    text: 'linear-gradient(90deg, #ff7a1f 0%, #ffd9a6 42%, #ffffff 52%, #ffb86a 70%, #ff7a1f 100%)',
+    counts: { eight: '#f472b6' },
     blurb: 'Same mass, same orbit, but a black hole the size of a grapefruit instead of a planet.',
     source: 'Scholtz & Unwin 2020',
     outline: '#000000',
@@ -100,8 +107,8 @@ export const SKINS = {
   },
   cheese: {
     name: 'Cheese',
-    colour: '#f2cf3a',
-    text: 'linear-gradient(135deg, #dca225 0%, #f5d246 38%, #fff1aa 52%, #f2c93a 66%, #d69a1e 100%)',
+    colour: '#f7e04a',
+    text: 'linear-gradient(135deg, #f3d835 0%, #fff59a 50%, #f0cf2e 100%)',
     blurb: 'Not a serious proposal. But nobody can prove otherwise until someone sees it.',
     source: 'folklore',
     outline: '#8c6a1a',

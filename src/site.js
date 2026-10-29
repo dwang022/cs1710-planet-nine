@@ -57,6 +57,8 @@ function publishColour (sk) {
   st.setProperty('--p9-ink', sk.colour)
   st.setProperty('--p9-text', sk.text || sk.colour)
   document.documentElement.toggleAttribute('data-skin-text', !!sk.text)
+  st.setProperty('--c-nine', sk.counts?.nine || 'var(--series-1)')
+  st.setProperty('--c-eight', sk.counts?.eight || 'var(--series-2)')
 }
 
 const pageId = () => document.body.dataset.page || 'intro'

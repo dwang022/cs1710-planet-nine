@@ -46,6 +46,9 @@
   --p9: var(--series-3);
   --p9-ink: var(--series-3-ink);
   --p9-dim: color-mix(in srgb, var(--p9) 14%, transparent);
+  /* the planets page's other two counts; a skin may swap them (see skins.js `counts`) */
+  --c-nine: var(--series-1);
+  --c-eight: var(--series-2);
   --neptune: #8d93a8;
 
   --font-sans: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", Inter, system-ui, sans-serif;
@@ -102,7 +105,8 @@ h2 { font-size: clamp(1.5rem, 3.2vw, 2.1rem); }
 h3 { font-size: 1.05rem; font-weight: 600; }
 
 p { margin: 0 0 1rem; max-width: 68ch; color: var(--text-secondary); }
-p strong { color: var(--text-primary); font-weight: 600; }
+p strong { font-weight: 600; }
+p strong:not([class]) { color: var(--text-primary); }
 
 a { color: var(--series-1); text-decoration-color: #a78bfa66; text-underline-offset: 3px; }
 a:hover { text-decoration-color: currentColor; }
@@ -420,21 +424,18 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 
 /* the definition: three requirements side by side, each with a drawing, numbered to match the table */
 .definition {
-  list-style: none; margin: 18px 0 30px; padding: 0;
+  list-style: none; margin: 18px 0 30px; padding: 0; counter-reset: req;
   display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px;
 }
 .definition li {
-  display: grid; grid-template-rows: auto auto auto; row-gap: 16px; align-content: start;
+  display: grid; grid-template-rows: auto auto; row-gap: 16px; align-content: start; counter-increment: req;
   padding: 24px 0 28px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
   font-size: clamp(1.02rem, 1.35vw, 1.2rem); line-height: 1.5; color: var(--text-secondary);
 }
 .rule-fig { margin: 0; background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
 .rule-fig svg { display: block; width: 100%; height: auto; }
-.definition .n {
-  width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--text-muted);
-  display: inline-flex; align-items: center; justify-content: center; font: 600 1rem var(--font-mono); color: var(--text-primary);
-}
 .definition b { display: block; color: var(--text-primary); font-size: 1.2em; letter-spacing: -0.01em; margin-bottom: 6px; }
+.definition b::before { content: counter(req) ". "; }
 @media (max-width: 760px) {
   .definition { grid-template-columns: 1fr; gap: 0; }
   .definition li { padding: 18px 0 22px; border-bottom: 0; row-gap: 12px; }
@@ -571,7 +572,7 @@ section.story { padding-bottom: 24px; }
 .step-card ul:last-child { margin-bottom: 0; }
 .step-card li { margin-bottom: 8px; }
 .step-card li:last-child { margin-bottom: 0; }
-.step-card li strong { color: var(--text-primary); }
+.step-card li strong:not([class]) { color: var(--text-primary); }
 .step-card .step-key {
   color: var(--text-primary); font-weight: 600; border-left: 3px solid var(--series-1);
   padding-left: 12px;
@@ -586,8 +587,8 @@ section.story { padding-bottom: 24px; }
 .k-nep { color: #aab0c4; font-weight: 600; }
 .k-obj { color: #c4b5fd; font-weight: 600; }
 /* the three counts on the planets page, one colour each wherever they appear */
-.k-nine { color: var(--series-1); font-weight: 600; }
-.k-eight { color: var(--series-2); font-weight: 600; }
+.k-nine { color: var(--c-nine); font-weight: 600; }
+.k-eight { color: var(--c-eight); font-weight: 600; }
 /* Planet Nine, and the word "ninth" when it means Planet Nine: the chosen skin's colour */
 .k-ninth, .k-p9 { color: var(--p9-ink); font-weight: 600; }
 /* skins with patterned lettering (the black hole's glow, the nine-ball's stripes) paint it through --p9-text */

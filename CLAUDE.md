@@ -136,7 +136,9 @@ from there, falling back to `data/raw/`.
   entity, never its rank, and nothing is encoded in colour alone. On the
   planets page the three counts keep one colour each wherever they appear:
   the first nine violet, eight ember, and the proposed ninth in `--p9`, via
-  `.k-nine`, `.k-eight`, `.k-ninth`.
+  `.k-nine`, `.k-eight`, `.k-ninth`. A skin whose colour would be confused
+  with violet or ember swaps that count's colour through `counts` in
+  `src/skins.js` (`--c-nine`, `--c-eight`).
 - **No descriptors a reader can work out.** No "Part 3 · The search · page 2
   of 4" eyebrows, no "scroll slowly" hints, no "pick a look" explanations on
   the intro; the nav, the step counters and the controls carry that. Titles

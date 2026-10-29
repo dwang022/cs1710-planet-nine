@@ -136,27 +136,35 @@ body.intro { overflow-x: hidden; }
   100% { opacity: 0; transform: rotate(var(--angle, 25deg)) translateX(var(--dist, 400px)); }
 }
 
-/* the scene: an SVG box with the skin picker laid over it beside the planet */
+/* the scene: an SVG box with the skin carousel laid over the planet */
 .sky-scene { position: relative; z-index: 1; width: min(880px, 100%); aspect-ratio: 880 / 420; margin: 0 auto 4px; }
 #scene svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .sight { stroke: var(--series-3); stroke-opacity: .5; stroke-width: 1.4; stroke-dasharray: 4 8; fill: none; }
 .p9-float { transform-box: fill-box; transform-origin: center; animation: float 7s ease-in-out infinite; }
 @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
-@media (prefers-reduced-motion: reduce) { .p9-float, .meteor { animation: none; } }
+@keyframes swap { 0% { scale: .9; opacity: .3; } 100% { scale: 1; opacity: 1; } }
+.p9-swap { transform-box: fill-box; transform-origin: center; }
+.p9-swap.is-swap { animation: swap .4s ease-out; }
+@media (prefers-reduced-motion: reduce) { .p9-float, .p9-swap, .meteor { animation: none; } }
 
-.skin-pick {
-  position: absolute; translate: 0 -50%; display: flex; flex-direction: column; align-items: flex-start; gap: 3px;
-}
-.skin-k { font: 600 .62rem/1 var(--font-mono); letter-spacing: .18em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 4px 10px; }
-.skin-pick button {
-  display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 6px; border-radius: 999px;
-  background: transparent; border: 1px solid transparent; color: var(--text-secondary);
-  font: inherit; font-size: .8rem; line-height: 1; cursor: pointer; white-space: nowrap;
+/* the skin carousel: a box over the planet's bounds (positioned by pages/intro.js),
+   one arrow hanging off each side, the skin's name under the bottom edge */
+.skin-pick { position: absolute; pointer-events: none; }
+.skin-arrow {
+  pointer-events: auto; position: absolute; top: 50%; translate: 0 -50%; width: 40px; height: 40px; padding: 0;
+  display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--rule);
+  background: #ffffff08; color: var(--text-secondary); cursor: pointer;
   transition: border-color .18s ease, background-color .18s ease, color .18s ease;
 }
-.skin-pick button svg { width: 22px; height: 22px; flex: none; }
-.skin-pick button:hover { color: var(--text-primary); background: #ffffff0a; }
-.skin-pick button[aria-pressed="true"] { color: var(--text-primary); border-color: var(--series-3); background: color-mix(in srgb, var(--series-3) 12%, transparent); }
+.skin-arrow svg { width: 20px; height: 20px; }
+.skin-arrow.prev { right: calc(100% + 14px); }
+.skin-arrow.next { left: calc(100% + 14px); }
+.skin-arrow:hover { color: var(--text-primary); border-color: var(--series-3); background: color-mix(in srgb, var(--series-3) 14%, transparent); }
+.skin-arrow:focus-visible { outline: 2px solid var(--series-3); outline-offset: 2px; }
+.skin-name {
+  position: absolute; top: calc(100% + 4px); left: 50%; translate: -50% 0; white-space: nowrap;
+  font-size: clamp(.8rem, 2.2vw, .98rem); color: var(--text-secondary); letter-spacing: .01em;
+}
 
 .sky h1 {
   position: relative; z-index: 1; font-size: clamp(2.2rem, 7vw, 4.8rem); letter-spacing: -0.035em; line-height: 1.02;
@@ -182,7 +190,9 @@ body.intro { overflow-x: hidden; }
   .sky { padding-top: 24px; }
   .sky-scene { aspect-ratio: auto; height: auto; }
   #scene svg { position: static; display: block; aspect-ratio: 880 / 420; }
-  .skin-pick { position: static; translate: none; flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 4px 2px; margin-top: 6px; }
-  .skin-k { width: 100%; text-align: center; margin: 0 0 4px; }
+  .skin-arrow { width: 32px; height: 32px; }
+  .skin-arrow svg { width: 16px; height: 16px; }
+  .skin-arrow.prev { right: calc(100% + 8px); }
+  .skin-arrow.next { left: calc(100% + 8px); }
   .sky h1 { margin-top: 18px; }
 }

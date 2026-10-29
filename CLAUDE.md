@@ -30,7 +30,7 @@ links are all generated from it.
 
 | Page | Module | What it holds |
 |---|---|---|
-| `index.html` | `pages/intro.js` | Title, telescope aimed at Planet Nine, shooting stars, Start, three part buttons, the skin picker beside the planet |
+| `index.html` | `pages/intro.js` | Title, telescope aimed at Planet Nine, shooting stars, Start, three part buttons, the skin carousel on the planet (arrows either side, name beneath) |
 | `setting/planets.html` | `pages/planets.js` | Lineup scrolly (9 → 8 → 9?), Pluto's reclassification with the sad-face callout, the IAU definition and scorecard table |
 | `setting/distance.html` | `pages/distance.js` | Zoom-out scrolly (planets on arcs, extreme objects as range bars with a "now" dot), real discovery frames in blink players, arc-vs-disagreement chart, JPL and MPC cards with Sedna's raw records, the grid of all 8,079 bodies |
 | `insights/clustering.html` | `pages/clustering.js` | Lean scrolly (one orbit → compass → arrow → Planet Nine), filters in the last card, brush-to-select scatter and table, the herding exhibit |
@@ -118,7 +118,8 @@ from there, falling back to `data/raw/`.
   herd the orbits yourself"). Put orientation for future work in HTML or JS
   comments, not on the page.
 - **The intro** holds only the title, Start, three part buttons, and the skin
-  picker beside the planet (one word of context plus the skin names).
+  carousel: the planet the telescope points at, an arrow either side, the
+  skin's name beneath. No label, no explanation.
 - **Links.** Write root-relative hrefs (`/setting/planets.html`); `site.js`
   rewrites them if `BASE_URL` is not `/`. Data and asset URLs go through
   `url()` in `data.js`.

@@ -111,16 +111,14 @@ export function makeLineup (root, { planets }) {
   gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 50).text('Pluto is reclassified')
   gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 68).text('as a dwarf planet')
 
-  // The same bubble beside Planet Nine once it is pencilled in: why anyone
-  // thinks it is there, and that it is a search, not a sighting.
-  const CO2 = { w: 262, h: 100 }
+  // The same bubble beside Planet Nine once it is pencilled in: a search, not a sighting.
+  const CO2 = { w: 200, h: 84 }
   const gCallout2 = g.append('g').attr('class', 'lu-callout p9').attr('opacity', 0).style('pointer-events', 'none')
   gCallout2.append('path').attr('class', 'lu-callout-box').attr('d', bubble(CO2.w, CO2.h, CO2.w - 40, 6))
-  gCallout2.append('use').attr('href', '#art-planet-nine').attr('x', 8).attr('y', 24).attr('width', 52).attr('height', 52)
-  gCallout2.append('text').attr('class', 'lu-callout-t').attr('x', 66).attr('y', 28).text('2016')
-  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 48).text('A planet may be steering')
-  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 66).text('the farthest orbits.')
-  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 84).text('Unseen. The search begins.')
+  gCallout2.append('use').attr('href', '#art-planet-nine').attr('x', 8).attr('y', 16).attr('width', 52).attr('height', 52)
+  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 30).text('Astronomers begin')
+  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 48).text('searching for a')
+  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 66).html('possible <tspan class="p9">ninth planet</tspan>')
 
   function hover (ev, d) {
     showTip(ev, d.p9

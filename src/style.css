@@ -648,7 +648,7 @@ details.more > summary { font-size: .95rem; }
 .lu-callout-t { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; fill: #c8ad94; }
 .lu-callout-s { font-size: 13px; fill: var(--text-secondary); }
 .lu-callout.p9 .lu-callout-box { stroke: var(--p9); }
-.lu-callout.p9 .lu-callout-t { fill: var(--p9-ink); }
+.lu-callout.p9 .lu-callout-t, .lu-callout.p9 tspan.p9 { fill: var(--p9-ink); font-weight: 600; }
 
 /* --- the distance chart's stack of extreme objects (charts/distance.js) --- */
 .dist-lbl.p9 { fill: var(--p9-ink); }

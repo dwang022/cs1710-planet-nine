@@ -13,9 +13,9 @@
 // --p9 (and --p9-ink), so everything that stands for Planet Nine, from the
 // orbit in a chart to the word "ninth" in a sentence, follows the chosen skin.
 // `text`, when present, is a CSS background painted through the lettering
-// instead of the flat colour: icy bands, stone speckle, cheese holes, the
-// black hole's glow, the nine-ball's stripes. Layers may carry their own
-// position / size, since the whole value lands in one `background`.
+// instead of the flat colour: icy bands, rock strata, glossy cheese, the
+// black hole's glow, the nine-ball's stripes. Keep patterns to gradients and
+// bands: spots are chopped up by the thin strokes of the letters.
 // The ocean world is the one blue on the site, by request: its own colour.
 
 const R = 40
@@ -47,9 +47,7 @@ export const SKINS = {
   rock: {
     name: 'Rock world',
     colour: '#d9a876',
-    text: 'radial-gradient(circle at 40% 55%, #7d5a46 0 .085em, transparent .095em) 0 0 / 1em .85em, ' +
-          'radial-gradient(circle at 72% 28%, #9a7259 0 .055em, transparent .065em) .35em .25em / 1.25em 1.05em, ' +
-          'linear-gradient(180deg, #e6c096, #c8966c)',
+    text: 'repeating-linear-gradient(180deg, #e6c096 0 .16em, #b9865c .16em .27em, #d8a97e .27em .46em, #96684b .46em .54em)',
     blurb: 'A bare world of rock and ice, a few times heavier than Earth, with at most a thin atmosphere.',
     source: 'one of the compositions Brown & Batygin 2021 allow',
     outline: '#4a3a30',
@@ -103,9 +101,7 @@ export const SKINS = {
   cheese: {
     name: 'Cheese',
     colour: '#f2cf3a',
-    text: 'radial-gradient(circle at 38% 58%, #c9981f 0 .1em, transparent .11em) 0 0 / 1.05em .9em, ' +
-          'radial-gradient(circle at 76% 26%, #c9981f 0 .065em, transparent .075em) .3em .2em / 1.3em 1.1em, ' +
-          'linear-gradient(90deg, #f4d23c, #f9e070 50%, #f1c93a)',
+    text: 'linear-gradient(135deg, #dca225 0%, #f5d246 38%, #fff1aa 52%, #f2c93a 66%, #d69a1e 100%)',
     blurb: 'Not a serious proposal. But nobody can prove otherwise until someone sees it.',
     source: 'folklore',
     outline: '#8c6a1a',

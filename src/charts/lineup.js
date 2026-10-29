@@ -93,21 +93,34 @@ export function makeLineup (root, { planets }) {
     .attr('transform', d => `translate(${d.x},${d.y})`)
     .attr('opacity', d => d.p9 ? 0 : 1)
     .on('pointerenter', hover).on('pointermove', hover).on('pointerleave', () => hideTip())
-  body.append('circle').attr('class', d => `lu-halo${d.p9 ? ' dashed' : ''}`).attr('r', d => d.size * 0.62 + 4)
   body.append('use').attr('href', d => `#art-${d.art}`)
     .attr('x', d => -d.size / 2).attr('y', d => -d.size / 2).attr('width', d => d.size).attr('height', d => d.size)
   body.append('text').attr('class', d => `lu-lbl${d.p9 ? ' p9' : ''}`).attr('text-anchor', 'middle')
     .attr('y', d => d.size * 0.62 + 20).text(d => d.p9 ? 'Planet Nine?' : d.name)
 
+  // A speech bubble w by h with a 16px tail under x = tx, leaning by tdx.
+  const bubble = (w, h, tx, tdx) =>
+    `M8,0 H${w - 8} a8,8 0 0 1 8,8 V${h - 8} a8,8 0 0 1 -8,8 H${tx + 10} L${tx + tdx},${h + 16} L${tx - 6},${h} H8 a8,8 0 0 1 -8,-8 V8 a8,8 0 0 1 8,-8 Z`
+
   // Pluto itself stays its usual self, only faded; the reaction goes in a
   // speech bubble beside it, so the face reads as a comment on the moment.
   const CO = { w: 190, h: 84 }
-  gCallout.append('path').attr('class', 'lu-callout-box')
-    .attr('d', `M8,0 H${CO.w - 8} a8,8 0 0 1 8,8 V${CO.h - 8} a8,8 0 0 1 -8,8 H30 l-16,16 l4,-16 H8 a8,8 0 0 1 -8,-8 V8 a8,8 0 0 1 8,-8 Z`)
+  gCallout.append('path').attr('class', 'lu-callout-box').attr('d', bubble(CO.w, CO.h, 20, -6))
   gCallout.append('use').attr('href', '#art-pluto-sad').attr('x', 8).attr('y', 16).attr('width', 52).attr('height', 52)
   gCallout.append('text').attr('class', 'lu-callout-t').attr('x', 66).attr('y', 30).text('24 Aug 2006')
   gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 50).text('Pluto is reclassified')
   gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 68).text('as a dwarf planet')
+
+  // The same bubble beside Planet Nine once it is pencilled in: why anyone
+  // thinks it is there, and that it is a search, not a sighting.
+  const CO2 = { w: 262, h: 100 }
+  const gCallout2 = g.append('g').attr('class', 'lu-callout p9').attr('opacity', 0).style('pointer-events', 'none')
+  gCallout2.append('path').attr('class', 'lu-callout-box').attr('d', bubble(CO2.w, CO2.h, CO2.w - 40, 6))
+  gCallout2.append('use').attr('href', '#art-planet-nine').attr('x', 8).attr('y', 24).attr('width', 52).attr('height', 52)
+  gCallout2.append('text').attr('class', 'lu-callout-t').attr('x', 66).attr('y', 28).text('2016')
+  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 48).text('A planet may be steering')
+  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 66).text('the farthest orbits.')
+  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 84).text('Unseen. The search begins.')
 
   function hover (ev, d) {
     showTip(ev, d.p9
@@ -132,6 +145,9 @@ export function makeLineup (root, { planets }) {
     const bx = Math.min(W - CO.w - 4, pluto.x + 16), by = pluto.y + DROP - CO.h - 36
     gCallout.attr('transform', `translate(${bx},${by})`)
       .transition().duration(T).attr('opacity', step === 'eight' ? 1 : 0)
+    const bx2 = P9X - CO2.w + 40, by2 = p9.y - p9.size / 2 - 16 - CO2.h - 6
+    gCallout2.attr('transform', `translate(${bx2},${by2})`)
+      .transition().duration(T).attr('opacity', showP9 ? 1 : 0)
     gArcs.selectAll('circle').transition().duration(T).attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.4 : 1)
 
     // Notes beside Pluto: the crowd, then the three checks. The drawing carries

@@ -44,6 +44,7 @@ function meteors () {
   if (reduce.matches) return
   const sky = document.getElementById('skyCanvas')
   const one = () => {
+    if (document.hidden) return
     const m = document.createElement('div')
     m.className = 'meteor'
     const w = innerWidth, h = Math.min(innerHeight, 900)
@@ -57,6 +58,9 @@ function meteors () {
   }
   const loop = () => { one(); if (Math.random() < 0.25) setTimeout(one, 180 + Math.random() * 300); setTimeout(loop, 1600 + Math.random() * 3200) }
   setTimeout(loop, 700)
+  // A hidden tab pauses the animations but not the timers, so meteors made
+  // while away would all streak at once on return: clear them instead.
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) sky.querySelectorAll('.meteor').forEach(m => m.remove()) })
 }
 
 // --- the skin carousel: arrows either side of the planet, its name beneath ------

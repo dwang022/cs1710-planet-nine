@@ -52,7 +52,7 @@ export const SKINS = {
   },
   ocean: {
     name: 'Ocean world',
-    colour: '#3ad6b8',
+    colour: '#2ec4b6',
     blurb: 'Water ice and a deep ocean under a thin, hazy sky, far too cold to be liquid at the surface.',
     source: 'a water-rich composition, as in Linder & Mordasini 2016',
     outline: '#143f3a',

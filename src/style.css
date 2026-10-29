@@ -121,6 +121,7 @@ a:hover { text-decoration-color: currentColor; }
 /* --- sections ------------------------------------------------------------ */
 
 section { padding-block: 56px; border-top: var(--divider); }
+main > section:last-child { padding-bottom: 28px; }   /* the footer follows closely */
 .sec-head { margin-bottom: 28px; }
 .sec-head h2 { margin-bottom: 12px; }
 
@@ -387,8 +388,6 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .lu-lbl.p9 { fill: var(--p9-ink); }
 .lu-arc { fill: none; stroke-width: 1.2; stroke-opacity: .35; }
 .lu-arc.dashed { stroke-dasharray: 4 5; stroke-opacity: .55; }
-.lu-halo { fill: none; stroke: #ffffff; stroke-opacity: .42; stroke-width: 1.3; }
-.lu-halo.dashed { stroke: var(--p9); stroke-dasharray: 3 4; stroke-opacity: .8; }
 .lu-body { cursor: pointer; }
 .lu-kbo { fill: #9fb0bf; fill-opacity: .7; }
 .lu-note { font-size: 12.5px; fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
@@ -644,6 +643,8 @@ details.more > summary { font-size: .95rem; }
 .lu-callout-box { fill: var(--surface-2); stroke: #c8ad94; stroke-opacity: .7; stroke-width: 1.2; }
 .lu-callout-t { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; fill: #c8ad94; }
 .lu-callout-s { font-size: 13px; fill: var(--text-secondary); }
+.lu-callout.p9 .lu-callout-box { stroke: var(--p9); }
+.lu-callout.p9 .lu-callout-t { fill: var(--p9-ink); }
 
 /* --- the distance chart's stack of extreme objects (charts/distance.js) --- */
 .dist-lbl.p9 { fill: var(--p9-ink); }

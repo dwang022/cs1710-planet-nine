@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>What comes next · The search for Planet Nine</title>
+<meta name="description" content="What could settle the Planet Nine question, and when: the Rubin Observatory's ten-year survey, infrared follow-up, a millimetre-wave search, and the thousands of new distant orbits that will test the pattern." />
+<link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
+</head>
+<body data-page="future">
+<main>
+  <header class="page-head wrap">
+    <div data-page-head></div>
+    <h1>What comes next, <em>and when we might know</em></h1>
+    <p class="lede">The argument has gone on for a decade because the sky where the planet should be has never been
+    photographed deeply enough. That changed in 2026. This page sets out the telescope most likely to settle it, the
+    other ways it could be found, what would end the idea instead, and a realistic timeline.</p>
+  </header>
+
+  <!-- the depth gap -->
+  <section class="part wrap" id="depth">
+    <div class="sec-head">
+      <h2>The telescope that should settle it</h2>
+      <p>Every search so far stopped short of the planet's predicted brightness. The Vera C. Rubin Observatory's
+      ten-year survey reaches past it, over most of the sky where the planet could be, and photographs each patch
+      again and again, which is exactly what finding a slow-moving dot requires.</p>
+    </div>
+    <div class="card">
+      <h3>How faint each search could see, against how faint the planet would be</h3>
+      <div class="sub">Bigger magnitude means fainter. Each marker is the limit of one survey; the green band is the predicted brightness of Planet Nine.</div>
+      <div id="chartDepth"></div>
+    </div>
+    <div class="grid-stats auto" id="futureStats" style="margin-top:22px"></div>
+  </section>
+
+  <!-- what to watch -->
+  <section class="part wrap" id="next">
+    <div class="sec-head">
+      <h2>Four things to watch</h2>
+      <p>Searches that are running or proposed, and what each could settle. None of these is a finding yet.</p>
+    </div>
+    <div class="legend fl-legend" id="nextLegend" aria-hidden="true"></div>
+    <div class="fl" id="nextLedger"></div>
+  </section>
+
+  <!-- when -->
+  <section class="part wrap" id="when">
+    <div class="sec-head">
+      <h2>When could we know?</h2>
+      <p>A realistic schedule, with the reasons. Dates after 2026 are expectations, not promises.</p>
+    </div>
+    <ol class="when">
+      <li><span class="when-y">June 2026</span><div><b>Rubin's survey begins.</b> The ten-year Legacy Survey of Space and Time started on 29 June 2026. By late October it had already turned up a probable new dwarf planet, 2026 ED138, the first of what should be tens of thousands of new distant objects.</div></li>
+      <li><span class="when-y">2027</span><div><b>Most of the southern path photographed deeply at least once.</b> One deep image is not a detection: the planet would move only a few arcseconds a night, so it has to be seen on several nights and linked. Candidates will appear, and most will be ordinary asteroids or noise.</div></li>
+      <li><span class="when-y">2028 to 2029</span><div><b>The first real verdict.</b> With two or three years of repeat imaging, Brown and Batygin's estimate is that Rubin reaches most of the predicted brightness range. Either a slow mover with the right motion turns up, or the predicted orbit is left with only its faintest, most distant corner and the stretch behind the Milky Way.</div></li>
+      <li><span class="when-y">meanwhile</span><div><b>Side channels.</b> A few deep pointings along the infrared candidate's predicted track (DECam or Subaru) would confirm or kill it within a season. The Simons Observatory could repeat the millimetre-wave search for the planet's own heat with far more sensitivity, independent of how much sunlight it reflects.</div></li>
+      <li><span class="when-y">2036</span><div><b>The survey ends.</b> If nothing has been found by then, what remains is a planet fainter or farther than any current fit allows, or hidden against the dense star fields of the galactic plane. At that point the hypothesis as published would be close to ruled out.</div></li>
+    </ol>
+  </section>
+
+  <!-- what would end it -->
+  <section class="part wrap" id="verdicts">
+    <div class="two-col">
+      <div class="source-card" style="border-color:#199e7060">
+        <h3><span class="k-for">What would confirm it</span></h3>
+        <p>A faint object seen on several nights, moving a few arcseconds a day in the direction and at the rate the orbit
+        predicts, then recovered the following season. A second sighting fixes the distance; a season of positions fixes the
+        orbit; a mass comes last, from how it bends the orbits around it. Discovery would be announced through the Minor
+        Planet Center like every other object on this site.</p>
+      </div>
+      <div class="source-card" style="border-color:#d9592660">
+        <h3><span class="k-against">What would end it</span></h3>
+        <p>Not a single failed search, but two things together: Rubin covering the predicted path to its predicted depth
+        and finding nothing, and the tens of thousands of new distant objects it finds showing no preference for one
+        direction. If the newly found extreme orbits scatter evenly, there is nothing left for a planet to explain.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="part wrap">
+    <div class="takeaway">
+      <div class="takeaway-k">The end, for now</div>
+      <p>Planet Nine is an inference, not an observation: a few dozen faint orbits that lean the same way, a planet that
+      would explain it, and a decade of looking that has not found it but has not ruled it out. The next few years of
+      Rubin data should do one or the other. Every number on this site will be refreshed as they arrive.</p>
+    </div>
+  </section>
+</main>
+<script type="module" src="/src/pages/future.js"></script>
+</body>
+</html>

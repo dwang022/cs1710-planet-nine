@@ -4,9 +4,9 @@
       <circle cx="30" cy="34" r="4" fill="#ad927a"/><circle cx="68" cy="30" r="3" fill="#ad927a"/>
       <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.26"/>
     </g><circle cx="50" cy="50" r="40" fill="none" stroke="#85684f" stroke-width="2.5"/>
-    <g fill="#3a2a1e" stroke="#3a2a1e" stroke-width="2.5" stroke-linecap="round">
-      <circle cx="37" cy="41" r="2.7" stroke="none"/><circle cx="49" cy="41" r="2.7" stroke="none"/>
-      <path d="M32,36 L39,33 M54,33 L61,36" fill="none"/>
-      <path d="M36,54 Q43,48 50,54" fill="none"/>
+    <g fill="#3a2a1e" stroke="#3a2a1e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="36" cy="43" r="3.6" stroke="none"/><circle cx="54" cy="43" r="3.6" stroke="none"/>
+      <path d="M29,34 L40,31 M50,31 L61,34" fill="none"/>
+      <path d="M33,61 Q45,51 57,61" fill="none"/>
     </g>
-    <ellipse cx="51" cy="48" rx="1.8" ry="3" fill="#9fd8e0"/></svg>
+    <path d="M57,47 C57,47 61,55 61,58 A4,4 0 0 1 53,58 C53,55 57,47 57,47 Z" fill="#9fd8e0"/></svg>

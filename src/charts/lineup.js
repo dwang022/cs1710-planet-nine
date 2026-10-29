@@ -70,6 +70,7 @@ export function makeLineup (root, { planets, readout }) {
   const gSun = g.append('g')
   const gBodies = g.append('g')
   const gNotes = g.append('g').style('pointer-events', 'none')
+  const gCallout = g.append('g').attr('class', 'lu-callout').attr('opacity', 0).style('pointer-events', 'none')
 
   gSun.append('use').attr('href', '#art-sun')
     .attr('x', SUN.x - SUN.r).attr('y', SUN.y - SUN.r).attr('width', SUN.r * 2).attr('height', SUN.r * 2)
@@ -107,6 +108,16 @@ export function makeLineup (root, { planets, readout }) {
   body.append('text').attr('class', 'lu-lbl sub').attr('text-anchor', 'middle')
     .attr('y', d => d.size * 0.62 + 35).text('')
 
+  // Pluto itself stays its usual self, only faded; the reaction goes in a
+  // speech bubble beside it, so the face reads as a comment on the moment.
+  const CO = { w: 190, h: 84 }
+  gCallout.append('path').attr('class', 'lu-callout-box')
+    .attr('d', `M8,0 H${CO.w - 8} a8,8 0 0 1 8,8 V${CO.h - 8} a8,8 0 0 1 -8,8 H30 l-16,16 l4,-16 H8 a8,8 0 0 1 -8,-8 V8 a8,8 0 0 1 8,-8 Z`)
+  gCallout.append('use').attr('href', '#art-pluto-sad').attr('x', 8).attr('y', 16).attr('width', 52).attr('height', 52)
+  gCallout.append('text').attr('class', 'lu-callout-t').attr('x', 66).attr('y', 30).text('24 Aug 2006')
+  gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 50).text('Pluto is reclassified')
+  gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 68).text('as a dwarf planet')
+
   function hover (ev, d) {
     showTip(ev, d.p9
       ? `<b>Planet Nine (predicted)</b><div>Proposed in 2016 by Konstantin Batygin and Mike Brown. Five to ten times Earth's mass, hundreds of AU out. Never observed.</div>`
@@ -125,10 +136,13 @@ export function makeLineup (root, { planets, readout }) {
     gKbo.transition().duration(T).attr('opacity', crowded ? (dropped ? 0.55 : 1) : 0)
     body.transition().duration(T)
       .attr('transform', d => `translate(${d.x},${d.y + (d.dwarf && dropped ? DROP : 0)})`)
-      .attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.7 : 1)
+      .attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.5 : 1)
     body.select('text.sub').text(d => d.dwarf && dropped ? 'dwarf planet · 2006' : d.p9 ? 'proposed 2016 · not yet observed' : '')
-    // Pluto's face appears only at the moment it is reclassified.
-    body.select('use').attr('href', d => d.dwarf && dropped ? '#art-pluto-sad' : `#art-${d.art}`)
+    // Pluto keeps its own face; the bubble beside it carries the reaction,
+    // and only while the reclassification is the point of the step.
+    const bx = Math.min(W - CO.w - 4, pluto.x + 16), by = pluto.y + DROP - CO.h - 36
+    gCallout.attr('transform', `translate(${bx},${by})`)
+      .transition().duration(T).attr('opacity', step === 'eight' ? 1 : 0)
     gArcs.selectAll('circle').transition().duration(T).attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.4 : 1)
 
     // Notes beside Pluto: the crowd, then the scorecard.
@@ -140,7 +154,7 @@ export function makeLineup (root, { planets, readout }) {
       notes.push({ x: nx, y: ny + 80, t: 'round ✓', cls: 'good' })
       notes.push({ x: nx, y: ny + 98, t: 'cleared its orbit ✗', cls: 'bad' })
     }
-    if (step === 'eight') notes.push({ x: nx, y: ny + 60, t: 'reclassified: condition 3 not met', cls: '' })
+    if (step === 'eight') notes.push({ x: nx, y: ny + 60, t: 'condition 3 not met', cls: 'bad' })
     if (step === 'nine-again') notes.push({ x: P9X - 2, y: p9.y - 56, t: 'predicted, not observed', cls: 'p9' })
     gNotes.selectAll('text').data(notes, d => d.t).join(
       enter => enter.append('text').attr('class', d => `lu-note ${d.cls}`).attr('text-anchor', 'middle')

@@ -1,5 +1,5 @@
-// Sketch RL5 — who supports it. The argument as a ledger: one full-width row
-// per paper, year by year, the year riding in a gutter on the left.
+// The argument over Planet Nine as a ledger: one full-width row per paper,
+// year by year, the year riding in a gutter on the left.
 //
 // Each row is one claim: a title that says what the paper means for the
 // search, one line of context, a small drawing of the point, and a link. The
@@ -8,6 +8,11 @@
 // shifted right, data and searches centred with centred text). When a data
 // row's authors draw a conclusion, it hangs a for/against row of its own
 // beneath the data row, joined by a connector and labelled as their reading.
+//
+// Used on four pages of part 3, each showing the subset it needs:
+//   filter    keeps only the entries it returns true for (a hung row follows its data row)
+//   compact   title, icon and year only; drawings only on key papers (the timeline page)
+//   future    include the "what comes next" group (the future page shows nothing else)
 //
 // Content comes from field_timeline.json; titles, journals, citation counts
 // and links come from papers.json by DOI, so the two files cannot disagree.
@@ -36,13 +41,15 @@ function paperLink (p) {
   return `<a href="${esc(href)}" rel="noopener">${esc(p.label)}${journal ? ' · ' + esc(journal) : ''}</a>`
 }
 
-function links (e, byDoi) {
+function links (e, byDoi, compact) {
   const out = []
   if (e.doi) out.push(paperLink(byDoi.get(e.doi)))
-  for (const d of e.also || []) out.push(paperLink(byDoi.get(d)))
-  for (const l of e.links || []) out.push(`<a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`)
-  const p = e.doi && byDoi.get(e.doi)
-  if (p && p.citations_crossref != null) out.push(`<span>${p.citations_crossref} citations</span>`)
+  if (!compact) {
+    for (const d of e.also || []) out.push(paperLink(byDoi.get(d)))
+    for (const l of e.links || []) out.push(`<a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`)
+    const p = e.doi && byDoi.get(e.doi)
+    if (p && p.citations_crossref != null) out.push(`<span>${p.citations_crossref} citations</span>`)
+  } else if (!e.doi && e.links?.length) out.push(`<a href="${esc(e.links[0].url)}" rel="noopener">${esc(e.links[0].label)}</a>`)
   return out.filter(Boolean).join('<span class="fr-sep">·</span>')
 }
 
@@ -58,26 +65,27 @@ function bar (e) {
 }
 
 /** One row. `from` labels a row that hangs off the data row above it. */
-function row (e, byDoi, from = null) {
+function row (e, byDoi, from = null, compact = false) {
   const lane = LANE[e.lane]
-  const foot = links(e, byDoi)
-  return `<article class="fr ${lane.cls}${e.key ? ' is-key' : ''}${from ? ' is-branch' : ''}" data-id="${esc(e.id)}" data-kind="${esc(e.kind || '')}">
+  const foot = links(e, byDoi, compact)
+  const art = compact ? (e.key && e.diagram ? diagram(e.diagram, e.id) : '') : (e.diagram ? diagram(e.diagram, e.id) : '')
+  return `<article class="fr ${lane.cls}${e.key ? ' is-key' : ''}${from ? ' is-branch' : ''}${art ? '' : ' no-art'}" data-id="${esc(e.id)}" data-kind="${esc(e.kind || '')}">
     <div class="fr-icon" title="${esc(lane.word)}">${icon(KIND_ICON[e.kind] || lane.icon)}</div>
     <div class="fr-body">
       ${from ? `<div class="fr-from"><span aria-hidden="true">↳</span> ${esc(from)}</div>` : ''}
       <h4 class="fr-title">${esc(e.title)}</h4>
-      ${e.line ? `<p class="fr-line">${avatars(e)}${esc(e.line)}</p>` : ''}
+      ${!compact && e.line ? `<p class="fr-line">${avatars(e)}${esc(e.line)}</p>` : ''}
     </div>
-    <div class="fr-art">${e.diagram ? diagram(e.diagram, e.id) : ''}</div>
-    <div class="fr-meta">${bar(e)}${foot ? `<div class="fr-foot">${foot}</div>` : ''}</div>
+    <div class="fr-art">${art}</div>
+    <div class="fr-meta">${compact ? '' : bar(e)}${foot ? `<div class="fr-foot">${foot}</div>` : ''}</div>
   </article>`
 }
 
 /** The for/against row a data entry's authors earned it. */
-function branchRow (e) {
+function branchRow (e, compact) {
   const b = e.branch
-  return row({ id: e.id + '-branch', lane: b.side, kind: 'branch', title: b.title, line: b.line, diagram: b.diagram },
-    new Map(), b.from || 'What its finders concluded')
+  return row({ id: e.id + '-branch', lane: b.side, kind: 'branch', title: b.title, line: b.line, diagram: b.diagram, key: e.key },
+    new Map(), b.from || 'What its finders concluded', compact)
 }
 
 function credits (entries) {
@@ -89,25 +97,26 @@ function credits (entries) {
   return `<details class="fl-credits"><summary>Portrait credits (${rows.length}, Wikimedia Commons)</summary><ul>${rows.join('')}</ul></details>`
 }
 
-function legend () {
-  return [
-    ['is-for', 'planet', 'For a planet'],
-    ['is-against', 'noplanet', 'Against a planet'],
-    ['is-data', 'object', 'Data and searches'],
-    ['is-next', 'next', 'What comes next'],
-  ].map(([cls, ic, word]) => `<div class="legend-item ${cls}"><span class="fr-icon">${icon(ic)}</span>${word}</div>`).join('') +
-    `<div class="legend-item is-muted">Larger rows: the papers the field answers to</div>`
+export function legend (lanes = ['for', 'against', 'data', 'next'], { key = true } = {}) {
+  const items = {
+    for: ['is-for', 'planet', 'For a planet'],
+    against: ['is-against', 'noplanet', 'Against a planet'],
+    data: ['is-data', 'object', 'Data and searches'],
+    next: ['is-next', 'next', 'What comes next'],
+  }
+  return lanes.map(l => items[l]).map(([cls, ic, word]) => `<div class="legend-item ${cls}"><span class="fr-icon">${icon(ic)}</span>${word}</div>`).join('') +
+    (key ? '<div class="legend-item is-muted">Larger rows: the papers the field answers to</div>' : '')
 }
 
-export function drawField (root, { timeline, papers, legend: legendEl }) {
+export function drawField (root, { timeline, papers, legend: legendEl, filter = () => true, compact = false, future = true, dated = true, lanes }) {
   root.__field?.destroy()
   const byDoi = new Map(papers.map(p => [p.doi, p]))
-  const dated = timeline.entries.filter(e => e.lane !== 'next')
-    .sort((a, b) => a.year - b.year || a.order - b.order)
-  const future = timeline.entries.filter(e => e.lane === 'next').sort((a, b) => a.order - b.order)
+  const kept = timeline.entries.filter(filter)
+  const datedEntries = dated ? kept.filter(e => e.lane !== 'next').sort((a, b) => a.year - b.year || a.order - b.order) : []
+  const futureEntries = future ? kept.filter(e => e.lane === 'next').sort((a, b) => a.order - b.order) : []
 
   const years = []
-  for (const e of dated) {
+  for (const e of datedEntries) {
     const y = years[years.length - 1]
     if (y && y.year === e.year) y.entries.push(e)
     else years.push({ year: e.year, entries: [e] })
@@ -116,19 +125,21 @@ export function drawField (root, { timeline, papers, legend: legendEl }) {
   const group = (label, entries, cls = '') => `
     <div class="fy ${cls}">
       <div class="fy-year"><span>${label}</span></div>
-      <div class="fy-rows">${entries.map(e => row(e, byDoi) + (e.branch ? branchRow(e) : '')).join('')}</div>
+      <div class="fy-rows">${entries.map(e => row(e, byDoi, null, compact) + (e.branch ? branchRow(e, compact) : '')).join('')}</div>
     </div>`
 
+  root.classList.toggle('is-compact', compact)
   root.innerHTML = years.map(y => group(y.year, y.entries)).join('') +
-    group('Next', future, 'fy-next') + credits(timeline.entries)
-  if (legendEl) legendEl.innerHTML = legend()
+    (futureEntries.length ? group('Next', futureEntries, 'fy-next') : '') +
+    (compact ? '' : credits(kept))
+  if (legendEl) legendEl.innerHTML = legend(lanes || ['for', 'against', 'data', ...(futureEntries.length ? ['next'] : [])], { key: !compact || true })
 
   // --- entrance: each row comes in from its own side; a hung row follows its data row
-  // Scoped to html.has-reveal (set by initReveals in scrolly.js), so with
-  // reduced motion or without JS the rows are simply there.
   const rows = [...root.querySelectorAll('.fr')]
   let enter = null, leave = null
-  if (document.documentElement.classList.contains('has-reveal') && 'IntersectionObserver' in window) {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (!reduce && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('has-reveal')
     enter = new IntersectionObserver(es => {
       for (const e of es) if (e.isIntersecting) e.target.classList.add('is-in')
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0 })
@@ -141,4 +152,16 @@ export function drawField (root, { timeline, papers, legend: legendEl }) {
   }
 
   root.__field = { destroy () { enter?.disconnect(); leave?.disconnect() } }
+}
+
+/** Entry pickers for the part 3 pages. */
+export const PICK = {
+  /** a direct search, a limit, a candidate or a survey */
+  searches: e => e.lane !== 'next' && ['search', 'limit', 'candidate', 'survey'].includes(e.kind),
+  /** the case against: bias and alternative-mechanism papers, and discoveries whose finders read them against */
+  against: e => e.lane === 'against' || (e.lane === 'data' && e.branch?.side === 'against'),
+  /** everything dated */
+  all: e => e.lane !== 'next',
+  /** only what comes next */
+  next: e => e.lane === 'next',
 }

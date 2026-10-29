@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ten years of argument · The search for Planet Nine</title>
+<meta name="description" content="The argument over Planet Nine, year by year: one line per paper, for and against, with the data and searches between them, and how the proposed planet itself has shrunk and moved closer." />
+<link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
+</head>
+<body data-page="timeline">
+<main>
+  <header class="page-head wrap">
+    <div data-page-head></div>
+    <h1>Ten years <em>of argument</em></h1>
+    <p class="lede">The major papers, one line each. <span class="k-for">Green rows</span> argue for a planet,
+    <span class="k-against">orange rows</span> against one, and <span class="k-data">blue rows</span> are the data and
+    searches, with their finders' conclusions hanging beneath. The larger rows are the papers the rest of the field
+    answers to. Earlier pages covered the details; this one is the shape of the decade.</p>
+  </header>
+
+  <section class="part wrap" id="ledger">
+    <div class="legend fl-legend" id="fieldLegend" aria-hidden="true"></div>
+    <div class="fl" id="fieldTimeline"></div>
+    <p class="caption">Which lane a paper lands in is <strong>our</strong> reading of its abstract, not a label the authors chose.
+    Every paper we read is listed in
+    <a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/papers/README.md">papers/README.md</a>.</p>
+  </section>
+
+  <section class="part wrap" id="proposals">
+    <div class="sec-head">
+      <h2>The planet itself has changed</h2>
+      <p>Each paper that fitted an orbit put the planet somewhere slightly different. Over the decade it has moved
+      closer and grown lighter, as searches ruled out the bright, nearby possibilities and new objects tightened
+      the fit. The orange bar is a candidate, not a fit.</p>
+    </div>
+    <div class="card"><div id="chartProposals"></div></div>
+    <p class="caption">Values and ranges are read from each paper's abstract or figures, as tagged in the data; the 2016
+    founding paper gave only a mass floor and a notional orbit. Two readings of Brown &amp; Batygin (2021) are shown: the
+    headline numbers in its abstract and the full fit from its Figure 8, which is what this site draws everywhere else.</p>
+  </section>
+
+  <section class="part wrap">
+    <div class="takeaway">
+      <div class="takeaway-k">So far</div>
+      <p>A decade on, the argument is narrower but not over. The proposed planet is smaller, closer and fainter than
+      it started; the strongest criticism has shifted from "the pattern is not there" to "the surveys made it". The
+      last page looks at what could end the argument, and when.</p>
+    </div>
+  </section>
+</main>
+<script type="module" src="/src/pages/timeline.js"></script>
+</body>
+</html>

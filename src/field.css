@@ -19,7 +19,7 @@
 .k-against { color: var(--fl-against-ink); font-weight: 600; }
 .k-data { color: var(--fl-data-ink); font-weight: 600; }
 .k-next { color: var(--fl-next-ink); font-weight: 600; }
-#field .sec-head p { max-width: 78ch; }
+#ledger .sec-head p { max-width: 78ch; }
 
 /* legend: the icons, in their colours */
 .fl-legend { gap: 8px 26px; margin: 2px 0 22px; align-items: center; }
@@ -192,4 +192,29 @@ html.has-reveal .fr:focus-within { opacity: 1; transform: none; }
   .fr-bar { flex-wrap: wrap; justify-content: center; }
   .fr-bar-track { flex-basis: 140px; }
   .fr-art { max-width: 220px; }
+}
+
+/* --- compact ledger (the timeline page): title, icon, year; drawings only on key rows --- */
+.fl.is-compact { --fl-icon: 44px; --fl-art: 190px; }
+.fl.is-compact .fy { padding: 10px 0 14px; }
+.fl.is-compact .fy-rows { gap: 8px; }
+.fl.is-compact .fr.is-for, .fl.is-compact .fr.is-against { padding: 10px 16px 10px 14px; gap: 2px 16px; }
+.fl.is-compact .fr.is-against { padding: 10px 14px 10px 16px; }
+.fl.is-compact .fr.is-data, .fl.is-compact .fr.is-next { padding: 12px 18px 10px; flex-direction: row; text-align: left; align-items: center; gap: 16px; }
+.fl.is-compact .fr.is-data .fr-icon, .fl.is-compact .fr.is-next .fr-icon { margin: 0; }
+.fl.is-compact .fr.is-data .fr-body, .fl.is-compact .fr.is-next .fr-body { max-width: none; flex: 1; }
+.fl.is-compact .fr.is-data .fr-art, .fl.is-compact .fr.is-next .fr-art { width: 170px; margin: 0; }
+.fl.is-compact .fr.is-data .fr-meta, .fl.is-compact .fr.is-next .fr-meta { align-items: flex-start; }
+.fl.is-compact .fr-title { font-size: 1rem; margin: 0; }
+.fl.is-compact .fr.is-key .fr-title { font-size: 1.18rem; }
+.fl.is-compact .fr.is-key { --fl-art: 230px; }
+.fl.is-compact .fr.is-key.is-for, .fl.is-compact .fr.is-key.is-against { padding-block: 14px; }
+.fl.is-compact .fr.no-art { grid-template-columns: var(--fl-icon) minmax(0, 1fr) 0; }
+.fl.is-compact .fr.no-art.is-against { grid-template-columns: 0 minmax(0, 1fr) var(--fl-icon); }
+.fl.is-compact .fr.no-art .fr-art { display: none; }
+.fl.is-compact .fr-foot { margin-top: 4px; font-size: .74rem; }
+.fl.is-compact .fr-from { margin-bottom: 4px; }
+@media (max-width: 900px) {
+  .fl.is-compact .fr.is-data, .fl.is-compact .fr.is-next { flex-direction: column; align-items: flex-start; }
+  .fl.is-compact .fr.is-data .fr-art { width: min(100%, 220px); }
 }

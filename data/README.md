@@ -1,6 +1,6 @@
 # Planet Nine — data
 
-Everything the five chosen sketches need. Run `./scripts/fetch_all.sh` to rebuild
+Everything the site's pages need. Run `./scripts/fetch_all.sh` to rebuild
 from source (network required, Python 3 stdlib only, no pip installs).
 
 ```
@@ -21,6 +21,13 @@ scripts/          fetch + build
 | **GG8** — What else could explain the evidence | `alternatives.json`, `papers.json`, `clustering_null.json` |
 
 ## Processed files
+
+**`catalogue_samples.json`** — Sedna's raw record from each catalogue (the JPL
+query row with all 46 fields, the MPC distant-object record, and its line in
+the MPC numbered-object list), plus row counts and the JPL query itself. Built
+by `scripts/build_catalogue_samples.py` from the raw downloads in
+`../FinalProject/data/raw` (falling back to `data/raw/`). Shown on the
+distance page so readers see what the stored data actually looks like.
 
 **`tnos.csv`** — 8,079 small bodies with semi-major axis > 30 AU. JPL orbital
 elements joined to the Minor Planet Center's independent solution for the same
@@ -114,7 +121,8 @@ reading (supports / against / alternative / neutral), not a label the authors
 chose. Current split: 10 supports, 8 against, 4 alternative, 6 neutral — a
 property of the sample we picked, not a measurement of community opinion.
 
-**`field_timeline.json`** — the rows of the section 07 ledger: which of the
+**`field_timeline.json`** — the rows of the ledger on the part 3 pages (the search,
+alternatives, timeline and future pages each show a subset): which of the
 papers we judged major, which lane each goes in (`lane`: for / against / data /
 next), whether it is a `key` paper, a one-line `title` that says what the paper
 did to the question and one `line` of context (both retellings of the

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How the search is done · The search for Planet Nine</title>
+<meta name="description" content="Why nobody has found Planet Nine yet: the sky has been photographed, but mostly too shallowly. The searches so far, how much of the prediction they have ruled out, and a planet you can place yourself to see whether it could still be hiding." />
+<link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
+</head>
+<body data-page="search">
+<main>
+  <header class="page-head wrap">
+    <div data-page-head></div>
+    <h1>So why hasn't <em>anyone found it?</em></h1>
+    <p class="lede">Telescopes have photographed almost the entire sky, but only about <span data-n="deepPct">—</span>% of
+    it deeply enough to see something as faint as Planet Nine, and <span data-n="thinPct">—</span>% of its predicted path
+    lies outside that small, deep part. This page shows where the searches have looked, what they have ruled out, and
+    lets you test a planet of your own against them.</p>
+  </header>
+
+  <!-- the sky -->
+  <section class="part story" id="sky">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Where the telescopes have looked</h2>
+        <p class="scroll-hint">Scroll slowly. The map changes with each card.</p>
+      </div>
+    </div>
+    <div class="scrolly wrap wide" id="skyStory">
+      <div class="scrolly-graphic">
+        <div class="viz-head"><div class="legend" id="skyLegend"></div><div class="chip-row" id="surveyChips" hidden></div></div>
+        <div class="viz" id="chartSky"></div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="step" data-step="sky"><div class="step-card">
+          <div class="step-n">1 / 9</div>
+          <h3>This oval is the whole sky</h3>
+          <p>It is flattened onto the page the way a world map flattens the globe. Left to right is the direction
+          you face; up and down is north and south.</p>
+          <p>The faint curve is the <strong>ecliptic</strong>, the path the Sun and planets follow across the sky.</p>
+        </div></div>
+        <div class="step" data-step="track"><div class="step-card">
+          <div class="step-n">2 / 9</div>
+          <h3>Planet Nine would be somewhere on the green line</h3>
+          <p>This is its predicted orbit, traced across the sky (Brown &amp; Batygin, 2021). The thin lines show how
+          uncertain the prediction is.</p>
+          <p class="step-key">Nobody knows where on the line it is right now.</p>
+        </div></div>
+        <div class="step" data-step="coverage"><div class="step-card">
+          <div class="step-n">3 / 9</div>
+          <h3>Telescopes have photographed nearly all of it</h3>
+          <p>Every shaded area has been covered by at least one large sky survey, and together they cover
+          practically the whole sky.</p>
+          <p class="step-key">So why hasn't anyone spotted it?</p>
+        </div></div>
+        <div class="step" data-step="depth"><div class="step-card">
+          <div class="step-n">4 / 9</div>
+          <h3>Because a photo can be too shallow</h3>
+          <p>Planet Nine would be extremely faint: <strong>magnitude 22 to 25</strong>. On this scale bigger means
+          fainter, and your eye gives out at about 6.</p>
+          <p class="step-key">Each area is now shaded by how faint its photos can see. Brighter means deeper. Only a
+          few small patches are bright. Most of the sky has only been photographed to about magnitude 22.</p>
+        </div></div>
+        <div class="step" data-step="deep"><div class="step-card">
+          <div class="step-n">5 / 9</div>
+          <h3>Only these slivers are deep enough</h3>
+          <p>Just two surveys reach <strong>magnitude 23.5</strong>, the depth needed to catch a faint Planet Nine.
+          Together they cover about <strong><span data-n="deepPct">—</span>% of the sky</strong>.</p>
+        </div></div>
+        <div class="step" data-step="unsearched"><div class="step-card warn">
+          <div class="step-n">6 / 9</div>
+          <h3>Most of the path has never been searched deeply</h3>
+          <p>The <span class="k-warn">orange stretches</span> are where the predicted path crosses sky that has only
+          been photographed shallowly.</p>
+          <p class="step-key">That is <span data-n="thinPct">—</span>% of the path. A faint planet there could easily
+          have slipped through.</p>
+        </div></div>
+        <div class="step" data-step="milky"><div class="step-card">
+          <div class="step-n">7 / 9</div>
+          <h3>And part of it is lost in the Milky Way</h3>
+          <p>The pale band is our own galaxy, seen edge-on. Where the path crosses it, there are so many stars that
+          picking out one faint, slow-moving dot is nearly hopeless, even in a deep photo.</p>
+        </div></div>
+        <div class="step" data-step="future"><div class="step-card">
+          <div class="step-n">8 / 9</div>
+          <h3>The search that could settle it</h3>
+          <p>The <span class="k-lsst">Vera C. Rubin Observatory</span> (pink outline) is surveying the southern sky
+          to magnitude 24.5 from 2026 to 2036. That is deep enough.</p>
+          <p class="step-key">It covers <span data-n="lsstPct">—</span>% of the unsearched stretches of the path. It
+          should either find Planet Nine or leave very few places for it to hide.</p>
+        </div></div>
+        <div class="step" data-step="explore"><div class="step-card explore">
+          <div class="step-n">9 / 9 · your turn</div>
+          <h3>Explore the map</h3>
+          <ul>
+            <li><strong>Point at</strong> any shaded area to see which survey took it and how deep it went.</li>
+            <li><strong>Click a survey name</strong> above the map to outline just its area.</li>
+            <li>The <span class="k-obj">blue dots</span> are the directions the objects from part 2 point, now placed on the sky.</li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="grid-stats auto" id="searchStats" style="margin-top:8px"></div>
+      <p class="caption">Footprints are simplified to bands of sky, each squeezed so it covers the area that survey
+      published. OSSOS has no area we could verify, so it is left out. Planet Nine's brightness along its path is
+      estimated, not observed.</p>
+    </div>
+  </section>
+
+  <!-- the searches so far -->
+  <section class="part wrap" id="searches">
+    <div class="sec-head">
+      <h2>The searches so far</h2>
+      <p>Every direct search for the planet, and every survey that set a limit on it, in order. An empty search
+      is not nothing: each one rules out part of the predicted range, and the bars say how much.</p>
+    </div>
+    <div class="legend fl-legend" id="searchLegend" aria-hidden="true"></div>
+    <div class="fl" id="searchLedger"></div>
+  </section>
+
+  <!-- put a planet out there -->
+  <section class="part wrap" id="build">
+    <div class="sec-head">
+      <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Could a planet still be hiding? Put one out there</h2>
+      <p>Drag the dials. Your planet is scored against what the real objects do and what the real searches have
+      already ruled out. It starts at the published best fit.</p>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>Your planet, against the real orbits</h3>
+        <div class="sub">Orange is yours. Blue are the well-measured extreme objects.</div>
+        <div id="chartPlace"></div>
+      </div>
+      <div class="card">
+        <div class="build-controls" id="buildControls"></div>
+        <div id="scoreBox"></div>
+      </div>
+    </div>
+    <div class="grid-stats auto" id="propGrid" style="margin-top:22px"></div>
+    <p class="caption" id="propNote"></p>
+  </section>
+
+  <section class="part wrap">
+    <div class="takeaway">
+      <div class="takeaway-k">So far</div>
+      <p>It hasn't been found because almost nobody has looked deeply enough where it should be, and the searches
+      that have looked have already removed the bright, nearby possibilities. Before asking what comes next, the
+      next page asks whether a planet is the only thing that could explain the pattern at all.</p>
+    </div>
+  </section>
+</main>
+<script type="module" src="/src/pages/search.js"></script>
+</body>
+</html>

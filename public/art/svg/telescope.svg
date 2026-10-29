@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" width="256" height="192" role="img" aria-label="A telescope on a tripod, pointed at the sky" style="color:#ffffff"><defs></defs>
+      <g stroke="#3a3f45" stroke-width="4" stroke-linecap="round" fill="none">
+        <line x1="80" y1="78" x2="46" y2="116"/><line x1="80" y1="78" x2="114" y2="116"/><line x1="80" y1="78" x2="80" y2="112"/>
+        <line x1="62" y1="100" x2="98" y2="100" stroke-width="2.5" opacity=".7"/>
+      </g>
+      <circle cx="80" cy="78" r="7" fill="#596270" stroke="#2f343a" stroke-width="2.5"/>
+      <g transform="rotate(-34 80 72)">
+        <rect x="36" y="63" width="92" height="18" rx="6" fill="#55636f" stroke="#2f3a42" stroke-width="2.5"/>
+        <rect x="118" y="60" width="16" height="24" rx="4" fill="#7b8b98" stroke="#2f3a42" stroke-width="2.5"/>
+        <rect x="26" y="67" width="12" height="10" rx="3" fill="#3f4a53" stroke="#2f3a42" stroke-width="2.5"/>
+        <rect x="46" y="66" width="60" height="3" rx="1.5" fill="#8fa0ad" opacity=".55"/>
+        <rect x="60" y="56" width="28" height="7" rx="3" fill="#3f4a53" stroke="#2f3a42" stroke-width="2"/>
+      </g></svg>

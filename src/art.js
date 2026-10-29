@@ -1,5 +1,6 @@
-// The page's small cast of illustrated bodies: the Planet Nine mark, the Sun,
-// the eight planets, a sad Pluto, and three generic trans-Neptunian objects.
+// The site's small cast of illustrated bodies: the Planet Nine mark (in any of
+// the skins from skins.js), the Sun, the eight planets, a sad Pluto, three
+// generic trans-Neptunian objects, and a telescope for the intro screen.
 //
 // Flat shapes, a darker outline in the body's own hue, soft wavy bands and a
 // thin "halo" ring, after the Outer Wilds planetary chart, but muted so they
@@ -8,8 +9,10 @@
 //
 // Pure: every function returns a markup string and nothing touches the DOM,
 // so scripts/export_art.mjs can run this file in Node to write the standalone
-// SVG and PNG files in public/art/. In the page, main.js injects sprite() once
+// SVG and PNG files in public/art/. In the page, site.js injects sprite() once
 // and charts draw a body with <use href="#art-NAME">.
+
+import { skin as skinFor, DEFAULT_SKIN } from './skins.js'
 
 const R = 40                 // body radius inside the 100 x 100 box
 const HALO_R = 46.5
@@ -42,21 +45,17 @@ const halo = (dashed = false, r = HALO_R) =>
 const FONT = "ui-sans-serif, -apple-system, 'SF Pro Text', 'Segoe UI', Inter, system-ui, sans-serif"
 
 /** The question mark: Planet Nine is a prediction, and the mark says so at any size. */
-const QMARK = `<text x="50" y="67" text-anchor="middle" font-family="${FONT}" font-size="48" font-weight="700" fill="#e6f4ef" stroke="#1b3a32" stroke-width="2.5" stroke-linejoin="round" paint-order="stroke">?</text>`
+const qmark = ({ fill = '#e6f4ef', stroke = '#1b3a32', x = 50, y = 67, size = 48 } = {}) =>
+  `<text x="${x}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${size}" font-weight="700" fill="${fill}" stroke="${stroke}" stroke-width="2.5" stroke-linejoin="round" paint-order="stroke">?</text>`
 
 // --- Planet Nine -----------------------------------------------------------
 
-function planetNineBody (id, { halo: ring = true } = {}) {
-  return `<g clip-path="url(#${id}-c)">
-    ${disc('#3b6d60')}
-    ${band(29, 8, '#487f71')}
-    ${band(46, 11, '#2f5b50')}
-    ${band(66, 6, '#487f71', 0.9)}
-    <ellipse cx="37" cy="25" rx="11" ry="5" fill="#6a9d8d" opacity="0.4"/>
-    ${shade(0.36)}
-  </g>
-  ${outline('#1b3a32')}
-  ${QMARK}
+/** The planet in a skin (skins.js); the question mark and the dashed halo are the constants. */
+export function planetNineBody (id, { halo: ring = true, skin = DEFAULT_SKIN } = {}) {
+  const s = skinFor(skin)
+  return `<g clip-path="url(#${id}-c)">${s.paint(id)}</g>
+  ${outline(s.outline)}
+  ${qmark(s.q)}
   ${ring ? halo(true) : ''}`
 }
 
@@ -68,29 +67,30 @@ function plutoBody (id, sad) {
       <circle cx="30" cy="34" r="4" fill="#ad927a"/><circle cx="68" cy="30" r="3" fill="#ad927a"/>
       ${shade(0.26)}
     </g>${outline('#85684f')}` + (sad ? `
-    <g fill="#3a2a1e" stroke="#3a2a1e" stroke-width="2.5" stroke-linecap="round">
-      <circle cx="37" cy="41" r="2.7" stroke="none"/><circle cx="49" cy="41" r="2.7" stroke="none"/>
-      <path d="M32,36 L39,33 M54,33 L61,36" fill="none"/>
-      <path d="M36,54 Q43,48 50,54" fill="none"/>
+    <g fill="#3a2a1e" stroke="#3a2a1e" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="36" cy="43" r="3.6" stroke="none"/><circle cx="54" cy="43" r="3.6" stroke="none"/>
+      <path d="M29,34 L40,31 M50,31 L61,34" fill="none"/>
+      <path d="M33,61 Q45,51 57,61" fill="none"/>
     </g>
-    <ellipse cx="51" cy="48" rx="1.8" ry="3" fill="#9fd8e0"/>` : '')
+    <path d="M57,47 C57,47 61,55 61,58 A4,4 0 0 1 53,58 C53,55 57,47 57,47 Z" fill="#9fd8e0"/>` : '')
 }
 
 // --- the catalogue ---------------------------------------------------------
 //
 // Each entry: a label for assistive tech, an optional box (default 100 x 100),
 // defs(id) for anything that needs a document-unique id, and body(id, opts).
+// `opts.skin` reaches the Planet Nine entries.
 
 export const ART = {
   'planet-nine': {
-    label: 'Planet Nine, the predicted planet: a muted teal world with a dashed ring, because no one has seen it',
+    label: 'Planet Nine, the predicted planet, with a dashed ring because no one has seen it',
     defs: id => clip(id),
-    body: id => planetNineBody(id, { halo: true }),
+    body: (id, o) => planetNineBody(id, { ...o, halo: true }),
   },
   'planet-nine-mark': {
     label: 'Planet Nine',
     defs: id => clip(id),
-    body: id => planetNineBody(id, { halo: false }),
+    body: (id, o) => planetNineBody(id, { ...o, halo: false }),
   },
   'planet-nine-mono': {
     label: 'Planet Nine',
@@ -100,11 +100,11 @@ export const ART = {
     <circle cx="50" cy="50" r="${HALO_R}" fill="none" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.4" stroke-dasharray="2.5 3.5"/>`,
   },
   'planet-nine-lockup': {
-    label: 'The evidence for Planet Nine',
+    label: 'The search for Planet Nine',
     box: [360, 100],
     defs: id => clip(id),
-    body: id => `<g transform="translate(50 50) scale(0.88) translate(-50 -50)">${planetNineBody(id)}</g>
-    <text x="106" y="43" font-family="${FONT}" font-size="11" font-weight="600" letter-spacing="3.2" fill="currentColor" opacity="0.6">THE EVIDENCE FOR</text>
+    body: (id, o) => `<g transform="translate(50 50) scale(0.88) translate(-50 -50)">${planetNineBody(id, o)}</g>
+    <text x="106" y="43" font-family="${FONT}" font-size="11" font-weight="600" letter-spacing="3.2" fill="currentColor" opacity="0.6">THE SEARCH FOR</text>
     <text x="106" y="75" font-family="${FONT}" font-size="28" font-weight="700" letter-spacing="2.6" fill="currentColor">PLANET NINE</text>`,
   },
 
@@ -278,6 +278,25 @@ export const ART = {
       <ellipse cx="40" cy="36" rx="12" ry="8" fill="#dbe8f0" opacity="0.55"/>
       <circle cx="60" cy="58" r="5" fill="#7d93a3"/><circle cx="44" cy="62" r="2.5" fill="#7d93a3"/>`,
   },
+
+  // --- the telescope on the intro screen, aimed up and to the right ---
+  telescope: {
+    label: 'A telescope on a tripod, pointed at the sky',
+    box: [160, 120],
+    body: () => `
+      <g stroke="#3a3f45" stroke-width="4" stroke-linecap="round" fill="none">
+        <line x1="80" y1="78" x2="46" y2="116"/><line x1="80" y1="78" x2="114" y2="116"/><line x1="80" y1="78" x2="80" y2="112"/>
+        <line x1="62" y1="100" x2="98" y2="100" stroke-width="2.5" opacity=".7"/>
+      </g>
+      <circle cx="80" cy="78" r="7" fill="#596270" stroke="#2f343a" stroke-width="2.5"/>
+      <g transform="rotate(-34 80 72)">
+        <rect x="36" y="63" width="92" height="18" rx="6" fill="#55636f" stroke="#2f3a42" stroke-width="2.5"/>
+        <rect x="118" y="60" width="16" height="24" rx="4" fill="#7b8b98" stroke="#2f3a42" stroke-width="2.5"/>
+        <rect x="26" y="67" width="12" height="10" rx="3" fill="#3f4a53" stroke="#2f3a42" stroke-width="2.5"/>
+        <rect x="46" y="66" width="60" height="3" rx="1.5" fill="#8fa0ad" opacity=".55"/>
+        <rect x="60" y="56" width="28" height="7" rx="3" fill="#3f4a53" stroke="#2f3a42" stroke-width="2"/>
+      </g>`,
+  },
 }
 
 export const NAMES = Object.keys(ART)
@@ -291,8 +310,9 @@ const box = name => ART[name].box || [100, 100]
  *   bg     'none' (transparent), 'dark' or 'light': a rounded tile behind it
  *   halo   add the thin ring round a real body (Planet Nine's is built in)
  *   color  what currentColor resolves to (the lockup's wordmark, the mono mark)
+ *   skin   which Planet Nine skin to draw (skins.js)
  */
-export function svgMarkup (name, { size = 64, bg = 'none', halo: ring = false, color } = {}) {
+export function svgMarkup (name, { size = 64, bg = 'none', halo: ring = false, color, skin = DEFAULT_SKIN } = {}) {
   const a = ART[name]
   if (!a) throw new Error(`unknown art: ${name}`)
   const [bw, bh] = box(name)
@@ -301,21 +321,21 @@ export function svgMarkup (name, { size = 64, bg = 'none', halo: ring = false, c
   const tile = bg === 'none' ? ''
     : `<rect width="${bw}" height="${bh}" rx="${Math.min(bw, bh) * 0.16}" fill="${bg === 'light' ? '#f4f2ec' : '#121211'}"/>`
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${bw} ${bh}" width="${size}" height="${Math.round(size * bh / bw)}" role="img" aria-label="${a.label}" style="color:${fg}">` +
-    `${tile}<defs>${a.defs?.(id) ?? ''}</defs>${a.body(id)}${ring && bw === 100 ? halo(false) : ''}</svg>`
+    `${tile}<defs>${a.defs?.(id) ?? ''}</defs>${a.body(id, { skin })}${ring && bw === 100 ? halo(false) : ''}</svg>`
 }
 
 /** One <symbol> per body, for a sprite. */
-export function symbolMarkup (name) {
+export function symbolMarkup (name, { skin = DEFAULT_SKIN } = {}) {
   const a = ART[name]
   const [bw, bh] = box(name)
   const id = `art-${name}`
-  return `<symbol id="${id}" viewBox="0 0 ${bw} ${bh}"><defs>${a.defs?.(id) ?? ''}</defs>${a.body(id)}</symbol>`
+  return `<symbol id="${id}" viewBox="0 0 ${bw} ${bh}"><defs>${a.defs?.(id) ?? ''}</defs>${a.body(id, { skin })}</symbol>`
 }
 
 /** The hidden sprite the page injects once; afterwards <use href="#art-NAME"> draws any body. */
-export function sprite (names = NAMES) {
+export function sprite (names = NAMES, { skin = DEFAULT_SKIN } = {}) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>` +
-    names.map(symbolMarkup).join('') + '</defs></svg>'
+    names.map(n => symbolMarkup(n, { skin })).join('') + '</defs></svg>'
 }
 
 /** Inline use of a sprite symbol in HTML, sized by CSS (defaults to the .art class). */

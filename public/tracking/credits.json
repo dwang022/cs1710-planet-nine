@@ -1,0 +1,96 @@
+{
+ "_what": "Real discovery photographs for the tracking exhibit, from Wikimedia Commons via scripts/fetch_tracking_images.py. Credits were read from the Commons API.",
+ "_fetched": "2026-10-29",
+ "images": [
+  {
+   "id": "pluto",
+   "files": [
+    "pluto-1.jpg",
+    "pluto-2.jpg"
+   ],
+   "dates": [
+    "23 Jan 1930",
+    "29 Jan 1930"
+   ],
+   "caption": "Clyde Tombaugh's two plates, 23 and 29 January 1930, Lowell Observatory. Pluto is the dot that moved (arrowed).",
+   "credit": "Clyde Tombaugh",
+   "license": "Public domain",
+   "license_url": "",
+   "source": "https://commons.wikimedia.org/wiki/File:Pluto_discovery_plates.png",
+   "original_size": [
+    1779,
+    1101
+   ]
+  },
+  {
+   "id": "sedna",
+   "files": [
+    "sedna-1.jpg",
+    "sedna-2.jpg",
+    "sedna-3.jpg"
+   ],
+   "dates": [
+    "06:32 UT",
+    "08:05 UT",
+    "09:38 UT"
+   ],
+   "caption": "Sedna's discovery frames, 14 November 2003, Samuel Oschin Telescope, Palomar: three exposures over three hours.",
+   "credit": "NASA/Caltech",
+   "license": "Public domain",
+   "license_url": "",
+   "source": "https://commons.wikimedia.org/wiki/File:Sedna_Discovery_Image.jpg",
+   "original_size": [
+    2480,
+    900
+   ]
+  },
+  {
+   "id": "vp113",
+   "files": [
+    "vp113.gif"
+   ],
+   "dates": [],
+   "caption": "2012 VP113 on 5 November 2012 in the Dark Energy Camera on the 4-metre Blanco telescope, Cerro Tololo: the grey dot that moves between exposures.",
+   "credit": "Scott Sheppard/CADC/NOIRLab, processed by Nrco0e",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:2012_VP113_DECam_2012-11-05_annotated.gif",
+   "original_size": [
+    600,
+    400
+   ]
+  },
+  {
+   "id": "bp519",
+   "files": [
+    "bp519.jpg"
+   ],
+   "dates": [],
+   "caption": "2015 BP519 (circled) on 17 January 2015, the Dark Energy Survey's camera. A survey built for cosmology found one of the most extreme orbits known.",
+   "credit": "Original images taken by Kathy Vivas, David Gerdes, Friedman/Dark Energy Survey/NOIRLab, processing and color compositing by Nrco0e",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Geyagugv_DECam_2015-01-17_annotated.png",
+   "original_size": [
+    1100,
+    750
+   ]
+  },
+  {
+   "id": "comparator",
+   "files": [
+    "comparator.jpg"
+   ],
+   "dates": [],
+   "caption": "The Zeiss blink comparator Tombaugh used: two plates, one eyepiece, a shutter that flips between them.",
+   "credit": "nivium",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Zeiss_Blink_comparator_at_Lowell_Observatory_used_in_the_discovery_of_Pluto_by_Clyde_Tombaugh_in_1930.jpg",
+   "original_size": [
+    2592,
+    1936
+   ]
+  }
+ ]
+}

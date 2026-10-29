@@ -8,7 +8,9 @@
 //
 // Pure: each `paint(id)` returns the markup for the inside of the disc (the
 // caller clips it) so art.js and scripts/export_art.mjs can both use it.
-// `outline` is the disc's edge colour; `q` recolours the question mark.
+// `outline` is the disc's edge colour; `q` recolours the question mark; `ink`
+// is the skin's hue lifted for text on the dark surfaces (site.js publishes it
+// as --p9-ink, so words about the proposed ninth planet follow the skin).
 
 const R = 40
 
@@ -24,6 +26,7 @@ function band (y, h, fill, opacity = 1, amp = 2.2) {
 export const SKINS = {
   'ice-giant': {
     name: 'Ice giant',
+    ink: '#5fcbab',
     blurb: 'The mainstream guess: a small Neptune, ice and rock wrapped in hydrogen and helium.',
     source: 'Batygin et al. 2019; Brown & Batygin 2021',
     outline: '#1b3a32',
@@ -36,6 +39,7 @@ export const SKINS = {
   },
   rock: {
     name: 'Rocky super-Earth',
+    ink: '#cfa98c',
     blurb: 'A bare rock-and-ice world a few times Earth’s mass, with at most a thin atmosphere.',
     source: 'one of the compositions Brown & Batygin 2021 allow',
     outline: '#4a3a30',
@@ -47,6 +51,7 @@ export const SKINS = {
   },
   ocean: {
     name: 'Ocean world',
+    ink: '#5fc2b2',
     blurb: 'Water ice and a deep ocean under a thin, hazy sky, far too cold to be liquid at the surface.',
     source: 'a water-rich composition, as in Linder & Mordasini 2016',
     outline: '#143f3a',
@@ -60,6 +65,7 @@ export const SKINS = {
   },
   iron: {
     name: 'Iron world',
+    ink: '#d49282',
     blurb: 'Mostly metal, like a giant Mercury: dense, dark and dull, with rust-coloured plains.',
     source: 'a dense composition the mass estimates do not rule out',
     outline: '#2c2a2e',
@@ -72,6 +78,7 @@ export const SKINS = {
   },
   'black-hole': {
     name: 'Primordial black hole',
+    ink: '#f0a04a',
     blurb: 'Same mass, same orbit, but a black hole the size of a grapefruit instead of a planet.',
     source: 'Scholtz & Unwin 2020',
     outline: '#000000',
@@ -84,6 +91,7 @@ export const SKINS = {
   },
   cheese: {
     name: 'Cheese',
+    ink: '#f1c64f',
     blurb: 'Not a serious proposal. But nobody can prove otherwise until someone sees it.',
     source: 'folklore',
     outline: '#8c6a1a',
@@ -97,6 +105,7 @@ export const SKINS = {
   },
   'nine-ball': {
     name: 'Nine-ball',
+    ink: '#f0d04a',
     blurb: 'The ninth ball on the table. Also not a serious proposal.',
     source: 'the game of nine-ball',
     outline: '#7a6a10',

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Credits · The search for Planet Nine</title>
+<meta name="description" content="Who made The search for Planet Nine, and where its data, photographs and drawings come from." />
+<link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
+</head>
+<body data-page="credits">
+<!--
+  Outside the walkthrough: PAGES marks it aside, so no Continue button leads
+  here and the nav sets it apart. It holds everything the footer used to say.
+-->
+<main>
+  <header class="page-head wrap">
+    <h1>Credits</h1>
+    <p class="lede">Who made this, and where everything on it comes from.</p>
+  </header>
+
+  <section class="part wrap" id="who">
+    <div class="credits-two">
+      <div>
+        <h2>Made by</h2>
+        <p>Daniel Wang, Gabriel Gonzalez and Russell Rui Luo, for CS 1710 at Harvard, autumn 2026.
+        Source on <a href="https://github.com/dwang022/cs1710-planet-nine">GitHub</a>.</p>
+      </div>
+      <div>
+        <h2>One caution</h2>
+        <p>Planet Nine has never been seen. Everything on this site describes an inference from the orbits of
+        other objects, not an observation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="part wrap" id="data">
+    <h2>Data</h2>
+    <p>Fetched in October 2026. Every number on the site is computed from these files on load or carries a tag
+    naming its source.</p>
+    <ul class="credits-list">
+      <li><span><b>JPL Small-Body Database</b><br>Orbits of every known body more than 30 times farther from the Sun than Earth, from the Query API.</span>
+        <span class="muted"><a href="https://ssd.jpl.nasa.gov/tools/sbdb_query.html">ssd.jpl.nasa.gov</a></span></li>
+      <li><span><b>Minor Planet Center</b><br>The independent orbit catalogue used to cross-check JPL, and the discovery records of numbered minor planets.</span>
+        <span class="muted"><a href="https://www.minorplanetcenter.net/data">minorplanetcenter.net</a></span></li>
+      <li><span><b>JPL planetary elements</b><br>The planets' own orbits; JPL Horizons was used only to verify our geometry.</span>
+        <span class="muted"><a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html">ssd.jpl.nasa.gov/planets</a></span></li>
+      <li><span><b>Crossref and arXiv</b><br>Titles, dates and abstracts of the papers; every claim about a paper was checked against its abstract.</span>
+        <span class="muted"><a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/papers/README.md">papers/README.md</a></span></li>
+    </ul>
+    <p style="margin-top:14px">The full list of sources, with the exact queries, is in
+    <a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/data/SOURCES.md">data/SOURCES.md</a>.</p>
+  </section>
+
+  <section class="part wrap" id="photos">
+    <h2>Photographs</h2>
+    <p>All from Wikimedia Commons. Credit and licence were read from the Commons API, not typed.</p>
+    <ul class="credits-list" id="photoCredits"></ul>
+  </section>
+
+  <section class="part wrap" id="made">
+    <h2>Drawings and code</h2>
+    <p>The planets, the telescope and every Planet Nine are our own drawings, written as SVG. The charts are built
+    with d3 and the site with Vite. The planetary chart takes its look from the one in Outer Wilds.</p>
+  </section>
+</main>
+<script type="module" src="/src/pages/credits.js"></script>
+</body>
+</html>

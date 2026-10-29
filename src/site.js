@@ -21,6 +21,8 @@ export const PAGES = [
   { id: 'alternatives', path: 'search/alternatives.html', group: 'The search', title: 'What else could explain it', short: 'Alternatives' },
   { id: 'timeline', path: 'search/timeline.html', group: 'The search', title: 'Ten years of argument', short: 'Timeline' },
   { id: 'future', path: 'search/future.html', group: 'The search', title: 'What comes next', short: 'Future' },
+  // Outside the walkthrough: no group, no Continue leads to it, the nav sets it apart.
+  { id: 'credits', path: 'credits.html', title: 'Credits', short: 'Credits', aside: true },
 ]
 export const GROUPS = ['The setting', 'The insight', 'The search']
 
@@ -44,6 +46,7 @@ export function applySkin (id) {
   if (!holder) return
   holder.innerHTML = sprite(NAMES, { skin: id })
   document.documentElement.dataset.skin = id
+  document.documentElement.style.setProperty('--p9-ink', skinFor(id).ink)
 }
 
 const pageId = () => document.body.dataset.page || 'intro'
@@ -55,6 +58,7 @@ function injectSprite () {
   div.innerHTML = sprite(NAMES, { skin: currentSkin() })
   document.body.prepend(div)
   document.documentElement.dataset.skin = currentSkin()
+  document.documentElement.style.setProperty('--p9-ink', skinFor(currentSkin()).ink)
 }
 
 function stars () {
@@ -65,7 +69,7 @@ function stars () {
   document.body.prepend(d)
 }
 
-/** The top bar: the mark, the three parts, and the pages in each. */
+/** The top bar: the mark, the three parts and the pages in each, and the credits set apart. */
 function nav () {
   const cur = here()
   if (cur.id === 'intro') return
@@ -76,6 +80,8 @@ function nav () {
       <ul>${pages.map(p => `<li><a href="${url(p.path)}"${p.id === cur.id ? ' aria-current="page"' : ''}>${p.short}</a></li>`).join('')}</ul>
     </li>`
   }).join('')
+  const aside = PAGES.filter(p => p.aside).map(p =>
+    `<li class="nav-aside"><a href="${url(p.path)}"${p.id === cur.id ? ' aria-current="page"' : ''}>${p.short}</a></li>`).join('')
   const el = document.createElement('header')
   el.className = 'site-nav'
   el.innerHTML = `
@@ -86,13 +92,13 @@ function nav () {
       </a>
       <details class="nav-menu">
         <summary aria-label="Pages"><span></span><span></span><span></span></summary>
-        <nav aria-label="Pages"><ul class="nav-groups">${groups}</ul></nav>
+        <nav aria-label="Pages"><ul class="nav-groups">${groups}${aside}</ul></nav>
       </details>
     </div>`
   document.body.prepend(el)
   // Wide screens show the page links in the bar; narrow ones fold them into a menu.
   const details = el.querySelector('.nav-menu')
-  const wide = window.matchMedia('(min-width: 1101px)')
+  const wide = window.matchMedia('(min-width: 1280px)')
   const fold = () => { details.open = wide.matches }
   fold(); wide.addEventListener('change', fold)
   // The pinned graphics in the scrolly sections sit below this bar.
@@ -105,23 +111,21 @@ function nav () {
 // reader can work out alone. The part and position live in PAGES for anyone
 // who needs them (the nav, the footer, the intro's three part buttons).
 
-/** Below the content: where to go next, and the credits. */
+/** Below the content: one Continue button, and a small link to the credits. */
 function footer () {
   const cur = here()
   if (cur.id === 'intro') return
-  const next = PAGES[PAGES.indexOf(cur) + 1]
-  // One button. The walkthrough reads in order; the nav is there for jumping about.
+  // The walkthrough reads in order; the nav is there for jumping about. Pages
+  // outside it (the credits) and the last page send the reader back to the start.
+  const main = PAGES.filter(p => !p.aside)
+  const next = cur.aside ? null : main[main.indexOf(cur) + 1]
   const go = next
     ? `<a class="btn-continue" href="${url(next.path)}">Continue <span aria-hidden="true">→</span></a>`
     : `<a class="btn-continue" href="${url('index.html')}">Back to the start</a>`
+  const credits = cur.aside ? '' : `<a class="foot-credits" href="${url('credits.html')}">Credits and sources</a>`
   const el = document.createElement('footer')
   el.className = 'site-foot wrap'
-  el.innerHTML = `
-    <nav class="continue" aria-label="Continue">${go}</nav>
-    <p class="colophon">Daniel Wang · Gabriel Gonzalez · Russell Rui Luo — CS 1710, Harvard. Data fetched October 2026 from the
-      <a href="https://ssd.jpl.nasa.gov/tools/sbdb_query.html">JPL Small-Body Database</a> and the
-      <a href="https://www.minorplanetcenter.net/data">Minor Planet Center</a>. Planet Nine has never been seen; everything here describes an inference, not an observation.
-      Full provenance in <a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/data/SOURCES.md">data/SOURCES.md</a>.</p>`
+  el.innerHTML = `<nav class="continue" aria-label="Continue">${go}${credits}</nav>`
   document.body.append(el)
 }
 

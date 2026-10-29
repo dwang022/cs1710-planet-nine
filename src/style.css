@@ -40,6 +40,7 @@
   --accent-ink: var(--series-1-ink);
 
   --sun: #e8c46a;
+  --p9-ink: var(--series-3);          /* site.js sets this to the chosen skin's ink */
   --neptune: #8d93a8;
 
   --font-sans: ui-sans-serif, -apple-system, "SF Pro Text", "Segoe UI", Inter, system-ui, sans-serif;
@@ -407,15 +408,26 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .criteria td.verdict { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
 .criteria td.verdict small { white-space: normal; font-weight: 400; }
 .criteria tr.p9 th, .criteria tr.p9 td { background: #34d3990d; }
-/* the definition: a full-width list, numbered to match the table's columns */
-#rules .sec-head p, #rules > p { max-width: none; }
-.definition { list-style: none; margin: 12px 0 18px; padding: 0; }
-.definition li { display: flex; gap: 16px; align-items: flex-start; padding: 14px 0; border-top: 1px solid var(--rule); font-size: 1.02rem; line-height: 1.55; color: var(--text-secondary); }
-.definition li:last-child { border-bottom: 1px solid var(--rule); }
-.definition .n { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--text-muted); margin-top: 1px;
-  display: inline-flex; align-items: center; justify-content: center; font: 600 .8rem var(--font-mono); color: var(--text-primary); }
-.definition b { color: var(--text-primary); }
-.definition cite { display: block; font-style: normal; color: var(--text-muted); font-size: .84rem; margin-top: 4px; }
+/* the definition: three requirements side by side, numbered to match the table's columns */
+.definition {
+  list-style: none; margin: 18px 0 26px; padding: 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 40px;
+}
+.definition li {
+  display: grid; grid-template-rows: auto auto; row-gap: 16px; align-content: start;
+  padding: 24px 0 28px; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  font-size: clamp(1.02rem, 1.35vw, 1.2rem); line-height: 1.5; color: var(--text-secondary);
+}
+.definition .n {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--text-muted);
+  display: inline-flex; align-items: center; justify-content: center; font: 600 1rem var(--font-mono); color: var(--text-primary);
+}
+.definition b { display: block; color: var(--text-primary); font-size: 1.2em; letter-spacing: -0.01em; margin-bottom: 6px; }
+@media (max-width: 760px) {
+  .definition { grid-template-columns: 1fr; gap: 0; }
+  .definition li { grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: auto; column-gap: 16px; padding: 16px 0; border-bottom: 0; }
+  .definition li:last-child { border-bottom: 1px solid var(--rule); }
+}
 
 /* survey filter chips */
 .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -564,7 +576,7 @@ section.story { padding-bottom: 24px; }
 /* the three counts on the planets page, one colour each wherever they appear */
 .k-nine { color: var(--series-1); font-weight: 600; }
 .k-eight { color: var(--series-2); font-weight: 600; }
-.k-ninth { color: var(--series-3); font-weight: 600; }
+.k-ninth { color: var(--p9-ink); font-weight: 600; }   /* follows the chosen skin */
 .k-p9 { color: #6ee7b7; font-weight: 600; }
 .k-warn { color: #ffa07a; font-weight: 600; }
 .k-lsst { color: #f472b6; font-weight: 600; }

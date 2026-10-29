@@ -22,11 +22,13 @@ non-ASCII.
 
 ## The pages
 
-Nine pages in three parts. Each page is one HTML file at the repo root plus
-one module in `src/pages/`; the shared chrome comes from `src/site.js`.
+Nine pages in three parts, plus a credits page outside the walkthrough. Each
+page is one HTML file at the repo root plus one module in `src/pages/`; the
+shared chrome comes from `src/site.js`.
 `src/site.js` exports `PAGES`, the single source of truth for titles, order and
 groups: the top bar, the footer's Continue button and the intro's skip-ahead
-links are all generated from it.
+links are all generated from it. The footer carries no colophon; credits,
+sources and the inference-not-observation note live on `credits.html`.
 
 | Page | Module | What it holds |
 |---|---|---|
@@ -39,6 +41,7 @@ links are all generated from it.
 | `search/alternatives.html` | `pages/alternatives.js` | Eight explanations × four tests matrix, detail panel, ledger of the case against |
 | `search/timeline.html` | `pages/timeline.js` | Compact ledger of every major paper, how the proposed planet changed |
 | `search/future.html` | `pages/future.js` | Brightness ruler (survey depths vs predicted magnitude), "what comes next" rows, a dated schedule, what would confirm or end it |
+| `credits.html` | `pages/credits.js` | Who made it, the data, the photographs (read from `tracking/credits.json` and `field/CREDITS.md`), drawings and code. `aside: true` in `PAGES`: no group, no Continue leads to it, the nav sets it apart |
 
 Adding a page: create the HTML (copy a sibling: `<body data-page="ID">`, a
 `.page-head` with `<div data-page-head>`, sections with `class="part wrap"`),
@@ -48,7 +51,7 @@ in `PAGES` in `src/site.js` and in `pages` in `vite.config.js`.
 ## Layout
 
 ```
-index.html, setting/, insights/, search/   the nine pages (Vite MPA inputs in vite.config.js)
+index.html, setting/, insights/, search/   the nine pages (Vite MPA inputs in vite.config.js); credits.html sits outside the walkthrough
 src/
   site.js        shared chrome: sprite injection, skin persistence, nav, page head, footer, base-URL link fix-up
   site.css       nav, page head, footer, intro screen, catalogue cards
@@ -91,7 +94,8 @@ from there, falling back to `data/raw/`.
   ocean world, iron world, primordial black hole, cheese, nine-ball). The
   choice is stored in `localStorage` under `p9-skin`; `site.js` rebuilds the
   sprite's Planet Nine symbols, so every `<use href="#art-planet-nine">`
-  follows it. Chart code never hard-codes a skin.
+  follows it, and publishes the skin's `ink` as `--p9-ink` for text. Chart
+  code never hard-codes a skin.
 - **Data.** Charts read `public/data/*.json` through `loadData()`. Never
   invent a number: every quoted value is computed from the data on load or
   carries a `src` tag in its JSON. Values tagged `ours` are presented as our
@@ -118,8 +122,9 @@ from there, falling back to `data/raw/`.
   only as Earth's and Neptune's own colour in the art. Colour follows the
   entity, never its rank, and nothing is encoded in colour alone. On the
   planets page the three counts keep one colour each wherever they appear:
-  the first nine violet, eight ember, the proposed ninth aurora (`.k-nine`,
-  `.k-eight`, `.k-ninth`).
+  the first nine violet, eight ember, and the proposed ninth in the chosen
+  skin's own `ink` colour (`--p9-ink`, set by `site.js`), via `.k-nine`,
+  `.k-eight`, `.k-ninth`.
 - **No descriptors a reader can work out.** No "Part 3 · The search · page 2
   of 4" eyebrows, no "scroll slowly" hints, no "pick a look" explanations on
   the intro; the nav, the step counters and the controls carry that. Titles

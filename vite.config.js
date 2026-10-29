@@ -13,6 +13,7 @@ const pages = {
   alternatives: 'search/alternatives.html',
   timeline: 'search/timeline.html',
   future: 'search/future.html',
+  credits: 'credits.html',
 }
 
 export default defineConfig({

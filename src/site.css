@@ -1,6 +1,6 @@
 /* ---------------------------------------------------------------------------
    Site chrome shared by every page (loaded by site.js): the top bar, the page
-   head, the previous/next footer, and the intro screen. Design tokens live in
+   head, the Continue footer, the credits page, and the intro screen. Design tokens live in
    style.css.
    --------------------------------------------------------------------------- */
 
@@ -28,23 +28,31 @@
 .nav-menu summary::-webkit-details-marker { display: none; }
 .nav-groups {
   list-style: none; margin: 0; padding: 0;
-  display: flex; gap: 26px; align-items: center;
+  display: flex; gap: 18px; align-items: center;
 }
-.nav-group { display: flex; align-items: center; gap: 10px; }
+.nav-group { display: flex; align-items: center; gap: 8px; }
 .nav-group-k {
   font: 600 .66rem/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text-muted); white-space: nowrap;
 }
 .nav-group.is-here .nav-group-k { color: var(--text-secondary); }
 .nav-group ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; }
 .nav-group a {
-  display: inline-block; padding: 6px 10px; border-radius: 8px; font-size: .84rem;
+  display: inline-block; padding: 6px 8px; border-radius: 8px; font-size: .82rem; white-space: nowrap;
   color: var(--text-secondary); text-decoration: none; border: 1px solid transparent;
 }
 .nav-group a:hover { color: var(--text-primary); background: #ffffff0a; }
 .nav-group a[aria-current="page"] { color: var(--text-primary); background: #a78bfa1f; border-color: #a78bfa55; }
+/* pages outside the walkthrough sit apart, after a rule, in smaller muted type */
+.nav-aside { border-left: 1px solid var(--rule); padding-left: 12px; }
+.nav-aside a {
+  display: inline-block; padding: 6px 8px; border-radius: 8px; font-size: .78rem; color: var(--text-muted); white-space: nowrap;
+  text-decoration: none; border: 1px solid transparent;
+}
+.nav-aside a:hover { color: var(--text-primary); background: #ffffff0a; }
+.nav-aside a[aria-current="page"] { color: var(--text-primary); border-color: var(--rule); }
 
-@media (max-width: 1100px) {
+@media (max-width: 1279px) {
   .nav-menu { position: relative; }
   .nav-menu summary {
     display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 8px; border: 1px solid var(--rule);
@@ -58,6 +66,7 @@
   .nav-groups { flex-direction: column; align-items: stretch; gap: 12px; }
   .nav-group { flex-direction: column; align-items: flex-start; gap: 6px; }
   .nav-group ul { flex-wrap: wrap; }
+  .nav-aside { border-left: 0; padding: 10px 0 0; border-top: 1px solid var(--rule); }
 }
 
 /* --- page head ----------------------------------------------------------- */
@@ -90,8 +99,25 @@
 /* --- footer -------------------------------------------------------------- */
 
 .site-foot { padding-block: 40px 72px; border-top: var(--divider); margin-top: 48px; }
-.continue { display: flex; justify-content: center; margin-bottom: 36px; }
-.colophon { font-size: .82rem; color: var(--text-muted); max-width: 80ch; margin: 0; }
+.continue { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.foot-credits { font-size: .8rem; color: var(--text-muted); text-decoration: none; }
+.foot-credits:hover { color: var(--text-secondary); text-decoration: underline; }
+
+/* the credits page */
+.credits-list { list-style: none; margin: 0; padding: 0; }
+.credits-list li {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 8px 32px;
+  padding: 14px 0; border-top: 1px solid var(--rule); color: var(--text-secondary); line-height: 1.5;
+}
+.credits-list li:last-child { border-bottom: 1px solid var(--rule); }
+.credits-list b { color: var(--text-primary); font-weight: 600; }
+.credits-list .muted { color: var(--text-muted); }
+.credits-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
+.credits-two p { max-width: none; }
+@media (max-width: 760px) {
+  .credits-list li { grid-template-columns: 1fr; gap: 4px; }
+  .credits-two { grid-template-columns: 1fr; gap: 24px; }
+}
 
 /* --- common page pieces --------------------------------------------------- */
 

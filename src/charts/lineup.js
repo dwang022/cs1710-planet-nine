@@ -98,8 +98,6 @@ export function makeLineup (root, { planets }) {
     .attr('x', d => -d.size / 2).attr('y', d => -d.size / 2).attr('width', d => d.size).attr('height', d => d.size)
   body.append('text').attr('class', d => `lu-lbl${d.p9 ? ' p9' : ''}`).attr('text-anchor', 'middle')
     .attr('y', d => d.size * 0.62 + 20).text(d => d.p9 ? 'Planet Nine?' : d.name)
-  body.append('text').attr('class', 'lu-lbl sub').attr('text-anchor', 'middle')
-    .attr('y', d => d.size * 0.62 + 35).text('')
 
   // Pluto itself stays its usual self, only faded; the reaction goes in a
   // speech bubble beside it, so the face reads as a comment on the moment.
@@ -129,7 +127,6 @@ export function makeLineup (root, { planets }) {
     body.transition().duration(T)
       .attr('transform', d => `translate(${d.x},${d.y + (d.dwarf && dropped ? DROP : 0)})`)
       .attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.5 : 1)
-    body.select('text.sub').text(d => d.dwarf && dropped ? 'dwarf planet · 2006' : d.p9 ? 'proposed 2016 · not yet observed' : '')
     // Pluto keeps its own face; the bubble beside it carries the reaction,
     // and only while the reclassification is the point of the step.
     const bx = Math.min(W - CO.w - 4, pluto.x + 16), by = pluto.y + DROP - CO.h - 36
@@ -137,7 +134,8 @@ export function makeLineup (root, { planets }) {
       .transition().duration(T).attr('opacity', step === 'eight' ? 1 : 0)
     gArcs.selectAll('circle').transition().duration(T).attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.4 : 1)
 
-    // Notes beside Pluto: the crowd, then the scorecard.
+    // Notes beside Pluto: the crowd, then the three checks. The drawing carries
+    // the rest (the faded Pluto, the dashed Planet Nine); the card says what it means.
     const notes = []
     const nx = pluto.x, ny = pluto.y + (dropped ? DROP : 0)
     if (step === 'neighbours') notes.push({ x: nx - 40, y: ny + 70, t: 'and thousands of others: Eris, Makemake, Haumea…', cls: '' })
@@ -146,8 +144,6 @@ export function makeLineup (root, { planets }) {
       notes.push({ x: nx, y: ny + 80, t: 'round ✓', cls: 'good' })
       notes.push({ x: nx, y: ny + 98, t: 'cleared its orbit ✗', cls: 'bad' })
     }
-    if (step === 'eight') notes.push({ x: nx, y: ny + 60, t: 'condition 3 not met', cls: 'bad' })
-    if (step === 'nine-again') notes.push({ x: P9X - 2, y: p9.y - 56, t: 'predicted, not observed', cls: 'p9' })
     gNotes.selectAll('text').data(notes, d => d.t).join(
       enter => enter.append('text').attr('class', d => `lu-note ${d.cls}`).attr('text-anchor', 'middle')
         .attr('x', d => Math.min(W - 8, d.x)).attr('y', d => d.y).text(d => d.t)

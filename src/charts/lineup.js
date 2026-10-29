@@ -112,11 +112,15 @@ export function makeLineup (root, { planets }) {
   gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 68).text('as a dwarf planet')
 
   // The same bubble beside Planet Nine once it is pencilled in: a search, not a sighting.
-  const CO2 = { w: 214, h: 62 }
+  const CO2 = { w: 182, h: 62 }
   const gCallout2 = g.append('g').attr('class', 'lu-callout p9').attr('opacity', 0).style('pointer-events', 'none')
-  gCallout2.append('path').attr('class', 'lu-callout-box').attr('d', bubble(CO2.w, CO2.h, CO2.w - 40, 6))
-  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 14).attr('y', 27).text('Astronomers begin searching')
-  gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 14).attr('y', 47).html('for a possible <tspan class="p9">ninth planet</tspan>')
+  const box2 = gCallout2.append('path').attr('class', 'lu-callout-box')
+  const l1 = gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 14).attr('y', 27).text('Astronomers begin searching')
+  const l2 = gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 14).attr('y', 47).html('for a possible <tspan class="p9">ninth planet</tspan>')
+  // size the bubble to its words (the font is the reader's), falling back to a guess
+  const tw = Math.max(l1.node().getComputedTextLength?.() || 0, l2.node().getComputedTextLength?.() || 0)
+  if (tw > 0) CO2.w = Math.round(tw + 28)
+  box2.attr('d', bubble(CO2.w, CO2.h, CO2.w - 40, 6))
 
   function hover (ev, d) {
     showTip(ev, d.p9

@@ -89,8 +89,10 @@ from there, falling back to `data/raw/`.
 
 - **Art.** Add bodies to `src/art.js` as pure markup functions and re-export
   with `node scripts/export_art.mjs`. Flat shapes, same-hue outline, soft
-  bands, thin halo (dashed for Planet Nine). Planet Nine always keeps its
-  question mark, in every skin. The sad Pluto appears only at the moment of reclassification: the 2006
+  bands, no rings: Planet Nine carries no dashed halo, its question mark
+  alone marks it as predicted, and the intro shows the chosen skin with a
+  glow in its own colour rather than an outline. Planet Nine always keeps
+  its question mark, in every skin. The sad Pluto appears only at the moment of reclassification: the 2006
   beat on the planets page and the callout in the lineup.
 - **Skins.** `src/skins.js` holds the seven skins (ice giant, rock world,
   ocean world, iron world, primordial black hole, cheese, nine-ball). The

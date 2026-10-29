@@ -2,10 +2,11 @@
 // the skins from skins.js), the Sun, the eight planets, a sad Pluto, three
 // generic trans-Neptunian objects, and a telescope for the intro screen.
 //
-// Flat shapes, a darker outline in the body's own hue, soft wavy bands and a
-// thin "halo" ring, after the Outer Wilds planetary chart, but muted so they
-// sit behind the data instead of competing with it. Planet Nine's halo is
-// dashed: it is the one body here nobody has seen.
+// Flat shapes, a darker outline in the body's own hue and soft wavy bands,
+// after the Outer Wilds planetary chart, but muted so they sit behind the data
+// instead of competing with it. Planet Nine carries no ring: the question
+// mark alone says it is a prediction. (A thin halo can still be asked for on
+// a real body through svgMarkup.)
 //
 // Pure: every function returns a markup string and nothing touches the DOM,
 // so scripts/export_art.mjs can run this file in Node to write the standalone
@@ -50,8 +51,8 @@ const qmark = ({ fill = '#e6f4ef', stroke = '#1b3a32', x = 50, y = 67, size = 48
 
 // --- Planet Nine -----------------------------------------------------------
 
-/** The planet in a skin (skins.js); the question mark and the dashed halo are the constants. */
-export function planetNineBody (id, { halo: ring = true, skin = DEFAULT_SKIN } = {}) {
+/** The planet in a skin (skins.js); the question mark is the constant. */
+export function planetNineBody (id, { halo: ring = false, skin = DEFAULT_SKIN } = {}) {
   const s = skinFor(skin)
   return `<g clip-path="url(#${id}-c)">${s.paint(id)}</g>
   ${outline(s.outline)}
@@ -83,9 +84,9 @@ function plutoBody (id, sad) {
 
 export const ART = {
   'planet-nine': {
-    label: 'Planet Nine, the predicted planet, with a dashed ring because no one has seen it',
+    label: 'Planet Nine, the predicted planet, marked with a question mark',
     defs: id => clip(id),
-    body: (id, o) => planetNineBody(id, { ...o, halo: true }),
+    body: (id, o) => planetNineBody(id, { ...o, halo: false }),
   },
   'planet-nine-mark': {
     label: 'Planet Nine',
@@ -96,8 +97,7 @@ export const ART = {
     label: 'Planet Nine',
     defs: id => clip(id),
     body: () => `<circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="5"/>
-    <text x="50" y="67" text-anchor="middle" font-family="${FONT}" font-size="50" font-weight="700" fill="currentColor">?</text>
-    <circle cx="50" cy="50" r="${HALO_R}" fill="none" stroke="currentColor" stroke-opacity="0.55" stroke-width="1.4" stroke-dasharray="2.5 3.5"/>`,
+    <text x="50" y="67" text-anchor="middle" font-family="${FONT}" font-size="50" font-weight="700" fill="currentColor">?</text>`,
   },
   'planet-nine-lockup': {
     label: 'The search for Planet Nine',

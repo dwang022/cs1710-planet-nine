@@ -87,7 +87,6 @@ These are worth knowing about: two of them are the obvious next additions.
 | **Planet Nine MCMC posterior samples** | — | Not published machine-readably. Without them we have a median-orbit sky track, not a real probability map. |
 | **NASA ADS** | <https://ui.adsabs.harvard.edu/help/api/> | Needs an API token. Its citation counts are far better than Crossref's for astronomy. |
 | **Semantic Scholar Graph API** | <https://api.semanticscholar.org/graph/v1> | Rate-limited (HTTP 429) without a key. Fell back to Crossref. |
-| **Luhman 2014 (WISE)** | <https://doi.org/10.1088/0004-637X/781/1/4> | No arXiv preprint, so we could not read the abstract to verify its mass limits. Flagged in the data. |
 
 ---
 
@@ -99,7 +98,7 @@ Crossref's, which undercount astronomy badly (the field cites through arXiv and
 ADS); treat them as relative weight only.
 
 Every summary below was checked against the paper's own abstract or full text,
-except where marked ⚠. arXiv links are given where a preprint exists (21 of
+except where marked ⚠. arXiv links are given where a preprint exists ({na} of
 {n}); they are free to read, unlike several of the journal versions.
 
 > **Note on link checking:** `doi.org` links to Astronomy & Astrophysics papers,
@@ -120,8 +119,8 @@ FOOT = """
 - **Planet Nine's ϖ and Ω** (246.7°, 96.9°) read directly from the Figure 8
   corner plot of Brown & Batygin 2021, <https://arxiv.org/abs/2108.09868v2> —
   the abstract does not contain them.
-- **Every paper summary** checked against its abstract via the arXiv API, except
-  Luhman 2014.
+- **Every paper summary** checked against its abstract via the arXiv API; Luhman
+  2014, which has no preprint, against the journal PDF (`papers/`).
 - **Survey exclusion fractions** (56% ZTF, 78% cumulative) verified from the ZTF
   and Pan-STARRS1 search abstracts.
 
@@ -135,7 +134,7 @@ in [`README.md`](README.md).
 
 
 def main():
-    papers = json.load(open(os.path.join(P, "papers.json")))["papers"]
+    papers = json.load(open(os.path.join(P, "papers.json"), encoding="utf-8"))["papers"]
     body = []
     for stance in STANCE_ORDER:
         group = [p for p in papers if p["stance"] == stance]
@@ -160,10 +159,11 @@ def main():
                 f"{p['summary']}\n")
         body.append("")
 
-    doc = (HEAD.replace("{n}", str(len(papers)))
+    n_arxiv = sum(1 for p in papers if p.get("arxiv_url"))
+    doc = (HEAD.replace("{n}", str(len(papers))).replace("{na}", str(n_arxiv))
            + "\n".join(body)
            + FOOT.replace("{date}", time.strftime("%Y-%m-%d")))
-    with open(OUT, "w") as f:
+    with open(OUT, "w", encoding="utf-8") as f:
         f.write(doc)
     print(f"wrote {OUT} ({len(papers)} papers, {len(doc.splitlines())} lines)")
 

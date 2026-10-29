@@ -70,20 +70,19 @@ These are worth knowing about: two of them are the obvious next additions.
 | **Planet Nine MCMC posterior samples** | — | Not published machine-readably. Without them we have a median-orbit sky track, not a real probability map. |
 | **NASA ADS** | <https://ui.adsabs.harvard.edu/help/api/> | Needs an API token. Its citation counts are far better than Crossref's for astronomy. |
 | **Semantic Scholar Graph API** | <https://api.semanticscholar.org/graph/v1> | Rate-limited (HTTP 429) without a key. Fell back to Crossref. |
-| **Luhman 2014 (WISE)** | <https://doi.org/10.1088/0004-637X/781/1/4> | No arXiv preprint, so we could not read the abstract to verify its mass limits. Flagged in the data. |
 
 ---
 
 ## 3. Bibliography
 
-25 papers. **`stance` is our editorial reading of each abstract, not a label
+28 papers. **`stance` is our editorial reading of each abstract, not a label
 the authors chose** — say so wherever the site displays it. Citation counts are
 Crossref's, which undercount astronomy badly (the field cites through arXiv and
 ADS); treat them as relative weight only.
 
 Every summary below was checked against the paper's own abstract or full text,
-except where marked ⚠. arXiv links are given where a preprint exists (21 of
-25); they are free to read, unlike several of the journal versions.
+except where marked ⚠. arXiv links are given where a preprint exists (25 of
+28); they are free to read, unlike several of the journal versions.
 
 > **Note on link checking:** `doi.org` links to Astronomy & Astrophysics papers,
 > and `minorplanetcenter.net`, return HTTP 403 to automated checkers. They work
@@ -99,12 +98,12 @@ Discovery of 2012 VP113. First to point out that the distant objects share an ar
 
 **Batygin & Brown 2016**  
 Konstantin Batygin, Michael E. Brown (2016). *EVIDENCE FOR A DISTANT GIANT PLANET IN THE SOLAR SYSTEM*. The Astronomical Journal  
-[doi](https://doi.org/10.3847/0004-6256/151/2/22) · [arXiv:1601.05438](https://arxiv.org/abs/1601.05438) · 387 Crossref citations  
+[doi](https://doi.org/10.3847/0004-6256/151/2/22) · [arXiv:1601.05438](https://arxiv.org/abs/1601.05438) · 390 Crossref citations  
 The founding paper. Six distant objects share an orbital orientation, and a ~10 Earth-mass planet on an anti-aligned orbit reproduces it.
 
 **Brown & Batygin 2016**  
 Michael E. Brown, Konstantin Batygin (2016). *OBSERVATIONAL CONSTRAINTS ON THE ORBIT AND LOCATION OF PLANET NINE IN THE OUTER SOLAR SYSTEM*. The Astrophysical Journal Letters  
-[doi](https://doi.org/10.3847/2041-8205/824/2/L23) · [arXiv:1603.05712](https://arxiv.org/abs/1603.05712) · 97 Crossref citations  
+[doi](https://doi.org/10.3847/2041-8205/824/2/L23) · [arXiv:1603.05712](https://arxiv.org/abs/1603.05712) · 98 Crossref citations  
 Maps which parts of the predicted orbit existing surveys have already searched and excluded.
 
 **Malhotra et al. 2016**  
@@ -124,7 +123,7 @@ J. C. Becker et al. (2018). *Discovery and Dynamical Analysis of an Extreme Tran
 
 **Batygin et al. 2019 (review)**  
 Konstantin Batygin et al. (2019). *The planet nine hypothesis*. Physics Reports  
-[doi](https://doi.org/10.1016/j.physrep.2019.01.009) · [arXiv:1902.10103](https://arxiv.org/abs/1902.10103) · 167 Crossref citations  
+[doi](https://doi.org/10.1016/j.physrep.2019.01.009) · [arXiv:1902.10103](https://arxiv.org/abs/1902.10103) · 168 Crossref citations  
 The definitive review. Revises the planet to 5-10 Earth masses, a = 400-800 AU, e = 0.2-0.5, i = 15-25 degrees, explaining clustering beyond a ~ 250 AU.
 
 **Brown & Batygin 2019**  
@@ -143,12 +142,12 @@ Terry Long Phan et al. (2025). *A search for Planet Nine with IRAS and AKARI dat
 One far-infrared candidate from two all-sky surveys 23 years apart, implying 500-700 AU and 7-17 Earth masses. Two detections cannot fix an orbit, so this stays a candidate until followed up.
 
 
-### Against it, or narrowing where it can hide (6)
+### Against it, or narrowing where it can hide (8)
 
-**Luhman 2014 (WISE)** ⚠  
+**Luhman 2014 (WISE)**  
 K. L. Luhman (2013). *A SEARCH FOR A DISTANT COMPANION TO THE SUN WITH THE<i>WIDE-FIELD INFRARED SURVEY EXPLORER</i>*. The Astrophysical Journal  
 [doi](https://doi.org/10.1088/0004-637X/781/1/4) · 86 Crossref citations  
-An all-sky infrared search rules out a Saturn-mass body within 10,000 AU. A small, cold Planet Nine stays allowed.
+An all-sky infrared search for a distant companion to the Sun by its parallactic motion finds nothing to W2 = 14.5: no Saturn analog within 28,000 AU and no Jupiter analog within 82,000 AU (26,000 AU for a Jupiter-mass brown dwarf on fainter models). A planet of a few Earth masses is far below this reach.
 
 **Shankman et al. 2017 (OSSOS VI)**  
 Cory Shankman et al. (2017). *OSSOS. VI. Striking Biases in the Detection of Large Semimajor Axis Trans-Neptunian Objects*. The Astronomical Journal  
@@ -175,6 +174,16 @@ Michael E. Brown, Matthew J. Holman, Konstantin Batygin (2024). *A Pan-STARRS1 S
 [doi](https://doi.org/10.3847/1538-3881/ad24e9) · [arXiv:2401.17977](https://arxiv.org/abs/2401.17977) · 8 Crossref citations  
 Rules out the Brown & Batygin (2021) Planet Nine to a 50% completion depth of V = 21.5. With ZTF and DES, 78% of the predicted parameter space is now excluded; what remains is faint and near where the northern galactic plane crosses the ecliptic.
 
+**Chen et al. 2025 (Ammonite)**  
+Ying-Tung Chen et al. (2025). *Discovery and dynamics of a Sedna-like object with a perihelion of 66 au*. Nature Astronomy  
+[doi](https://doi.org/10.1038/s41550-025-02595-7) · [arXiv:2508.02162](https://arxiv.org/abs/2508.02162) · 6 Crossref citations  
+Discovery of 2023 KQ14, a Sedna-like object with q = 66 AU and a = 252 AU. Its orbit does not align with the other Sedna-like objects, and its long-term stability favours a hypothetical planet on a larger orbit (about 500 AU) rather than a closer one.
+
+**Cheng, Li & Yang 2026 (2017 OF201)**  
+Sihao 思浩 Cheng 程, Jiaxuan 嘉轩 Li 李, Eritas 晴 Yang 杨 (2026). *Discovery of a Dwarf Planet Candidate in an Extremely Wide Orbit: 2017 OF201*. The Astrophysical Journal Letters  
+[doi](https://doi.org/10.3847/2041-8213/ae3a75) · [arXiv:2505.15806](https://arxiv.org/abs/2505.15806) · 2 Crossref citations  
+A roughly 700 km dwarf-planet candidate on an 830 AU orbit with perihelion at 45 AU (posted May 2025). Its longitude of perihelion lies outside the observed clustering, which the authors call a challenge to the dynamical evidence for Planet Nine.
+
 
 ### Alternative explanations (4)
 
@@ -190,7 +199,7 @@ A massive self-gravitating disk of small bodies can produce the same clustering 
 
 **Scholtz & Unwin 2020**  
 Jakub Scholtz, James Unwin (2020). *What if Planet 9 is a Primordial Black Hole?*. Physical Review Letters  
-[doi](https://doi.org/10.1103/PhysRevLett.125.051103) · [arXiv:1909.11090](https://arxiv.org/abs/1909.11090) · 82 Crossref citations  
+[doi](https://doi.org/10.1103/PhysRevLett.125.051103) · [arXiv:1909.11090](https://arxiv.org/abs/1909.11090) · 83 Crossref citations  
 Same mass, same orbit, but a grapefruit-sized primordial black hole instead of a planet.
 
 **Zderic & Madigan 2020**  
@@ -199,7 +208,7 @@ Alexander Zderic et al. (2020). *Apsidal Clustering following the Inclination In
 Shows the inclination instability also produces apsidal clustering, directly mimicking the Planet Nine signal.
 
 
-### Neutral: data, constraints and characterisation (5)
+### Neutral: data, constraints and characterisation (6)
 
 **Cowan et al. 2016 (CMB)**  
 Nicolas B. Cowan, Gil Holder, Nathan A. Kaib (2016). *COSMOLOGISTS IN SEARCH OF PLANET NINE: THE CASE FOR CMB EXPERIMENTS*. The Astrophysical Journal Letters  
@@ -208,7 +217,7 @@ Proposes millimetre-wave cosmology surveys as an independent search channel.
 
 **Fienga et al. 2016 (Cassini)**  
 A. Fienga et al. (2016). *Constraints on the location of a possible 9th planet derived from the<i>Cassini</i>data*. Astronomy &amp; Astrophysics  
-[doi](https://doi.org/10.1051/0004-6361/201628227) · 66 Crossref citations  
+[doi](https://doi.org/10.1051/0004-6361/201628227) · [arXiv:1602.06116](https://arxiv.org/abs/1602.06116) · 68 Crossref citations  
 Cassini ranging to Saturn narrows where a massive planet could sit without visibly perturbing the giant planets.
 
 **Fortney et al. 2016**  
@@ -226,6 +235,11 @@ A. Fienga et al. (2020). *New constraints on the location of P9 obtained with th
 [doi](https://doi.org/10.1051/0004-6361/202037919) · 32 Crossref citations  
 Updated planetary ephemerides further restrict where a massive perturber can hide.
 
+**Naess et al. 2021 (ACT)**  
+Sigurd Naess et al. (2021). *The Atacama Cosmology Telescope: A Search for Planet 9*. The Astrophysical Journal  
+[doi](https://doi.org/10.3847/1538-4357/ac2307) · [arXiv:2104.10264](https://arxiv.org/abs/2104.10264) · 21 Crossref citations  
+A blind millimetre-wave search over 18,000 square degrees finds no significant detection, rules out roughly 17% (5 Earth masses) or 9% (10 Earth masses) of the parameter space, and lists ten weak candidates for follow-up.
+
 
 ---
 
@@ -237,8 +251,8 @@ Updated planetary ephemerides further restrict where a massive perturber can hid
 - **Planet Nine's ϖ and Ω** (246.7°, 96.9°) read directly from the Figure 8
   corner plot of Brown & Batygin 2021, <https://arxiv.org/abs/2108.09868v2> —
   the abstract does not contain them.
-- **Every paper summary** checked against its abstract via the arXiv API, except
-  Luhman 2014.
+- **Every paper summary** checked against its abstract via the arXiv API; Luhman
+  2014, which has no preprint, against the journal PDF (`papers/`).
 - **Survey exclusion fractions** (56% ZTF, 78% cumulative) verified from the ZTF
   and Pan-STARRS1 search abstracts.
 
@@ -247,4 +261,4 @@ in [`README.md`](README.md).
 
 ---
 
-*Generated 2026-10-12 by `scripts/build_sources_doc.py`.*
+*Generated 2026-10-28 by `scripts/build_sources_doc.py`.*

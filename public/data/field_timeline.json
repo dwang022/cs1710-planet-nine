@@ -1,0 +1,590 @@
+{
+ "_what": "Section 07: the argument over Planet Nine as a ledger, one row per paper, year by year. Lanes: for a planet, against one, data and searches (which may branch into a for/against row), and what comes next. Every title says what the result means for the search.",
+ "_caution": [
+  "'lane' and 'branch' are our editorial reading of what each paper does to the argument, like 'stance' in papers.json. Say so on the site.",
+  "Entries with a 'doi' take their title, authors, citation count and links from papers.json; 'title' and 'line' here are a one- or two-line retelling of that paper's abstract-checked summary, phrased as what it means for the search.",
+  "A 'branch' is drawn as its own for/against row under the data row, labelled as the finders' conclusion. Its title and line are the authors' own reading, from the abstract.",
+  "'excluded' percentages are the fractions of the predicted parameter space an empty search ruled out, quoted from the paper's abstract.",
+  "'diagram' names a drawing in src/charts/fieldart.js. The drawings are schematic: they show the kind of claim, not measured orbits.",
+  "'photos' are small inline portraits from Wikimedia Commons; scripts/fetch_portraits.py downloads them and fills in 'credit', 'license' and 'source' from the Commons API.",
+  "'next' entries describe searches that are under way or proposed. They are not findings."
+ ],
+ "_lanes": {
+  "for": "argues the pattern is real and a planet is the best explanation",
+  "against": "argues the pattern is a selection effect, or that something other than a planet explains it",
+  "data": "a new object, a constraint, a search or a survey; branches into a for/against row only when its authors draw that conclusion",
+  "next": "a search that is running or planned, and what it could settle"
+ },
+ "entries": [
+  {
+   "id": "vp113-2014",
+   "year": 2014,
+   "order": 1,
+   "lane": "data",
+   "kind": "object",
+   "doi": "10.1038/nature13156",
+   "title": "A second object found too far out for Neptune to have put it there",
+   "line": "2012 VP113 never comes within 80 AU of the Sun; only Sedna was known on such a detached orbit. Something else shaped these orbits: a passing star, the Sun's birth cluster, or an unseen planet.",
+   "branch": {
+    "side": "for",
+    "from": "What its finders suggested",
+    "title": "Both detached orbits point the same way, and a hidden super-Earth could be why",
+    "line": "Trujillo and Sheppard's suggestion: the seed of the Planet Nine idea.",
+    "diagram": {
+     "type": "orbits",
+     "n": 2,
+     "aligned": true,
+     "jitter": 8,
+     "planet": true
+    }
+   },
+   "diagram": {
+    "type": "orbits",
+    "n": 2,
+    "aligned": true,
+    "jitter": 10,
+    "highlight": true,
+    "big": true
+   },
+   "photos": [
+    {
+     "file": "trujillo",
+     "alt": "Chad Trujillo",
+     "commons": "File:Chad Aaron Trujillo.jpg",
+     "focus": [
+      0.38,
+      0.32
+     ],
+     "zoom": 0.6,
+     "src": "/field/trujillo.jpg",
+     "credit": "Orion415",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Chad_Aaron_Trujillo.jpg"
+    }
+   ]
+  },
+  {
+   "id": "luhman-2014",
+   "year": 2014,
+   "order": 2,
+   "lane": "data",
+   "kind": "limit",
+   "doi": "10.1088/0004-637X/781/1/4",
+   "title": "Any hidden planet must be small and cold: nothing Saturn-sized within 28,000 AU",
+   "line": "WISE's infrared sweep of the whole sky rules out big, warm companions to the Sun (Luhman, Penn State). A few Earth masses, far out and faint, is what is left to look for.",
+   "diagram": {
+    "type": "limit",
+    "au": "28,000 AU"
+   }
+  },
+  {
+   "id": "batygin-brown-2016",
+   "year": 2016,
+   "order": 1,
+   "lane": "for",
+   "kind": "proposal",
+   "key": true,
+   "doi": "10.3847/0004-6256/151/2/22",
+   "title": "The Planet Nine proposal: six aligned orbits point to a planet of ten Earth masses",
+   "line": "Batygin and Brown (Caltech) show in simulations that a distant planet on an opposing orbit would herd the orbits into this alignment, and name it Planet Nine.",
+   "diagram": {
+    "type": "orbits",
+    "n": 6,
+    "aligned": true,
+    "planet": true
+   },
+   "photos": [
+    {
+     "file": "batygin",
+     "alt": "Konstantin Batygin",
+     "commons": "File:Konstantin Batygin by Christopher Michel in 2022 01.jpg",
+     "focus": [
+      0.5,
+      0.3
+     ],
+     "zoom": 0.85,
+     "src": "/field/batygin.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Konstantin_Batygin_by_Christopher_Michel_in_2022_01.jpg"
+    },
+    {
+     "file": "brown",
+     "alt": "Mike Brown",
+     "commons": "File:Mike Brown Caltech 2021 01.jpg",
+     "focus": [
+      0.5,
+      0.28
+     ],
+     "zoom": 0.72,
+     "src": "/field/brown.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Mike_Brown_Caltech_2021_01.jpg"
+    }
+   ]
+  },
+  {
+   "id": "fienga-2016",
+   "year": 2016,
+   "order": 2,
+   "lane": "data",
+   "kind": "constraint",
+   "doi": "10.1051/0004-6361/201628227",
+   "title": "Where Planet Nine cannot be: Saturn would have felt it",
+   "line": "Cassini's ranging to Saturn is precise enough to sense a nearby massive planet's pull. Fienga and Laskar cross those directions off the predicted orbit; the rest stays open.",
+   "diagram": {
+    "type": "constraint"
+   }
+  },
+  {
+   "id": "malhotra-2016",
+   "year": 2016,
+   "order": 3,
+   "lane": "for",
+   "kind": "resonance",
+   "doi": "10.3847/2041-8205/824/2/L22",
+   "title": "A second route to the same planet: the longest orbits beat in simple ratios",
+   "line": "Malhotra, Volk and Wang (Arizona): period ratios like these are what resonance with a planet near 665 AU would produce.",
+   "diagram": {
+    "type": "orbits",
+    "n": 4,
+    "aligned": true,
+    "jitter": 8,
+    "planet": true
+   }
+  },
+  {
+   "id": "ossos-2017",
+   "year": 2017,
+   "order": 1,
+   "lane": "against",
+   "kind": "bias",
+   "key": true,
+   "doi": "10.3847/1538-3881/aa7aed",
+   "title": "The alignment may be an artefact of where telescopes happened to look",
+   "line": "OSSOS logged exactly where it pointed and how deep it saw. Its own eight distant objects are consistent with no clustering, so the pattern behind Planet Nine may not be real.",
+   "diagram": {
+    "type": "orbits",
+    "n": 8,
+    "aligned": false,
+    "footprints": true
+   },
+   "photos": [
+    {
+     "file": "bannister",
+     "alt": "Michele Bannister",
+     "commons": "File:Michele Bannister in Hawai'i.jpg",
+     "focus": [
+      0.5,
+      0.62
+     ],
+     "zoom": 0.55,
+     "src": "/field/bannister.jpg",
+     "credit": "International Gemini Observatory/NSF’s NOIRLab/AURA/J. Pollard",
+     "license": "CC BY 4.0",
+     "license_url": "https://creativecommons.org/licenses/by/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Michele_Bannister_in_Hawai%27i.jpg"
+    }
+   ]
+  },
+  {
+   "id": "bp519-2018",
+   "year": 2018,
+   "order": 1,
+   "lane": "data",
+   "kind": "object",
+   "doi": "10.3847/1538-3881/aad042",
+   "title": "A new extreme object, tilted 54 degrees out of the planets' plane",
+   "line": "2015 BP519, from the Dark Energy Survey: by one measure the most extreme orbit known, and exactly the kind Planet Nine is predicted to produce.",
+   "branch": {
+    "side": "for",
+    "from": "What its finders concluded",
+    "title": "A tilt like this is what a distant massive planet would produce",
+    "line": "Becker and the DES team: the first of a predicted population of tilted, shepherded orbits, adding to the circumstantial case.",
+    "diagram": {
+     "type": "orbits",
+     "n": 6,
+     "aligned": true,
+     "planet": true,
+     "highlight": true
+    }
+   },
+   "diagram": {
+    "type": "tilt",
+    "deg": 54
+   }
+  },
+  {
+   "id": "madigan-2018",
+   "year": 2018,
+   "order": 2,
+   "lane": "against",
+   "kind": "alt",
+   "doi": "10.3847/1538-3881/aad95c",
+   "title": "No planet needed: the distant bodies could align themselves",
+   "line": "Madigan and colleagues (Colorado): a swarm of small distant bodies with enough combined mass tilts and clusters under its own gravity, producing the Planet Nine signal without a planet.",
+   "diagram": {
+    "type": "swarm"
+   }
+  },
+  {
+   "id": "brown-batygin-2019",
+   "year": 2019,
+   "order": 1,
+   "lane": "for",
+   "kind": "odds",
+   "doi": "10.3847/1538-3881/aaf051",
+   "also": [
+    "10.1016/j.physrep.2019.01.009"
+   ],
+   "title": "Correcting for the biases, the alignment is still a 1-in-500 fluke",
+   "line": "Brown and Batygin model how the surveys could have shaped the sample, and the clustering survives. Their review the same year shrinks the planet to 5 to 10 Earth masses on a closer orbit.",
+   "diagram": {
+    "type": "odds"
+   },
+   "photos": [
+    {
+     "file": "brown",
+     "alt": "Mike Brown",
+     "commons": "File:Mike Brown Caltech 2021 01.jpg",
+     "focus": [
+      0.5,
+      0.28
+     ],
+     "zoom": 0.72,
+     "src": "/field/brown.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Mike_Brown_Caltech_2021_01.jpg"
+    }
+   ]
+  },
+  {
+   "id": "napier-2021",
+   "year": 2021,
+   "order": 1,
+   "lane": "against",
+   "kind": "bias",
+   "key": true,
+   "doi": "10.3847/PSJ/abe53e",
+   "title": "Three bias-tracked surveys see no significant clustering at all",
+   "line": "14 distant objects from DES, OSSOS and the Sheppard–Trujillo survey are consistent with random orientations (Napier and colleagues). If the pattern is not there, there is nothing for a planet to explain.",
+   "diagram": {
+    "type": "orbits",
+    "n": 14,
+    "aligned": false
+   }
+  },
+  {
+   "id": "brown-batygin-2021",
+   "year": 2021,
+   "order": 2,
+   "lane": "for",
+   "kind": "fit",
+   "key": true,
+   "doi": "10.3847/1538-3881/ac2056",
+   "title": "The planet's orbit, refined: 6 Earth masses at about 380 AU, with a map of where to look",
+   "line": "Brown and Batygin keep the clustering at 99.6% significance and fit the planet closer and brighter than first thought, within reach of large telescopes.",
+   "diagram": {
+    "type": "orbits",
+    "n": 6,
+    "aligned": true,
+    "planet": true,
+    "region": true
+   },
+   "photos": [
+    {
+     "file": "batygin",
+     "alt": "Konstantin Batygin",
+     "commons": "File:Konstantin Batygin by Christopher Michel in 2022 01.jpg",
+     "focus": [
+      0.5,
+      0.3
+     ],
+     "zoom": 0.85,
+     "src": "/field/batygin.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Konstantin_Batygin_by_Christopher_Michel_in_2022_01.jpg"
+    },
+    {
+     "file": "brown",
+     "alt": "Mike Brown",
+     "commons": "File:Mike Brown Caltech 2021 01.jpg",
+     "focus": [
+      0.5,
+      0.28
+     ],
+     "zoom": 0.72,
+     "src": "/field/brown.jpg",
+     "credit": "Christopher Michel",
+     "license": "CC BY-SA 4.0",
+     "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+     "source": "https://commons.wikimedia.org/wiki/File:Mike_Brown_Caltech_2021_01.jpg"
+    }
+   ]
+  },
+  {
+   "id": "act-2021",
+   "year": 2021,
+   "order": 3,
+   "lane": "data",
+   "kind": "search",
+   "doi": "10.3847/1538-4357/ac2307",
+   "title": "A search for the planet's own heat finds nothing, and removes a tenth of the possibilities",
+   "line": "The Atacama Cosmology Telescope scanned 18,000 square degrees at millimetre wavelengths, where a cold planet glows faintly. Ten weak candidates, none convincing.",
+   "excluded": {
+    "pct": 17,
+    "text": "ruled out for a 5 Earth-mass planet (9% for 10)"
+   },
+   "diagram": {
+    "type": "search",
+    "pct": 17
+   }
+  },
+  {
+   "id": "ztf-2022",
+   "year": 2022,
+   "order": 1,
+   "lane": "data",
+   "kind": "search",
+   "doi": "10.3847/1538-3881/ac32dd",
+   "title": "Half of the predicted planets are ruled out by a direct search",
+   "line": "The planet's own proponents comb the Zwicky Transient Facility archive to magnitude 20.5 and find no candidate.",
+   "excluded": {
+    "pct": 56,
+    "text": "of the predicted planets ruled out"
+   },
+   "diagram": {
+    "type": "search",
+    "pct": 56
+   }
+  },
+  {
+   "id": "ps1-2024",
+   "year": 2024,
+   "order": 1,
+   "lane": "data",
+   "kind": "search",
+   "key": true,
+   "doi": "10.3847/1538-3881/ad24e9",
+   "title": "Three-quarters of the predicted planets are now ruled out",
+   "line": "Pan-STARRS1 finds nothing to magnitude 21.5. What is left is faint and near the Milky Way's plane, the hardest place to search.",
+   "excluded": {
+    "pct": 78,
+    "text": "of the predicted planets ruled out, with ZTF and DES"
+   },
+   "diagram": {
+    "type": "search",
+    "pct": 78
+   }
+  },
+  {
+   "id": "phan-2025",
+   "year": 2025,
+   "order": 1,
+   "lane": "data",
+   "kind": "candidate",
+   "doi": "10.1017/pasa.2025.10024",
+   "title": "A possible first sighting: one infrared source moved the way Planet Nine would",
+   "line": "Phan, Goto and colleagues compare the IRAS and AKARI sky surveys, 23 years apart. Two detections cannot fix an orbit.",
+   "branch": {
+    "side": "for",
+    "from": "What it would mean",
+    "title": "If real, a planet of 7 to 17 Earth masses, 500 to 700 AU out",
+    "line": "It stays a candidate until a telescope follows it up.",
+    "diagram": {
+     "type": "orbits",
+     "n": 0,
+     "planet": true
+    }
+   },
+   "diagram": {
+    "type": "candidate"
+   }
+  },
+  {
+   "id": "ammonite-2025",
+   "year": 2025,
+   "order": 2,
+   "lane": "data",
+   "kind": "object",
+   "doi": "10.1038/s41550-025-02595-7",
+   "title": "A fourth Sedna-like object, on an orbit that does not fit the pattern",
+   "line": "2023 KQ14, nicknamed Ammonite (Subaru Telescope): perihelion 66 AU, stable for 4.5 billion years.",
+   "branch": {
+    "side": "against",
+    "from": "What its finders concluded",
+    "title": "Ammonite points the other way, so a planet, if any, must sit farther out",
+    "line": "Its orbit does not align with the other three, and its stability favours a large planet near 500 AU rather than a closer one (Chen and colleagues).",
+    "diagram": {
+     "type": "orbits",
+     "n": 3,
+     "aligned": true,
+     "jitter": 10,
+     "highlight": true,
+     "anti": true,
+     "planet": true,
+     "far": true
+    }
+   },
+   "diagram": {
+    "type": "orbits",
+    "n": 3,
+    "aligned": true,
+    "jitter": 10,
+    "highlight": true,
+    "anti": true
+   }
+  },
+  {
+   "id": "of201-2025",
+   "year": 2025,
+   "order": 3,
+   "lane": "data",
+   "kind": "object",
+   "doi": "10.3847/2041-8213/ae3a75",
+   "title": "A new dwarf planet whose orbit lies outside the Planet Nine cluster",
+   "line": "2017 OF201, about 700 km across on an 830 AU orbit, found by Cheng, Li and Yang (IAS and Princeton). Posted May 2025, published 2026.",
+   "branch": {
+    "side": "against",
+    "from": "What its finders concluded",
+    "title": "Its perihelion falls outside the clustering: a challenge to the dynamical evidence",
+    "line": "The alignment the planet is meant to explain does not include this object, the authors say.",
+    "diagram": {
+     "type": "orbits",
+     "n": 6,
+     "aligned": true,
+     "highlight": true,
+     "anti": true,
+     "big": true,
+     "planet": true
+    }
+   },
+   "diagram": {
+    "type": "orbits",
+    "n": 6,
+    "aligned": true,
+    "highlight": true,
+    "anti": true,
+    "big": true
+   }
+  },
+  {
+   "id": "rubin-2026",
+   "year": 2026,
+   "order": 1,
+   "lane": "data",
+   "kind": "survey",
+   "key": true,
+   "title": "The telescope most likely to find Planet Nine, or rule it out, starts work",
+   "line": "Rubin's ten-year survey reaches far fainter than the searches so far and will sweep much of the planet's predicted path again and again. It began on 29 June 2026 and has already found a probable dwarf planet, 2026 ED138.",
+   "links": [
+    {
+     "label": "Rubin: start of LSST (10 July 2026)",
+     "url": "https://www.rubin.community/t/2026-07-10-early-operations-update-start-of-lsst/12280"
+    },
+    {
+     "label": "SLAC: first dwarf planet candidate (27 Oct 2026)",
+     "url": "https://www6.slac.stanford.edu/news/2026-10-27-nsf-doe-vera-c-rubin-observatory-reveals-its-first-dwarf-planet-candidate-our-solar"
+    }
+   ],
+   "diagram": {
+    "type": "survey",
+    "progress": 0.1
+   }
+  },
+  {
+   "id": "next-rubin",
+   "lane": "next",
+   "kind": "survey",
+   "order": 1,
+   "title": "Within a few years, Rubin should either find the planet or empty most of what remains",
+   "line": "Most predicted brightnesses are within reach of a single Rubin image (Brown & Batygin 2021). A slow mover crossing successive images would give it away.",
+   "links": [
+    {
+     "label": "Brown & Batygin 2021",
+     "url": "https://arxiv.org/abs/2108.09868"
+    }
+   ],
+   "diagram": {
+    "type": "survey",
+    "progress": 0.6,
+    "dashed": true
+   }
+  },
+  {
+   "id": "next-infrared",
+   "lane": "next",
+   "kind": "candidate",
+   "order": 2,
+   "title": "A few deep images could confirm or kill the infrared candidates",
+   "line": "DECam or Subaru pointings along their predicted tracks would show whether they move like a planet.",
+   "links": [
+    {
+     "label": "Phan et al. 2025",
+     "url": "https://arxiv.org/abs/2504.17288"
+    },
+    {
+     "label": "Chen, Goto, Phan et al. 2025 (AKARI)",
+     "url": "https://arxiv.org/abs/2506.12854"
+    }
+   ],
+   "diagram": {
+    "type": "candidate",
+    "dashed": true
+   }
+  },
+  {
+   "id": "next-mm",
+   "lane": "next",
+   "kind": "search",
+   "order": 3,
+   "title": "Listen for the planet's own heat with the Simons Observatory",
+   "line": "On ACT's plateau with far more sensitivity, a repeat of the millimetre search would not depend on how much sunlight the planet reflects.",
+   "links": [
+    {
+     "label": "Naess et al. 2021 (ACT)",
+     "url": "https://arxiv.org/abs/2104.10264"
+    },
+    {
+     "label": "Cowan et al. 2016",
+     "url": "https://arxiv.org/abs/1602.05963"
+    }
+   ],
+   "diagram": {
+    "type": "search",
+    "pct": 0,
+    "dashed": true,
+    "label": "not yet searched"
+   }
+  },
+  {
+   "id": "next-objects",
+   "lane": "next",
+   "kind": "object",
+   "order": 4,
+   "title": "Every new distant orbit is a vote on whether the pattern is real",
+   "line": "Rubin should find tens of thousands of trans-Neptunian objects. If the new ones cluster, the case for a planet grows; if they scatter, it fades.",
+   "links": [
+    {
+     "label": "LSST Solar System Science Collaboration (2020)",
+     "url": "https://arxiv.org/abs/2009.07653"
+    }
+   ],
+   "diagram": {
+    "type": "orbits",
+    "n": 10,
+    "aligned": false,
+    "dashed": true
+   }
+  }
+ ],
+ "_photos_fetched": "2026-10-28"
+}

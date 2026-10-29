@@ -27,7 +27,7 @@ const OBLIQUITY = 23.439291 * D
 const DEPTH_RANGE = [20.0, 26.0]
 export const depthColour = d3.scaleLinear()
   .domain(DEPTH_RANGE).clamp(true)
-  .range(['#1d2a31', '#8fd3e2'])
+  .range(['#232228', '#ece6d8'])
   .interpolate(d3.interpolateLab)
 
 /**
@@ -159,7 +159,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   g.selectAll('path.outline').data([0]).join('path')
     .attr('class', 'outline')
     .attr('d', outlineD)
-    .attr('fill', '#0e0e0d').attr('stroke', 'var(--text-muted)')
+    .attr('fill', '#0c0c0e').attr('stroke', 'var(--text-muted)')
     .attr('stroke-width', 1.2).attr('stroke-opacity', 0.55)
 
   if (layers.empty()) layers = svg.append('g').attr('class', 'sky-layers').attr('clip-path', 'url(#sky-clip)')
@@ -211,8 +211,8 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   // the deep-enough surveys left lit.
   const isDeep = s => (s.depth_mag ?? 0) >= 23.5 && s.wavelength === 'optical'
   const fpFill = d => {
-    if (d.s.future) return '#F08BB4'
-    if (L.surveys === 'coverage') return '#556b77'
+    if (d.s.future) return '#f472b6'
+    if (L.surveys === 'coverage') return '#4a4852'
     return d.s.depth_mag != null && d.s.wavelength === 'optical' ? depthColour(d.s.depth_mag) : '#1a2228'
   }
   const fpOpacity = d => {
@@ -228,7 +228,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .merge(fp)
     .attr('d', d => d3.line()(d.ring) + 'Z')
     .style('pointer-events', d => fpOpacity(d) > 0.1 ? null : 'none')
-    .attr('stroke', d => d.s.future ? '#F08BB4' : activeSurvey === d.s.id ? d.s.color_hex : 'none')
+    .attr('stroke', d => d.s.future ? '#f472b6' : activeSurvey === d.s.id ? d.s.color_hex : 'none')
     .attr('stroke-width', 2)
     .attr('stroke-dasharray', d => d.s.future ? '6 5' : null)
     .style('cursor', 'pointer')
@@ -269,14 +269,14 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .attr('d', bandPath(
       d3.range(0, 361, 2).map(l => galacticToEquatorial(l, 15)),
       d3.range(0, 361, 2).map(l => galacticToEquatorial(l, -15))))
-    .attr('fill', '#e8dcc0')
+    .attr('fill', '#dcc48a')
     .attr('stroke', 'none')
     .transition().duration(T)
     .attr('fill-opacity', L.milky ? 0.13 : 0)
   layers.selectAll('path.galplane').data([0]).join('path')
     .attr('class', 'galplane')
     .attr('d', segmentedPath(d3.range(0, 361, 2).map(l => galacticToEquatorial(l, 0))))
-    .attr('fill', 'none').attr('stroke', '#e8dcc0')
+    .attr('fill', 'none').attr('stroke', '#dcc48a')
     .attr('stroke-width', 1.2)
     .transition().duration(T)
     .attr('stroke-opacity', L.milky ? 0.45 : 0)
@@ -290,7 +290,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .merge(tk)
     .attr('d', d => segmentedPath(d.points.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none')
-    .attr('stroke', 'var(--series-3)')
+    .attr('stroke', 'var(--p9)')
     .attr('stroke-width', d => d.label === 'nominal' ? 2.6 : 1.1)
     .attr('stroke-opacity', d => d.label === 'nominal' ? 1 : 0.4)
 
@@ -378,7 +378,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   bd.enter().append('path').attr('class', 'buried')
     .merge(bd)
     .attr('d', run => segmentedPath(run.map(p => [p.ra_deg, p.dec_deg])))
-    .attr('fill', 'none').attr('stroke', '#e8dcc0')
+    .attr('fill', 'none').attr('stroke', '#dcc48a')
     .attr('stroke-width', 6).attr('stroke-opacity', 0.5)
     .attr('stroke-linecap', 'round')
 
@@ -387,7 +387,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   bl.exit().remove()
   bl.enter().append('text').attr('class', 'buriedlabel axis-label')
     .merge(bl)
-    .style('fill', '#e8dcc0').attr('font-weight', 600).attr('text-anchor', 'middle')
+    .style('fill', '#dcc48a').attr('font-weight', 600).attr('text-anchor', 'middle')
     .attr('x', run => mollweide(clampRA(run[Math.floor(run.length / 2)].ra_deg),
       run[Math.floor(run.length / 2)].dec_deg)[0])
     .attr('y', run => mollweide(clampRA(run[Math.floor(run.length / 2)].ra_deg),

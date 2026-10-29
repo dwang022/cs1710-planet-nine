@@ -35,7 +35,7 @@ export function makeLean (root) {
   const defs = svg.append('defs')
   defs.append('clipPath').attr('id', 'lean-clip')
     .append('circle').attr('cx', cx).attr('cy', cy).attr('r', PLOT_R)
-  for (const [id, fill] of [['lean-head', 'var(--text-primary)'], ['lean-head-p9', 'var(--series-3)']]) {
+  for (const [id, fill] of [['lean-head', 'var(--text-primary)'], ['lean-head-p9', 'var(--p9)']]) {
     defs.append('marker').attr('id', id).attr('viewBox', '0 0 10 10')
       .attr('refX', 7).attr('refY', 5).attr('markerWidth', 16).attr('markerHeight', 16)
       .attr('markerUnits', 'userSpaceOnUse')
@@ -74,13 +74,13 @@ export function makeLean (root) {
 
   // --- Planet Nine: an arc in the orbit view, a spoke on the compass -------
   gP9.append('path').attr('class', 'p9arc').attr('fill', 'none')
-    .attr('stroke', 'var(--series-3)').attr('stroke-width', 3)
+    .attr('stroke', 'var(--p9)').attr('stroke-width', 3)
   gP9.append('circle').attr('class', 'p9dot').attr('r', 8)
-    .attr('fill', 'var(--series-3)').attr('stroke', 'var(--surface-1)').attr('stroke-width', 2)
+    .attr('fill', 'var(--p9)').attr('stroke', 'var(--surface-1)').attr('stroke-width', 2)
   gP9.append('use').attr('class', 'p9icon').attr('href', '#art-planet-nine')
     .attr('width', 28).attr('height', 28).attr('opacity', 0)
   const p9Spoke = svg.insert('line', () => gMean.node())
-    .attr('stroke', 'var(--series-3)').attr('stroke-width', 3)
+    .attr('stroke', 'var(--p9)').attr('stroke-width', 3)
     .attr('stroke-dasharray', '2 6').attr('stroke-linecap', 'round')
     .attr('x1', cx).attr('y1', cy)
     .attr('x2', ax(PLANET_NINE.varpi_deg, RING_R)).attr('y2', ay(PLANET_NINE.varpi_deg, RING_R))
@@ -257,7 +257,7 @@ export function makeLean (root) {
     const L = (key, x, y, text, opts = {}) => list.push({ key, x, y, text, ...opts })
     if (s.labels?.sun) L('sun', cx + 12, cy + 22, 'the Sun', { anchor: 'start', colour: 'var(--sun)' })
     if (s.labels?.neptune && !ring) {
-      L('nep', cx - r(30) * 0.72 - 6, cy + r(30) * 0.72 + 18, 'Neptune’s orbit', { anchor: 'end', colour: '#8ea8d8' })
+      L('nep', cx - r(30) * 0.72 - 6, cy + r(30) * 0.72 + 18, 'Neptune’s orbit', { anchor: 'end', colour: '#aab0c4' })
     }
     if (s.labels?.closest && focus && !ring) {
       const p = perihelionPoint(focus)
@@ -266,7 +266,7 @@ export function makeLean (root) {
     if (s.labels?.half && stats.n >= 3) {
       const ang = stats.meanDeg
       L('half', ax(ang, PLOT_R * 0.72), ay(ang, PLOT_R * 0.72),
-        `${s.halfCount} of ${stats.n} dots in this half`, { size: 17, colour: '#9cc4f2' })
+        `${s.halfCount} of ${stats.n} dots in this half`, { size: 17, colour: '#c4b5fd' })
       L('half2', ax(ang + 180, PLOT_R * 0.62), ay(ang + 180, PLOT_R * 0.62),
         `only ${stats.n - s.halfCount} in this half`, { size: 15, colour: 'var(--text-muted)' })
     }
@@ -279,10 +279,10 @@ export function makeLean (root) {
     }
     if (s.labels?.p9 && s.p9) {
       if (!ring) {
-        L('p9', cx + r(p9pt[0]), cy - r(p9pt[1]) + 28, 'Planet Nine (predicted)', { size: 15, colour: 'var(--series-3)', anchor: 'middle' })
+        L('p9', cx + r(p9pt[0]), cy - r(p9pt[1]) + 28, 'Planet Nine (predicted)', { size: 15, colour: 'var(--p9)', anchor: 'middle' })
       }
       const a = PLANET_NINE.varpi_deg
-      L('p9s', ax(a, RING_R * 0.55) - 12, ay(a, RING_R * 0.55), 'Planet Nine points this way', { size: 13, colour: 'var(--series-3)', anchor: 'end' })
+      L('p9s', ax(a, RING_R * 0.55) - 12, ay(a, RING_R * 0.55), 'Planet Nine points this way', { size: 13, colour: 'var(--p9)', anchor: 'end' })
     }
 
     const t = gNotes.selectAll('text').data(list, d => d.key)

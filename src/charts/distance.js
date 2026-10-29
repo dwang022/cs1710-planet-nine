@@ -1,24 +1,28 @@
-// Section 01 — "how far away are these objects?", as one continuous zoom.
+// Part 1, page 2: "how far away is all this?", as one continuous zoom.
 //
 // The Sun sits at the left edge and everything else is placed at its true
-// distance along a ray from it, after the Outer Wilds planetary chart: the
-// planets on the dashed arcs of their orbits, each extreme object on a thin
-// line that runs from its closest point to its farthest, Planet Nine as a
-// shaded band between the two ends of its predicted orbit. Scrolling changes
-// one number, the width of the view in AU, so the reader watches the familiar
-// planets shrink into the Sun's glow as the picture opens out.
+// distance from it. The planets ride the dashed arcs of their orbits, after
+// the Outer Wilds planetary chart. Below them, each extreme object is a
+// horizontal bar that runs from its nearest point to the Sun to its farthest,
+// stacked in order of how far out it goes, with a dot at the distance it is
+// right now. Planet Nine is a shaded band between the two ends of its
+// predicted orbit. Scrolling changes one number, the width of the view in AU,
+// so the reader watches the familiar planets shrink into the Sun's glow as the
+// picture opens out.
 //
-// Distances are to scale. The drawn sizes of the bodies are not, and the
-// caption says so. Bodies are drawn from the sprite in art.js.
+// Distances are to scale. The drawn sizes of the bodies are not, and the chart
+// says so. Bodies are drawn from the sprite in art.js.
 
 import * as d3 from 'd3'
 import { showTip, hideTip } from './tooltip.js'
 import { registerHighlight, setHover } from '../highlight.js'
 import { PLANET_ART } from '../art.js'
 
-const W = 900, H = 520
-const SUN = { x: 52, y: H / 2, r: 46 }       // drawn size; not to scale
+const W = 900, H = 560
+const SUN = { x: 52, y: 190, r: 46 }       // drawn size; not to scale
 const RIGHT_PAD = 44
+const BARS = { top: 300, bottom: H - 46 }     // where the extreme objects stack
+const P9_Y = 258                              // Planet Nine's own row, between the two
 const LIGHT_S_PER_AU = 499.005
 const RAD = Math.PI / 180
 
@@ -29,7 +33,7 @@ const LOOK = {
   Mars: { size: 17, ang: -15 }, Jupiter: { size: 46, ang: 10 }, Saturn: { size: 50, ang: -9 },
   Uranus: { size: 31, ang: 12 }, Neptune: { size: 30, ang: -7 }, Pluto: { size: 19, ang: 17 },
 }
-const VOYAGER_AU = 170          // the primer card's "about 170"
+const VOYAGER_AU = 170
 const KUIPER = [30, 50]
 
 const nameOf = d => d.name || d.provisional_desig || d.id
@@ -44,22 +48,29 @@ export function lightTime (au) {
   return `${Math.round(s / 86400)} days`
 }
 
-// A stable pseudo-random spread for the extreme objects' rays, keyed by id so
-// nothing shuffles when the filters change.
-function hash01 (s) {
-  let h = 2166136261
-  for (const c of String(s)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) }
-  return ((h >>> 0) % 10007) / 10007
+/**
+ * Where an object is now: its distance from the Sun at the catalogue epoch,
+ * from its mean anomaly by solving Kepler's equation. The epoch is June 2026,
+ * close enough to "now" for bodies that take thousands of years to go round.
+ */
+export function distanceNow (o) {
+  const M = ((o.mean_anom_deg % 360) + 360) % 360 * RAD
+  const e = o.e
+  let E = e < 0.8 ? M : Math.PI
+  for (let k = 0; k < 60; k++) {
+    const d = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E))
+    E -= d
+    if (Math.abs(d) < 1e-10) break
+  }
+  return o.a_au * (1 - e * Math.cos(E))
 }
-const rayAngle = id => { const u = hash01(id); return (u < 0.5 ? -1 : 1) * (7 + ((u * 2) % 1) * 23) }
-const tnoArt = id => `tno-${1 + Math.floor(hash01(id + 'v') * 3)}`
 
 const NICE = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000]
 
 export function makeDistance (root, { planets, p9 }) {
   const svg = d3.select(root).append('svg')
     .attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-    .attr('aria-label', 'The solar system drawn to scale from the Sun outward, zooming out as you scroll: the planets, Pluto, the extreme objects in view, and the range of distances predicted for Planet Nine.')
+    .attr('aria-label', 'The solar system drawn to scale from the Sun outward, zooming out as you scroll: the planets, Pluto, each extreme object as a bar from its nearest to its farthest point, and the range of distances predicted for Planet Nine.')
 
   svg.append('defs').append('clipPath').attr('id', 'dist-clip')
     .append('rect').attr('width', W).attr('height', H)
@@ -68,6 +79,7 @@ export function makeDistance (root, { planets, p9 }) {
   const gBands = g.append('g')
   const gOrbits = g.append('g')
   const gRays = g.append('g')
+  const gBars = g.append('g')
   const gBodies = g.append('g')
   const gVoy = g.append('g')
   const gSun = g.append('g')
@@ -93,9 +105,11 @@ export function makeDistance (root, { planets, p9 }) {
   const sector = d3.arc().startAngle(0).endAngle(Math.PI)    // the right half-annulus
   const pos = (au, ang, k) => [SUN.x + au * k * Math.cos(ang * RAD), SUN.y - au * k * Math.sin(ang * RAD)]
   const FOCUS = { home: 'Earth', giants: 'Saturn', neptune: 'Neptune', pluto: 'Pluto', p9: 'p9' }
+  const barsOn = () => ['extreme', 'p9', 'farthest', 'explore'].includes(S.step)
 
   function draw () {
     const k = (W - SUN.x - RIGHT_PAD) / S.view
+    const xOf = au => SUN.x + au * k
 
     // The Sun shrinks as the view opens out, so the zoom reads as a zoom; it
     // stays an icon, never to scale (at 5,000 AU it would be a thousandth of a pixel).
@@ -104,11 +118,11 @@ export function makeDistance (root, { planets, p9 }) {
     gSun.select('text').attr('y', SUN.y + sunR + 14)
 
     const focus = S.step === 'farthest' ? S.far?.id : FOCUS[S.step]
-    const p9On = S.showP9 && (S.step === 'p9' || S.step === 'farthest')
+    const p9On = S.showP9 && (S.step === 'p9' || S.step === 'farthest' || S.step === 'explore')
     const notes = []        // { x, y, text, cls, anchor }
     let focusAt = null
 
-    // --- bands: the Kuiper belt and Planet Nine's range ---------------------
+    // --- bands: the Kuiper belt (an arc round the planets, a column through the bars) and Planet Nine's range
     const bands = []
     if ((KUIPER[1] - KUIPER[0]) * k >= 5) bands.push({ id: 'kuiper', r0: KUIPER[0] * k, r1: KUIPER[1] * k, cls: 'kuiper' })
     if (p9On && (P9.Q - P9.q) * k >= 4) {
@@ -119,6 +133,12 @@ export function makeDistance (root, { planets, p9 }) {
       .attr('class', d => `dist-band ${d.cls}`)
       .attr('transform', `translate(${SUN.x},${SUN.y})`)
       .attr('d', d => sector({ innerRadius: d.r0, outerRadius: d.r1 }))
+    // the same ranges continue straight down through the stack of bars
+    const cols = barsOn() ? bands : []
+    gBands.selectAll('rect').data(cols, d => d.id).join('rect')
+      .attr('class', d => `dist-band ${d.cls}`)
+      .attr('x', d => SUN.x + d.r0).attr('width', d => Math.max(0, d.r1 - d.r0))
+      .attr('y', BARS.top - 14).attr('height', BARS.bottom - BARS.top + 22)
     const edges = bands.filter(b => b.id !== 'kuiper').flatMap(b => [{ id: b.id + '0', r: b.r0, cls: b.cls }, { id: b.id + '1', r: b.r1, cls: b.cls }])
     gBands.selectAll('circle').data(edges, d => d.id).join('circle')
       .attr('class', d => `dist-edge ${d.cls}`)
@@ -126,6 +146,9 @@ export function makeDistance (root, { planets, p9 }) {
     if (bands.some(b => b.id === 'kuiper') && (KUIPER[1] - KUIPER[0]) * k >= 26 && (S.step === 'pluto' || S.step === 'neptune')) {
       const [x, y] = pos((KUIPER[0] + KUIPER[1]) / 2, -22, k)
       notes.push({ x, y: y + 4, text: 'Kuiper belt', cls: 'muted', anchor: 'middle' })
+    }
+    if (barsOn() && bands.some(b => b.id === 'kuiper') && (KUIPER[1] - KUIPER[0]) * k >= 10) {
+      notes.push({ x: xOf(KUIPER[1]) + 5, y: BARS.top - 4, text: 'Kuiper belt', cls: 'muted small', anchor: 'start' })
     }
 
     // --- the planets ---------------------------------------------------------
@@ -148,33 +171,46 @@ export function makeDistance (root, { planets, p9 }) {
     gRays.selectAll('line.dwarf').data(plutoLine, d => d.id).join('line').attr('class', 'dist-ray dwarf')
       .attr('x1', d => d.x1).attr('y1', d => d.y1).attr('x2', d => d.x2).attr('y2', d => d.y2)
 
-    // --- the extreme objects: a thin line from closest to farthest, a rock at the average ---
-    const objs = S.objects.map(o => {
-      const ang = rayAngle(o.id)
-      const [x, y] = pos(o.a_au, ang, k)
-      const [x1, y1] = pos(o.q_au, ang, k)
-      const [x2, y2] = pos(o.Q_au, ang, k)
+    // --- the extreme objects: one bar each, nearest point to farthest, a dot where it is now
+    const list = barsOn() ? S.objects.slice().sort((a, b) => a.Q_au - b.Q_au) : []
+    const rowH = list.length ? Math.min(9, (BARS.bottom - BARS.top) / list.length) : 9
+    const barH = Math.max(2, Math.min(5, rowH * 0.55))
+    const rows = list.map((o, i) => {
+      const y = BARS.top + (i + 0.5) * rowH
       const hot = o.id === S.hot || o.id === focus
-      return { ...o, ang, x, y, x1, y1, x2, y2, hot, size: hot ? 20 : 12, art: tnoArt(o.id) }
+      return { ...o, y, x1: xOf(o.q_au), x2: xOf(o.Q_au), xa: xOf(o.a_au), xn: xOf(o.now_au), hot }
     })
-    gRays.selectAll('line.etno').data(objs, d => d.id).join('line')
-      .attr('class', d => `dist-ray etno ${d.alignment === 'anti-aligned' ? 'anti' : 'ali'}${d.hot ? ' hot' : ''}`)
-      .attr('x1', d => d.x1).attr('y1', d => d.y1).attr('x2', d => d.x2).attr('y2', d => d.y2)
+    const bar = gBars.selectAll('g.row').data(rows, d => d.id)
+    bar.exit().remove()
+    const be = bar.enter().append('g').attr('class', 'row')
+    be.append('rect').attr('class', 'hit')
+    be.append('rect').attr('class', 'range')
+    be.append('line').attr('class', 'near')
+    be.append('circle').attr('class', 'now')
+    const ba = be.merge(bar)
+      .attr('class', d => `row ${d.alignment === 'anti-aligned' ? 'anti' : 'ali'}${d.hot ? ' hot' : ''}${d.well_determined ? '' : ' faint'}`)
       .on('pointerenter', hover).on('pointermove', hover).on('pointerleave', unhover)
+    ba.select('rect.hit').attr('x', d => Math.max(SUN.x, d.x1 - 4)).attr('width', d => Math.max(12, Math.min(W, d.x2) - Math.max(SUN.x, d.x1) + 8))
+      .attr('y', d => d.y - rowH / 2).attr('height', rowH)
+    ba.select('rect.range').attr('x', d => d.x1).attr('width', d => Math.max(1.5, d.x2 - d.x1))
+      .attr('y', d => d.y - barH / 2).attr('height', barH).attr('rx', barH / 2)
+    ba.select('line.near').attr('x1', d => d.x1).attr('x2', d => d.x1)
+      .attr('y1', d => d.y - barH).attr('y2', d => d.y + barH)
+    ba.select('circle.now').attr('cx', d => d.xn).attr('cy', d => d.y).attr('r', d => d.hot ? 4.5 : Math.max(2, barH * 0.75))
 
-    // --- bodies: planets and rocks share one layer, drawn far to near --------
-    const bodies = [
-      ...objs.filter(o => o.x < W + 20).map(o => ({ key: o.id, art: o.art, x: o.x, y: o.y, size: o.size, etno: o, cls: `etno${o.hot ? ' hot' : ''}` })),
-      ...shown.map(p => ({ key: p.name, art: p.art, x: p.x, y: p.y, size: p.size, cls: 'planet' })),
-    ].sort((a, b) => b.x - a.x)
+    // the stack's own caption, once there is something in it
+    if (rows.length) {
+      notes.push({ x: SUN.x, y: BARS.top - 4, text: `${rows.length} extreme objects · each bar runs from its nearest point to its farthest · the dot is where it is now`, cls: 'muted small', anchor: 'start', raw: true })
+    }
+
+    // --- bodies: the planets, drawn far to near ------------------------------
+    const bodies = shown.map(p => ({ key: p.name, art: p.art, x: p.x, y: p.y, size: p.size, cls: 'planet' }))
+      .sort((a, b) => b.x - a.x)
     gBodies.selectAll('use.gen').data(bodies, d => d.key).join('use')
       .attr('class', d => `dist-body gen ${d.cls}`)
       .attr('href', d => `#art-${d.art}`)
       .attr('x', d => d.x - d.size / 2).attr('y', d => d.y - d.size / 2)
       .attr('width', d => d.size).attr('height', d => d.size)
-      .on('pointerenter', (ev, d) => d.etno && hover(ev, d.etno))
-      .on('pointermove', (ev, d) => d.etno && hover(ev, d.etno))
-      .on('pointerleave', (ev, d) => d.etno && unhover())
 
     // --- labels: every planet big enough to read, thinned where they crowd ---
     let lastX = -Infinity
@@ -192,22 +228,21 @@ export function makeDistance (root, { planets, p9 }) {
       }
     }
 
-    // --- Planet Nine ---------------------------------------------------------
+    // --- Planet Nine, on its own row between the planets and the stack -------
     const p9use = []
     if (p9On) {
       const size = 36 * Math.min(1, Math.max(0.3, (P9.a * k) / 120))
-      const [x, y] = pos(P9.a, 0, k)
+      const x = xOf(P9.a), y = P9_Y
       if (x < W + 20 && P9.a * k > 14) p9use.push({ x, y, size })
       if (focus === 'p9' && p9use.length) {
         focusAt = { x, y, r: size * 0.72 + 6, dashed: true }
         notes.push({ x, y: y - size / 2 - 10, text: 'Planet Nine (predicted)', cls: 'focus p9', anchor: 'middle' })
-        notes.push({ x, y: y + size / 2 + 17, text: `between ${fmtAu(P9.q)} and ${fmtAu(P9.Q)} on its orbit`, cls: 'focus-v', anchor: 'middle' })
-        notes.push({ x, y: y + size / 2 + 33, text: `and anywhere from ~${fmt(P9.qMin)} to ~${fmt(P9.QMax)} AU, given the uncertainty`, cls: 'muted', anchor: 'middle' })
-        for (const [au, side, wide] of [[P9.q, -1, false], [P9.Q, 1, false], [P9.qMin, -1, true], [P9.QMax, 1, true]]) {
-          const ex = SUN.x + au * k + side * 6
-          if (ex > W - 4) continue
-          notes.push({ x: ex, y: wide ? y + 19 : y - 9, text: `${wide ? '~' : ''}${fmt(au)} AU`, cls: wide ? 'muted small' : 'focus-v', anchor: side < 0 ? 'end' : 'start' })
-        }
+        notes.push({ x: xOf(P9.q) - 6, y: y + 5, text: `${fmt(P9.q)} AU`, cls: 'focus-v', anchor: 'end' })
+        if (xOf(P9.Q) < W - 4) notes.push({ x: xOf(P9.Q) + 6, y: y + 5, text: `${fmt(P9.Q)} AU`, cls: 'focus-v', anchor: 'start' })
+        notes.push({ x: xOf(P9.qMin) - 6, y: y + 22, text: `~${fmt(P9.qMin)} AU`, cls: 'muted small', anchor: 'end' })
+        if (xOf(P9.QMax) < W - 4) notes.push({ x: xOf(P9.QMax) + 6, y: y + 22, text: `~${fmt(P9.QMax)} AU`, cls: 'muted small', anchor: 'start' })
+      } else if (p9use.length && S.step !== 'p9') {
+        notes.push({ x, y: y - size / 2 - 8, text: 'Planet Nine?', cls: 'p9 small', anchor: 'middle' })
       }
     }
     gBodies.selectAll('use.p9').data(p9use).join('use').attr('class', 'dist-body p9')
@@ -230,19 +265,22 @@ export function makeDistance (root, { planets, p9 }) {
 
     // --- the farthest point in view -------------------------------------------
     if (S.step === 'farthest' && S.far) {
-      const o = objs.find(d => d.id === S.far.id)
+      const o = rows.find(d => d.id === S.far.id)
       if (o) {
-        focusAt = { x: o.x2, y: o.y2, r: 9 }
-        const left = o.x2 > W - 260, up = o.y2 > H - 70
-        const lx = o.x2 + (left ? -14 : 14)
-        notes.push({ x: lx, y: up ? o.y2 - 28 : o.y2 - 8, text: `farthest point: ${fmtAu(o.Q_au)}`, cls: 'focus', anchor: left ? 'end' : 'start' })
-        notes.push({ x: lx, y: up ? o.y2 - 11 : o.y2 + 10, text: `${nameOf(o)} · light takes ${lightTime(o.Q_au)} to get there`, cls: 'focus-v', anchor: left ? 'end' : 'start' })
+        focusAt = { x: Math.min(o.x2, W - 10), y: o.y, r: 8 }
+        const left = o.x2 > W - 260
+        const lx = Math.min(o.x2, W - 10) + (left ? -14 : 14)
+        notes.push({ x: lx, y: o.y - 10, text: `farthest point: ${fmtAu(o.Q_au)}`, cls: 'focus', anchor: left ? 'end' : 'start' })
+        notes.push({ x: lx, y: o.y + 8, text: `${nameOf(o)} · light takes ${lightTime(o.Q_au)} to get there`, cls: 'focus-v', anchor: left ? 'end' : 'start' })
       }
     }
 
-    // --- the hovered rock ------------------------------------------------------
-    const hot = objs.find(o => o.id === S.hot)
-    if (hot && hot.x < W) notes.push({ x: hot.x, y: hot.y - hot.size / 2 - 7, text: nameOf(hot), cls: 'focus', anchor: 'middle' })
+    // --- the hovered object ----------------------------------------------------
+    const hot = rows.find(o => o.id === S.hot)
+    if (hot && S.step !== 'farthest') {
+      const right = hot.xn > W - 200
+      notes.push({ x: hot.xn + (right ? -8 : 8), y: hot.y - 7, text: `${nameOf(hot)} · now ${fmtAu(hot.now_au)} out`, cls: 'focus', anchor: right ? 'end' : 'start' })
+    }
 
     gFocus.selectAll('circle').data(focusAt ? [focusAt] : []).join('circle')
       .attr('class', d => `dist-focus${d.dashed ? ' dashed' : ''}`)
@@ -250,12 +288,12 @@ export function makeDistance (root, { planets, p9 }) {
 
     gNotes.selectAll('text').data(notes).join('text')
       .attr('class', d => `dist-lbl ${d.cls}`)
-      .attr('x', d => Math.min(W - 6, Math.max(6, d.x))).attr('y', d => d.y)
+      .attr('x', d => d.raw ? d.x : Math.min(W - 6, Math.max(6, d.x))).attr('y', d => d.y)
       .attr('text-anchor', d => d.anchor).text(d => d.text)
 
     // --- a ruler for the current zoom ------------------------------------------
     const nice = NICE.filter(n => n * k <= 240).pop() ?? NICE[0]
-    const len = nice * k, x1 = 16, y = H - 44
+    const len = nice * k, x1 = 16, y = H - 34
     const rule = gRuler.selectAll('g').data([0]).join(enter => {
       const e = enter.append('g').attr('class', 'dist-ruler')
       e.append('line').attr('class', 'bar'); e.append('line').attr('class', 'tick t1'); e.append('line').attr('class', 'tick t2')
@@ -271,7 +309,8 @@ export function makeDistance (root, { planets, p9 }) {
   function hover (ev, d) {
     setHover(d.id)
     showTip(ev, `<b>${nameOf(d)}</b>
-      <dl><dt>closest to the Sun</dt><dd>${fmtAu(d.q_au)}</dd>
+      <dl><dt>nearest to the Sun</dt><dd>${fmtAu(d.q_au)}</dd>
+      <dt>where it is now</dt><dd>${fmtAu(d.now_au)}</dd>
       <dt>average distance</dt><dd>${fmtAu(d.a_au)}</dd>
       <dt>farthest from the Sun</dt><dd>${fmtAu(d.Q_au)}</dd>
       <dt>light to its far end</dt><dd>${lightTime(d.Q_au)}</dd></dl>
@@ -289,17 +328,16 @@ export function makeDistance (root, { planets, p9 }) {
   registerHighlight(id => { if (id !== S.hot) { S.hot = id; draw() } })
 
   return {
-    /** New objects, filters or story step. */
-    update (patch) { Object.assign(S, patch); draw() },
+    /** New objects, filters or story step. Objects get their present distance computed here. */
+    update (patch) {
+      if (patch.objects) patch.objects = patch.objects.map(o => ({ ...o, now_au: distanceNow(o) }))
+      Object.assign(S, patch); draw()
+    },
     /** The width of the view in AU; called on every scroll frame. */
     setView (view) { if (view !== S.view) { S.view = view; draw() } },
     view: () => S.view,
     p9: P9,
-    /** The smallest view that keeps an object's far end on the canvas, whatever its ray's angle. */
-    viewFor (o) {
-      const ang = rayAngle(o.id) * RAD
-      const rx = W - SUN.x - RIGHT_PAD, ry = H / 2 - 26
-      return o.Q_au * Math.max(Math.cos(ang), Math.abs(Math.sin(ang)) * rx / ry) * 1.04
-    },
+    /** The smallest view that keeps an object's far end on the canvas. */
+    viewFor (o) { return o.Q_au * 1.06 },
   }
 }

@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nine, eight, nine? · The search for Planet Nine</title>
+<meta name="description" content="How the solar system went from nine planets to eight, what the word planet means since 2006, and why two astronomers think there is a ninth after all." />
+<link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
+</head>
+<body data-page="planets">
+<main>
+  <header class="page-head wrap">
+    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
+    <!-- The three counts keep one colour each across the page: .k-nine, .k-eight, .k-ninth. -->
+    <h1><span class="k-nine">Nine</span> planets. <span class="k-eight">Eight.</span> <span class="k-ninth">Nine?</span></h1>
+    <!-- The page in three beats, one per phrase of the title; the scrolly below tells them in five steps. -->
+    <ol class="beats">
+      <li><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-pluto"/></svg>
+        <span class="beat-y">1930</span><p>Pluto is found. The solar system has <strong class="k-nine">nine</strong> planets.</p></li>
+      <li><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-pluto-sad"/></svg>
+        <span class="beat-y">2006</span><p>Astronomers define what a planet is. Pluto no longer qualifies, leaving <strong class="k-eight">eight</strong>.</p></li>
+      <li><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg>
+        <span class="beat-y">2016</span><p>A <strong class="k-ninth">ninth</strong> planet, far beyond Neptune, is proposed.</p></li>
+    </ol>
+  </header>
+
+  <!-- the lineup, step by step -->
+  <section class="part story" id="lineup">
+    <div class="scrolly wrap wide" id="lineupStory">
+      <div class="scrolly-graphic">
+        <div class="viz-head"><div class="viz-note">not to scale</div></div>
+        <div class="viz" id="chartLineup"></div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="step" data-step="nine"><div class="step-card">
+          <div class="step-n">1 / 5</div>
+          <h3>The <span class="k-nine">nine</span> planets of the twentieth century</h3>
+          <ul>
+            <li>Pluto, found in 1930, was by far the smallest.</li>
+            <li>For sixty years nothing else was known in its region, so its place was never questioned.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="neighbours"><div class="step-card">
+          <div class="step-n">2 / 5</div>
+          <h3>Pluto's neighbourhood fills up</h3>
+          <ul>
+            <li>From 1992, surveys found hundreds of icy bodies near Pluto: the <strong>Kuiper belt</strong>.</li>
+            <li>In 2005 one of them, <strong>Eris</strong>, turned out to be Pluto's size and heavier.</li>
+          </ul>
+          <p class="step-key">Either the list of planets keeps growing, or the word needs a definition.</p>
+        </div></div>
+        <div class="step" data-step="rules"><div class="step-card">
+          <div class="step-n">3 / 5</div>
+          <h3>2006: the IAU defines "planet"</h3>
+          <p>A planet must:</p>
+          <ul>
+            <li><strong>orbit the Sun</strong></li>
+            <li>be <strong>round</strong> under its own gravity</li>
+            <li>have <strong>cleared the neighbourhood</strong> around its orbit</li>
+          </ul>
+          <p class="step-key">Pluto fails the third: thousands of bodies share its region, one of them heavier.</p>
+        </div></div>
+        <div class="step" data-step="eight"><div class="step-card">
+          <div class="step-n">4 / 5</div>
+          <h3><span class="k-eight">Eight</span> planets</h3>
+          <ul>
+            <li>Pluto becomes a <strong>dwarf planet</strong>, alongside Ceres and Eris.</li>
+            <li>The other eight pass all three tests.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="nine-again"><div class="step-card">
+          <div class="step-n">5 / 5</div>
+          <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> 2016: a <span class="k-ninth">ninth</span> planet is proposed</h3>
+          <ul>
+            <li>Two Caltech astronomers noticed that the most distant known orbits lean the same way.</li>
+            <li>They proposed that a <strong class="k-ninth">ninth planet</strong>, far beyond Neptune, is steering them.</li>
+          </ul>
+          <p class="step-key">Astronomers have been searching for it since.</p>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- the definition and the scorecard -->
+  <section class="part wrap" id="rules">
+    <div class="sec-head with-logo">
+      <div>
+        <h2>What counts as a planet</h2>
+        <p>The International Astronomical Union has three requirements:</p>
+      </div>
+      <img class="iau-logo" src="/logos/iau.svg" alt="International Astronomical Union" width="104" height="74" />
+    </div>
+    <!-- pages/planets.js draws a diagram into each item from charts/rulesart.js -->
+    <ol class="definition">
+      <li data-rule="orbit"><div><b>Orbits the Sun</b>Moons orbit a planet instead.</div></li>
+      <li data-rule="round"><div><b>Is round</b>Heavy enough for its own gravity to pull it into a ball.</div></li>
+      <li data-rule="cleared"><div><b>Has cleared its orbit</b>Nothing of comparable size shares its path.</div></li>
+    </ol>
+    <div class="criteria-wrap">
+      <table class="criteria">
+        <thead><tr>
+          <th scope="col">Object</th>
+          <th scope="col">1 · Orbits the Sun</th>
+          <th scope="col">2 · Is round</th>
+          <th scope="col">3 · Has cleared its orbit</th>
+          <th scope="col">Verdict</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-earth"/></svg><b>Earth</b><small>home</small></th>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="ok"><span class="mark">✓</span><small>nothing of comparable size shares its orbit</small></td>
+            <td class="verdict">Planet</td>
+          </tr>
+          <tr>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-jupiter"/></svg><b>Jupiter</b><small>the largest planet</small></th>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="ok"><span class="mark">✓</span><small>its gravity herds the asteroids that remain near its orbit</small></td>
+            <td class="verdict">Planet</td>
+          </tr>
+          <tr>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-moon"/></svg><b>The Moon</b><small>Earth's satellite</small></th>
+            <td class="no"><span class="mark">✗</span><small>it orbits Earth, not the Sun</small></td>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="na"><span class="mark">–</span><small>not assessed</small></td>
+            <td class="verdict">A moon</td>
+          </tr>
+          <tr>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-ceres"/></svg><b>Ceres</b><small>in the asteroid belt</small></th>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="ok"><span class="mark">✓</span><small>narrowly: about 940 km across</small></td>
+            <td class="no"><span class="mark">✗</span><small>shares the asteroid belt with millions of others</small></td>
+            <td class="verdict">Dwarf planet<small>a planet from 1801 to the 1850s</small></td>
+          </tr>
+          <tr>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-pluto"/></svg><b>Pluto</b><small>in the Kuiper belt</small></th>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="no"><span class="mark">✗</span><small>shares the Kuiper belt with thousands of bodies, one of them heavier</small></td>
+            <td class="verdict">Dwarf planet<small>a planet from 1930 to 2006</small></td>
+          </tr>
+          <tr>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-tno-2"/></svg><b>Arrokoth</b><small>a typical trans-Neptunian object</small></th>
+            <td class="ok"><span class="mark">✓</span></td>
+            <td class="no"><span class="mark">✗</span><small>two joined lobes, about 35 km long</small></td>
+            <td class="no"><span class="mark">✗</span></td>
+            <td class="verdict">Small body<small>visited by New Horizons in 2019</small></td>
+          </tr>
+          <tr class="p9">
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg><b>Planet Nine</b><small>predicted</small></th>
+            <td class="maybe"><span class="mark">✓?</span><small>if it is where predicted</small></td>
+            <td class="maybe"><span class="mark">✓?</span><small>if it is as heavy as predicted</small></td>
+            <td class="maybe"><span class="mark">✓?</span><small>its pull on distant orbits is the evidence for it</small></td>
+            <td class="verdict">A planet<small>if it exists</small></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+<script type="module" src="/src/pages/planets.js"></script>
+</body>
+</html>

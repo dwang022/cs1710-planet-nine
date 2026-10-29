@@ -69,7 +69,7 @@ export function makeLuck (root) {
   gObs.append('circle').attr('r', 6).attr('fill', 'var(--series-1)')
     .attr('stroke', 'var(--surface-1)').attr('stroke-width', 2)
   const obsLabel = gObs.append('text').attr('class', 'halo').attr('font-size', 15)
-    .attr('font-weight', 600).attr('fill', '#8fbdf0')
+    .attr('font-weight', 600).attr('fill', '#c4b5fd')
   const obsLabel2 = gObs.append('text').attr('class', 'halo').attr('font-size', 13)
     .attr('fill', 'var(--text-secondary)')
   const pileLabel = gHist.append('text').attr('class', 'halo').attr('font-size', 14)
@@ -107,12 +107,12 @@ export function makeLuck (root) {
       .attr('x2', RING.cx + RING.r * st.R * Math.cos(st.meanDeg * RAD))
       .attr('y2', RING.cy - RING.r * st.R * Math.sin(st.meanDeg * RAD))
     ringTitle.text(real ? 'The real objects' : 'A fake solar system')
-      .attr('fill', real ? '#8fbdf0' : 'var(--text-primary)')
+      .attr('fill', real ? '#c4b5fd' : 'var(--text-primary)')
     ringSub.text(real
       ? `${angles.length} objects${quality ? ', well-measured only' : ', including briefly seen'}`
       : `${angles.length} objects pointed at random`)
     ringFoot.text(`arrow length ${st.R.toFixed(2)}`)
-      .attr('fill', real ? '#8fbdf0' : 'var(--text-primary)')
+      .attr('fill', real ? '#c4b5fd' : 'var(--text-primary)')
     return st
   }
 
@@ -275,7 +275,7 @@ export function makeLuck (root) {
     gCuts.append('line').attr('x1', xl(20)).attr('x2', xl(20)).attr('y1', top - 22).attr('y2', top + cuts.length * rowH - 18)
       .attr('stroke', 'var(--series-3)').attr('stroke-width', 1.5)
     gCuts.append('text').attr('x', xl(20) + 8).attr('y', top - 30).attr('font-size', 13)
-      .attr('fill', '#5cc79c').attr('font-weight', 600).text('past the usual bar (1 in 20) → probably not luck')
+      .attr('fill', '#6ee7b7').attr('font-weight', 600).text('past the usual bar (1 in 20) → probably not luck')
     const axis = gCuts.append('g').attr('transform', `translate(0,${top + cuts.length * rowH - 14})`)
       .call(d3.axisBottom(xl).tickValues([1, 2, 5, 20, 100, 1000]).tickFormat(d => `1 in ${d3.format(',')(d)}`))
     axis.selectAll('text').attr('class', 'axis-label').attr('font-size', 12)

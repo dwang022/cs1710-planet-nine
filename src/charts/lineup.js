@@ -29,25 +29,20 @@ const FACTS = {
   Neptune: 'Found in 1846, on paper before in the sky: its pull on Uranus gave it away.',
   Pluto: 'Found in 1930. A planet until 24 August 2006; a dwarf planet since.',
 }
-const EDITION = {
-  nine: ['1930 – 2006 edition', 'nine planets'],
-  neighbours: ['1992 – 2005', "Pluto's neighbourhood fills up"],
-  rules: ['2006', 'the IAU defines the word'],
-  eight: ['2006 edition', 'eight planets, one dwarf planet'],
-  'nine-again': ['2016 edition', 'eight planets and one proposed'],
-}
-const COUNT = {
-  nine: '9 planets',
-  neighbours: '9 planets, and a crowded neighbourhood',
-  rules: '9 planets, 3 conditions',
-  eight: '8 planets + 1 dwarf planet',
-  'nine-again': '8 planets + 1 dwarf planet + 1 proposed',
+// The years in the chart's title: what each edition means is in the step
+// card beside it, and the planets themselves are drawn.
+const YEARS = {
+  nine: '1930 – 2006',
+  neighbours: '1992 – 2005',
+  rules: '2006',
+  eight: '2006',
+  'nine-again': '2016',
 }
 
 // A small seeded generator so the Kuiper belt speckle is the same on every visit.
 function lcg (seed) { let s = seed >>> 0; return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296 } }
 
-export function makeLineup (root, { planets, readout }) {
+export function makeLineup (root, { planets }) {
   const au = new Map(planets.map(p => [p.name, p.a]))
   const svg = d3.select(root).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
     .attr('aria-label', 'A chart of the planets in a row from the Sun, with Pluto at the end. As the story advances, Pluto is reclassified and a ninth planet appears with a question mark.')
@@ -56,9 +51,7 @@ export function makeLineup (root, { planets, readout }) {
   const g = svg.append('g').attr('clip-path', 'url(#lu-clip)')
 
   // --- title -----------------------------------------------------------------
-  svg.append('text').attr('class', 'lu-title').attr('x', W / 2).attr('y', 36).attr('text-anchor', 'middle')
-    .text('Planetary chart of the Solar System')
-  const sub = svg.append('text').attr('class', 'lu-sub').attr('x', W / 2).attr('y', 58).attr('text-anchor', 'middle')
+  const title = svg.append('text').attr('class', 'lu-title').attr('x', W / 2).attr('y', 40).attr('text-anchor', 'middle')
 
   // --- bodies ------------------------------------------------------------------
   const slots = SLOTS.map((s, i) => ({ ...s, x: X0 + i * DX, y: SUN.y + s.dy, art: PLANET_ART[s.name] }))
@@ -70,6 +63,7 @@ export function makeLineup (root, { planets, readout }) {
   const gSun = g.append('g')
   const gBodies = g.append('g')
   const gNotes = g.append('g').style('pointer-events', 'none')
+  const gCallout = g.append('g').attr('class', 'lu-callout').attr('opacity', 0).style('pointer-events', 'none')
 
   gSun.append('use').attr('href', '#art-sun')
     .attr('x', SUN.x - SUN.r).attr('y', SUN.y - SUN.r).attr('width', SUN.r * 2).attr('height', SUN.r * 2)
@@ -79,7 +73,7 @@ export function makeLineup (root, { planets, readout }) {
   gArcs.selectAll('circle').data([...slots, p9], d => d.name).join('circle')
     .attr('class', d => `lu-arc${d.p9 ? ' dashed' : ''}`)
     .attr('cx', SUN.x).attr('cy', SUN.y).attr('r', dist)
-    .attr('stroke', d => d.p9 ? 'var(--series-3)' : colour[d.name])
+    .attr('stroke', d => d.p9 ? 'var(--p9)' : colour[d.name])
     .attr('opacity', d => d.p9 ? 0 : 1)
 
   // Pluto's neighbours: a speckle along its arc.
@@ -99,13 +93,34 @@ export function makeLineup (root, { planets, readout }) {
     .attr('transform', d => `translate(${d.x},${d.y})`)
     .attr('opacity', d => d.p9 ? 0 : 1)
     .on('pointerenter', hover).on('pointermove', hover).on('pointerleave', () => hideTip())
-  body.append('circle').attr('class', d => `lu-halo${d.p9 ? ' dashed' : ''}`).attr('r', d => d.size * 0.62 + 4)
   body.append('use').attr('href', d => `#art-${d.art}`)
     .attr('x', d => -d.size / 2).attr('y', d => -d.size / 2).attr('width', d => d.size).attr('height', d => d.size)
   body.append('text').attr('class', d => `lu-lbl${d.p9 ? ' p9' : ''}`).attr('text-anchor', 'middle')
     .attr('y', d => d.size * 0.62 + 20).text(d => d.p9 ? 'Planet Nine?' : d.name)
-  body.append('text').attr('class', 'lu-lbl sub').attr('text-anchor', 'middle')
-    .attr('y', d => d.size * 0.62 + 35).text('')
+
+  // A speech bubble w by h with a 16px tail under x = tx, leaning by tdx.
+  const bubble = (w, h, tx, tdx) =>
+    `M8,0 H${w - 8} a8,8 0 0 1 8,8 V${h - 8} a8,8 0 0 1 -8,8 H${tx + 10} L${tx + tdx},${h + 16} L${tx - 6},${h} H8 a8,8 0 0 1 -8,-8 V8 a8,8 0 0 1 8,-8 Z`
+
+  // Pluto itself stays its usual self, only faded; the reaction goes in a
+  // speech bubble beside it, so the face reads as a comment on the moment.
+  const CO = { w: 190, h: 84 }
+  gCallout.append('path').attr('class', 'lu-callout-box').attr('d', bubble(CO.w, CO.h, 20, -6))
+  gCallout.append('use').attr('href', '#art-pluto-sad').attr('x', 8).attr('y', 16).attr('width', 52).attr('height', 52)
+  gCallout.append('text').attr('class', 'lu-callout-t').attr('x', 66).attr('y', 30).text('24 Aug 2006')
+  gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 50).text('Pluto is reclassified')
+  gCallout.append('text').attr('class', 'lu-callout-s').attr('x', 66).attr('y', 68).text('as a dwarf planet')
+
+  // The same bubble beside Planet Nine once it is pencilled in: a search, not a sighting.
+  const CO2 = { w: 182, h: 62 }
+  const gCallout2 = g.append('g').attr('class', 'lu-callout p9').attr('opacity', 0).style('pointer-events', 'none')
+  const box2 = gCallout2.append('path').attr('class', 'lu-callout-box')
+  const l1 = gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 14).attr('y', 27).text('Astronomers begin searching')
+  const l2 = gCallout2.append('text').attr('class', 'lu-callout-s').attr('x', 14).attr('y', 47).html('for a possible <tspan class="p9">ninth planet</tspan>')
+  // size the bubble to its words (the font is the reader's), falling back to a guess
+  const tw = Math.max(l1.node().getComputedTextLength?.() || 0, l2.node().getComputedTextLength?.() || 0)
+  if (tw > 0) CO2.w = Math.round(tw + 28)
+  box2.attr('d', bubble(CO2.w, CO2.h, CO2.w - 40, 6))
 
   function hover (ev, d) {
     showTip(ev, d.p9
@@ -119,19 +134,24 @@ export function makeLineup (root, { planets, readout }) {
     const crowded = step !== 'nine'
     const showP9 = step === 'nine-again'
 
-    sub.text(`${EDITION[step][0]} · ${EDITION[step][1]}`)
-    if (readout) readout.textContent = COUNT[step]
+    title.text(`Planetary chart of the Solar System (${YEARS[step]})`)
 
     gKbo.transition().duration(T).attr('opacity', crowded ? (dropped ? 0.55 : 1) : 0)
     body.transition().duration(T)
       .attr('transform', d => `translate(${d.x},${d.y + (d.dwarf && dropped ? DROP : 0)})`)
-      .attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.7 : 1)
-    body.select('text.sub').text(d => d.dwarf && dropped ? 'dwarf planet · 2006' : d.p9 ? 'proposed 2016 · not yet observed' : '')
-    // Pluto's face appears only at the moment it is reclassified.
-    body.select('use').attr('href', d => d.dwarf && dropped ? '#art-pluto-sad' : `#art-${d.art}`)
+      .attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.5 : 1)
+    // Pluto keeps its own face; the bubble beside it carries the reaction,
+    // and only while the reclassification is the point of the step.
+    const bx = Math.min(W - CO.w - 4, pluto.x + 16), by = pluto.y + DROP - CO.h - 36
+    gCallout.attr('transform', `translate(${bx},${by})`)
+      .transition().duration(T).attr('opacity', step === 'eight' ? 1 : 0)
+    const bx2 = P9X - CO2.w + 40, by2 = p9.y - p9.size / 2 - 16 - CO2.h - 6
+    gCallout2.attr('transform', `translate(${bx2},${by2})`)
+      .transition().duration(T).attr('opacity', showP9 ? 1 : 0)
     gArcs.selectAll('circle').transition().duration(T).attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.4 : 1)
 
-    // Notes beside Pluto: the crowd, then the scorecard.
+    // Notes beside Pluto: the crowd, then the three checks. The drawing carries
+    // the rest (the faded Pluto, the dashed Planet Nine); the card says what it means.
     const notes = []
     const nx = pluto.x, ny = pluto.y + (dropped ? DROP : 0)
     if (step === 'neighbours') notes.push({ x: nx - 40, y: ny + 70, t: 'and thousands of others: Eris, Makemake, Haumea…', cls: '' })
@@ -140,8 +160,6 @@ export function makeLineup (root, { planets, readout }) {
       notes.push({ x: nx, y: ny + 80, t: 'round ✓', cls: 'good' })
       notes.push({ x: nx, y: ny + 98, t: 'cleared its orbit ✗', cls: 'bad' })
     }
-    if (step === 'eight') notes.push({ x: nx, y: ny + 60, t: 'reclassified: condition 3 not met', cls: '' })
-    if (step === 'nine-again') notes.push({ x: P9X - 2, y: p9.y - 56, t: 'predicted, not observed', cls: 'p9' })
     gNotes.selectAll('text').data(notes, d => d.t).join(
       enter => enter.append('text').attr('class', d => `lu-note ${d.cls}`).attr('text-anchor', 'middle')
         .attr('x', d => Math.min(W - 8, d.x)).attr('y', d => d.y).text(d => d.t)

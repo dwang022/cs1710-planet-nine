@@ -44,7 +44,9 @@ sources and the inference-not-observation note live on `credits.html`.
 | `search/future.html` | `pages/future.js` | Brightness ruler (survey depths vs predicted magnitude), "what comes next" rows, a dated schedule, what would confirm or end it |
 | `credits.html` | `pages/credits.js` | Who made it, the data, the photographs (read from `tracking/credits.json` and `field/CREDITS.md`), drawings and code. `aside: true` in `PAGES`: no group, no Continue leads to it, the nav sets it apart |
 
-Adding a page: create the HTML (copy a sibling: `<body data-page="ID">`, a
+Adding a page: create the HTML (copy a sibling: the `color-scheme` meta and
+inline `<style>` in the head, which keep the page dark and hidden until
+`site.js` sets `data-ready`, so a click never flashes white; `<body data-page="ID">`, a
 `.page-head` with `<div data-page-head>`, sections with `class="part wrap"`),
 add its module in `src/pages/` (first line `import '../site.js'`), register it
 in `PAGES` in `src/site.js` and in `pages` in `vite.config.js`.

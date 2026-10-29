@@ -195,3 +195,6 @@ nav()
 footer()
 watchName()
 fixLinks()
+// Each page's <head> keeps the body hidden until now, so a click never shows the
+// page unstyled (white, in dev, where the CSS arrives through JS) or without its bar.
+document.documentElement.dataset.ready = ''

@@ -44,6 +44,10 @@ picks one on the intro screen; every page draws the planet that way, and
 everything that stands for it, down to the words "Planet Nine", takes that
 skin's colour.
 
+How the site is written and coloured (plain science communication, one
+meaning per accent, Planet Nine in the skin's colour, no rings or glows) is
+set out in `CLAUDE.md`, along with how to verify a change.
+
 ## The thing worth demoing
 
 On the probability page, switch off **"Only well-measured orbits"**. The sample
@@ -65,8 +69,9 @@ finds.
   published 22 < V < 25.
 - Every paper summary was checked against the paper's own abstract; the ledger
   rows retell those summaries and link to the paper.
-- The discovery photographs are Wikimedia Commons files with their licences
-  read from the Commons API (`public/tracking/CREDITS.md`).
+- The discovery photographs and the IAU's mark are Wikimedia Commons files
+  with their licences read from the Commons API (`public/tracking/credits.json`,
+  `public/logos/credits.json`); the credits page lists them.
 - The herding and streetlight exhibits are cartoons of a mechanism, labelled
   as such on the page; nothing in them is presented as a measurement.
 
@@ -78,16 +83,17 @@ remaining unverified claims in [`data/README.md`](data/README.md).
 See [`CLAUDE.md`](CLAUDE.md) for the full map and the conventions. In short:
 
 ```
-index.html, setting/, insights/, search/   the nine pages (one Vite entry each)
+index.html, setting/, insights/, search/   the ten pages (one Vite entry each); credits.html outside the walkthrough
 src/site.js        shared chrome: sprite, skin, nav, footer; PAGES is the page list
 src/pages/         one module per page
-src/charts/        one module per visualisation
+src/charts/        one module per visualisation; rulesart.js draws the three requirements
 src/art.js         the hand-drawn bodies; src/skins.js the Planet Nine skins
 src/sample.js      which extreme objects count (shared between the insight pages)
 public/data/       the processed datasets the pages fetch
 public/art/        the drawings as SVG/PNG, with a contact sheet (node scripts/export_art.mjs)
 public/tracking/   the real discovery frames (python -P scripts/fetch_tracking_images.py)
 public/field/      portraits for the ledger (python -P scripts/fetch_portraits.py)
+public/logos/      the IAU's mark with its credit (python -P scripts/fetch_logos.py)
 data/, scripts/    the datasets and the Python pipeline that builds them
 papers/            index of every paper read (PDFs gitignored)
 docs/              the sketches PDF and exploration figures

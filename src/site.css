@@ -190,8 +190,8 @@ body.intro { overflow-x: hidden; }
 .p9-float { transform-box: fill-box; transform-origin: center; animation: float 7s ease-in-out infinite; }
 @keyframes float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -10px; } }
 @keyframes swap { 0% { scale: .9; opacity: .3; } 100% { scale: 1; opacity: 1; } }
-/* the chosen planet is lit in its own colour, which is what marks it as the selection */
-.p9-swap { transform-box: fill-box; transform-origin: center; filter: drop-shadow(0 0 22px color-mix(in srgb, var(--p9) 55%, transparent)); }
+/* the arrows and the name beneath mark the chosen skin; the planet itself is drawn plain */
+.p9-swap { transform-box: fill-box; transform-origin: center; }
 .p9-swap.is-swap { animation: swap .4s ease-out; }
 @media (prefers-reduced-motion: reduce) { .p9-float, .p9-swap, .meteor { animation: none; } }
 

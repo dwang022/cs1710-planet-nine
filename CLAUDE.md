@@ -101,6 +101,10 @@ from there, falling back to `data/raw/`.
   point to the Sun", not perihelion, on first use; define AU once per page.
   Never refer to controls the reader has not reached yet. One claim per
   ledger row. Stances and lanes are *our* reading of abstracts; say so.
+  Prefer short bullets (one idea each) to paragraphs in step cards, and a
+  `.beats` row (year, drawing, one line) to a lede paragraph when a page's
+  story has beats. Never say in the text what the picture already shows, or
+  label in the picture what the card beside it says.
 - **Colour: the "Deep Field" palette** (tokens at the top of `src/style.css`).
   Zinc surfaces and four accents, each with one meaning everywhere:
   `--series-1` violet is the objects we talk about (and links, the current

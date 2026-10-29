@@ -29,25 +29,20 @@ const FACTS = {
   Neptune: 'Found in 1846, on paper before in the sky: its pull on Uranus gave it away.',
   Pluto: 'Found in 1930. A planet until 24 August 2006; a dwarf planet since.',
 }
+// The chart's subtitle carries only the edition date: what each edition
+// means is in the step card beside it, and the planets themselves are drawn.
 const EDITION = {
-  nine: ['1930 – 2006 edition', 'nine planets'],
-  neighbours: ['1992 – 2005', "Pluto's neighbourhood fills up"],
-  rules: ['2006', 'the IAU defines the word'],
-  eight: ['2006 edition', 'eight planets, one dwarf planet'],
-  'nine-again': ['2016 edition', 'eight planets and one proposed'],
-}
-const COUNT = {
-  nine: '9 planets',
-  neighbours: '9 planets, and a crowded neighbourhood',
-  rules: '9 planets, 3 conditions',
-  eight: '8 planets + 1 dwarf planet',
-  'nine-again': '8 planets + 1 dwarf planet + 1 proposed',
+  nine: '1930 – 2006 edition',
+  neighbours: '1992 – 2005 edition',
+  rules: '2006 edition',
+  eight: '2006 edition',
+  'nine-again': '2016 edition',
 }
 
 // A small seeded generator so the Kuiper belt speckle is the same on every visit.
 function lcg (seed) { let s = seed >>> 0; return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296 } }
 
-export function makeLineup (root, { planets, readout }) {
+export function makeLineup (root, { planets }) {
   const au = new Map(planets.map(p => [p.name, p.a]))
   const svg = d3.select(root).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
     .attr('aria-label', 'A chart of the planets in a row from the Sun, with Pluto at the end. As the story advances, Pluto is reclassified and a ninth planet appears with a question mark.')
@@ -130,8 +125,7 @@ export function makeLineup (root, { planets, readout }) {
     const crowded = step !== 'nine'
     const showP9 = step === 'nine-again'
 
-    sub.text(`${EDITION[step][0]} · ${EDITION[step][1]}`)
-    if (readout) readout.textContent = COUNT[step]
+    sub.text(EDITION[step])
 
     gKbo.transition().duration(T).attr('opacity', crowded ? (dropped ? 0.55 : 1) : 0)
     body.transition().duration(T)

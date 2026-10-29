@@ -373,6 +373,7 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 
 /* --- 00: the planet lineup (charts/lineup.js) ------------------------------ */
 .viz-note { font-size: .8rem; color: var(--text-muted); }
+.viz-head > .viz-note:only-child { margin-left: auto; }
 .lu-title { font-size: 19px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; fill: var(--text-primary); }
 .lu-sub { font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; fill: var(--text-muted); }
 .lu-lbl { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; fill: var(--text-secondary);
@@ -541,10 +542,13 @@ section.story { padding-bottom: 24px; }
 }
 .step.is-active .step-card { opacity: 1; border-color: var(--text-muted); cursor: default; }
 .step-card h3 { font-size: 1.3rem; margin-bottom: 12px; }
+.step-card h3 em { font-style: normal; color: var(--series-1); }
 .step-card p { font-size: 1.02rem; margin: 0 0 12px; }
 .step-card p:last-child { margin-bottom: 0; }
-.step-card ul { margin: 0; padding-left: 20px; color: var(--text-secondary); }
+.step-card ul { margin: 0 0 12px; padding-left: 20px; color: var(--text-secondary); font-size: 1.02rem; line-height: 1.5; }
+.step-card ul:last-child { margin-bottom: 0; }
 .step-card li { margin-bottom: 8px; }
+.step-card li:last-child { margin-bottom: 0; }
 .step-card li strong { color: var(--text-primary); }
 .step-card .step-key {
   color: var(--text-primary); font-weight: 600; border-left: 3px solid var(--series-1);

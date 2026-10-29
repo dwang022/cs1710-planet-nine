@@ -7,8 +7,6 @@ import { scrolly } from '../scrolly.js'
 
 loadData('planets').then(({ planets }) => {
   const PLANETS = planets.planets.map(p => ({ name: p.name, a: p.a, e: p.e }))
-  const lineup = makeLineup(document.querySelector('#chartLineup'), {
-    planets: PLANETS, readout: document.querySelector('#lineupReadout'),
-  })
+  const lineup = makeLineup(document.querySelector('#chartLineup'), { planets: PLANETS })
   scrolly(document.querySelector('#lineupStory'), { onStep: (i, step) => lineup.setStep(step) })
 }).catch(showLoadError)

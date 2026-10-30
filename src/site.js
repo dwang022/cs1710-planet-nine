@@ -14,12 +14,12 @@ import { url } from './data.js'
 export const PAGES = [
   { id: 'intro', path: 'index.html', title: 'The search for Planet Nine', short: 'Start' },
   { id: 'planets', path: 'setting/planets.html', group: 'Background', title: 'Nine, eight, nine?', short: 'Planets' },
-  { id: 'distance', path: 'setting/distance.html', group: 'Background', title: 'How far away', short: 'Distance' },
+  { id: 'distance', path: 'setting/distance.html', group: 'Background', title: 'Far from home', short: 'Distance' },
   { id: 'data', path: 'setting/data.html', group: 'Background', title: 'The data', short: 'Data' },
   { id: 'clustering', path: 'insights/clustering.html', group: 'Evidence', title: 'The orbits lean the same way', short: 'Clustering' },
   { id: 'probability', path: 'insights/probability.html', group: 'Evidence', title: 'Could it just be luck?', short: 'Probability' },
+  { id: 'alternatives', path: 'insights/alternatives.html', group: 'Evidence', title: 'What else could explain it', short: 'Alternatives' },
   { id: 'search', path: 'search/how.html', group: 'The search', title: 'Why nobody has found it', short: 'The search' },
-  { id: 'alternatives', path: 'search/alternatives.html', group: 'The search', title: 'What else could explain it', short: 'Alternatives' },
   { id: 'timeline', path: 'search/timeline.html', group: 'The search', title: 'Ten years of argument', short: 'Timeline' },
   { id: 'future', path: 'search/future.html', group: 'The search', title: 'What comes next', short: 'Future' },
   // Outside the walkthrough: no group, no Continue leads to it, the nav sets it apart.
@@ -59,6 +59,8 @@ function publishColour (sk) {
   document.documentElement.toggleAttribute('data-skin-text', !!sk.text)
   st.setProperty('--c-nine', sk.counts?.nine || 'var(--series-1)')
   st.setProperty('--c-eight', sk.counts?.eight || 'var(--series-2)')
+  if (sk.counts?.au) st.setProperty('--au', sk.counts.au)
+  else st.removeProperty('--au')
 }
 
 const pageId = () => document.body.dataset.page || 'intro'
@@ -195,3 +197,6 @@ nav()
 footer()
 watchName()
 fixLinks()
+// Each page's <head> keeps the body hidden until now, so a click never shows the
+// page unstyled (white, in dev, where the CSS arrives through JS) or without its bar.
+document.documentElement.dataset.ready = ''

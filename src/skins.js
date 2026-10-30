@@ -19,7 +19,8 @@
 // `counts`, when present, recolours the planets page's other two counts (the
 // first nine, violet by default; eight, ember by default) where the skin's own
 // colour would be confused with them: ocean blue beside violet, iron red and
-// black-hole orange beside ember.
+// black-hole orange beside ember. `counts.au` does the same for the lime of
+// distances in AU (--au), which sits too close to the two yellow skins.
 // The ocean world is the one blue on the site, by request: its own colour.
 
 const R = 40
@@ -108,6 +109,7 @@ export const SKINS = {
   cheese: {
     name: 'Cheese',
     colour: '#f7e04a',
+    counts: { au: '#4ade80' },
     text: 'linear-gradient(135deg, #f3d835 0%, #fff59a 50%, #f0cf2e 100%)',
     blurb: 'Not a serious proposal. But nobody can prove otherwise until someone sees it.',
     source: 'folklore',
@@ -123,6 +125,7 @@ export const SKINS = {
   'nine-ball': {
     name: 'Nine-ball',
     colour: '#f3dc4e',
+    counts: { au: '#4ade80' },
     text: 'repeating-linear-gradient(90deg, #faf6e8 0 .55em, #f3dc4e .55em 1.1em)',
     blurb: 'The ninth ball on the table. Also not a serious proposal.',
     source: 'the game of nine-ball',

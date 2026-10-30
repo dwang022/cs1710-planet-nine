@@ -45,7 +45,11 @@
     {"ref": "phan_2025", "label": "Phan et al. 2025 (IRAS/AKARI far-IR candidate)", "year": 2025, "doi": "10.1017/pasa.2025.10024",
      "mass_earths_range": [7, 17], "distance_au_range": [500, 700], "candidate": true,
      "src": {"mass_earths_range": "abstract", "distance_au_range": "abstract"},
-     "note": "One candidate surviving selection and image inspection, out of 13 pairs. Two epochs cannot determine an orbit; the authors call for follow-up. Not a detection."}
+     "note": "One candidate surviving selection and image inspection, out of 13 pairs. Two epochs cannot determine an orbit; the authors call for follow-up. Not a detection."},
+    {"ref": "brown_batygin_2024", "label": "Brown & Batygin 2024 (after the searches)", "year": 2024, "doi": "10.3847/1538-3881/ad24e9",
+     "a_au": 500, "mass_earths": 6.6, "aphelion_au": 630, "current_distance_au": 550, "V_mag": 22.0, "e_derived": 0.26,
+     "src": {"a_au": "paper (sec. 6)", "mass_earths": "paper (sec. 6)", "aphelion_au": "paper (sec. 6)", "current_distance_au": "paper (sec. 6)", "V_mag": "paper (sec. 6)", "e_derived": "derived (aphelion / a - 1)"},
+     "note": "Brown, Holman & Batygin's update after ZTF, DES and PS1 ruled out 78% of the 2021 predictions: medians of the reference population still standing. Their quoted uncertainties are not transcribed here (the PDF text garbles them). The other orbital elements 'remain generally unchanged'."}
   ],
   "search_exclusions": {
     "_what": "How much of the predicted parameter space has actually been searched. These are the hard numbers for 'why hasn't anyone found it'.",
@@ -61,6 +65,18 @@
       "V_mag": 21.7, "R_mag": 21.4, "intrinsic_luminosity_Ljup": 0.006,
       "V_mag_near_aphelion_by_mass": {"5": 24.3, "10": 23.7, "20": 23.3, "50": 22.6},
       "src": "abstract", "note": "T_eff of 47 K is far above the ~10 K equilibrium temperature: the planet is self-luminous."},
+    "brightness_model": {
+      "_what": "How the site turns a planet's mass, distance and albedo into a V magnitude, a width and a temperature (charts/placeplanet.js), and how it decides whether the searches would have seen it.",
+      "_choice": "Two published radius rules disagree. Linder & Mordasini's interior models give 2.92, 3.66, 4.62 and 6.32 Earth radii for 5, 10, 20 and 50 Earth masses; Brown & Batygin's fit, and the 2024 search that tested it, use r = m/3, which is smaller (2.3 against about 3.2 Earth radii at 6.9 Earth masses, about 0.7 magnitude fainter). We use m/3, because a planet scored here is then judged by the same model that ruled out 78% of the predictions. Linder & Mordasini's grid is kept as the check on the magnitude formula and as the source of the temperature, which they model and Brown & Batygin do not.",
+      "radius_rule": {"formula": "radius = mass / 3 (Earth radii, Earth masses)", "src": "paper (Brown & Batygin 2021 sec. 5 and Brown, Holman & Batygin 2024 sec. 3, both after Wu & Lithwick 2013)"},
+      "albedo": {"value": 0.41, "src": "paper (Neptune's geometric albedo, the nominal value in Linder & Mordasini 2016 sec. 2 after Traub & Oppenheimer 2010; Brown & Batygin 2021 call their lower bound of 0.2 'half that of Neptune')"},
+      "magnitude_formula": {"formula": "V = 5 log10(1329 km / (D sqrt(p))) + 5 log10(r (r - 1)), D the diameter in km, p the geometric albedo, r the distance from the Sun in AU, seen at opposition", "src": "derived (the standard reflected-light magnitude of a solar-system body)"},
+      "check": {"mass_earths": 10, "radius_earths": 3.66, "albedo": 0.41, "distance_au": 700, "V_computed": 21.69, "V_published": 21.7, "src": "derived; the published V is Linder & Mordasini 2016's abstract value, and the formula also gives their 5, 20 and 50 Earth-mass values (22.3, 21.3, 20.6) to within 0.12 magnitude"},
+      "check_2024": {"mass_earths": 6.6, "distance_au": 550, "albedo": 0.41, "V_computed": 21.75, "V_published": 22.0, "src": "derived; the published V is the median of the reference population the 2024 search left standing (Brown, Holman & Batygin 2024 sec. 6), at its median current distance and mass, which used albedos from 0.2 to 0.75"},
+      "linder_mordasini_grid": {"mass_earths": [5, 10, 20, 50], "radius_earths": [2.92, 3.66, 4.62, 6.32], "T_eff_K": [40, 47, 54, 69], "V_mag_at_700_au": [22.3, 21.7, 21.3, 20.6], "src": "paper (Linder & Mordasini 2016 sec. 4.3 and abstract; the temperatures hardly depend on distance from 5 to 1120 AU, sec. 5)"},
+      "detection": {"V_94pct": 20.5, "V_50pct": 21.5, "src": "paper (Brown, Holman & Batygin 2024 sec. 5: the combined ZTF, DES and PS1 searches are about 94% efficient brighter than V = 20.5, falling to 50% at V = 21.5)"},
+      "hiding_rule": {"rule": "the share of its orbital period the planet spends fainter than V_50pct", "src": "ours (where on its orbit the planet is now is unknown, so each point of the orbit counts by the time spent there)"}
+    },
     "mass_earths": {"min": 4, "max": 17, "best": 6.2, "unit": "Earth masses", "confidence": "moderate", "src": "abstract (Brown & Batygin 2021 model 4-20; Phan 2025 candidate 7-17)"},
     "radius_earths": {"min": 2.0, "max": 3.9, "best": 3.2, "unit": "Earth radii", "confidence": "low", "src": "ours (interpolated from the Linder & Mordasini grid)"},
     "effective_temperature_k": {"min": 28, "max": 55, "best": 42, "unit": "K", "confidence": "low", "src": "ours (interpolated; their only quoted point is 47 K for 10 Earth masses at 700 AU)"},

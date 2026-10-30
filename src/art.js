@@ -1,6 +1,6 @@
 // The site's small cast of illustrated bodies: the Planet Nine mark (in any of
 // the skins from skins.js), the Sun, the eight planets, a sad Pluto, three
-// generic trans-Neptunian objects, and a telescope for the intro screen.
+// generic trans-Neptunian objects, and an observatory for the intro screen and the data page.
 //
 // Flat shapes, a darker outline in the body's own hue and soft wavy bands,
 // after the Outer Wilds planetary chart, but muted so they sit behind the data
@@ -81,6 +81,12 @@ function plutoBody (id, sad) {
 // Each entry: a label for assistive tech, an optional box (default 100 x 100),
 // defs(id) for anything that needs a document-unique id, and body(id, opts).
 // `opts.skin` reaches the Planet Nine entries.
+
+// The observatory's tube pivots on the dome's centre (80, 74) and reaches 65 units out.
+export const OBSERVATORY = (() => {
+  const angle = 34, a = angle * Math.PI / 180
+  return { angle, lens: [80 + 65 * Math.cos(a), 74 - 65 * Math.sin(a)] }
+})()
 
 export const ART = {
   'planet-nine': {
@@ -279,22 +285,24 @@ export const ART = {
       <circle cx="60" cy="58" r="5" fill="#7d93a3"/><circle cx="44" cy="62" r="2.5" fill="#7d93a3"/>`,
   },
 
-  // --- the telescope on the intro screen, aimed up and to the right ---
-  telescope: {
-    label: 'A telescope on a tripod, pointed at the sky',
+  // --- an observatory, its slit open and its telescope aimed up and to the right ---
+  // (the intro screen and the data page's head). The tube points OBSERVATORY.angle
+  // degrees above horizontal; its far end is OBSERVATORY.lens, in the 160 × 120 box.
+  observatory: {
+    label: 'An observatory dome with its slit open and its telescope pointed at the sky',
     box: [160, 120],
     body: () => `
-      <g stroke="#3a3f45" stroke-width="4" stroke-linecap="round" fill="none">
-        <line x1="80" y1="78" x2="46" y2="116"/><line x1="80" y1="78" x2="114" y2="116"/><line x1="80" y1="78" x2="80" y2="112"/>
-        <line x1="62" y1="100" x2="98" y2="100" stroke-width="2.5" opacity=".7"/>
-      </g>
-      <circle cx="80" cy="78" r="7" fill="#596270" stroke="#2f343a" stroke-width="2.5"/>
-      <g transform="rotate(-34 80 72)">
-        <rect x="36" y="63" width="92" height="18" rx="6" fill="#55636f" stroke="#2f3a42" stroke-width="2.5"/>
-        <rect x="118" y="60" width="16" height="24" rx="4" fill="#7b8b98" stroke="#2f3a42" stroke-width="2.5"/>
-        <rect x="26" y="67" width="12" height="10" rx="3" fill="#3f4a53" stroke="#2f3a42" stroke-width="2.5"/>
-        <rect x="46" y="66" width="60" height="3" rx="1.5" fill="#8fa0ad" opacity=".55"/>
-        <rect x="60" y="56" width="28" height="7" rx="3" fill="#3f4a53" stroke="#2f3a42" stroke-width="2"/>
+      <rect x="38" y="74" width="84" height="42" rx="2" fill="#5d6670" stroke="#2f3a42" stroke-width="2.5"/>
+      <rect x="38" y="74" width="84" height="7" fill="#4a535c"/>
+      <rect x="71" y="94" width="18" height="22" rx="1.5" fill="#343c44"/>
+      <path d="M36,74 A44,44 0 0 1 124,74 Z" fill="#9aa4ad" stroke="#2f3a42" stroke-width="2.5" stroke-linejoin="round"/>
+      <path d="M80,30 A44,44 0 0 1 124,74 L104,74 A26,44 0 0 0 80,30 Z" fill="#7f8992" opacity=".75"/>
+      <path d="M62,74 A20,44 0 0 1 80,30 M98,74 A20,44 0 0 0 80,30" fill="none" stroke="#6f7982" stroke-width="1.3"/>
+      <g transform="rotate(-${OBSERVATORY.angle} 80 74)">
+        <rect x="94" y="66" width="26" height="16" fill="#1c2228"/>
+        <rect x="96" y="67" width="46" height="14" rx="4" fill="#55636f" stroke="#2f3a42" stroke-width="2.2"/>
+        <rect x="100" y="69.5" width="30" height="2.5" rx="1.2" fill="#8fa0ad" opacity=".55"/>
+        <rect x="134" y="65" width="11" height="18" rx="3" fill="#7b8b98" stroke="#2f3a42" stroke-width="2.2"/>
       </g>`,
   },
 }

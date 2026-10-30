@@ -4,6 +4,7 @@
   "'lane' and 'branch' are our editorial reading of what each paper does to the argument, like 'stance' in papers.json. Say so on the site.",
   "Entries with a 'doi' take their title, authors, citation count and links from papers.json; 'title' and 'line' here are a one- or two-line retelling of that paper's abstract-checked summary, phrased as what it means for the search.",
   "A 'branch' is drawn as its own for/against row under the data row, labelled as the finders' conclusion. Its title and line are the authors' own reading, from the abstract.",
+  "A branch with \"of\": \"orbit\" argues against the proposed orbit, not against a planet; the case against on the alternatives page leaves it out.",
   "'excluded' percentages are the fractions of the predicted parameter space an empty search ruled out, quoted from the paper's abstract.",
   "'diagram' names a drawing in src/charts/fieldart.js. The drawings are schematic: they show the kind of claim, not measured orbits.",
   "'photos' are small inline portraits from Wikimedia Commons; scripts/fetch_portraits.py downloads them and fills in 'credit', 'license' and 'source' from the Commons API.",
@@ -24,12 +25,12 @@
    "kind": "object",
    "doi": "10.1038/nature13156",
    "title": "A second object found too far out for Neptune to have put it there",
-   "line": "2012 VP113 never comes within 80 AU of the Sun; only Sedna was known on such a detached orbit. Something else shaped these orbits: a passing star, the Sun's birth cluster, or an unseen planet.",
+   "line": "2012 VP113 never comes within 80 AU of the Sun; only Sedna was known on such a remote orbit. Something else shaped these orbits, perhaps a passing star, the Sun's birth cluster or an unseen planet.",
    "branch": {
     "side": "for",
     "from": "What its finders suggested",
-    "title": "Both detached orbits point the same way, and a hidden super-Earth could be why",
-    "line": "Trujillo and Sheppard's suggestion: the seed of the Planet Nine idea.",
+    "title": "Both remote orbits point the same way, and a hidden super-Earth could be why",
+    "line": "This suggestion was the seed of the Planet Nine idea.",
     "diagram": {
      "type": "orbits",
      "n": 2,
@@ -71,8 +72,8 @@
    "lane": "data",
    "kind": "limit",
    "doi": "10.1088/0004-637X/781/1/4",
-   "title": "Any hidden planet must be small and cold: nothing Saturn-sized within 28,000 AU",
-   "line": "WISE's infrared sweep of the whole sky rules out big, warm companions to the Sun (Luhman, Penn State). A few Earth masses, far out and faint, is what is left to look for.",
+   "title": "Nothing Saturn-sized lies within 28,000 AU, so any hidden planet is small and cold",
+   "line": "WISE's infrared sweep of the whole sky rules out big, warm companions to the Sun. A few Earth masses, far out and faint, is what is left to look for.",
    "diagram": {
     "type": "limit",
     "au": "28,000 AU"
@@ -86,8 +87,8 @@
    "kind": "proposal",
    "key": true,
    "doi": "10.3847/0004-6256/151/2/22",
-   "title": "The Planet Nine proposal: six aligned orbits point to a planet of ten Earth masses",
-   "line": "Batygin and Brown (Caltech) show in simulations that a distant planet on an opposing orbit would herd the orbits into this alignment, and name it Planet Nine.",
+   "title": "Six aligned orbits point to a planet of ten Earth masses, Planet Nine",
+   "line": "Simulations show that a distant planet on an opposing orbit would herd the orbits into this alignment, and the authors name it Planet Nine.",
    "diagram": {
     "type": "orbits",
     "n": 6,
@@ -134,8 +135,8 @@
    "lane": "data",
    "kind": "constraint",
    "doi": "10.1051/0004-6361/201628227",
-   "title": "Where Planet Nine cannot be: Saturn would have felt it",
-   "line": "Cassini's ranging to Saturn is precise enough to sense a nearby massive planet's pull. Fienga and Laskar cross those directions off the predicted orbit; the rest stays open.",
+   "title": "In some directions Saturn would have felt the planet's pull, so it cannot be there",
+   "line": "Cassini's ranging to Saturn is precise enough to sense a nearby massive planet's pull. Those directions come off the predicted orbit; the rest stays open.",
    "diagram": {
     "type": "constraint"
    }
@@ -147,8 +148,8 @@
    "lane": "for",
    "kind": "resonance",
    "doi": "10.3847/2041-8205/824/2/L22",
-   "title": "A second route to the same planet: the longest orbits beat in simple ratios",
-   "line": "Malhotra, Volk and Wang (Arizona): period ratios like these are what resonance with a planet near 665 AU would produce.",
+   "title": "The longest orbits beat in simple ratios, a second route to the same planet",
+   "line": "Period ratios like these are what resonance with a planet near 665 AU would produce.",
    "diagram": {
     "type": "orbits",
     "n": 4,
@@ -166,7 +167,7 @@
    "key": true,
    "doi": "10.3847/1538-3881/aa7aed",
    "title": "The alignment may be an artefact of where telescopes happened to look",
-   "line": "OSSOS logged exactly where it pointed and how deep it saw. Its own eight distant objects are consistent with no clustering, so the pattern behind Planet Nine may not be real.",
+   "line": "OSSOS logged exactly where it pointed and how deep it saw. Its own eight distant objects are consistent with no clustering.",
    "diagram": {
     "type": "orbits",
     "n": 8,
@@ -199,12 +200,12 @@
    "kind": "object",
    "doi": "10.3847/1538-3881/aad042",
    "title": "A new extreme object, tilted 54 degrees out of the planets' plane",
-   "line": "2015 BP519, from the Dark Energy Survey: by one measure the most extreme orbit known, and exactly the kind Planet Nine is predicted to produce.",
+   "line": "2015 BP519, from the Dark Energy Survey, has by one measure the most extreme orbit known, exactly the kind Planet Nine is predicted to produce.",
    "branch": {
     "side": "for",
     "from": "What its finders concluded",
     "title": "A tilt like this is what a distant massive planet would produce",
-    "line": "Becker and the DES team: the first of a predicted population of tilted, shepherded orbits, adding to the circumstantial case.",
+    "line": "It would be the first of a predicted family of tilted orbits steered by the planet, adding to the circumstantial case.",
     "diagram": {
      "type": "orbits",
      "n": 6,
@@ -225,8 +226,8 @@
    "lane": "against",
    "kind": "alt",
    "doi": "10.3847/1538-3881/aad95c",
-   "title": "No planet needed: the distant bodies could align themselves",
-   "line": "Madigan and colleagues (Colorado): a swarm of small distant bodies with enough combined mass tilts and clusters under its own gravity, producing the Planet Nine signal without a planet.",
+   "title": "The distant bodies could align themselves, with no planet",
+   "line": "A swarm of small distant bodies with enough combined mass tilts and clusters itself.",
    "diagram": {
     "type": "swarm"
    }
@@ -242,7 +243,7 @@
     "10.1016/j.physrep.2019.01.009"
    ],
    "title": "Correcting for the biases, the alignment is still a 1-in-500 fluke",
-   "line": "Brown and Batygin model how the surveys could have shaped the sample, and the clustering survives. Their review the same year shrinks the planet to 5 to 10 Earth masses on a closer orbit.",
+   "line": "A model of how the surveys could have shaped the sample leaves the clustering standing. A review the same year shrinks the planet to 5 to 10 Earth masses on a closer orbit.",
    "diagram": {
     "type": "odds"
    },
@@ -273,7 +274,7 @@
    "key": true,
    "doi": "10.3847/PSJ/abe53e",
    "title": "Three bias-tracked surveys see no significant clustering at all",
-   "line": "14 distant objects from DES, OSSOS and the Sheppard–Trujillo survey are consistent with random orientations (Napier and colleagues). If the pattern is not there, there is nothing for a planet to explain.",
+   "line": "14 distant objects from DES, OSSOS and the Sheppard–Trujillo survey are consistent with random orientations. If the pattern is not there, there is nothing for a planet to explain.",
    "diagram": {
     "type": "orbits",
     "n": 14,
@@ -288,8 +289,8 @@
    "kind": "fit",
    "key": true,
    "doi": "10.3847/1538-3881/ac2056",
-   "title": "The planet's orbit, refined: 6 Earth masses at about 380 AU, with a map of where to look",
-   "line": "Brown and Batygin keep the clustering at 99.6% significance and fit the planet closer and brighter than first thought, within reach of large telescopes.",
+   "title": "A refined orbit puts the planet at 6 Earth masses and about 380 AU, with a map of where to look",
+   "line": "The clustering stays at 99.6% significance, and the planet fits closer and brighter than first thought, within reach of large telescopes.",
    "diagram": {
     "type": "orbits",
     "n": 6,
@@ -392,8 +393,8 @@
    "lane": "data",
    "kind": "candidate",
    "doi": "10.1017/pasa.2025.10024",
-   "title": "A possible first sighting: one infrared source moved the way Planet Nine would",
-   "line": "Phan, Goto and colleagues compare the IRAS and AKARI sky surveys, 23 years apart. Two detections cannot fix an orbit.",
+   "title": "One infrared source moved the way Planet Nine would, a possible first sighting",
+   "line": "It turned up in a comparison of the IRAS and AKARI sky surveys, 23 years apart. Two detections cannot fix an orbit.",
    "branch": {
     "side": "for",
     "from": "What it would mean",
@@ -417,12 +418,13 @@
    "kind": "object",
    "doi": "10.1038/s41550-025-02595-7",
    "title": "A fourth Sedna-like object, on an orbit that does not fit the pattern",
-   "line": "2023 KQ14, nicknamed Ammonite (Subaru Telescope): perihelion 66 AU, stable for 4.5 billion years.",
+   "line": "2023 KQ14, nicknamed Ammonite, found with the Subaru Telescope, never comes closer than 66 AU and stays stable over 4.5 billion years.",
    "branch": {
     "side": "against",
+    "of": "orbit",
     "from": "What its finders concluded",
-    "title": "Ammonite points the other way, so a planet, if any, must sit farther out",
-    "line": "Its orbit does not align with the other three, and its stability favours a large planet near 500 AU rather than a closer one (Chen and colleagues).",
+    "title": "Any planet must sit farther out",
+    "line": "Its orbit does not align with the other three, and its stability favours a large planet near 500 AU rather than a closer one.",
     "diagram": {
      "type": "orbits",
      "n": 3,
@@ -450,13 +452,13 @@
    "lane": "data",
    "kind": "object",
    "doi": "10.3847/2041-8213/ae3a75",
-   "title": "A new dwarf planet whose orbit lies outside the Planet Nine cluster",
-   "line": "2017 OF201, about 700 km across on an 830 AU orbit, found by Cheng, Li and Yang (IAS and Princeton). Posted May 2025, published 2026.",
+   "title": "A likely dwarf planet, on the widest orbit of any",
+   "line": "2017 OF201, about 700 km across, on an 830 AU orbit.",
    "branch": {
     "side": "against",
     "from": "What its finders concluded",
-    "title": "Its perihelion falls outside the clustering: a challenge to the dynamical evidence",
-    "line": "The alignment the planet is meant to explain does not include this object, the authors say.",
+    "title": "Its orbit points away from the cluster",
+    "line": "The authors read this as a challenge to the evidence for a planet.",
     "diagram": {
      "type": "orbits",
      "n": 6,
@@ -506,7 +508,7 @@
    "kind": "survey",
    "order": 1,
    "title": "Within a few years, Rubin should either find the planet or empty most of what remains",
-   "line": "Most predicted brightnesses are within reach of a single Rubin image (Brown & Batygin 2021). A slow mover crossing successive images would give it away.",
+   "line": "Most predicted brightnesses are within reach of a single Rubin image. A slow mover crossing successive images would give it away.",
    "links": [
     {
      "label": "Brown & Batygin 2021",

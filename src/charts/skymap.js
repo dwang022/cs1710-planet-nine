@@ -6,9 +6,13 @@
 //   3. the perihelion direction of every extreme object, from its elements
 // Nothing here is invented; the footprints are schematic dec/RA bands and are
 // labelled as such in the caption.
+//
+// Clicking a footprint or an object opens a card (.pick-card) that stays until
+// its close button or Escape. On phones (700 px and narrower) the map is cropped
+// to the band between declinations -62 and +62, where the path and every survey
+// that matters lie, and its marks are drawn heavier so they survive the scale.
 
 import * as d3 from 'd3'
-import { showTip, hideTip } from './tooltip.js'
 import { registerHighlight, setHover } from '../highlight.js'
 
 const W = 940, H = 500
@@ -25,6 +29,11 @@ const OBLIQUITY = 23.439291 * D
 // how faint could anyone see at this patch of sky? One hue, dark (shallow) to
 // bright (deep), on the dark surface.
 const DEPTH_RANGE = [20.0, 26.0]
+// The depth a photo must reach to catch a faint Planet Nine (predicted at magnitude 21 to 25). Ours, not a
+// published number: a survey bottoming out at 22 could only have caught the very brightest end of the range.
+export const DEEP_MAG = 23.5
+// Sky surveyed only in the infrared: a dark neutral, below the shallowest optical shade.
+const INFRARED_FILL = '#1c1c21'
 export const depthColour = d3.scaleLinear()
   .domain(DEPTH_RANGE).clamp(true)
   .range(['#232228', '#ece6d8'])
@@ -98,13 +107,18 @@ const T = 650
 export const galacticPoint = galacticToEquatorial
 export const eclipticPoint = eclipticToEquatorial
 
+const fmtInt = d3.format(',.0f')
+const SKY_SQ_DEG = 41253
+
 export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, visibleIds, scene = ALL_LAYERS }) {
   const L = { ...ALL_LAYERS, ...scene }
+  const narrow = window.matchMedia('(max-width: 700px)').matches
+  const K = narrow ? 1.9 : 1   // stroke and dot weight
   const showTrack = L.track, showPerihelia = L.perihelia
   const svg = d3.select(root).selectAll('svg').data([0]).join('svg')
-    .attr('viewBox', `0 0 ${W} ${H}`)
+    .attr('viewBox', `0 0 ${W} ${H}`)   // narrowed to the band below, once the projection exists
     .attr('role', 'img')
-    .attr('aria-label', 'All-sky map showing survey coverage, the predicted path of Planet Nine, and the perihelion direction of each extreme object.')
+    .attr('aria-label', 'All-sky map showing survey coverage, the predicted path of Planet Nine, and the direction each extreme object points.')
 
   const iw = W - M.left - M.right, ih = H - M.top - M.bottom
   // d3-geo-projection is not bundled; Mollweide is simple enough to inline.
@@ -137,6 +151,27 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
       M.top + ih / 2 - (y / Math.SQRT2) * (ih / 2),
     ]
   }
+
+  if (narrow) {
+    const y0 = mollweide(180, 62)[1], y1 = mollweide(180, -62)[1]
+    svg.attr('viewBox', `0 ${(y0 - 6).toFixed(1)} ${W} ${(y1 - y0 + 12).toFixed(1)}`)
+  }
+
+  // --- the click card: one per map, kept across redraws ----------------------------
+  let card = d3.select(root).select('div.pick-card')
+  if (card.empty()) {
+    card = d3.select(root).append('div').attr('class', 'pick-card sky-card').attr('hidden', true).attr('role', 'dialog')
+    document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !card.attr('hidden')) closeCard() })
+  }
+  function closeCard () { card.attr('hidden', true).html(''); setHover(null) }
+  function openCard (html) {
+    card.attr('hidden', null).html(`<button type="button" class="pick-close" aria-label="Close">×</button>${html}`)
+    card.select('.pick-close').on('click', closeCard).node().focus({ preventScroll: true })
+  }
+  // a new story step shows different layers, so a card left open from the last one goes
+  const sceneKey = [L.surveys, L.perihelia, L.future, L.milky, L.unsearched].join('|')
+  if (root.__scene !== undefined && root.__scene !== sceneKey && !card.attr('hidden')) closeCard()
+  root.__scene = sceneKey
 
   let g = svg.select('g.sky')
   if (g.empty()) g = svg.append('g').attr('class', 'sky')
@@ -209,11 +244,11 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   // How each footprint is painted depends on the step: first just "someone
   // photographed this" in one flat tone, then shaded by depth, then with only
   // the deep-enough surveys left lit.
-  const isDeep = s => (s.depth_mag ?? 0) >= 23.5 && s.wavelength === 'optical'
+  const isDeep = s => (s.depth_mag ?? 0) >= DEEP_MAG && s.wavelength === 'optical'
   const fpFill = d => {
-    if (d.s.future) return '#f472b6'
+    if (d.s.future) return 'var(--series-4)'
     if (L.surveys === 'coverage') return '#4a4852'
-    return d.s.depth_mag != null && d.s.wavelength === 'optical' ? depthColour(d.s.depth_mag) : '#1a2228'
+    return d.s.depth_mag != null && d.s.wavelength === 'optical' ? depthColour(d.s.depth_mag) : INFRARED_FILL
   }
   const fpOpacity = d => {
     if (d.s.future) return L.future ? 0.22 : 0
@@ -228,21 +263,18 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .merge(fp)
     .attr('d', d => d3.line()(d.ring) + 'Z')
     .style('pointer-events', d => fpOpacity(d) > 0.1 ? null : 'none')
-    .attr('stroke', d => d.s.future ? '#f472b6' : activeSurvey === d.s.id ? d.s.color_hex : 'none')
-    .attr('stroke-width', 2)
+    .attr('stroke', d => d.s.future ? 'var(--series-4)' : activeSurvey === d.s.id ? 'var(--text-primary)' : 'none')
+    .attr('stroke-width', 2 * K)
     .attr('stroke-dasharray', d => d.s.future ? '6 5' : null)
     .style('cursor', 'pointer')
-    .on('pointerenter', (ev, d) => showTip(ev, `
-      <div class="t-name">${d.s.name}</div>
+    .on('click', (ev, d) => openCard(`
+      <div class="pick-name">${d.s.short || d.s.name}</div>
       <dl>
-        <dt>sees down to</dt><dd>${d.s.depth_mag ? 'mag ' + d.s.depth_mag : 'infrared'}</dd>
+        <dt>reaches</dt><dd>${d.s.depth_mag && d.s.wavelength === 'optical' ? 'magnitude ' + d.s.depth_mag : 'infrared only'}</dd>
         <dt>years</dt><dd>${d.s.years[0]}–${d.s.years[1]}</dd>
+        ${d.s.area_sq_deg ? `<dt>sky covered</dt><dd>${Math.max(1, Math.round(100 * d.s.area_sq_deg / SKY_SQ_DEG))}%</dd>` : ''}
       </dl>
-      <div style="margin-top:6px;color:var(--text-secondary)">${
-        (d.s.depth_mag ?? 0) >= 22
-          ? 'Deep enough to spot Planet Nine here.'
-          : 'Too shallow — Planet Nine could sit here unseen.'}</div>`))
-    .on('pointerleave', hideTip)
+      <p class="sky-verdict">${d.s.future ? 'Deep enough, from 2026' : isDeep(d.s) ? 'Deep enough' : 'Too shallow'}</p>`))
     .transition().duration(T)
     .attr('fill', fpFill)
     .attr('fill-opacity', fpOpacity)
@@ -291,7 +323,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .attr('d', d => segmentedPath(d.points.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none')
     .attr('stroke', 'var(--p9)')
-    .attr('stroke-width', d => d.label === 'nominal' ? 2.6 : 1.1)
+    .attr('stroke-width', d => (d.label === 'nominal' ? 2.6 : 1.1) * K)
     .attr('stroke-opacity', d => d.label === 'nominal' ? 1 : 0.4)
 
   /** Fill between two parallel curves, split at the same wrap points. */
@@ -337,7 +369,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   // out at 22 could only ever have caught it at the very brightest end, so it
   // has not really excluded anything. 23.5 is the bar for ruling out a faint
   // one, and it is the threshold this line is split on.
-  const P9_MAG = 23.5
+  const P9_MAG = DEEP_MAG
   const nom = track.tracks.find(t => t.label === 'nominal')
   const unsearched = []
   if (showTrack && L.unsearched && nom) {
@@ -355,7 +387,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .merge(us)
     .attr('d', run => segmentedPath(run.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none').attr('stroke', 'var(--series-2)')
-    .attr('stroke-width', 7).attr('stroke-opacity', 0.55)
+    .attr('stroke-width', 7 * K).attr('stroke-opacity', 0.55)
     .attr('stroke-linecap', 'round')
 
   // --- where the predicted path is hardest to search -----------------------
@@ -379,7 +411,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .merge(bd)
     .attr('d', run => segmentedPath(run.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none').attr('stroke', '#dcc48a')
-    .attr('stroke-width', 6).attr('stroke-opacity', 0.5)
+    .attr('stroke-width', 6 * K).attr('stroke-opacity', 0.5)
     .attr('stroke-linecap', 'round')
 
   const labelled = buried.filter(r => r.length > 6)
@@ -401,26 +433,32 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   const ph = layers.selectAll('circle.ph').data(showPerihelia ? shown : [], d => d.id)
   ph.exit().remove()
   ph.enter().append('circle').attr('class', 'ph')
-    .attr('r', 4).attr('stroke', 'var(--surface-2)').attr('stroke-width', 1.2)
+    .attr('stroke', 'var(--surface-2)')
     .merge(ph)
+    .attr('r', 4 * K).attr('stroke-width', 1.2 * K)
+    .style('cursor', 'pointer')
     .attr('cx', d => mollweide(clampRA(d.peri_ra_deg), d.peri_dec_deg)[0])
     .attr('cy', d => mollweide(clampRA(d.peri_ra_deg), d.peri_dec_deg)[1])
     .attr('fill', 'var(--series-1)')
     .attr('opacity', d => d.well_determined ? 0.95 : 0.4)
-    .on('pointerenter', (ev, d) => { setHover(d.id); showTip(ev, `
-      <div class="t-name">${d.name || d.id}</div>
-      <dl><dt>perihelion RA</dt><dd>${d.peri_ra_deg.toFixed(1)}°</dd>
-      <dt>dec</dt><dd>${d.peri_dec_deg.toFixed(1)}°</dd>
-      <dt>distance</dt><dd>${d3.format(',.0f')(d.a_au)} AU</dd></dl>`) })
-    .on('pointerleave', () => { setHover(null); hideTip() })
+    .on('click', (ev, d) => {
+      openCard(`
+        <div class="pick-name">${d.name || d.id}</div>
+        <dl>
+          <dt>average distance</dt><dd class="au">${fmtInt(d.a_au)} AU</dd>
+          <dt>closest to the Sun</dt><dd class="au">${fmtInt(d.q_au)} AU</dd>
+          <dt>seasons seen</dt><dd>${d.well_determined ? 'more than one' : 'one'}</dd>
+        </dl>`)
+      setHover(d.id)
+    })
 
   if (!root.__hl) {
     root.__hl = true
     registerHighlight(id => {
       d3.select(root).selectAll('circle.ph')
-        .attr('r', d => d.id === id ? 7.5 : 4)
+        .attr('r', d => (d.id === id ? 7.5 : 4) * (window.matchMedia('(max-width: 700px)').matches ? 1.9 : 1))
         .attr('fill', d => d.id === id ? 'var(--text-primary)' : 'var(--series-1)')
-        .attr('stroke-width', d => d.id === id ? 2 : 1.2)
+        .attr('stroke-width', d => (d.id === id ? 2 : 1.2) * (window.matchMedia('(max-width: 700px)').matches ? 1.9 : 1))
     })
   }
 
@@ -450,5 +488,72 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .attr('class', 'ralt axis-label')
     .attr('x', M.left + iw / 2).attr('y', M.top + ih + 32)
     .attr('text-anchor', 'middle')
-    .text('right ascension — position around the sky')
+    .text('position around the sky (right ascension)')
+}
+
+/** The same equal-area projection, fitted to a box: for the small drawings in a page head. */
+function mollweideIn (left, top, iw, ih) {
+  return (raDeg, decDeg) => {
+    const lam = (180 - raDeg) * Math.PI / 180
+    const phi = Math.max(-89.99, Math.min(89.99, decDeg)) * Math.PI / 180
+    let th = phi
+    for (let k = 0; k < 20; k++) {
+      const den = 2 + 2 * Math.cos(2 * th)
+      if (Math.abs(den) < 1e-9) break
+      const d = (2 * th + Math.sin(2 * th) - Math.PI * Math.sin(phi)) / den
+      th -= d
+      if (Math.abs(d) < 1e-12) break
+    }
+    const x = (2 * Math.SQRT2 / Math.PI) * lam * Math.cos(th)
+    const y = Math.SQRT2 * Math.sin(th)
+    return [left + iw / 2 + (x / (2 * Math.SQRT2)) * (iw / 2), top + ih / 2 - (y / Math.SQRT2) * (ih / 2)]
+  }
+}
+
+/**
+ * A small whole-sky oval (an SVG string, 100 × 100 box) for a page head, drawn from the same data as the map:
+ *   show 'deep'  every footprint dim, the ones at least DEEP_MAG deep lit
+ *   show 'path'  Planet Nine's predicted path, its shallowly photographed stretches in ember
+ */
+export function skyThumb (surveys, track, { show = 'deep' } = {}) {
+  const P = mollweideIn(2, 26, 96, 48)
+  const clamp = ra => Math.min(359.99, Math.max(0.01, ra))
+  const line = pts => d3.line()(pts.map(([ra, dec]) => P(clamp(ra), dec)))
+  const outline = [...d3.range(-89.9, 90, 3).map(d => [0.01, d]), ...d3.range(89.9, -90, -3).map(d => [359.99, d])]
+  const id = `sky-thumb-${show}`
+  const body = []
+  if (show === 'deep') {
+    const drawn = surveys.filter(s => s.wavelength === 'optical' && !s.future && s.ra_ranges && footprintDec(s) && s.footprint_area_verified !== false)
+      .sort((a, b) => (a.depth_mag ?? 0) - (b.depth_mag ?? 0))
+    for (const s of drawn) {
+      const [d0, d1] = footprintDec(s)
+      for (const [r0, r1] of s.ra_ranges) {
+        const ring = [...d3.range(r0, r1 + 0.1, 3).map(ra => [ra, d0]), ...d3.range(d0, d1 + 0.1, 3).map(d => [r1, d]),
+          ...d3.range(r1, r0 - 0.1, -3).map(ra => [ra, d1]), ...d3.range(d1, d0 - 0.1, -3).map(d => [r0, d])]
+        body.push(`<path d="${line(ring)}Z" fill="${(s.depth_mag ?? 0) >= DEEP_MAG ? '#ece6d8' : '#4a4852'}" opacity=".9"/>`)
+      }
+    }
+  } else {
+    const nom = track.tracks.find(t => t.label === 'nominal').points
+    const runs = (keep) => {
+      const out = []; let run = [], prev = null
+      for (const p of nom) {
+        const ok = keep(p)
+        if (ok && run.length && prev !== null && Math.abs(p.ra_deg - prev) > 180) { out.push(run); run = [] }
+        if (ok) run.push([p.ra_deg, p.dec_deg]); else if (run.length) { out.push(run); run = [] }
+        prev = p.ra_deg
+      }
+      if (run.length) out.push(run)
+      return out.filter(r => r.length > 1)
+    }
+    for (const r of runs(() => true)) body.push(`<path d="${line(r)}" fill="none" stroke="var(--p9)" stroke-width="2"/>`)
+    for (const r of runs(p => { const d = deepestAt(surveys, p.ra_deg, p.dec_deg); return d === null || d < DEEP_MAG })) {
+      body.push(`<path d="${line(r)}" fill="none" stroke="var(--series-2)" stroke-width="5" stroke-opacity=".6" stroke-linecap="round"/>`)
+    }
+  }
+  return `<svg class="art sky-thumb" viewBox="0 0 100 100" aria-hidden="true">
+    <defs><clipPath id="${id}"><path d="${line(outline)}Z"/></clipPath></defs>
+    <path d="${line(outline)}Z" fill="#0c0c0e"/>
+    <g clip-path="url(#${id})">${body.join('')}</g>
+    <path d="${line(outline)}Z" fill="none" stroke="var(--text-muted)" stroke-width="1"/></svg>`
 }

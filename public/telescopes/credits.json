@@ -1,0 +1,232 @@
+{
+ "_what": "Photographs of the telescopes that measured the extreme objects most, from Wikimedia Commons via scripts/fetch_telescope_photos.py. Credits were read from the Commons API, except for local photographs, whose credit is written in the script.",
+ "_fetched": "2026-10-30",
+ "photos": [
+  {
+   "id": "panstarrs",
+   "file": "panstarrs.jpg",
+   "codes": [
+    "F51",
+    "F52"
+   ],
+   "name": "Pan-STARRS",
+   "place": "Haleakalā, Hawaiʻi",
+   "credit": "R. Ratkowski",
+   "license": "Public domain",
+   "license_url": "",
+   "source": "https://commons.wikimedia.org/wiki/File%3APan-STARRS_Observatory_%282019-12-4315%29.jpg",
+   "original_size": [
+    3000,
+    2000
+   ]
+  },
+  {
+   "id": "blanco",
+   "file": "blanco.jpg",
+   "codes": [
+    "W84"
+   ],
+   "name": "Blanco Telescope",
+   "place": "Cerro Tololo, Chile",
+   "credit": "CTIO/NOIRLab/NSF/AURA/T. Matsopoulos",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3ABlanco%27s_Open_Dome_%28Cerro-Tololo-Drone-Pic_15-CC%29_-_edit1.jpg",
+   "original_size": [
+    4000,
+    3000
+   ]
+  },
+  {
+   "id": "rubin",
+   "file": "rubin.jpg",
+   "codes": [
+    "X05"
+   ],
+   "name": "Rubin Observatory",
+   "place": "Cerro Pachón, Chile",
+   "credit": "NOIRLab/NSF/AURA/C. Corco",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3AVera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg",
+   "original_size": [
+    5829,
+    3218
+   ]
+  },
+  {
+   "id": "subaru",
+   "file": "subaru.jpg",
+   "codes": [
+    "T09",
+    "266"
+   ],
+   "name": "Subaru Telescope",
+   "place": "Maunakea, Hawaiʻi",
+   "credit": "Robert Linsdell from St. Andrews, Canada",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3ASubaru_Telescope._Mauna_Kea_Summit_%28503947%29_%2821404240034%29.jpg",
+   "original_size": [
+    5396,
+    3035
+   ]
+  },
+  {
+   "id": "magellan",
+   "file": "magellan.jpg",
+   "codes": [
+    "304",
+    "269"
+   ],
+   "name": "Magellan Telescopes",
+   "place": "Las Campanas, Chile",
+   "credit": "Jan Skowron",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3AMagellan-Telescopes-at-LCO-2014-04-19.jpg",
+   "original_size": [
+    5184,
+    3456
+   ]
+  },
+  {
+   "id": "hubble",
+   "file": "hubble.jpg",
+   "codes": [
+    "250"
+   ],
+   "name": "Hubble Space Telescope",
+   "place": "in orbit",
+   "credit": "NASA Hubble Space Telescope",
+   "license": "Public domain",
+   "license_url": "",
+   "source": "https://commons.wikimedia.org/wiki/File%3AView_of_Hubble_after_Being_Released_from_the_Shuttle_Atlantis_%2828223588012%29.jpg",
+   "original_size": [
+    3000,
+    1993
+   ]
+  },
+  {
+   "id": "palomar",
+   "file": "palomar.jpg",
+   "codes": [
+    "675",
+    "644",
+    "261"
+   ],
+   "name": "Palomar Observatory",
+   "place": "California",
+   "credit": "Photograph by Mike Peel (www.mikepeel.net).",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3APalomar_Observatory_2012_01.jpg",
+   "original_size": [
+    5184,
+    3456
+   ]
+  },
+  {
+   "id": "kittpeak",
+   "file": "kittpeak.jpg",
+   "codes": [
+    "695"
+   ],
+   "name": "Kitt Peak",
+   "place": "Arizona",
+   "credit": "KPNO/NOIRLab/NSF/AURA",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3AKitt_Peak_National_Observatory_%28Kitt-Peak%29.jpg",
+   "original_size": [
+    2964,
+    1936
+   ]
+  },
+  {
+   "id": "ldt",
+   "file": "ldt.jpg",
+   "codes": [
+    "G37"
+   ],
+   "name": "Lowell Discovery Telescope",
+   "place": "Arizona",
+   "credit": "SSR2000",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3AThe_Dome_of_Discovery_Channel_Telecope.JPG",
+   "original_size": [
+    4000,
+    3000
+   ]
+  },
+  {
+   "id": "lapalma",
+   "file": "lapalma.jpg",
+   "codes": [
+    "950"
+   ],
+   "name": "Roque de los Muchachos",
+   "place": "La Palma, Canary Islands",
+   "credit": "H. Zell",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3ARoque_de_los_Muchachos_-_ORM_-_ATC_-_WHT_-_DOT_-_LT_-_SST_-_GOTO_-_INT_-_JKT.jpg",
+   "original_size": [
+    5753,
+    3389
+   ]
+  },
+  {
+   "id": "lasilla",
+   "file": "lasilla.jpg",
+   "codes": [
+    "809"
+   ],
+   "name": "La Silla Observatory",
+   "place": "Chile",
+   "credit": "ESO",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3ATelescopes_at_La_Silla.jpg",
+   "original_size": [
+    4368,
+    2676
+   ]
+  },
+  {
+   "id": "paranal",
+   "file": "paranal.jpg",
+   "codes": [
+    "309"
+   ],
+   "name": "Paranal Observatory",
+   "place": "Chile",
+   "credit": "ESO/G. Hüdepohl (atacamaphoto.com)",
+   "license": "CC BY 4.0",
+   "license_url": "https://creativecommons.org/licenses/by/4.0",
+   "source": "https://commons.wikimedia.org/wiki/File%3AParanal_and_the_Pacific_at_sunset_%28dsc4088%2C_retouched%2C_cropped%29.jpg",
+   "original_size": [
+    3074,
+    2152
+   ]
+  },
+  {
+   "id": "keystone",
+   "file": "keystone.jpg",
+   "codes": [
+    "I17"
+   ],
+   "name": "Thomas G. Cupillari Observatory",
+   "place": "Fleetville, Pennsylvania",
+   "credit": "Rob, via Keystone College",
+   "license": "Fair use, class project",
+   "license_url": "",
+   "source": "https://www.facebook.com/KeystoneCollege/posts/-thank-you-rob-for-these-photos-and-for-sharing-your-experience-of-keystones-cup/1176382641180093/",
+   "original_size": [
+    738,
+    415
+   ]
+  }
+ ]
+}

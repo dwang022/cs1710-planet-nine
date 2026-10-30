@@ -1,127 +1,170 @@
-// Sketch GG8 — what else could explain this?
-// A scorecard: eight hypotheses against the four things any of them has to
-// account for. Reading across a row tells you where each idea breaks.
+// What else could explain the pattern: a scorecard of the explanations in
+// alternatives.json against the four things any of them has to account for,
+// on the planets page's pattern (setting/planets.html, .criteria): a drawing
+// and a name per row, a mark per test.
+//
+// Every row opens, in place, a panel directly under it: a drawing of the idea
+// (charts/altart.js), a few plain sentences on what it is and what it explains,
+// and where it falls short as the key line. Each sentence carries superscript
+// citations to the papers on the credits page. One panel is open at a time; the
+// row again, its × or Escape closes it.
+//
+// The marks say each verdict twice, by shape and by colour: a full aurora disc
+// (accounts for it), an aurora half disc (partly), an ember ring (does not), so
+// ember means "fails" here as it does on the planets page.
 
-import * as d3 from 'd3'
-import { showTip, hideTip } from './tooltip.js'
+import { url } from '../data.js'
+import { ROW_ART, PANEL_ART } from './altart.js'
+import { au } from './field.js'
 
-const MARK = {
-  yes:     { fill: 'var(--series-3)', glyph: '●', label: 'accounts for it' },
-  partial: { fill: 'var(--series-2)', glyph: '◐', label: 'partly accounts for it' },
-  no:      { fill: 'var(--text-muted)', glyph: '○', label: 'does not account for it' },
+export const MARK = {
+  yes: 'Accounts for it',
+  partial: 'Partly',
+  no: 'Does not',
 }
 
-// Greedy word wrap for SVG text. ~0.55em per character is close enough for the
-// UI font at these sizes; it only decides where lines break.
-function wrap (text, maxPx, fontPx) {
-  const max = Math.max(8, Math.floor(maxPx / (fontPx * 0.55)))
-  const lines = []
-  for (const w of text.split(' ')) {
-    const last = lines[lines.length - 1]
-    if (last && (last + ' ' + w).length <= max) lines[lines.length - 1] = last + ' ' + w
-    else lines.push(w)
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+
+/** One verdict as a drawn mark (styled in style.css, .mk). */
+export function markSvg (v) {
+  const inner = v === 'yes'
+    ? '<circle r="8.5"/>'
+    : v === 'partial'
+      ? '<circle r="8.5" class="ring"/><path d="M0,-8.5 A8.5,8.5 0 0,1 0,8.5 Z"/>'
+      : '<circle r="7.5" class="ring"/>'
+  return `<svg class="mk mk-${v}" viewBox="-12 -12 24 24" aria-hidden="true" focusable="false">${inner}</svg>`
+}
+
+/** The key above the table: each mark with what it means. */
+export const markKey = () => Object.entries(MARK).map(([v, label]) =>
+  `<div class="legend-item">${markSvg(v)}${label}</div>`).join('')
+
+// The anchor the credits page gives each paper (credits.js, papers()):
+// "Brown & Batygin 2019" → cite-brown-batygin-2019. Keep the two in step.
+const citeId = label => 'cite-' + label.replace(/\(.*?\)/g, '').replace(/&/g, ' ').trim().toLowerCase()
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+/**
+ * Sentences ({ text, cite: [doi] }) as running text, each followed by its
+ * superscripts. `nums` numbers the papers within one panel in order of first use.
+ */
+function cited (segments, byDoi, nums) {
+  return segments.map(({ text, cite = [] }) => {
+    const refs = cite.map(d => byDoi.get(d)).filter(Boolean)
+    for (const p of refs) if (!nums.has(p.doi)) nums.set(p.doi, nums.size + 1)
+    const sup = refs.length
+      ? `<sup class="cite">${refs.sort((a, b) => nums.get(a.doi) - nums.get(b.doi)).map(p =>
+          `<a href="${url('credits.html')}#${citeId(p.label)}" title="${esc(p.label)}">${nums.get(p.doi)}</a>`).join(',')}</sup>`
+      : ''
+    return au(esc(text)) + sup
+  }).join(' ')
+}
+
+const CHEVRON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M3.5 6 L8 10.5 L12.5 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+
+export function drawScorecard (table, { alternatives, phenomena, papers }) {
+  const byDoi = new Map(papers.map(p => [p.doi, p]))
+  const cols = phenomena.length + 2
+
+  const head = `<thead><tr>
+    <th scope="col" class="alt-h-name">Explanation</th>
+    ${phenomena.map(p => `<th scope="col" class="alt-h-test" title="${esc(p.plain)}"><span class="long">${esc(p.label)}</span><span class="short" aria-hidden="true">${esc(p.short || p.label)}</span></th>`).join('')}
+    <th scope="col" class="alt-h-more"><span class="vh">Details</span></th>
+  </tr></thead>`
+
+  const rows = alternatives.map(a => {
+    const nums = new Map()
+    const panel = `<figure class="alt-fig">${PANEL_ART[a.id]?.() || ''}</figure>
+      <div class="alt-text">
+        <p class="alt-explain">${cited(a.explain || [], byDoi, nums)}</p>
+        <p class="alt-short">${cited(a.struggles || [], byDoi, nums)}</p>
+      </div>
+      <button type="button" class="alt-close" aria-label="Close">×</button>`
+    const p9 = a.id === 'planet_nine'
+    return `<tr class="alt-row${p9 ? ' p9' : ''}" data-id="${esc(a.id)}">
+      <th scope="row">
+        <button type="button" class="alt-btn" id="alt-btn-${esc(a.id)}" aria-expanded="false" aria-controls="alt-more-${esc(a.id)}">
+          <span class="alt-ic-box">${ROW_ART[a.id]?.() || ''}</span>
+          <span class="alt-name"><b${p9 ? ' class="k-p9"' : ''}>${esc(a.name)}</b>${a.tag ? `<small>${esc(a.tag)}</small>` : ''}</span>
+        </button>
+      </th>
+      ${phenomena.map(p => {
+        const v = (a.scorecard || {})[p.id] || 'no'
+        return `<td class="alt-m">${markSvg(v)}<span class="vh">${MARK[v]}</span></td>`
+      }).join('')}
+      <td class="alt-more-cue" aria-hidden="true"><span class="alt-pill"><span class="w">More</span><span class="w2">Less</span>${CHEVRON}</span></td>
+    </tr>
+    <tr class="alt-more" id="alt-more-${esc(a.id)}" hidden>
+      <td colspan="${cols}"><div class="alt-more-in"><div class="alt-clip">
+        <div class="alt-panel" role="region" aria-labelledby="alt-btn-${esc(a.id)}">${panel}</div>
+      </div></div></td>
+    </tr>`
+  }).join('')
+
+  table.innerHTML = head + `<tbody>${rows}</tbody>`
+
+  // --- opening and closing, one panel at a time ---------------------------------
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const MS = reduce ? 0 : 300
+  const parts = id => ({
+    row: table.querySelector(`tr.alt-row[data-id="${CSS.escape(id)}"]`),
+    more: table.querySelector(`#alt-more-${CSS.escape(id)}`),
+    btn: table.querySelector(`#alt-btn-${CSS.escape(id)}`),
+  })
+  let open = null
+  const timers = new Map()
+
+  function close (id) {
+    const { row, more, btn } = parts(id)
+    row.classList.remove('is-open')
+    more.classList.remove('is-open')
+    btn.setAttribute('aria-expanded', 'false')
+    clearTimeout(timers.get(id))
+    timers.set(id, setTimeout(() => { if (!more.classList.contains('is-open')) more.hidden = true }, MS))
   }
-  return lines
-}
 
-export function drawMatrix (root, { alternatives, phenomena, onSelect, selected }) {
-  // Lay out at the container's real width so text renders at its true size
-  // instead of being scaled up on wide screens or shrunk on phones. Below the
-  // minimum the card scrolls sideways rather than crushing the labels.
-  const avail = root.clientWidth || 760
-  const narrow = avail < 640
-  const labelW = narrow ? 168 : Math.round(Math.min(420, Math.max(280, avail * 0.28)))
-  const chevW = 28
-  const colW = Math.max(narrow ? 92 : 110, (avail - labelW - chevW) / phenomena.length)
-  const W = labelW + phenomena.length * colW + chevW
-  const nameFont = 13.5, headFont = 12.5
-  const headLines = Math.max(...phenomena.map(p => wrap(p.label, colW - 12, headFont).length))
-  const headH = 18 + headLines * 15
-  const nameLines = alternatives.map(a => wrap(a.name, labelW - 24, nameFont).length)
-  const rowH = 46 + (Math.max(...nameLines) - 1) * 10
-  const H = headH + alternatives.length * rowH + 6
-  const cx = i => labelW + i * colW + colW / 2
+  function show (id) {
+    const { row, more, btn } = parts(id)
+    clearTimeout(timers.get(id))
+    more.hidden = false
+    void more.offsetHeight            // start the height transition from closed
+    row.classList.add('is-open')
+    more.classList.add('is-open')
+    btn.setAttribute('aria-expanded', 'true')
+    timers.set(id, setTimeout(() => reveal(row, more), MS + 20))
+  }
 
-  const svg = d3.select(root).selectAll('svg').data([0]).join('svg')
-    .attr('class', 'matrix-svg')
-    .attr('viewBox', `0 0 ${W} ${H}`).attr('width', W).attr('height', H)
-    .attr('role', 'group')
-    .attr('aria-label', 'Scorecard of eight competing explanations against four observations each must account for. Each row is a button that shows details.')
+  // Bring the open panel into view gently, never pushing its row off the top.
+  function reveal (row, more) {
+    const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar-h')) || 0
+    const top = row.getBoundingClientRect().top, bottom = more.getBoundingClientRect().bottom
+    const room = window.innerHeight
+    let dy = 0
+    if (top < bar + 8) dy = top - bar - 8
+    else if (bottom > room - 16) dy = Math.min(bottom - room + 16, top - bar - 8)
+    if (Math.abs(dy) > 2) window.scrollBy({ top: dy, behavior: reduce ? 'auto' : 'smooth' })
+  }
 
-  let g = svg.select('g.mx')
-  if (g.empty()) g = svg.append('g').attr('class', 'mx')
+  function toggle (id) {
+    if (open) close(open)
+    open = open === id ? null : id
+    if (open) show(open)
+  }
 
-  // column headers, wrapped and centred over their column
-  g.selectAll('text.col-head').data(phenomena).join('text')
-    .attr('class', 'col-head')
-    .attr('text-anchor', 'middle')
-    .attr('font-size', headFont)
-    .each(function (d, i) {
-      const lines = wrap(d.label, colW - 12, headFont)
-      const t = d3.select(this).text(null)
-      lines.forEach((ln, k) => t.append('tspan').attr('x', cx(i))
-        .attr('y', headH - 12 - (lines.length - 1 - k) * 15).text(ln))
-      t.append('title').text(d.plain)
-    })
-  g.selectAll('line.head-rule').data([0]).join('line').attr('class', 'head-rule')
-    .attr('x1', 0).attr('x2', W).attr('y1', headH).attr('y2', headH)
-
-  const rows = g.selectAll('g.row').data(alternatives, d => d.id)
-  const re = rows.enter().append('g').attr('class', 'row')
-    .attr('tabindex', 0).attr('role', 'button')
-  re.append('rect').attr('class', 'rowbg').attr('x', 0).attr('rx', 8)
-  re.append('rect').attr('class', 'rowbar').attr('x', 0).attr('width', 3).attr('rx', 1.5)
-  re.append('text').attr('class', 'rowlabel').attr('x', 14)
-  re.append('text').attr('class', 'chev').attr('text-anchor', 'middle')
-  re.append('line').attr('class', 'row-rule')
-  const all = re.merge(rows)
-  const toggle = d => onSelect(d.id === selected ? null : d.id)
-  all.attr('transform', (d, i) => `translate(0,${headH + 3 + i * rowH})`)
-    .classed('is-selected', d => d.id === selected)
-    .attr('aria-pressed', d => String(d.id === selected))
-    .attr('aria-label', d => `${d.name}. ` + phenomena.map(p =>
-      `${p.label}: ${MARK[(d.scorecard || {})[p.id] || 'no'].label}`).join('; ') + '.')
-    .on('click', (ev, d) => toggle(d))
-    .on('keydown', (ev, d) => {
-      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(d) }
-    })
-    .on('pointerenter', (ev, d) => showTip(ev, `<div class="t-name">${d.name}</div>${d.one_liner}`))
-    .on('pointerleave', hideTip)
-
-  const inner = rowH - 6
-  all.select('rect.rowbg').attr('y', 0).attr('width', W).attr('height', inner)
-  all.select('rect.rowbar').attr('y', 6).attr('height', inner - 12)
-  all.select('line.row-rule').attr('x1', 0).attr('x2', W).attr('y1', rowH - 3).attr('y2', rowH - 3)
-  all.select('text.chev').attr('x', W - chevW / 2).attr('y', inner / 2 + 5)
-    .text(d => d.id === selected ? '▾' : '›')
-  all.select('text.rowlabel')
-    .attr('font-size', nameFont)
-    .each(function (d) {
-      const lines = wrap(d.name, labelW - 24, nameFont)
-      const t = d3.select(this).text(null)
-      const top = inner / 2 + 5 - (lines.length - 1) * 8
-      lines.forEach((ln, k) => t.append('tspan').attr('x', 14).attr('y', top + k * 16).text(ln))
-    })
-
-  // Each verdict gets its own SHAPE as well as its own colour: a full disc, a
-  // half disc, or an empty ring. Shape carries the meaning on its own, so the
-  // chart still reads in greyscale or with any colour vision.
-  const R = 9
-  const cells = all.selectAll('g.cell').data(d =>
-    phenomena.map(p => ({ alt: d, ph: p, v: (d.scorecard || {})[p.id] || 'no' })))
-  const ce = cells.enter().append('g').attr('class', 'cell').attr('aria-hidden', 'true')
-  ce.append('circle').attr('class', 'ring').attr('r', R).attr('fill', 'none').attr('stroke-width', 2)
-  ce.append('path').attr('class', 'fillmark')
-  const cAll = ce.merge(cells)
-  cAll.attr('transform', (d, i) => `translate(${cx(i)},${inner / 2})`)
-  cAll.select('circle.ring').attr('stroke', d => MARK[d.v].fill)
-  cAll.select('path.fillmark')
-    .attr('fill', d => MARK[d.v].fill)
-    .attr('d', d => d.v === 'yes'
-      ? `M 0,-${R} A ${R},${R} 0 1,1 0,${R} A ${R},${R} 0 1,1 0,-${R} Z`
-      : d.v === 'partial'
-        ? `M 0,-${R} A ${R},${R} 0 0,1 0,${R} Z`
-        : null)
-
-  rows.exit().remove()
+  table.addEventListener('click', ev => {
+    if (ev.target.closest('.alt-close')) {
+      const id = open
+      toggle(open)
+      if (id) parts(id).btn.focus()
+      return
+    }
+    const row = ev.target.closest('tr.alt-row')
+    if (row) toggle(row.dataset.id)
+  })
+  document.addEventListener('keydown', ev => {
+    if (ev.key !== 'Escape' || !open) return
+    const id = open
+    toggle(open)
+    parts(id).btn.focus()
+  })
 }

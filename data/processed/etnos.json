@@ -146,7 +146,7 @@
   "mpc_U": "9",
   "mpc_num_opps": 4,
   "mpc_arc_years": "2016-2021",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 1.6075,
   "delta_varpi_deg": -28.699,
   "alignment": "aligned"
@@ -222,7 +222,7 @@
   "mpc_U": "9",
   "mpc_num_opps": 4,
   "mpc_arc_years": "2020-2024",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.1322,
   "delta_varpi_deg": -50.066,
   "alignment": "aligned"
@@ -488,7 +488,7 @@
   "mpc_U": "9",
   "mpc_num_opps": 2,
   "mpc_arc_years": "2025-2026",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 1.5513,
   "delta_varpi_deg": 89.471,
   "alignment": "aligned"
@@ -640,7 +640,7 @@
   "mpc_U": "5",
   "mpc_num_opps": 2,
   "mpc_arc_years": "2015-2026",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 1.9482,
   "delta_varpi_deg": -61.026,
   "alignment": "aligned"
@@ -944,7 +944,7 @@
   "mpc_U": "4",
   "mpc_num_opps": 5,
   "mpc_arc_years": "2009-2015",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0088,
   "delta_varpi_deg": -128.706,
   "alignment": "anti-aligned"
@@ -1210,7 +1210,7 @@
   "mpc_U": "2",
   "mpc_num_opps": 3,
   "mpc_arc_years": "2015-2017",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0665,
   "delta_varpi_deg": -71.841,
   "alignment": "aligned"
@@ -1286,7 +1286,7 @@
   "mpc_U": "8",
   "mpc_num_opps": 3,
   "mpc_arc_years": "2018-2020",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0549,
   "delta_varpi_deg": -110.967,
   "alignment": "anti-aligned"
@@ -1856,7 +1856,7 @@
   "mpc_U": "2",
   "mpc_num_opps": 2,
   "mpc_arc_years": "2015-2017",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.1789,
   "delta_varpi_deg": 89.652,
   "alignment": "aligned"
@@ -2122,7 +2122,7 @@
   "mpc_U": "3",
   "mpc_num_opps": 4,
   "mpc_arc_years": "2012-2020",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0058,
   "delta_varpi_deg": 112.476,
   "alignment": "anti-aligned"
@@ -2274,7 +2274,7 @@
   "mpc_U": "5",
   "mpc_num_opps": 4,
   "mpc_arc_years": "2014-2017",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0019,
   "delta_varpi_deg": 114.427,
   "alignment": "anti-aligned"
@@ -2312,7 +2312,7 @@
   "mpc_U": "7",
   "mpc_num_opps": 2,
   "mpc_arc_years": "2015-2016",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.9888,
   "delta_varpi_deg": 134.751,
   "alignment": "anti-aligned"
@@ -2540,7 +2540,7 @@
   "mpc_U": "3",
   "mpc_num_opps": 3,
   "mpc_arc_years": "2013-2015",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.1558,
   "delta_varpi_deg": -147.419,
   "alignment": "anti-aligned"
@@ -2730,7 +2730,7 @@
   "mpc_U": "8",
   "mpc_num_opps": 5,
   "mpc_arc_years": "2013-2018",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0012,
   "delta_varpi_deg": 62.286,
   "alignment": "aligned"
@@ -2768,7 +2768,7 @@
   "mpc_U": "9",
   "mpc_num_opps": 4,
   "mpc_arc_years": "2016-2020",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0246,
   "delta_varpi_deg": -129.352,
   "alignment": "anti-aligned"
@@ -2806,7 +2806,7 @@
   "mpc_U": "4",
   "mpc_num_opps": 5,
   "mpc_arc_years": "2001-2023",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0917,
   "delta_varpi_deg": -102.248,
   "alignment": "anti-aligned"
@@ -2882,7 +2882,7 @@
   "mpc_U": "5",
   "mpc_num_opps": 4,
   "mpc_arc_years": "2018-2020",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0006,
   "delta_varpi_deg": 133.214,
   "alignment": "anti-aligned"
@@ -3338,7 +3338,7 @@
   "mpc_U": "8",
   "mpc_num_opps": 3,
   "mpc_arc_years": "2016-2018",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0772,
   "delta_varpi_deg": 44.659,
   "alignment": "aligned"
@@ -3414,7 +3414,7 @@
   "mpc_U": "1",
   "mpc_num_opps": 4,
   "mpc_arc_years": "2014-2017",
-  "well_determined": false,
+  "well_determined": true,
   "a_disagreement_pct": 0.0414,
   "delta_varpi_deg": 51.764,
   "alignment": "aligned"

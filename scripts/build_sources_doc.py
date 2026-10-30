@@ -35,14 +35,29 @@ bodies with a > 30 AU.
 - Documentation: <https://ssd-api.jpl.nasa.gov/doc/sbdb_query.html>
 - Landing page: <https://ssd.jpl.nasa.gov/tools/sbdb_query.html>
 - Query used: `sb-cdata={"AND":["a|GT|30"]}`, 36 fields, full precision
-- Feeds: `tnos.csv`, `etnos.json`
+- Feeds: `tnos.csv`, `etnos.json`, `positions.json` (via `tnos.csv`)
 
 **Minor Planet Center — distant object catalogue** — the IAU's independent
 orbit solution for the same objects, used to cross-check JPL and surface
 disagreement.
 - File: <https://www.minorplanetcenter.net/Extended_Files/distant_extended.json.gz>
 - Index of extended files: <https://www.minorplanetcenter.net/data>
-- Feeds: the `mpc_*` columns and `a_disagreement_pct` in `tnos.csv`
+- Feeds: the `mpc_*` columns and `a_disagreement_pct` in `tnos.csv`, and
+  `well_determined` in `etnos.json`: an object seen at more than one opposition
+  (`Num_opps` ≥ 2), the sample rule of Brown & Batygin 2019 and 2021
+
+**NSF NOIRLab Astro Data Archive and the Canadian Astronomy Data Centre** —
+the public exposures behind the tracking game on the data page (DECam and
+CFHT MegaCam), found with CADC's Solar System Object Image Search.
+- NOIRLab: <https://astroarchive.noirlab.edu>
+- CADC SSOIS: <https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/ssois/>
+- Feeds: `public/game/` (scripts/fetch_game_sequences.py); acknowledgements in `public/game/CREDITS.md`
+
+**Minor Planet Center — observations API and observatory codes** — every
+reported position of the 90 extreme objects, and where each observatory is.
+- API: <https://data.minorplanetcenter.net/api/get-obs> (80-column format)
+- Codes: <https://minorplanetcenter.net/iau/lists/ObsCodes.html>
+- Feeds: `observatories.json`
 
 **Minor Planet Center — numbered minor planets** — discovery date, site and
 discoverer.
@@ -56,11 +71,13 @@ discoverer.
 - <https://ssd.jpl.nasa.gov/planets/approx_pos.html>
 - Feeds: `planets.json`
 
-**JPL Horizons API** — used only to *verify* our coordinate transforms, not as
-a data source. Agreement 2.5″–4.5″ on four test objects.
+**JPL Horizons API** — used to *verify* our coordinate transforms (agreement
+2.5″–4.5″ on four test objects), and for one position: Voyager 1's, on the
+catalogue date, for the distance page's map.
 - Endpoint: <https://ssd.jpl.nasa.gov/api/horizons.api>
 - Documentation: <https://ssd-api.jpl.nasa.gov/doc/horizons.html>
 - Web interface: <https://ssd.jpl.nasa.gov/horizons/app.html>
+- Feeds: `voyager_1` in `positions.json`
 
 ### Literature metadata
 
@@ -123,6 +140,9 @@ FOOT = """
   2014, which has no preprint, against the journal PDF (`papers/`).
 - **Survey exclusion fractions** (56% ZTF, 78% cumulative) verified from the ZTF
   and Pan-STARRS1 search abstracts.
+- **Published odds** in `published_odds.json` (0.007%, 0.2%, 99.6%, 17% to 94%,
+  and Shankman et al.'s "consistent with ... uniform") quoted from each paper's
+  abstract in `papers/`, checked 2026-10-30.
 
 Corrections this process produced, and the claims still unverified, are listed
 in [`README.md`](README.md).

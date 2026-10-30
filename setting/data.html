@@ -3,8 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
+<style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>The data · The search for Planet Nine</title>
-<meta name="description" content="How astronomers find and track the most distant objects, where the records are kept, and which of the thousands of catalogued bodies carry the Planet Nine argument." />
+<meta name="description" content="The telescopes that find the most distant objects, how an orbit is pinned down from their pictures, and which of the thousands of catalogued bodies the case for Planet Nine rests on." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="data">
@@ -12,86 +15,92 @@
   <header class="page-head wrap">
     <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
     <h1>The <em>data</em></h1>
-    <p class="lede">How these objects are found and measured, where the records are kept, and how few of the
-    thousands of catalogued bodies actually matter.</p>
+    <!-- A telescope finding an object's arc, with the page's three numbers as callouts (charts/datahero.js) -->
+    <div id="dataHero"></div>
   </header>
 
-  <!-- how they are found -->
-  <section class="part wrap" id="tracking">
+  <!-- every observatory on a map; clicking a dot opens its card (charts/scopes.js, observatories.json,
+       public/telescopes/credits.json). The map carries its own key; no caption explains it. -->
+  <section class="part wrap flush" id="telescopes">
     <div class="sec-head">
-      <h2>How they are found</h2>
-      <p>The method has not changed since Pluto: photograph the same patch of sky more than once and look for
-      the one dot that moved. These are the actual frames in which four of the objects on this site were found.</p>
+      <h2>Where the observations come from</h2>
     </div>
-    <div class="blink-grid">
-      <figure id="blinkPluto"></figure>
-      <figure id="blinkSedna"></figure>
-      <figure id="blinkVP113"></figure>
-      <figure id="blinkBP519"></figure>
-    </div>
-
-    <h3 class="sub-title">From a few dots to an orbit</h3>
-    <div class="howto-steps">
-      <div class="hs"><span class="n">1</span><div><b>Find the mover.</b> Two or three exposures, an hour or a week apart. Anything that shifts against the stars is in the solar system; how fast it shifts says roughly how far away it is.</div></div>
-      <div class="hs"><span class="n">2</span><div><b>Follow it.</b> Each later night adds a position. The run of positions is the object's <em>arc</em>. Objects this far out barely move, so a useful arc takes years, and many are lost before they get one.</div></div>
-      <div class="hs"><span class="n">3</span><div><b>Fit the oval.</b> An orbit is the one ellipse that passes through every measured position. With a short arc, many different ellipses fit almost equally well, so the far end of the orbit is guesswork.</div></div>
-    </div>
-    <div class="card" style="margin-top:18px">
-      <h3>A short arc is an uncertain orbit</h3>
-      <div class="sub">Each dot is one of the 90 extreme objects. Across: how long it has been watched. Up: how much the two
-      catalogues disagree about how far out its orbit goes. Both fit the same photographs; they differ only in method.</div>
-      <div id="chartArc"></div>
-      <p class="caption">After a year or more of observations the two catalogues agree to within a few percent,
-      often far better. Under a year, they can differ by a factor of two or twenty. That is why this site counts
-      only orbits watched for at least a year, across three or more seasons, with a low formal uncertainty.
-      <span data-n="shortN">—</span> of the 90 fail that test.</p>
+    <div class="scope-map">
+      <div class="scope-map-bar">
+        <button type="button" class="btn-game primary" id="findMe">Find the telescope nearest you</button>
+        <span class="map-note" id="findNote">Your location stays in your browser.</span>
+      </div>
+      <div id="scopeMap"></div>
     </div>
   </section>
 
-  <!-- where the data lives -->
-  <section class="part wrap" id="catalogues">
+  <!-- from pictures to an orbit: three drawings (charts/orbitart.js), laid out like the planet definition -->
+  <section class="part wrap" id="orbit">
     <div class="sec-head">
-      <h2>Where the data lives</h2>
-      <p>Every number on this site about a real object comes from two public catalogues that keep the orbits
-      of everything known in the solar system. Here is the same object, Sedna, exactly as each of them stores it.</p>
+      <h2>From pictures to orbits</h2>
     </div>
-    <div class="two-col">
-      <div class="source-card" id="cardJpl"></div>
-      <div class="source-card" id="cardMpc"></div>
-    </div>
-    <p class="caption" style="margin-top:16px">
-      The two catalogues share the raw observations (every measured position is reported to the Minor Planet Center,
-      which publishes it) but fit orbits independently, which is what makes the disagreement chart above possible.
-      This site's processed files join the two by designation; <span data-n="matched">—</span> of
-      <span data-n="total">—</span> bodies cross-match. Query details and every source are in
-      <a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/data/SOURCES.md">data/SOURCES.md</a>.
-    </p>
+    <ol class="definition">
+      <li data-art="find"><div><b>Spot the moving dot</b>The stars stay put. Whatever moves is in the solar system.</div></li>
+      <li data-art="follow"><div><b>Follow it</b>Each night it is found again adds a point to its arc.</div></li>
+      <li data-art="fit"><div><b>Fit the oval</b>A short arc fits many orbits. Years of points single one out.</div></li>
+    </ol>
   </section>
 
-  <!-- which objects matter -->
-  <section class="part wrap" id="matter">
+  <!-- the game on real discovery frames (charts/spotgame.js, public/game/game.json), then three more
+       discoveries in a row (charts/tracking.js, public/tracking/credits.json). Credits under images are one
+       short dim line; the full citations are on the credits page. -->
+  <section class="part wrap" id="spot">
     <div class="sec-head">
-      <h2>Which objects matter</h2>
-      <p>The catalogues hold <strong><span data-n="total">—</span> bodies</strong> whose average distance from the Sun
-      is beyond Neptune's 30 AU. Each cell below is one of them. The Planet Nine argument rests on a tiny corner of
-      this grid.</p>
+      <h2>Your turn at the telescope</h2>
+      <p>Follow the marked object through the frames, then click where it ends up.</p>
     </div>
-    <div class="grid-wrap">
-      <div id="chartGrid"></div>
-      <ul class="grid-legend" id="gridLegend"></ul>
-    </div>
-    <p class="caption">Why these cuts: beyond about 150 AU an orbit is too large for Neptune to have shaped it
-    recently, and a closest approach beyond 30 AU keeps it clear of Neptune altogether. Those are the objects whose
-    orbits remember whatever else is out there. The well-measured ones are the only ones whose direction can be trusted.
-    The six at the top-left are the orbits the 2016 proposal was built on.</p>
+    <div id="game"></div>
+
+    <h3 class="sub-title">Three more discoveries</h3>
+    <ol class="finds">
+      <li><figure id="blinkPluto"></figure><span class="beat-y">1930</span>
+        <p>Clyde Tombaugh finds Pluto by flipping between two plates taken six days apart.</p></li>
+      <li><figure id="blinkSedna"></figure><span class="beat-y">2003</span>
+        <p>Sedna never comes closer to the Sun than <span class="k-au" data-n="sednaQ">—</span>, out of Neptune's
+        reach. Palomar caught it in three exposures over three hours.</p></li>
+      <li><figure id="blinkBP519"></figure><span class="beat-y">2015</span>
+        <p>A camera built to study dark energy finds 2015 BP519, one of the most extreme orbits known.</p></li>
+    </ol>
   </section>
 
-  <section class="part wrap">
-    <div class="takeaway">
-      <div class="takeaway-k">So far</div>
-      <p>The case rests on a few dozen faint objects, each photographed a handful of times, each caught near the
-      Sun. The next part looks at the one thing their orbits have in common: which way they lean.</p>
+  <!-- the catalogue: every known body beyond Neptune where it is, narrowed level by level (charts/catalogue.js) -->
+  <section class="part wrap" id="catalogue">
+    <div class="sec-head">
+      <h2>Thousands of bodies, a few dozen that count</h2>
+      <p>NASA's JPL and the Minor Planet Center keep the orbit of every known body in the solar system.</p>
     </div>
+    <div class="cat-wrap">
+      <div class="cat-side">
+        <div class="cat-levels" id="catLevels" role="group" aria-label="Which bodies to mark"></div>
+        <label class="cat-toggle"><input type="checkbox" id="catOrbits"> Draw their orbits</label>
+      </div>
+      <div id="catMap"></div>
+    </div>
+  </section>
+
+  <!-- how long each was watched, and how well that pins its orbit (charts/arcs.js); the objects set aside
+       are grey. The bias argument on the probability page starts here: what makes the cut depends on who kept looking. -->
+  <section class="part wrap" id="arcs">
+    <div class="sec-head">
+      <h2>Years of watching pin down an orbit</h2>
+      <p class="lead-key">Whether an object makes the cut depends on telescopes finding it again, year after year.</p>
+      <p>Every position from another season shrinks the uncertainty in its orbit. Like the studies of Planet
+      Nine<sup class="cite"><a href="/credits.html#cite-brown-batygin-2019">1</a>,<a href="/credits.html#cite-brown-batygin-2021">2</a></sup>,
+      this site counts only objects seen in more than one season.</p>
+    </div>
+    <!-- the key on one line: the two groups, no estimate, and a drawn sample row for what a line and a tick are -->
+    <ul class="legend arc-legend">
+      <li class="legend-item"><i class="legend-swatch arc-used"></i>in the sample</li>
+      <li class="legend-item"><i class="legend-swatch arc-unused"></i>set aside</li>
+      <li class="legend-item"><svg class="arc-sample" viewBox="0 0 64 12" aria-hidden="true"><line x1="1" y1="6" x2="63" y2="6"/><path d="M1,2v8M9,2v8M13,2v8M30,2v8M47,2v8M51,2v8M63,2v8"/></svg>a tick per night it was measured</li>
+      <li class="legend-item"><i class="legend-swatch arc-none"></i>no uncertainty yet</li>
+    </ul>
+    <div id="arcChart"></div>
   </section>
 </main>
 <script type="module" src="/src/pages/data.js"></script>

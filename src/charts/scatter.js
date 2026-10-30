@@ -9,7 +9,6 @@
 // a drag is in flight destroys the gesture half-way through.
 
 import * as d3 from 'd3'
-import { showTip, hideTip } from './tooltip.js'
 import { registerHighlight, setHover } from '../highlight.js'
 
 const W = 700, H = 420
@@ -36,7 +35,7 @@ export function makeScatter (root, { onBrush }) {
 
   g.append('text').attr('class', 'axis-label')
     .attr('x', iw / 2).attr('y', ih + 40).attr('text-anchor', 'middle')
-    .text('how far the orbit reaches (AU — each gap is 10× further)')
+    .text('average distance from the Sun (AU)')
   g.append('text').attr('class', 'axis-label')
     .attr('transform', `translate(-44,${ih / 2}) rotate(-90)`).attr('text-anchor', 'middle')
     .text('closest it ever comes to the Sun (AU)')
@@ -48,7 +47,7 @@ export function makeScatter (root, { onBrush }) {
     .attr('stroke', 'var(--text-muted)').attr('stroke-width', 1).attr('opacity', .55)
   g.append('text').attr('class', 'axis-label')
     .attr('x', iw - 4).attr('y', y(45) - 7).attr('text-anchor', 'end')
-    .text('above this line, Neptune is too far away to be the cause')
+    .text('out of Neptune\'s reach')
 
   const gDots = g.append('g').attr('class', 'dots')
   const gb = g.append('g').attr('class', 'brush')
@@ -68,8 +67,8 @@ export function makeScatter (root, { onBrush }) {
     })
   gb.call(brush)
   gb.selectAll('.selection')
-    .attr('fill', 'var(--series-3)').attr('fill-opacity', .12)
-    .attr('stroke', 'var(--series-3)').attr('stroke-width', 1.5)
+    .attr('fill', 'var(--series-1)').attr('fill-opacity', .1)
+    .attr('stroke', 'var(--series-1-ink)').attr('stroke-width', 1.5)
 
   registerHighlight(id => {
     gDots.selectAll('circle.obj')
@@ -85,14 +84,8 @@ export function makeScatter (root, { onBrush }) {
       dots.exit().remove()
       dots.enter().append('circle').attr('class', 'obj')
         .attr('stroke', 'var(--surface-1)').attr('stroke-width', 1)
-        .on('pointerenter', (ev, d) => {
-          setHover(d.id)
-          showTip(ev, `<div class="t-name">${d.name || d.provisional_desig || d.id}</div>
-            <dl><dt>reaches</dt><dd>${d3.format(',.0f')(d.a_au)} AU</dd>
-            <dt>closest</dt><dd>${d.q_au.toFixed(1)} AU</dd>
-            <dt>leans</dt><dd>${d.varpi_deg.toFixed(0)}°</dd></dl>`)
-        })
-        .on('pointerleave', () => { setHover(null); hideTip() })
+        .on('pointerenter', (ev, d) => setHover(d.id))
+        .on('pointerleave', () => setHover(null))
         .merge(dots)
         .attr('cx', d => x(d.a_au)).attr('cy', d => y(d.q_au))
         .attr('r', d => d.well_determined ? 5 : 3.5)

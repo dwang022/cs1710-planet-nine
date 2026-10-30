@@ -1,85 +1,113 @@
-// Sketch "put the planet anywhere" + physical properties.
+// Put a planet out there: the reader dials in an orbit and a mass, and the planet
+// is scored against three published constraints, each traced to a paper:
 //
-// The user dials in an orbit; we score it against published constraints.
-// Every term in the score traces to a number we verified from a paper:
-//
-//  A. Anti-alignment. Batygin & Brown's mechanism requires the planet's
-//     perihelion to sit ~180 degrees from the clustered objects'. We measure
-//     against the mean direction of the CURRENT sample, which is real data.
-//  B. Agreement with Brown & Batygin (2021) marginalized posterior:
+//  A. Anti-alignment. Batygin & Brown's mechanism needs the planet's closest
+//     point about 180 degrees from the clustered objects'. Measured against the
+//     mean direction of the reader's current sample, which is real data.
+//  B. Agreement with the Brown & Batygin (2021) fit (Figure 8 medians):
 //     a = 460.7 +178.8/-103.3 AU, e = 0.3 +/-0.1, i = 15.6 +5.2/-5.4 deg.
-//  C. Already-searched. Brown & Batygin (2024) rule out the planet to V=21.5
-//     over most of the sky; a planet bright enough to have been seen, but not
-//     seen, is disfavoured.
+//  C. Could it still be hiding? The share of its orbit the planet spends fainter
+//     than the searches' 50% depth (Brown, Holman & Batygin 2024: V = 21.5).
+//
+// The brightness model is read from planet_nine_predictions.json
+// (physical_properties.brightness_model), where every number carries its source:
+// radius = mass / 3 Earth radii (the rule the 2021 fit and the 2024 search use),
+// Neptune's albedo, and the standard reflected-light magnitude, which reproduces
+// Linder & Mordasini's published V for their model planets. Temperature is read
+// off Linder & Mordasini's grid. Why m/3 and not their larger radii is said in the
+// data file's `_choice`.
 
 import * as d3 from 'd3'
 import { orbitPath, positionAt } from '../orbits.js'
 
-// Linder & Mordasini (2016) publish a 10 Mearth / 700 AU model: R = 3.7 Rearth,
-// T_eff = 47 K. We scale from that single anchor; the scaling is OURS.
-const LM_ANCHOR = { mass: 10, dist: 700, radius: 3.7, teff: 47, V: 21.7 }
+const EARTH_KM = 6371
 
-export function physicalProperties (massEarths, distanceAu, albedo) {
-  // Sub-Neptune mass-radius scaling, anchored on Linder & Mordasini's point.
-  const radius = LM_ANCHOR.radius * Math.pow(massEarths / LM_ANCHOR.mass, 0.27)
-  // Residual internal heat dominates; cooling luminosity scales roughly with
-  // mass, and T_eff with (L/R^2)^(1/4).
-  const teff = LM_ANCHOR.teff * Math.pow(massEarths / LM_ANCHOR.mass, 0.17)
-    * Math.pow(LM_ANCHOR.radius / radius, 0.5)
-  // Reflected light: flux ~ albedo * R^2 / d^4.
-  const dV = -2.5 * Math.log10(
-    (albedo / 0.4) * Math.pow(radius / LM_ANCHOR.radius, 2) *
-    Math.pow(LM_ANCHOR.dist / distanceAu, 4))
-  return { radius, teff, V: LM_ANCHOR.V + dV }
+/** The model from physical_properties.brightness_model: width, temperature and magnitude from mass and distance. */
+export function brightnessModel (bm) {
+  const grid = bm.linder_mordasini_grid
+  const lm = grid.mass_earths.map(Math.log)
+  const radius = m => m / 3
+  // temperature: linear in log mass between the grid's points; outside the grid, no number (see `inGrid`)
+  const teff = m => {
+    const x = Math.log(m)
+    const k = Math.max(0, Math.min(lm.length - 2, d3.bisectRight(lm, x) - 1))
+    const t = (x - lm[k]) / (lm[k + 1] - lm[k])
+    return grid.T_eff_K[k] + t * (grid.T_eff_K[k + 1] - grid.T_eff_K[k])
+  }
+  const magnitude = (m, r, p = bm.albedo.value) =>
+    5 * Math.log10(1329 / (2 * radius(m) * EARTH_KM * Math.sqrt(p))) + 5 * Math.log10(r * (r - 1))
+  return {
+    radius, teff, magnitude,
+    albedo: bm.albedo.value,
+    limitV: bm.detection.V_50pct,
+    tempRange: [grid.mass_earths[0], grid.mass_earths[grid.mass_earths.length - 1]],
+    coolest: grid.T_eff_K[0],
+  }
 }
 
-/** Score a user-placed planet, 0-100, with the reasons broken out. */
-export function scorePlanet ({ a, e, i, varpi }, observedMeanVarpi, albedo, mass) {
+/**
+ * Brightness along the orbit, and the share of the time the planet spends fainter
+ * than the searches' limit. Where on its orbit it is now is unknown, so every point
+ * counts by the time spent there: uniform steps in mean anomaly, Kepler's equation
+ * for the distance.
+ */
+export function orbitBrightness ({ a, e, mass }, model, n = 720) {
+  let hidden = 0
+  for (let k = 0; k < n; k++) {
+    const M = 2 * Math.PI * (k + 0.5) / n
+    let E = M
+    for (let it = 0; it < 30; it++) E -= (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E))
+    const r = a * (1 - e * Math.cos(E))
+    if (model.magnitude(mass, r) > model.limitV) hidden++
+  }
+  return {
+    brightest: model.magnitude(mass, a * (1 - e)),
+    faintest: model.magnitude(mass, a * (1 + e)),
+    hidden: hidden / n,
+  }
+}
+
+/**
+ * Score a user-placed planet, 0-100, with the reasons broken out. Each term's
+ * `cite` is the slug of its paper on the credits page (credits.html#cite-...).
+ */
+export function scorePlanet (planet, observedMeanVarpi, model) {
+  const { a, e, i, varpi } = planet
   const terms = []
 
   // A. anti-alignment with the real objects
   const sep = Math.abs(((varpi - observedMeanVarpi + 540) % 360) - 180)
-  const antiScore = Math.max(0, 1 - Math.abs(sep - 180) / 90)
   terms.push({
-    key: 'Points opposite the objects',
-    score: antiScore,
-    detail: `${Math.abs(sep).toFixed(0)}° from the cluster — the mechanism needs about 180°`,
-    cite: 'Batygin & Brown 2016',
+    key: 'Points away from the objects',
+    score: Math.max(0, 1 - Math.abs(sep - 180) / 90),
+    detail: `${sep.toFixed(0)}° from them; about 180° needed`,
+    cite: 'batygin-brown-2016',
   })
 
-  // B. agreement with the published posterior
-  const gauss = (v, mu, lo, hi) => Math.exp(-0.5 * Math.pow((v - mu) / (v < mu ? lo : hi), 2))
-  const aS = gauss(a, 460.7, 103.3, 178.8)
-  const eS = gauss(e, 0.30, 0.1, 0.1)
-  const iS = gauss(i, 15.6, 5.4, 5.2)
+  // B. agreement with the published fit
+  const POST = { a: [460.7, 103.3, 178.8], e: [0.30, 0.1, 0.1], i: [15.6, 5.4, 5.2] }
+  const gauss = (v, [mu, lo, hi]) => Math.exp(-0.5 * Math.pow((v - mu) / (v < mu ? lo : hi), 2))
+  const span = ([mu, lo, hi], f) => `${f(mu - lo)}–${f(mu + hi)}`
   terms.push({
-    key: 'Matches the published orbit fit',
-    score: (aS + eS + iS) / 3,
-    detail: `a ${a.toFixed(0)} AU vs 461 (+179/−103) · e ${e.toFixed(2)} vs 0.30±0.10 · i ${i.toFixed(0)}° vs 16°±5`,
-    cite: 'Brown & Batygin 2021, Fig. 8',
+    key: 'Matches the published fit',
+    score: (gauss(a, POST.a) + gauss(e, POST.e) + gauss(i, POST.i)) / 3,
+    detail: `<span class="k-au">${a.toFixed(0)} AU</span> (fit ${span(POST.a, v => v.toFixed(0))}) · stretch ${e.toFixed(2)} (${span(POST.e, v => v.toFixed(1))}) · tilt ${i.toFixed(0)}° (${span(POST.i, v => v.toFixed(0))}°)`,
+    cite: 'brown-batygin-2021',
   })
 
-  // C. would we already have found it?
-  // Use the time-averaged orbital distance a(1 + e^2/2): by Kepler's second law
-  // an eccentric body spends most of its time near the far end of its orbit,
-  // which is why the papers quote magnitudes "near aphelion".
-  const typicalDist = a * (1 + e * e / 2)
-  const { V } = physicalProperties(mass, typicalDist, albedo)
-  const hideScore = V > 21.5 ? 1 : Math.max(0, (V - 19) / 2.5)
+  // C. would the searches have seen it?
+  const b = orbitBrightness(planet, model)
   terms.push({
-    key: 'Could still be undetected',
-    score: hideScore,
-    detail: V > 21.5
-      ? `brightness V ≈ ${V.toFixed(1)} — fainter than every search so far, so it could still be hiding`
-      : `brightness V ≈ ${V.toFixed(1)} — Pan-STARRS1 reached V 21.5 and found nothing, so this spot is largely ruled out`,
-    cite: 'Brown & Batygin 2024 (V = 21.5 limit)',
+    key: 'Could still be hiding',
+    score: b.hidden,
+    detail: `magnitude ${b.brightest.toFixed(1)} to ${b.faintest.toFixed(1)} along its orbit; searches reached ${model.limitV}`,
+    cite: 'brown-batygin-2024',
   })
 
-  const total = Math.round(100 * d3.mean(terms, t => t.score))
-  return { total, terms, V }
+  return { total: Math.round(100 * d3.mean(terms, t => t.score)), terms, brightness: b }
 }
 
-/** Small top-down diagram of the user's planet against the real objects. */
+/** Top-down picture of the reader's planet against the real extreme orbits. */
 export function drawPlacement (root, { objects, planet, maxAu }) {
   const S = 460, cx = S / 2, cy = S / 2
   const svg = d3.select(root).selectAll('svg').data([0]).join('svg')
@@ -102,6 +130,9 @@ export function drawPlacement (root, { objects, planet, maxAu }) {
   g.selectAll('circle.ring').data(r.ticks(3).filter(d => d > 0)).join('circle')
     .attr('class', 'ring').attr('cx', cx).attr('cy', cy).attr('r', d => r(d))
     .attr('fill', 'none').attr('stroke', 'var(--rule)')
+  // the rings say how far out they are, in AU (lime, like every distance on the site)
+  g.selectAll('text.ringl').data(r.ticks(3).filter(d => d > 0)).join('text')
+    .attr('class', 'ringl axis-label au halo').attr('x', cx + 4).attr('y', d => cy - r(d) - 4).text(d => `${d} AU`)
 
   const obj = g.selectAll('path.o').data(objects, d => d.id)
   obj.exit().remove()
@@ -110,20 +141,21 @@ export function drawPlacement (root, { objects, planet, maxAu }) {
     .attr('d', d => line(orbitPath(d.a_au, d.e, d.i_deg, d.node_deg, d.argperi_deg)))
     .attr('stroke', 'var(--series-1)').attr('stroke-width', 1).attr('opacity', 0.32)
 
+  // The reader's planet is a Planet Nine, so it takes the chosen skin's colour and icon, at its closest point.
   const argperi = (planet.varpi - planet.node + 360) % 360
   g.selectAll('path.user').data([planet]).join('path')
     .attr('class', 'user').attr('fill', 'none')
-    .attr('stroke', 'var(--series-2)').attr('stroke-width', 3)
+    .attr('stroke', 'var(--p9)').attr('stroke-width', 3)
     .attr('d', d => line(orbitPath(d.a, d.e, d.i, d.node, argperi)))
 
-  g.selectAll('circle.userperi').data([planet]).join('circle')
-    .attr('class', 'userperi').attr('r', 7)
-    .attr('fill', 'var(--series-2)')
-    .attr('stroke', 'var(--surface-1)').attr('stroke-width', 2)
-    .attr('cx', d => px(positionAt(d.a, d.e, d.i, d.node, argperi, 0)))
-    .attr('cy', d => py(positionAt(d.a, d.e, d.i, d.node, argperi, 0)))
+  const ICON = 30
+  const peri = positionAt(planet.a, planet.e, planet.i, planet.node, argperi, 0)
+  svg.selectAll('use.userperi').data([planet]).join('use')
+    .attr('class', 'userperi').attr('href', '#art-planet-nine')
+    .attr('width', ICON).attr('height', ICON)
+    .attr('x', px(peri) - ICON / 2).attr('y', py(peri) - ICON / 2)
 
-  svg.selectAll('circle.sun').data([0]).join('circle')
-    .attr('class', 'sun').attr('cx', cx).attr('cy', cy).attr('r', 3.5)
-    .attr('fill', 'var(--sun)')
+  svg.selectAll('use.sun').data([0]).join('use')
+    .attr('class', 'sun').attr('href', '#art-sun')
+    .attr('x', cx - 7).attr('y', cy - 7).attr('width', 14).attr('height', 14)
 }

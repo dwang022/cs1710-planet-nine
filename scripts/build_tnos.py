@@ -42,6 +42,12 @@ def mpc_key(rec):
     return (rec.get("Principal_desig") or "").strip()
 
 
+def multi_opposition(opps, arc_days):
+    if opps not in (None, ""):
+        return int(opps) >= 2
+    return (arc_days or 0) >= 365
+
+
 def main():
     jpl = load_jpl()
     mpc = {mpc_key(r): r for r in load_mpc() if mpc_key(r)}
@@ -106,14 +112,11 @@ def main():
             "mpc_num_opps": (m.get("Num_opps") if m else None),
             "mpc_arc_years": (m.get("Arc_years") if m else None),
         }
-        # Ordinal quality flag so the site can drop one-opposition junk orbits.
-        cc = num(o["condition_code"])
-        opps = row["mpc_num_opps"]
-        row["well_determined"] = bool(
-            cc is not None and cc <= 3
-            and (opps is None or int(opps) >= 3)
-            and (row["data_arc_days"] or 0) >= 365
-        )
+        # Seen at more than one opposition, i.e. in more than one observing season:
+        # the rule Brown & Batygin (2019, 2021) use for their sample, so the site's
+        # trusted sample is the standard one. Where the MPC has no count, an arc of
+        # a year or more stands in for it.
+        row["well_determined"] = multi_opposition(row["mpc_num_opps"], row["data_arc_days"])
         if row["mpc_a_au"]:
             row["a_disagreement_pct"] = round(100 * abs(row["mpc_a_au"] - a) / a, 4)
         else:

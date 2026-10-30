@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
+<style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
+<title>What else could explain it · The search for Planet Nine</title>
+<meta name="description" content="A planet is not the only explanation for the aligned orbits. Eight competing ideas scored against the four things any of them must account for, and the papers that put the case against a planet." />
+<link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
+</head>
+<body data-page="alternatives">
+<main>
+  <header class="page-head wrap">
+    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
+    <h1>A planet is <em>not the only explanation</em></h1>
+    <p class="lede">The pattern needs explaining whether or not Planet Nine exists.</p>
+  </header>
+
+  <section class="part wrap" id="scorecard">
+    <div class="sec-head">
+      <!-- pages/alternatives.js fills the two counts from alternatives.json -->
+      <h2 id="altTitle">Eight explanations, four tests</h2>
+      <p>Open a row to see how each idea works and where it falls short.</p>
+    </div>
+    <!-- charts/matrix.js draws the key and the table; each row opens a panel under itself (charts/altart.js drawings) -->
+    <div class="legend alt-key" id="altKey"></div>
+    <div class="alt-wrap"><table class="alt-table" id="altTable"></table></div>
+    <p class="caption">Our reading of the published arguments. “Not found” counts against a planet and for every idea
+    that needs none.</p>
+  </section>
+
+  <section class="part wrap" id="against">
+    <!-- The compact ledger with each row's line. Ammonite's finders argue for a planet farther out, not against one
+         (its branch has "of": "orbit" in field_timeline.json), so PICK.against leaves it to the timeline. -->
+    <div class="sec-head">
+      <h2>The case against</h2>
+      <p>Studies that trace the pattern to where telescopes looked or to something other than a planet, or find an
+      orbit that does not fit.</p>
+    </div>
+    <div class="legend fl-legend" id="againstLegend" aria-hidden="true"></div>
+    <div class="fl" id="againstLedger"></div>
+    <p class="caption">Which side a paper lands on is <strong>our</strong> reading of its abstract. Both sides are on the
+    <a href="/search/timeline.html">timeline</a>.</p>
+  </section>
+
+  <section class="part wrap">
+    <div class="takeaway">
+      <div class="takeaway-k">So far</div>
+      <p>Only a planet, or a black hole of the same mass, accounts for all three patterns in the orbits. The surest way
+      to settle the argument is to <strong>find it</strong>.</p>
+    </div>
+  </section>
+</main>
+<script type="module" src="/src/pages/alternatives.js"></script>
+</body>
+</html>

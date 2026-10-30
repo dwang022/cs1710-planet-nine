@@ -19,6 +19,12 @@ curl -sSL -m 300 -o data/raw/mpc_numbered_discovery.txt \
 echo "==> Joining catalogues"
 python3 scripts/build_tnos.py
 
+echo "==> Where everything is on the catalogue date (and Voyager 1, from Horizons)"
+python3 scripts/build_positions.py
+
+echo "==> Every observation of the extreme objects, and the telescopes behind them"
+python3 scripts/build_observatories.py
+
 echo "==> Discovery circumstances"
 python3 scripts/build_discovery.py
 

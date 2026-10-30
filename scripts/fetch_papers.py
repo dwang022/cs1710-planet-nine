@@ -19,6 +19,8 @@ UA = "cs1710-planet-nine/1.0 (mailto:danielwang@g.harvard.edu)"
 
 # (doi, stance, short label for the timeline, one-line summary)
 PAPERS = [
+ ("10.1086/424617", "neutral", "Morbidelli & Levison 2004",
+  "Before the Planet Nine hypothesis: of four ways to lift 2000 CR105's closest point out of Neptune's reach, only a passing star works. A solar-mass star passing about 800 AU away moves only objects beyond about 200 AU, matching CR105 and the newly found Sedna (2003 VB12)."),
  ("10.1038/nature13156", "supports", "Trujillo & Sheppard 2014",
   "Discovery of 2012 VP113. First to point out that the distant objects share an argument of perihelion, and to suggest a super-Earth as the cause."),
  ("10.1088/0004-637X/781/1/4", "against", "Luhman 2014 (WISE)",
@@ -49,7 +51,7 @@ PAPERS = [
   "The definitive review. Revises the planet to 5-10 Earth masses, a = 400-800 AU, e = 0.2-0.5, i = 15-25 degrees, explaining clustering beyond a ~ 250 AU."),
  ("10.3847/1538-3881/aaf051", "supports", "Brown & Batygin 2019",
   "Quantifies the significance of the clustering after modelling known survey biases: about 1 in 500 by chance."),
- ("10.3847/1538-3881/aaf0fc", "alternative", "Sefilian & Rafikov 2019",
+ ("10.3847/1538-3881/aaf0fc", "alternative", "Sefilian & Touma 2019",
   "A massive self-gravitating disk of small bodies can produce the same clustering with no planet."),
  ("10.1103/PhysRevLett.125.051103", "alternative", "Scholtz & Unwin 2020",
   "Same mass, same orbit, but a grapefruit-sized primordial black hole instead of a planet."),
@@ -75,6 +77,12 @@ PAPERS = [
   "Discovery of 2023 KQ14, a Sedna-like object with q = 66 AU and a = 252 AU. Its orbit does not align with the other Sedna-like objects, and its long-term stability favours a hypothetical planet on a larger orbit (about 500 AU) rather than a closer one."),
  ("10.3847/2041-8213/ae3a75", "against", "Cheng, Li & Yang 2026 (2017 OF201)",
   "A roughly 700 km dwarf-planet candidate on an 830 AU orbit with perihelion at 45 AU (posted May 2025). Its longitude of perihelion lies outside the observed clustering, which the authors call a challenge to the dynamical evidence for Planet Nine."),
+ ("10.3847/1538-3881/acef1e", "alternative", "Brown & Mathur 2023",
+  "Modified gravity (MOND), proposed to explain galaxy rotation without dark matter, would line up the long axes of the distant orbits with the direction of the galactic centre and cluster them, an alternative explanation for the anomalies with no ninth planet."),
+ ("10.3847/1538-4357/ad40a3", "neutral", "Vokrouhlický et al. 2024",
+  "The first solar-system test of MOND at the weak accelerations where it departs from Newton. Simulating bodies scattered outward over the Sun's lifetime, the popular AQUAL form fails to reproduce the long-period and Oort-cloud comets seen from Earth, and the orbits of the detached disk (perihelion > 38 AU). Screened versions of MOND are not ruled out."),
+ ("10.1038/s41550-024-02349-x", "alternative", "Pfalzner et al. 2024",
+  "Thousands of flyby simulations find that a star of about 0.8 solar masses passing 110 AU from the Sun at an inclination of about 70 degrees reproduces the trans-Neptunian populations, including the distant detached objects and the retrograde ones. Predicts Rubin will find distant and retrograde objects relatively common."),
 ]
 
 # arXiv ids, each confirmed by an exact title match against the arXiv API.
@@ -105,6 +113,10 @@ ARXIV = {
     "10.1051/0004-6361/201628227": "1602.06116",
     "10.1038/s41550-025-02595-7": "2508.02162",
     "10.3847/2041-8213/ae3a75": "2505.15806",
+    "10.1086/424617": "astro-ph/0403358",
+    "10.3847/1538-3881/acef1e": "2304.00576",
+    "10.3847/1538-4357/ad40a3": "2403.09555",
+    "10.1038/s41550-024-02349-x": "2409.03342",
 }
 
 
@@ -159,7 +171,7 @@ def main():
             "'stance' is our editorial reading of each abstract, not a label the authors chose. Say so on the site.",
             "Crossref citation counts undercount astronomy, which cites heavily through arXiv and NASA ADS. Use them as relative weight, not absolute impact.",
             "Every summary below was checked against the paper's own abstract (or full text) in October 2026, except where summary_checked_against_abstract is false.",
-            "This is a deliberately chosen ~28-paper sample of a literature with hundreds of entries. It is not a census, and counting stances here does not measure community opinion.",
+            "This is a deliberately chosen ~32-paper sample of a literature with hundreds of entries. It is not a census, and counting stances here does not measure community opinion.",
         ],
         "_stance_values": {
             "supports": "argues the clustering is real and a planet is the best explanation",

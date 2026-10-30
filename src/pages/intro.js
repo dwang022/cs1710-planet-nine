@@ -1,22 +1,23 @@
-// The intro screen: a telescope looking at Planet Nine, shooting stars, the
+// The intro screen: an observatory looking at Planet Nine, shooting stars, the
 // skin carousel (arrows either side of the planet, its name beneath), Start,
 // and one button per part.
 
 import { PAGES, GROUPS, currentSkin, setSkin } from '../site.js'
-import { svgMarkup } from '../art.js'
+import { svgMarkup, OBSERVATORY } from '../art.js'
 import { SKINS, SKIN_IDS } from '../skins.js'
 import { url } from '../data.js'
 
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
 
-// --- the scene: telescope bottom-left, the planet up its line of sight ------
+// --- the scene: an observatory bottom-left, the planet up its line of sight ---
 
-// The telescope art points 34 degrees above horizontal from its pivot; the
-// planet sits on that line so the telescope really is looking at it. The skin
+// The observatory's telescope points OBSERVATORY.angle degrees above horizontal
+// from its far end (art.js); the planet sits on that line so the telescope
+// really is looking at it. The skin
 // carousel is laid over the planet's bounds from the same numbers (see skins()).
 const T = { x: 60, y: 250, w: 240, h: 180 }
-const LENS = [T.x + 124.8 * 1.5, T.y + 41.8 * 1.5]
-const ANG = 34 * Math.PI / 180, DIST = 370
+const LENS = [T.x + OBSERVATORY.lens[0] * (T.w / 160), T.y + OBSERVATORY.lens[1] * (T.h / 120)]
+const ANG = OBSERVATORY.angle * Math.PI / 180, DIST = 370
 const P9 = [LENS[0] + DIST * Math.cos(ANG), LENS[1] - DIST * Math.sin(ANG)]
 const SIZE = 170
 const BOX = [880, 420]
@@ -33,7 +34,7 @@ function scene () {
   root.innerHTML = `<svg viewBox="0 0 ${BOX[0]} ${BOX[1]}" aria-hidden="true">
     ${reduce.matches ? '' : stars}
     <line class="sight" x1="${LENS[0].toFixed(0)}" y1="${LENS[1].toFixed(0)}" x2="${(P9[0] - 92 * Math.cos(ANG)).toFixed(0)}" y2="${(P9[1] + 92 * Math.sin(ANG)).toFixed(0)}"/>
-    <use href="#art-telescope" x="${T.x}" y="${T.y}" width="${T.w}" height="${T.h}"/>
+    <use href="#art-observatory" x="${T.x}" y="${T.y}" width="${T.w}" height="${T.h}"/>
     <g class="p9-float"><g class="p9-swap"><use href="#art-planet-nine" x="${(P9[0] - SIZE / 2).toFixed(0)}" y="${(P9[1] - SIZE / 2).toFixed(0)}" width="${SIZE}" height="${SIZE}" style="color:#fff"/></g></g>
   </svg>`
 }

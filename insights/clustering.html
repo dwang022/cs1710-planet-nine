@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
+<style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>They lean the same way · The search for Planet Nine</title>
 <meta name="description" content="The clue behind Planet Nine: the most distant orbits in the solar system swing closest to the Sun on the same side. See it build up from one orbit, then herd a crowd of orbits with a planet of your own." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
@@ -12,109 +15,118 @@
   <header class="page-head wrap">
     <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
     <h1>The orbits <em>lean the same way</em></h1>
-    <p class="lede">The far ends of the solar system are full of small icy objects on long, oval orbits, and
-    nearly all of them swing closest to the Sun on the same side. If nothing were steering them, they would be
-    spread evenly all the way around.</p>
+    <p class="lede">Of the <span data-n="strictN">—</span> distant objects seen in more than one season,
+    <b><span data-n="strictHalf">—</span></b> swing closest to the Sun on the same side.</p>
+    <p class="head-q">What could be steering them?</p>
   </header>
 
-  <!-- the pattern, built up -->
-  <section class="part story" id="lean">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2>The pattern</h2>
-      </div>
+  <!-- before the pattern, what an orbit is: three drawings of Sedna's real orbit (charts/orbitintro.js),
+       laid out like the planet definition and the data page's "from pictures to orbits" -->
+  <section class="part wrap" id="orbits">
+    <div class="sec-head">
+      <h2>An orbit points somewhere</h2>
     </div>
+    <ol class="definition">
+      <li data-art="oval"><div><b>An oval</b>The Sun sits off-centre, so every orbit has a near end and a far end.</div></li>
+      <li data-art="time"><div><b>Slow at the far end</b>Each dot is the same stretch of time. Most of an orbit is spent far out, too faint to see.</div></li>
+      <li data-art="point"><div><b>A direction</b>A line from the Sun through the near end says which way the orbit points.</div></li>
+    </ol>
+  </section>
+
+  <!-- the pattern, built up. On the last step the views and the filters sit on the picture
+       (on a phone the filters stay in the card); pointing at an object lights it up, clicking opens its card. -->
+  <section class="part story" id="lean">
     <div class="scrolly wrap wide" id="leanStory">
       <div class="scrolly-graphic">
-        <div class="viz-head"><div id="leanReadout"></div><div class="seg" id="leanToggle" hidden><button type="button" data-v="orbits">Orbits</button><button type="button" data-v="ring">Compass</button></div></div>
-        <div class="viz" id="chartLean"></div>
+        <div class="viz-head"><div id="leanReadout"></div><ul class="legend lean-key" id="leanKey" aria-label="Key"></ul></div>
+        <div class="viz pic" id="chartLean">
+          <div class="pic-bar top lean-views" id="leanViews" hidden><div class="seg" id="leanToggle"><button type="button" data-v="orbits">Orbits</button><button type="button" data-v="ring">Compass</button><button type="button" data-v="sample">Sample</button></div></div>
+          <div class="lean-sample" id="chartScatter" hidden></div>
+          <div class="pic-bar lean-bar" id="leanBar" hidden></div>
+        </div>
       </div>
       <div class="scrolly-steps">
         <div class="step" data-step="one"><div class="step-card">
           <div class="step-n">1 / 8</div>
-          <h3>Start with one object: Sedna</h3>
-          <p>The <span class="k-sun">yellow dot</span> is the Sun. The small <span class="k-nep">grey loop</span>
-          around it is Neptune's orbit, the outermost planet.</p>
-          <p>The long <span class="k-obj">violet curve</span> is Sedna's orbit. It swings in to the
-          <strong>dot</strong>, its closest point to the Sun, then heads back out far past the edge of this picture.</p>
+          <h3>Sedna</h3>
+          <ul>
+            <li>It never comes closer to the Sun than <span class="k-au" data-n="sednaQ">—</span>, out of Neptune's reach.</li>
+            <li>The rest of its orbit runs far beyond this picture.</li>
+          </ul>
         </div></div>
         <div class="step" data-step="point"><div class="step-card">
           <div class="step-n">2 / 8</div>
           <h3>Every orbit points somewhere</h3>
-          <p>Draw a line from the Sun through that closest point. That is the direction the orbit
-          <em>points</em>. For Sedna it is <strong><span data-n="sednaDeg">—</span>°</strong>, measured
-          counter-clockwise from the right, like a compass.</p>
-          <p class="step-key">This one angle per object is all this part of the site is about.</p>
+          <ul>
+            <li>A line from the Sun through its closest point gives the direction an orbit points.</li>
+            <li>Sedna's points at <strong><span data-n="sednaDeg">—</span>°</strong>, counted counter-clockwise from the right.</li>
+          </ul>
         </div></div>
         <div class="step" data-step="all"><div class="step-card">
           <div class="step-n">3 / 8</div>
           <h3>Now add the rest</h3>
-          <p>Here are all <strong><span data-n="strictN">—</span> objects</strong> whose orbits have been
-          measured well (the ones the previous page's grid lit up in violet).</p>
-          <p class="step-key">Ignore the curves. Just look at where the dots are.</p>
+          <ul>
+            <li><span data-n="strictN">—</span> distant objects were seen in more than one season.</li>
+            <li><span data-n="looseExtra">—</span> more were seen in one season only, too briefly to trust.</li>
+          </ul>
         </div></div>
         <div class="step" data-step="half"><div class="step-card">
           <div class="step-n">4 / 8</div>
           <h3>Most of them are on one side</h3>
-          <p>Cut the picture in half through the Sun. <strong><span data-n="strictHalf">—</span> of the
-          <span data-n="strictN">—</span></strong> dots fall in the shaded half.</p>
-          <p>If the directions were random, you would expect about <span data-n="strictHalfExpect">—</span> on each side.</p>
+          <ul>
+            <li>Cut the picture in half through the Sun, and <strong><span data-n="strictHalf">—</span> of the
+            <span data-n="strictN">—</span></strong> fall in one half.</li>
+          </ul>
+          <p class="step-key">Random directions would split about <span data-n="strictHalfExpect">—</span> and
+          <span data-n="strictHalfExpect">—</span>.</p>
         </div></div>
         <div class="step" data-step="ring"><div class="step-card">
           <div class="step-n">5 / 8</div>
-          <h3>Make the pattern easier to see</h3>
-          <p>Throw away the curves and keep only each object's direction. Every dot slides out to the rim of a
-          compass, at its angle.</p>
-          <p class="step-key">The dots crowd one part of the rim and leave the opposite side nearly empty.</p>
+          <h3>Only the direction</h3>
+          <ul>
+            <li>Keep only each object's direction, and every dot slides out to the rim at its angle.</li>
+          </ul>
+          <p class="step-key">One side of the rim is crowded, the other sparse.</p>
         </div></div>
         <div class="step" data-step="arrow"><div class="step-card">
           <div class="step-n">6 / 8</div>
           <h3>Boil it down to one arrow</h3>
-          <p>Average all the directions together. Dots spread evenly around the rim cancel out and leave a stub.
-          The more they agree, the longer the <strong>white arrow</strong> gets. If every object pointed the same
-          way, it would reach the rim.</p>
-          <p class="step-key">Here it reaches <span data-n="strictR">—</span> of the way. Is that a lot? The next
-          page puts it to the test.</p>
+          <ul>
+            <li>Averaging every direction gives one arrow.</li>
+            <li>Random directions cancel to a stub; full agreement reaches the rim.</li>
+          </ul>
+          <p class="step-key">It reaches <span data-n="strictR">—</span> of the way. Could chance do that?</p>
         </div></div>
         <div class="step" data-step="p9"><div class="step-card">
           <div class="step-n">7 / 8</div>
           <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> The proposed explanation</h3>
-          <p>Astronomers proposed an unseen planet about <strong>7 times Earth's mass</strong>, far beyond
-          Neptune. Its own orbit, drawn in <span class="k-p9">this colour</span>, points roughly the <em>opposite</em> way.</p>
-          <p>Over billions of years its gravity would herd the small orbits onto the far side from itself. That
-          is where the white arrow points. The exhibit below shows how.</p>
+          <ul>
+            <li>Astronomers proposed an unseen planet about <strong><span data-n="p9Mass">—</span> times Earth's
+            mass</strong>, far beyond Neptune.</li>
+            <li>Its orbit, <span class="k-p9">this line</span>, points the other way. Its gravity would herd the small
+            orbits to the far side from itself.</li>
+          </ul>
         </div></div>
         <div class="step" data-step="explore"><div class="step-card explore">
-          <div class="step-n">8 / 8 · your turn</div>
-          <h3>Choose which objects count</h3>
-          <p>Point at any orbit or dot to see which object it is. Switch views with the buttons above the picture.
-          The filters below change the sample here and on the next page.</p>
+          <div class="step-n">8 / 8</div>
+          <h3>Your turn</h3>
+          <ul>
+            <li>Change which objects count; every view follows.</li>
+            <li>In Sample, drag a box round a group.</li>
+          </ul>
           <div id="leanControls"></div>
         </div></div>
       </div>
     </div>
     <div class="wrap">
-      <div class="takeaway">
-        <div class="takeaway-k">So far</div>
-        <p>Looking only at the well-measured orbits, <strong><span data-n="strictHalf">—</span> of
-        <span data-n="strictN">—</span></strong> point into the same half of the sky. A planet on the opposite side
-        could explain that.</p>
-      </div>
       <details class="table-view more">
-        <summary>Pick your own group of objects by dragging, or see every number</summary>
-        <div class="card" style="margin:14px 0 20px">
-          <h3>Choose which objects to include</h3>
-          <div class="sub">Each dot is one object. Left to right: how far out its orbit goes. Bottom to top: how
-          close it ever comes to the Sun. Drag a box to pick a group; the picture above then uses only those.</div>
-          <div id="chartScatter"></div>
-          <div id="selChip" style="margin-top:12px"></div>
-        </div>
+        <summary>Every number</summary>
         <div class="table-scroll">
           <table id="dataTable">
             <thead><tr>
-              <th>Object</th><th class="num">Reach (AU)</th><th class="num">Closest (AU)</th>
+              <th>Object</th><th class="num">Average distance (AU)</th><th class="num">Nearest to the Sun (AU)</th>
               <th class="num">Tilt (°)</th><th class="num">Points toward (°)</th>
-              <th>Vs. predicted planet</th><th>Orbit quality</th>
+              <th>Vs. predicted planet</th><th>Seasons seen</th>
             </tr></thead>
             <tbody></tbody>
           </table>
@@ -127,30 +139,20 @@
   <section class="part wrap" id="herd">
     <div class="sec-head">
       <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Herd the orbits</h2>
-      <p>Thirty-six orbits start out pointing at random. Place a planet, choose how heavy it is, and run four
-      billion years. The planet turns every orbit to swing about the direction opposite its own, and any orbit
-      that points the planet's way crosses its path and is eventually thrown out.</p>
+      <p>Thirty-six orbits start out pointing at random. Place a planet and run four billion years.</p>
     </div>
-    <div class="exhibit">
-      <div>
-        <div id="herdControls"></div>
-        <div id="herdResult" aria-live="polite"></div>
-      </div>
-      <div class="viz-static" id="herdView"></div>
+    <!-- the controls on the picture: run and reset by the clock, then the planet (which can also be dragged) -->
+    <div class="pic herd-pic">
+      <div id="herdView"></div>
+      <div class="pic-note" id="herdResult" aria-live="polite"></div>
+      <div class="pic-bar" id="herdControls"></div>
     </div>
-    <p class="caption">A cartoon of the mechanism in Batygin &amp; Brown (2016), not a simulation of gravity. In the
-    real dynamics the surviving orbits are protected by resonances with the planet and swing about anti-alignment
-    over hundreds of millions of years. The planet sits at 460 AU with the published eccentricity; only its direction
-    and mass are yours. Each setting is seeded, so re-running it gives the same result.</p>
-  </section>
-
-  <section class="part wrap">
-    <div class="takeaway">
-      <div class="takeaway-k">So far</div>
-      <p>A planet pointing one way would leave a crowd of orbits pointing the other. The real orbits do point one
-      way. The question is whether <strong>that could have happened by chance</strong>, and whether the telescopes
-      that found them could have manufactured the pattern. That is the next page.</p>
-    </div>
+    <!-- In the real dynamics the surviving orbits are protected by resonances with the planet and swing about
+         anti-alignment over hundreds of millions of years. The planet sits at the published average distance and
+         eccentricity; only its direction and mass are the reader's. Each setting is seeded, so re-running it gives
+         the same result. -->
+    <p class="caption">A cartoon of the mechanism<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>,
+    not a simulation of gravity.</p>
   </section>
 </main>
 <script type="module" src="/src/pages/clustering.js"></script>

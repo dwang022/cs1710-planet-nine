@@ -1,0 +1,17 @@
+# Telescope photographs
+
+Fetched from Wikimedia Commons by `scripts/fetch_telescope_photos.py`; credits as the Commons API gives them; local photographs (data/photos/) carry the credit written in the script.
+
+- **panstarrs.jpg** (Pan-STARRS, Haleakalā, Hawaiʻi): R. Ratkowski · Public domain · <https://commons.wikimedia.org/wiki/File%3APan-STARRS_Observatory_%282019-12-4315%29.jpg>
+- **blanco.jpg** (Blanco Telescope, Cerro Tololo, Chile): CTIO/NOIRLab/NSF/AURA/T. Matsopoulos · CC BY 4.0 (https://creativecommons.org/licenses/by/4.0) · <https://commons.wikimedia.org/wiki/File%3ABlanco%27s_Open_Dome_%28Cerro-Tololo-Drone-Pic_15-CC%29_-_edit1.jpg>
+- **rubin.jpg** (Rubin Observatory, Cerro Pachón, Chile): NOIRLab/NSF/AURA/C. Corco · CC BY 4.0 (https://creativecommons.org/licenses/by/4.0) · <https://commons.wikimedia.org/wiki/File%3AVera_C_Rubin_Observatory_in_the_Snow_%28IMG_0315-CC%29.jpg>
+- **subaru.jpg** (Subaru Telescope, Maunakea, Hawaiʻi): Robert Linsdell from St. Andrews, Canada · CC BY 2.0 (https://creativecommons.org/licenses/by/2.0) · <https://commons.wikimedia.org/wiki/File%3ASubaru_Telescope._Mauna_Kea_Summit_%28503947%29_%2821404240034%29.jpg>
+- **magellan.jpg** (Magellan Telescopes, Las Campanas, Chile): Jan Skowron · CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0) · <https://commons.wikimedia.org/wiki/File%3AMagellan-Telescopes-at-LCO-2014-04-19.jpg>
+- **hubble.jpg** (Hubble Space Telescope, in orbit): NASA Hubble Space Telescope · Public domain · <https://commons.wikimedia.org/wiki/File%3AView_of_Hubble_after_Being_Released_from_the_Shuttle_Atlantis_%2828223588012%29.jpg>
+- **palomar.jpg** (Palomar Observatory, California): Photograph by Mike Peel (www.mikepeel.net). · CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0) · <https://commons.wikimedia.org/wiki/File%3APalomar_Observatory_2012_01.jpg>
+- **kittpeak.jpg** (Kitt Peak, Arizona): KPNO/NOIRLab/NSF/AURA · CC BY 4.0 (https://creativecommons.org/licenses/by/4.0) · <https://commons.wikimedia.org/wiki/File%3AKitt_Peak_National_Observatory_%28Kitt-Peak%29.jpg>
+- **ldt.jpg** (Lowell Discovery Telescope, Arizona): SSR2000 · CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0) · <https://commons.wikimedia.org/wiki/File%3AThe_Dome_of_Discovery_Channel_Telecope.JPG>
+- **lapalma.jpg** (Roque de los Muchachos, La Palma, Canary Islands): H. Zell · CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0) · <https://commons.wikimedia.org/wiki/File%3ARoque_de_los_Muchachos_-_ORM_-_ATC_-_WHT_-_DOT_-_LT_-_SST_-_GOTO_-_INT_-_JKT.jpg>
+- **lasilla.jpg** (La Silla Observatory, Chile): ESO · CC BY 4.0 (https://creativecommons.org/licenses/by/4.0) · <https://commons.wikimedia.org/wiki/File%3ATelescopes_at_La_Silla.jpg>
+- **paranal.jpg** (Paranal Observatory, Chile): ESO/G. Hüdepohl (atacamaphoto.com) · CC BY 4.0 (https://creativecommons.org/licenses/by/4.0) · <https://commons.wikimedia.org/wiki/File%3AParanal_and_the_Pacific_at_sunset_%28dsc4088%2C_retouched%2C_cropped%29.jpg>
+- **keystone.jpg** (Thomas G. Cupillari Observatory, Fleetville, Pennsylvania): Rob, via Keystone College · Fair use, class project · <https://www.facebook.com/KeystoneCollege/posts/-thank-you-rob-for-these-photos-and-for-sharing-your-experience-of-keystones-cup/1176382641180093/>

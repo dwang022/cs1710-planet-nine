@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
+<style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>Nine, eight, nine? · The search for Planet Nine</title>
 <meta name="description" content="How the solar system went from nine planets to eight, what the word planet means since 2006, and why two astronomers think there is a ninth after all." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
@@ -58,7 +61,7 @@
             <li>be <strong>round</strong> under its own gravity</li>
             <li>have <strong>cleared the neighbourhood</strong> around its orbit</li>
           </ul>
-          <p class="step-key">Pluto fails the third: thousands of bodies share its region, one of them heavier.</p>
+          <p class="step-key">Pluto fails the third. Thousands of icy bodies share its region.</p>
         </div></div>
         <div class="step" data-step="eight"><div class="step-card">
           <div class="step-n">4 / 5</div>
@@ -110,27 +113,27 @@
             <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-earth"/></svg><b>Earth</b><small>home</small></th>
             <td class="ok"><span class="mark">✓</span></td>
             <td class="ok"><span class="mark">✓</span></td>
-            <td class="ok"><span class="mark">✓</span><small>nothing of comparable size shares its orbit</small></td>
+            <td class="ok"><span class="mark">✓</span></td>
             <td class="verdict">Planet</td>
           </tr>
           <tr>
             <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-jupiter"/></svg><b>Jupiter</b><small>the largest planet</small></th>
             <td class="ok"><span class="mark">✓</span></td>
             <td class="ok"><span class="mark">✓</span></td>
-            <td class="ok"><span class="mark">✓</span><small>its gravity herds the asteroids that remain near its orbit</small></td>
+            <td class="ok"><span class="mark">✓</span><small>its gravity controls the asteroids that share its path</small></td>
             <td class="verdict">Planet</td>
           </tr>
           <tr>
-            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-moon"/></svg><b>The Moon</b><small>Earth's satellite</small></th>
-            <td class="no"><span class="mark">✗</span><small>it orbits Earth, not the Sun</small></td>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-moon"/></svg><b>The Moon</b><small>larger than Pluto</small></th>
+            <td class="no"><span class="mark">✗</span><small>it orbits Earth</small></td>
             <td class="ok"><span class="mark">✓</span></td>
-            <td class="na"><span class="mark">–</span><small>not assessed</small></td>
+            <td class="na"><span class="mark">–</span><small>does not apply</small></td>
             <td class="verdict">A moon</td>
           </tr>
           <tr>
             <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-ceres"/></svg><b>Ceres</b><small>in the asteroid belt</small></th>
             <td class="ok"><span class="mark">✓</span></td>
-            <td class="ok"><span class="mark">✓</span><small>narrowly: about 940 km across</small></td>
+            <td class="ok"><span class="mark">✓</span><small>only just, at about 940 km across</small></td>
             <td class="no"><span class="mark">✗</span><small>shares the asteroid belt with millions of others</small></td>
             <td class="verdict">Dwarf planet<small>a planet from 1801 to the 1850s</small></td>
           </tr>
@@ -138,21 +141,21 @@
             <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-pluto"/></svg><b>Pluto</b><small>in the Kuiper belt</small></th>
             <td class="ok"><span class="mark">✓</span></td>
             <td class="ok"><span class="mark">✓</span></td>
-            <td class="no"><span class="mark">✗</span><small>shares the Kuiper belt with thousands of bodies, one of them heavier</small></td>
+            <td class="no"><span class="mark">✗</span><small>shares the Kuiper belt with thousands of others</small></td>
             <td class="verdict">Dwarf planet<small>a planet from 1930 to 2006</small></td>
           </tr>
           <tr>
-            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-tno-2"/></svg><b>Arrokoth</b><small>a typical trans-Neptunian object</small></th>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-tno-2"/></svg><b>Arrokoth</b><small>a typical Kuiper belt body</small></th>
             <td class="ok"><span class="mark">✓</span></td>
-            <td class="no"><span class="mark">✗</span><small>two joined lobes, about 35 km long</small></td>
+            <td class="no"><span class="mark">✗</span><small>two lumps stuck together, about 35 km long</small></td>
             <td class="no"><span class="mark">✗</span></td>
             <td class="verdict">Small body<small>visited by New Horizons in 2019</small></td>
           </tr>
           <tr class="p9">
-            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg><b>Planet Nine</b><small>predicted</small></th>
-            <td class="maybe"><span class="mark">✓?</span><small>if it is where predicted</small></td>
-            <td class="maybe"><span class="mark">✓?</span><small>if it is as heavy as predicted</small></td>
-            <td class="maybe"><span class="mark">✓?</span><small>its pull on distant orbits is the evidence for it</small></td>
+            <th scope="row"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg><b>Planet Nine</b><small>not yet found</small></th>
+            <td class="maybe"><span class="mark">✓?</span><small>far beyond Neptune</small></td>
+            <td class="maybe"><span class="mark">✓?</span><small>predicted at several times Earth's mass</small></td>
+            <td class="maybe"><span class="mark">✓?</span><small>its gravity would steer the small bodies around it</small></td>
             <td class="verdict">A planet<small>if it exists</small></td>
           </tr>
         </tbody>

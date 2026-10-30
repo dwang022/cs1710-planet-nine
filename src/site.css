@@ -77,6 +77,21 @@
 .page-head h1 em { font-style: normal; color: var(--series-1); }
 .page-head .lede { font-size: clamp(1.08rem, 1.7vw, 1.25rem); max-width: 70ch; }
 .page-head .art-lg { width: 64px; height: 64px; display: block; margin-bottom: 16px; }
+.page-head .lede strong { color: var(--text-primary); }
+/* A question that leads into the page, on its own line under the lede: brighter
+   and larger than it, smaller than the title (the distance page). */
+.page-head .head-q { font-size: clamp(1.3rem, 2.3vw, 1.7rem); font-weight: 600; letter-spacing: -0.01em; color: var(--text-primary); margin: 18px 0 0; }
+
+/* A head with a figure: the title and a short lede on the left, a small diagram
+   on the right (the distance page's AU ruler). The title keeps its place. */
+.head-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 56px; align-items: start; }
+.head-fig { margin: 6px 0 0; }
+.head-fig svg { display: block; width: 100%; height: auto; }
+.head-fig .dist-lbl { font-size: 15px; }
+.head-fig .dist-lbl.focus { font-size: 17px; }
+.head-split .lede { text-wrap: balance; }
+.head-fig figcaption { margin-top: 8px; color: var(--text-muted); font-size: .95rem; text-align: center; }
+@media (max-width: 860px) { .head-split { grid-template-columns: 1fr; row-gap: 18px; } }
 
 /* The beats: a page's story as three dated lines with a drawing each, laid
    across the full width under the title in place of a lede paragraph. */
@@ -122,6 +137,7 @@
   padding: 14px 0; border-top: 1px solid var(--rule); color: var(--text-secondary); line-height: 1.5;
 }
 .credits-list li:last-child { border-bottom: 1px solid var(--rule); }
+.credits-list li:target { background: #a78bfa14; box-shadow: inset 3px 0 0 var(--series-1); }
 .credits-list b { color: var(--text-primary); font-weight: 600; }
 .credits-list .muted { color: var(--text-muted); }
 .credits-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 36px; }
@@ -139,20 +155,6 @@ section.part:first-of-type { border-top: 0; }
 .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
 .two-col > * { min-width: 0; }
 @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
-.source-card {
-  background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 20px 22px;
-}
-.source-card h3 { font-size: 1.15rem; margin-bottom: 8px; }
-.source-card .who { font-size: .82rem; color: var(--text-muted); margin-bottom: 12px; }
-.source-card pre {
-  margin: 12px 0 0; background: var(--surface-0); border: 1px solid var(--rule); border-radius: 10px;
-  padding: 12px 14px; font: .74rem/1.5 var(--font-mono); color: var(--text-secondary); overflow-x: auto; white-space: pre;
-}
-.source-card pre b { color: #c4b5fd; font-weight: 600; }
-.source-card pre i { color: var(--text-muted); font-style: normal; }
-.record { display: grid; grid-template-columns: auto 1fr; gap: 3px 14px; font: .8rem/1.5 var(--font-mono); margin-top: 10px; }
-.record dt { color: var(--text-muted); } .record dd { margin: 0; color: var(--text-secondary); word-break: break-all; }
-.record dd b { color: var(--text-primary); font-weight: 600; }
 
 /* --- the intro screen ----------------------------------------------------- */
 

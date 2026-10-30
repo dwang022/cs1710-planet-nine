@@ -18,14 +18,29 @@ bodies with a > 30 AU.
 - Documentation: <https://ssd-api.jpl.nasa.gov/doc/sbdb_query.html>
 - Landing page: <https://ssd.jpl.nasa.gov/tools/sbdb_query.html>
 - Query used: `sb-cdata={"AND":["a|GT|30"]}`, 36 fields, full precision
-- Feeds: `tnos.csv`, `etnos.json`
+- Feeds: `tnos.csv`, `etnos.json`, `positions.json` (via `tnos.csv`)
 
 **Minor Planet Center — distant object catalogue** — the IAU's independent
 orbit solution for the same objects, used to cross-check JPL and surface
 disagreement.
 - File: <https://www.minorplanetcenter.net/Extended_Files/distant_extended.json.gz>
 - Index of extended files: <https://www.minorplanetcenter.net/data>
-- Feeds: the `mpc_*` columns and `a_disagreement_pct` in `tnos.csv`
+- Feeds: the `mpc_*` columns and `a_disagreement_pct` in `tnos.csv`, and
+  `well_determined` in `etnos.json`: an object seen at more than one opposition
+  (`Num_opps` ≥ 2), the sample rule of Brown & Batygin 2019 and 2021
+
+**NSF NOIRLab Astro Data Archive and the Canadian Astronomy Data Centre** —
+the public exposures behind the tracking game on the data page (DECam and
+CFHT MegaCam), found with CADC's Solar System Object Image Search.
+- NOIRLab: <https://astroarchive.noirlab.edu>
+- CADC SSOIS: <https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/ssois/>
+- Feeds: `public/game/` (scripts/fetch_game_sequences.py); acknowledgements in `public/game/CREDITS.md`
+
+**Minor Planet Center — observations API and observatory codes** — every
+reported position of the 90 extreme objects, and where each observatory is.
+- API: <https://data.minorplanetcenter.net/api/get-obs> (80-column format)
+- Codes: <https://minorplanetcenter.net/iau/lists/ObsCodes.html>
+- Feeds: `observatories.json`
 
 **Minor Planet Center — numbered minor planets** — discovery date, site and
 discoverer.
@@ -39,11 +54,13 @@ discoverer.
 - <https://ssd.jpl.nasa.gov/planets/approx_pos.html>
 - Feeds: `planets.json`
 
-**JPL Horizons API** — used only to *verify* our coordinate transforms, not as
-a data source. Agreement 2.5″–4.5″ on four test objects.
+**JPL Horizons API** — used to *verify* our coordinate transforms (agreement
+2.5″–4.5″ on four test objects), and for one position: Voyager 1's, on the
+catalogue date, for the distance page's map.
 - Endpoint: <https://ssd.jpl.nasa.gov/api/horizons.api>
 - Documentation: <https://ssd-api.jpl.nasa.gov/doc/horizons.html>
 - Web interface: <https://ssd.jpl.nasa.gov/horizons/app.html>
+- Feeds: `voyager_1` in `positions.json`
 
 ### Literature metadata
 
@@ -75,14 +92,14 @@ These are worth knowing about: two of them are the obvious next additions.
 
 ## 3. Bibliography
 
-28 papers. **`stance` is our editorial reading of each abstract, not a label
+32 papers. **`stance` is our editorial reading of each abstract, not a label
 the authors chose** — say so wherever the site displays it. Citation counts are
 Crossref's, which undercount astronomy badly (the field cites through arXiv and
 ADS); treat them as relative weight only.
 
 Every summary below was checked against the paper's own abstract or full text,
-except where marked ⚠. arXiv links are given where a preprint exists (25 of
-28); they are free to read, unlike several of the journal versions.
+except where marked ⚠. arXiv links are given where a preprint exists (29 of
+32); they are free to read, unlike several of the journal versions.
 
 > **Note on link checking:** `doi.org` links to Astronomy & Astrophysics papers,
 > and `minorplanetcenter.net`, return HTTP 403 to automated checkers. They work
@@ -185,14 +202,14 @@ Sihao 思浩 Cheng 程, Jiaxuan 嘉轩 Li 李, Eritas 晴 Yang 杨 (2026). *Disc
 A roughly 700 km dwarf-planet candidate on an 830 AU orbit with perihelion at 45 AU (posted May 2025). Its longitude of perihelion lies outside the observed clustering, which the authors call a challenge to the dynamical evidence for Planet Nine.
 
 
-### Alternative explanations (4)
+### Alternative explanations (6)
 
 **Madigan et al. 2018**  
 Ann-Marie Madigan et al. (2018). *On the Dynamics of the Inclination Instability*. The Astronomical Journal  
 [doi](https://doi.org/10.3847/1538-3881/aad95c) · [arXiv:1805.03651](https://arxiv.org/abs/1805.03651) · 16 Crossref citations  
 A self-gravitating population of distant bodies can tilt and align itself with no planet involved.
 
-**Sefilian & Rafikov 2019**  
+**Sefilian & Touma 2019**  
 Antranik A. Sefilian, Jihad R. Touma (2019). *Shepherding in a Self-gravitating Disk of Trans-Neptunian Objects*. The Astronomical Journal  
 [doi](https://doi.org/10.3847/1538-3881/aaf0fc) · [arXiv:1804.06859](https://arxiv.org/abs/1804.06859) · 29 Crossref citations  
 A massive self-gravitating disk of small bodies can produce the same clustering with no planet.
@@ -207,8 +224,23 @@ Alexander Zderic et al. (2020). *Apsidal Clustering following the Inclination In
 [doi](https://doi.org/10.3847/2041-8213/ab91a0) · [arXiv:2004.01198](https://arxiv.org/abs/2004.01198) · 8 Crossref citations  
 Shows the inclination instability also produces apsidal clustering, directly mimicking the Planet Nine signal.
 
+**Brown & Mathur 2023**  
+Katherine Brown, Harsh Mathur (2023). *Modified Newtonian Dynamics as an Alternative to the Planet Nine Hypothesis*. The Astronomical Journal  
+[doi](https://doi.org/10.3847/1538-3881/acef1e) · [arXiv:2304.00576](https://arxiv.org/abs/2304.00576) · 13 Crossref citations  
+Modified gravity (MOND), proposed to explain galaxy rotation without dark matter, would line up the long axes of the distant orbits with the direction of the galactic centre and cluster them, an alternative explanation for the anomalies with no ninth planet.
 
-### Neutral: data, constraints and characterisation (6)
+**Pfalzner et al. 2024**  
+Susanne Pfalzner, Amith Govind, Simon Portegies Zwart (2024). *Trajectory of the stellar flyby that shaped the outer Solar System*. Nature Astronomy  
+[doi](https://doi.org/10.1038/s41550-024-02349-x) · [arXiv:2409.03342](https://arxiv.org/abs/2409.03342) · 22 Crossref citations  
+Thousands of flyby simulations find that a star of about 0.8 solar masses passing 110 AU from the Sun at an inclination of about 70 degrees reproduces the trans-Neptunian populations, including the distant detached objects and the retrograde ones. Predicts Rubin will find distant and retrograde objects relatively common.
+
+
+### Neutral: data, constraints and characterisation (8)
+
+**Morbidelli & Levison 2004**  
+Alessandro Morbidelli, Harold F. Levison (2004). *Scenarios for the Origin of the Orbits of the Trans-Neptunian Objects 2000 CR<sub>105</sub>and 2003 VB<sub>12</sub>(Sedna)*. The Astronomical Journal  
+[doi](https://doi.org/10.1086/424617) · [arXiv:astro-ph/0403358](https://arxiv.org/abs/astro-ph/0403358) · 156 Crossref citations  
+Before the Planet Nine hypothesis: of four ways to lift 2000 CR105's closest point out of Neptune's reach, only a passing star works. A solar-mass star passing about 800 AU away moves only objects beyond about 200 AU, matching CR105 and the newly found Sedna (2003 VB12).
 
 **Cowan et al. 2016 (CMB)**  
 Nicolas B. Cowan, Gil Holder, Nathan A. Kaib (2016). *COSMOLOGISTS IN SEARCH OF PLANET NINE: THE CASE FOR CMB EXPERIMENTS*. The Astrophysical Journal Letters  
@@ -240,6 +272,11 @@ Sigurd Naess et al. (2021). *The Atacama Cosmology Telescope: A Search for Plane
 [doi](https://doi.org/10.3847/1538-4357/ac2307) · [arXiv:2104.10264](https://arxiv.org/abs/2104.10264) · 21 Crossref citations  
 A blind millimetre-wave search over 18,000 square degrees finds no significant detection, rules out roughly 17% (5 Earth masses) or 9% (10 Earth masses) of the parameter space, and lists ten weak candidates for follow-up.
 
+**Vokrouhlický et al. 2024**  
+David Vokrouhlický, David Nesvorný, Scott Tremaine (2024). *Testing MOND on Small Bodies in the Remote Solar System*. The Astrophysical Journal  
+[doi](https://doi.org/10.3847/1538-4357/ad40a3) · [arXiv:2403.09555](https://arxiv.org/abs/2403.09555) · 19 Crossref citations  
+The first solar-system test of MOND at the weak accelerations where it departs from Newton. Simulating bodies scattered outward over the Sun's lifetime, the popular AQUAL form fails to reproduce the long-period and Oort-cloud comets seen from Earth, and the orbits of the detached disk (perihelion > 38 AU). Screened versions of MOND are not ruled out.
+
 
 ---
 
@@ -255,10 +292,13 @@ A blind millimetre-wave search over 18,000 square degrees finds no significant d
   2014, which has no preprint, against the journal PDF (`papers/`).
 - **Survey exclusion fractions** (56% ZTF, 78% cumulative) verified from the ZTF
   and Pan-STARRS1 search abstracts.
+- **Published odds** in `published_odds.json` (0.007%, 0.2%, 99.6%, 17% to 94%,
+  and Shankman et al.'s "consistent with ... uniform") quoted from each paper's
+  abstract in `papers/`, checked 2026-10-30.
 
 Corrections this process produced, and the claims still unverified, are listed
 in [`README.md`](README.md).
 
 ---
 
-*Generated 2026-10-28 by `scripts/build_sources_doc.py`.*
+*Generated 2026-10-30 by `scripts/build_sources_doc.py`.*

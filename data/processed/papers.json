@@ -4,7 +4,7 @@
   "'stance' is our editorial reading of each abstract, not a label the authors chose. Say so on the site.",
   "Crossref citation counts undercount astronomy, which cites heavily through arXiv and NASA ADS. Use them as relative weight, not absolute impact.",
   "Every summary below was checked against the paper's own abstract (or full text) in October 2026, except where summary_checked_against_abstract is false.",
-  "This is a deliberately chosen ~28-paper sample of a literature with hundreds of entries. It is not a census, and counting stances here does not measure community opinion."
+  "This is a deliberately chosen ~32-paper sample of a literature with hundreds of entries. It is not a census, and counting stances here does not measure community opinion."
  ],
  "_stance_values": {
   "supports": "argues the clustering is real and a planet is the best explanation",
@@ -12,16 +12,38 @@
   "alternative": "accepts the signal but proposes something other than a planet",
   "neutral": "characterises, constrains or supplies data without taking a side"
  },
- "_fetched": "2026-10-28",
+ "_fetched": "2026-10-30",
  "_source": "Crossref REST API (api.crossref.org)",
- "n_papers": 28,
+ "n_papers": 32,
  "stance_counts": {
+  "neutral": 8,
   "against": 8,
   "supports": 10,
-  "neutral": 6,
-  "alternative": 4
+  "alternative": 6
  },
  "papers": [
+  {
+   "doi": "10.1086/424617",
+   "label": "Morbidelli & Levison 2004",
+   "title": "Scenarios for the Origin of the Orbits of the Trans-Neptunian Objects 2000 CR<sub>105</sub>and 2003 VB<sub>12</sub>(Sedna)",
+   "authors": [
+    "Alessandro Morbidelli",
+    "Harold F. Levison"
+   ],
+   "first_author": "Alessandro Morbidelli",
+   "n_authors": 2,
+   "year": 2004,
+   "date": "2004-11",
+   "journal": "The Astronomical Journal",
+   "citations_crossref": 156,
+   "url": "https://doi.org/10.1086/424617",
+   "arxiv": "astro-ph/0403358",
+   "arxiv_url": "https://arxiv.org/abs/astro-ph/0403358",
+   "stance": "neutral",
+   "summary": "Before the Planet Nine hypothesis: of four ways to lift 2000 CR105's closest point out of Neptune's reach, only a passing star works. A solar-mass star passing about 800 AU away moves only objects beyond about 200 AU, matching CR105 and the newly found Sedna (2003 VB12).",
+   "summary_checked_against_abstract": true,
+   "resolved": true
+  },
   {
    "doi": "10.1088/0004-637X/781/1/4",
    "label": "Luhman 2014 (WISE)",
@@ -397,7 +419,7 @@
   },
   {
    "doi": "10.3847/1538-3881/aaf0fc",
-   "label": "Sefilian & Rafikov 2019",
+   "label": "Sefilian & Touma 2019",
    "title": "Shepherding in a Self-gravitating Disk of Trans-Neptunian Objects",
    "authors": [
     "Antranik A. Sefilian",
@@ -803,6 +825,28 @@
    "resolved": true
   },
   {
+   "doi": "10.3847/1538-3881/acef1e",
+   "label": "Brown & Mathur 2023",
+   "title": "Modified Newtonian Dynamics as an Alternative to the Planet Nine Hypothesis",
+   "authors": [
+    "Katherine Brown",
+    "Harsh Mathur"
+   ],
+   "first_author": "Katherine Brown",
+   "n_authors": 2,
+   "year": 2023,
+   "date": "2023-09-22",
+   "journal": "The Astronomical Journal",
+   "citations_crossref": 13,
+   "url": "https://doi.org/10.3847/1538-3881/acef1e",
+   "arxiv": "2304.00576",
+   "arxiv_url": "https://arxiv.org/abs/2304.00576",
+   "stance": "alternative",
+   "summary": "Modified gravity (MOND), proposed to explain galaxy rotation without dark matter, would line up the long axes of the distant orbits with the direction of the galactic centre and cluster them, an alternative explanation for the anomalies with no ninth planet.",
+   "summary_checked_against_abstract": true,
+   "resolved": true
+  },
+  {
    "doi": "10.3847/1538-3881/ad24e9",
    "label": "Brown & Batygin 2024 (Pan-STARRS1 search)",
    "title": "A Pan-STARRS1 Search for Planet Nine",
@@ -822,6 +866,52 @@
    "arxiv_url": "https://arxiv.org/abs/2401.17977",
    "stance": "against",
    "summary": "Rules out the Brown & Batygin (2021) Planet Nine to a 50% completion depth of V = 21.5. With ZTF and DES, 78% of the predicted parameter space is now excluded; what remains is faint and near where the northern galactic plane crosses the ecliptic.",
+   "summary_checked_against_abstract": true,
+   "resolved": true
+  },
+  {
+   "doi": "10.3847/1538-4357/ad40a3",
+   "label": "Vokrouhlick\u00fd et al. 2024",
+   "title": "Testing MOND on Small Bodies in the Remote Solar System",
+   "authors": [
+    "David Vokrouhlick\u00fd",
+    "David Nesvorn\u00fd",
+    "Scott Tremaine"
+   ],
+   "first_author": "David Vokrouhlick\u00fd",
+   "n_authors": 3,
+   "year": 2024,
+   "date": "2024-06-01",
+   "journal": "The Astrophysical Journal",
+   "citations_crossref": 19,
+   "url": "https://doi.org/10.3847/1538-4357/ad40a3",
+   "arxiv": "2403.09555",
+   "arxiv_url": "https://arxiv.org/abs/2403.09555",
+   "stance": "neutral",
+   "summary": "The first solar-system test of MOND at the weak accelerations where it departs from Newton. Simulating bodies scattered outward over the Sun's lifetime, the popular AQUAL form fails to reproduce the long-period and Oort-cloud comets seen from Earth, and the orbits of the detached disk (perihelion > 38 AU). Screened versions of MOND are not ruled out.",
+   "summary_checked_against_abstract": true,
+   "resolved": true
+  },
+  {
+   "doi": "10.1038/s41550-024-02349-x",
+   "label": "Pfalzner et al. 2024",
+   "title": "Trajectory of the stellar flyby that shaped the outer Solar System",
+   "authors": [
+    "Susanne Pfalzner",
+    "Amith Govind",
+    "Simon Portegies Zwart"
+   ],
+   "first_author": "Susanne Pfalzner",
+   "n_authors": 3,
+   "year": 2024,
+   "date": "2024-09-04",
+   "journal": "Nature Astronomy",
+   "citations_crossref": 22,
+   "url": "https://doi.org/10.1038/s41550-024-02349-x",
+   "arxiv": "2409.03342",
+   "arxiv_url": "https://arxiv.org/abs/2409.03342",
+   "stance": "alternative",
+   "summary": "Thousands of flyby simulations find that a star of about 0.8 solar masses passing 110 AU from the Sun at an inclination of about 70 degrees reproduces the trans-Neptunian populations, including the distant detached objects and the retrograde ones. Predicts Rubin will find distant and retrograde objects relatively common.",
    "summary_checked_against_abstract": true,
    "resolved": true
   },

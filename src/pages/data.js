@@ -13,7 +13,6 @@ import { buildBlinks } from '../charts/tracking.js'
 import { ORBIT_ART } from '../charts/orbitart.js'
 import { makeCatalogue } from '../charts/catalogue.js'
 import { drawArcs } from '../charts/arcs.js'
-import { fmtAu } from '../charts/distance.js'
 import { STRICT } from '../sample.js'
 
 const $ = s => document.querySelector(s)
@@ -113,11 +112,6 @@ async function main () {
 
   // --- watched longer, known better ---------------------------------------------------
   drawArcs($('#arcChart'), etnos.map(o => ({ ...o, rec: obs.objects[o.id] })).filter(o => o.rec?.nights.length))
-
-  // --- numbers quoted in the text ------------------------------------------------
-  const sedna = etnos.find(o => o.name === 'Sedna')
-  const nums = { sednaQ: sedna ? fmtAu(sedna.q_au) : '—' }
-  document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
 }
 
 main().catch(showLoadError)

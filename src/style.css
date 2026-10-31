@@ -915,7 +915,7 @@ figure.blink figcaption { padding: 8px 12px 10px; font-size: .84rem; line-height
 .finds { list-style: none; margin: 14px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .finds li {
   display: grid; grid-template-columns: 190px minmax(0, 1fr); grid-template-rows: auto auto 1fr;
-  column-gap: 18px; row-gap: 6px; align-items: start; padding: 0 26px;
+  column-gap: 14px; row-gap: 6px; align-items: start; padding: 0 20px;
 }
 .finds li:first-child { padding-left: 0; }
 .finds li:last-child { padding-right: 0; }
@@ -923,9 +923,11 @@ figure.blink figcaption { padding: 8px 12px 10px; font-size: .84rem; line-height
 .finds figure.blink { grid-row: 1 / 4; border-radius: 10px; }
 .finds .blink-stage { aspect-ratio: 1 / 1; }
 .finds .beat-y { padding-top: 4px; }
-.finds p { margin: 0; font-size: clamp(1rem, 1.2vw, 1.08rem); line-height: 1.45; color: var(--text-secondary); max-width: none; }
+/* a little smaller than body text, so a caption beside its picture runs four or five lines, not six */
+.finds p { margin: 0; font-size: clamp(.94rem, 1.1vw, 1.02rem); line-height: 1.45; color: var(--text-secondary); max-width: none; }
 .finds .find-credit, .game-src { font-size: .72rem; line-height: 1.4; color: var(--text-muted); }
-@media (max-width: 1150px) { .finds { grid-template-columns: 1fr; gap: 22px; } .finds li, .finds li + li { padding: 0; border-left: 0; } }
+/* below 1300px three columns leave the captions under 150px wide: one discovery per row instead */
+@media (max-width: 1300px) { .finds { grid-template-columns: 1fr; gap: 22px; } .finds li, .finds li + li { padding: 0; border-left: 0; } }
 @media (max-width: 480px) { .finds li { grid-template-columns: 130px minmax(0, 1fr); } }
 
 /* your turn at the telescope: every control is on the image */

@@ -821,7 +821,9 @@ section.part.flush { border-top: 0; padding-top: 4px; }
 .scope-map-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 6px; }
 .scope-map-bar .map-note { font-size: .82rem; color: var(--text-muted); }
 .scope-stage { position: relative; }
-.scope-stage svg { display: block; width: 100%; height: auto; }
+/* never taller than the screen leaves under the bar, the heading and the button row (170px); on a wide,
+   short screen the map keeps its shape and centres in its panel */
+.scope-stage svg { display: block; width: 100%; height: auto; max-height: max(280px, calc(100svh - var(--bar-h, 57px) - 170px)); }
 /* the map is of Earth, so Earth's own colours, kept dark and quiet: a deep navy sea, dark green-grey land */
 .map-sphere { fill: #0d1620; }
 .map-grat { fill: none; stroke: #ffffff0c; stroke-width: .6; }
@@ -832,6 +834,12 @@ section.part.flush { border-top: 0; padding-top: 4px; }
 .site:hover, .site:focus-visible { fill-opacity: 1; outline: none; stroke: #ffffff; stroke-width: 1.5; }
 .site.open { fill: #ffffff; fill-opacity: 1; stroke: #ffffff; stroke-width: 2; }
 .site.key { cursor: default; pointer-events: none; }
+/* an inset's site on the world map: a thin, faint white ring, not a sand disc, since it marks a place and
+   not a value; it and its dot in the inset light up together */
+.ring { fill: none; stroke: #ffffff; stroke-opacity: .5; stroke-width: .8; pointer-events: none; }
+.ring.lit, .ring.open { stroke-opacity: 1; stroke-width: 1.2; }
+.ring-hit { fill: transparent; cursor: pointer; }
+.site.lit { fill-opacity: 1; stroke: #ffffff; stroke-width: 1.5; }
 /* the objects first found at a site: a violet core in its dot */
 .site-core { fill: var(--series-1); stroke: #0d1620; stroke-width: .8; pointer-events: none; }
 .you path { fill: #ffffff; stroke: #121215; stroke-width: 1.5; }
@@ -884,8 +892,7 @@ section.part.flush { border-top: 0; padding-top: 4px; }
 .sc-stats dd { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
 .sc-scopes { list-style: none; margin: 10px 0 0; padding: 8px 0 0; border-top: 1px solid var(--rule); display: grid; gap: 3px; font-size: .8rem; color: var(--text-secondary); }
 .sc-scopes li { display: flex; justify-content: space-between; gap: 10px; }
-.sc-scopes b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.sc-credit { margin-top: 8px; font-size: .68rem; color: var(--text-muted); }
+.sc-scopes b { color: var(--text-primary); font-variant-numeric: tabular-nums; }.sc-credit { margin-top: 8px; font-size: .68rem; color: var(--text-muted); }
 
 /* the blink player: the pause button and the frame's date sit on the image */
 figure.blink { margin: 0; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }

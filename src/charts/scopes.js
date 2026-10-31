@@ -5,14 +5,17 @@
 // many positions its telescopes reported, with a violet core (the colour of the
 // objects) sized by how many of the extreme objects were first found there. Where the sites crowd (Hawaii, the
 // American Southwest, Europe, northern Chile) an inset laid over empty ocean
-// or empty land enlarges them, joined by a thin line to the area it shows,
-// which the world map outlines instead of drawing its dots. Country borders
+// or empty land enlarges them, joined by a thin line to the area it shows.
+// On the world map those sites are thin white rings, all one size: where they
+// are, not how many (their dots, at the key's scale, are in the inset). A ring
+// and its dot light up together, and clicking a ring opens the site's card.
+// Country borders
 // are drawn faintly. Rubin, the newest, has a callout with its name in pink (the site's
 // colour for what comes next) saying why it stands out: it has
 // found every extreme object discovered since it opened (`recent`, counted in
 // pages/data.js). Hubble, the one in
-// orbit, sits at the top, above the globe, as a button with its own dot. The
-// bottom-left corner holds the size scale. The reader is a map pin.
+// orbit, sits in the top right corner the globe leaves empty, as a button with
+// its own dot. The South Pacific, bottom left, holds the size scale. The reader is a map pin.
 // Clicking a dot (or Hubble) opens a card that stays until it is closed: a
 // photograph where we have one (public/telescopes, read from credits.json),
 // what the site measured, and its telescopes. locate() puts the reader on the
@@ -32,20 +35,26 @@ const SITE_KM = 5                         // telescopes this close share a dot
 const RUBIN = 'X05'                       // rose everywhere on the site: what comes next
 const km = (a, b) => d3.geoDistance([a.lon, a.lat], [b.lon, b.lat]) * 6371
 
-const W = 960, H = 470
+// The map shows only the band of latitudes between BAND's two (north, south):
+// no site lies near either pole, so cutting the Arctic and Antarctica away
+// makes the map wide rather than tall and lets it fit on one screen.
+const W = 960, H = 408
+const BAND = [72, -56]
 // Each inset: the area it enlarges (bbox, lon/lat) and where it is drawn
-// (box, in the map's pixels), placed where no site and little land lies under
-// it: Hawaiʻi in the North Pacific above the islands, the Southwest in the
-// South Pacific, Africa to the Indian Ocean, the South Atlantic. RUBIN_NOTE is
-// the callout beside the Chilean inset (its width is a minimum: it grows to its words).
+// (box, in the map's pixels), placed where no site lies under it: Hawaiʻi in
+// the North Pacific above the islands, the Southwest in the South Pacific
+// clear of Central America, Europe over Africa (between Brazil's coast and
+// India), northern Chile in the South Atlantic. RUBIN_NOTE is the callout
+// below Europe, beside the Chilean inset (its width is a minimum: it grows to its words).
 const INSETS = [
-  { name: 'Hawaiʻi', bbox: [[-156.75, 18.85], [-154.75, 21.05]], box: [16, 22, 108, 94] },
-  { name: 'Southwest US', bbox: [[-118, 30.9], [-104.8, 36.1]], box: [10, 212, 252, 156] },
-  { name: 'Europe', bbox: [[-19, 27.4], [21.5, 52.6]], box: [556, 206, 226, 172] },
-  { name: 'Northern Chile', bbox: [[-71.4, -30.7], [-70.2, -28.8]], box: [388, 290, 100, 146] },
+  { name: 'Hawaiʻi', bbox: [[-156.75, 18.85], [-154.75, 21.05]], box: [8, 14, 88, 98] },
+  { name: 'Southwest US', bbox: [[-118, 30.9], [-104.8, 36.1]], box: [8, 182, 226, 134] },
+  { name: 'Europe', bbox: [[-19, 27.4], [21.5, 52.6]], box: [490, 140, 166, 196] },
+  { name: 'Northern Chile', bbox: [[-71.4, -30.7], [-70.2, -28.8]], box: [388, 270, 94, 132] },
 ]
-const RUBIN_NOTE = [496, 392, 178, 44]
+const RUBIN_NOTE = [490, 346, 166, 58]        // one column with Europe's inset above it: the same left edge and width
 const within = (s, p) => s.lon >= p.bbox[0][0] && s.lon <= p.bbox[1][0] && s.lat >= p.bbox[0][1] && s.lat <= p.bbox[1][1]
+const RING = 2, RING_HIT = 6                  // an inset's site on the world map: the ring, and the reach of a click on it
 
 // Hubble: a silver tube shaded round, its darker aft shroud, the aperture door
 // open at the front, two antenna masts, and the two solar wings in their own
@@ -103,26 +112,38 @@ function describe (s, photos) {
 
 // Nudge apart dots that would overlap (sites a few kilometres apart in the
 // Southwest), keeping each as close to its place as it can: a pixel or two at
-// this scale, so every site can be picked. Returns site → [x, y].
-function separate (pts, gap = 1.5) {
+// this scale, so every site can be picked. A `fixed` dot holds its place and
+// only pushes the others (an inset's ring on the world map).
+// Within `bounds` ([x0, y0, x1, y1], an inset's ground below its name) every
+// dot is kept whole. Returns site → [x, y].
+function separate (pts, gap = 1.5, bounds = null) {
   const p = pts.map(d => ({ ...d, x: d.xy[0], y: d.xy[1] }))
+  const keep = d => {
+    if (!bounds || d.fixed) return
+    d.x = Math.min(Math.max(d.x, bounds[0] + d.r), bounds[2] - d.r)
+    d.y = Math.min(Math.max(d.y, bounds[1] + d.r), bounds[3] - d.r)
+  }
+  p.forEach(keep)
   for (let k = 0; k < 60; k++) {
     let moved = false
+    p.forEach(keep)
     for (let i = 0; i < p.length; i++) {
       for (let j = i + 1; j < p.length; j++) {
         const a = p[i], b = p[j]
+        if (a.fixed && b.fixed) continue
         let dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy)
         const need = a.r + b.r + gap
         if (d >= need) continue
         if (d < 1e-6) { dx = 1; dy = 0; d = 1 }
-        const push = (need - d) / 2
-        a.x -= dx / d * push; a.y -= dy / d * push
-        b.x += dx / d * push; b.y += dy / d * push
+        const ka = a.fixed ? 0 : b.fixed ? 1 : 0.5, kb = 1 - ka
+        a.x -= dx / d * (need - d) * ka; a.y -= dy / d * (need - d) * ka
+        b.x += dx / d * (need - d) * kb; b.y += dy / d * (need - d) * kb
         moved = true
       }
     }
     if (!moved) break
   }
+  p.forEach(keep)
   return new Map(p.map(d => [d.s, [d.x, d.y]]))
 }
 
@@ -130,11 +151,13 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
   const all = sites(obs, photos)
   const hubbleRow = obs.observatories.find(r => r.code === '250')
   const hubble = hubbleRow && describe({ lon: null, lat: null, scopes: [hubbleRow] }, photos)
-  const r = d3.scaleSqrt().domain([0, d3.max(all, s => s.n_obs)]).range([0, 22])
-  const radius = (s, k = 1) => Math.max(2.6, r(s.n_obs) * k)
+  // One size scale on the world map, in the insets and in the key: an inset enlarges the ground, not the dots.
+  // At 16 px the busiest site still fits its inset (Hawaiʻi), and no core below needs its cap.
+  const r = d3.scaleSqrt().domain([0, d3.max(all, s => s.n_obs)]).range([0, 16])
+  const radius = s => Math.max(2.6, r(s.n_obs))
   // the core: objects first found there, never wider than most of its dot
-  const rc = d3.scaleSqrt().domain([0, d3.max(all, s => s.found.size) || 1]).range([0, 9])
-  const core = (s, k = 1) => (s.found.size ? Math.min(radius(s, k) * 0.78, Math.max(1.5, rc(s.found.size) * k)) : 0)
+  const rc = d3.scaleSqrt().domain([0, d3.max(all, s => s.found.size) || 1]).range([0, 7])
+  const core = s => (s.found.size ? Math.min(radius(s) * 0.78, Math.max(1.5, rc(s.found.size))) : 0)
 
   root.classList.add('scope-stage')
   const svg = d3.select(root).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
@@ -142,44 +165,42 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
   const card = d3.select(root).append('div').attr('class', 'scope-card').attr('hidden', true).node()
   const proj = d3.geoEqualEarth()
   const path = d3.geoPath(proj)
-  const gLand = svg.append('g'), gLink = svg.append('g'), gDots = svg.append('g'), gCores = svg.append('g').attr('class', 'site-cores'), gYou = svg.append('g')
+  const gLand = svg.append('g'), gLink = svg.append('g')
+  const gRings = svg.append('g').attr('aria-hidden', 'true'), gRingHits = svg.append('g').attr('aria-hidden', 'true')
+  const gDots = svg.append('g'), gCores = svg.append('g').attr('class', 'site-cores'), gYou = svg.append('g')
   const gInsets = svg.append('g'), gKey = svg.append('g').attr('class', 'scope-key')
   svg.append('defs').html(HUBBLE_DEFS)
   const insets = INSETS.map(p => ({ ...p, proj: d3.geoMercator() }))
 
   let you = null, open = null
 
-  // the size scale in the empty corner bottom left; Hubble above the globe, top right
+  // the size scale in the South Pacific, bottom left; Hubble in the top right corner, over the open sea
+  // Each scale is a row of circles standing on one line, its values under them and its name under those.
   function drawKey () {
-    const steps = [10, 100, 1000].filter(v => v <= r.domain()[1])
-    const base = H - 24
+    const base = H - 38, slot = 34
     const g = gKey.append('g')
-    g.append('text').attr('class', 'key-lbl muted').attr('x', 22).attr('y', base - 58).text('positions reported')
-    let x = 22
-    for (const v of steps) {
-      const rr = Math.max(2.6, r(v))
-      g.append('circle').attr('class', 'site key').attr('cx', x + rr).attr('cy', base - rr).attr('r', rr)
-      g.append('text').attr('class', 'key-lbl').attr('x', x + rr).attr('y', base + 16).attr('text-anchor', 'middle').text(fmt(v))
-      x += 2 * rr + 20
+    const scale = (x0, name, values, cls, size) => {
+      values.forEach((v, i) => {
+        const rr = size(v), cx = x0 + slot * i + slot / 2
+        g.append('circle').attr('class', cls).attr('cx', cx).attr('cy', base - rr).attr('r', rr)
+        g.append('text').attr('class', 'key-lbl').attr('x', cx).attr('y', base + 13).attr('text-anchor', 'middle').text(fmt(v))
+      })
+      g.append('text').attr('class', 'key-lbl muted').attr('x', x0 + slot * values.length / 2).attr('y', base + 27).attr('text-anchor', 'middle').text(name)
+      return x0 + slot * values.length
     }
+    const x = scale(14, 'positions reported', [10, 100, 1000].filter(v => v <= r.domain()[1]), 'site key', v => Math.max(2.6, r(v)))
     // objects first found there: violet discs at their own scale
-    x += 16
-    g.append('text').attr('class', 'key-lbl muted').attr('x', x).attr('y', base - 58).text('first found there')
-    for (const v of [1, 5, 20].filter(v => v <= rc.domain()[1])) {
-      const rr = Math.max(1.5, rc(v))
-      g.append('circle').attr('class', 'site-core').attr('cx', x + rr).attr('cy', base - 9).attr('r', rr)
-      g.append('text').attr('class', 'key-lbl').attr('x', x + rr).attr('y', base + 16).attr('text-anchor', 'middle').text(v)
-      x += 2 * rr + 20
-    }
+    scale(x + 18, 'first found there', [1, 5, 20].filter(v => v <= rc.domain()[1]), 'site-core', v => Math.max(1.5, rc(v)))
     if (!hubble) return
+    // two rows, the dot and the drawing over the name, so it fits the corner the globe leaves empty
     const h = gKey.append('g').attr('class', 'hubble').attr('tabindex', 0).attr('role', 'button')
-      .attr('aria-label', `Hubble Space Telescope, in orbit: ${hubble.n_obs} positions`).attr('transform', `translate(${W - 226},8)`)
-    h.append('rect').attr('class', 'hubble-pill').attr('width', 218).attr('height', 56).attr('rx', 28)
-    h.append('circle').attr('class', 'site').attr('cx', 24).attr('cy', 28).attr('r', radius(hubble))
-    h.append('g').attr('transform', 'translate(76,28) scale(.68)').html(HUBBLE)
-    h.append('text').attr('class', 'key-lbl strong').attr('x', 114).attr('y', 25).text('Hubble')
-    h.append('text').attr('class', 'key-lbl muted').attr('x', 114).attr('y', 40).text('in orbit')
-    h.append('text').attr('class', 'key-lbl more').attr('x', 196).attr('y', 34).attr('text-anchor', 'middle').text('›')
+      .attr('aria-label', `Hubble Space Telescope, in orbit: ${hubble.n_obs} positions`).attr('transform', `translate(${W - 106},6)`)
+    h.append('rect').attr('class', 'hubble-pill').attr('width', 100).attr('height', 90).attr('rx', 16)
+    h.append('circle').attr('class', 'site').attr('cx', 22).attr('cy', 30).attr('r', radius(hubble))
+    h.append('g').attr('transform', 'translate(66,30) scale(.56)').html(HUBBLE)
+    h.append('text').attr('class', 'key-lbl strong').attr('x', 12).attr('y', 66).text('Hubble')
+    h.append('text').attr('class', 'key-lbl muted').attr('x', 12).attr('y', 80).text('in orbit')
+    h.append('text').attr('class', 'key-lbl more').attr('x', 84).attr('y', 77).attr('text-anchor', 'middle').text('›')
     h.on('click', ev => show(hubble, ev.currentTarget))
       .on('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); show(hubble, ev.currentTarget) } })
   }
@@ -188,7 +209,10 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
   import('world-atlas/countries-50m.json').then(({ default: topo }) => {
     const land = feature(topo, topo.objects.land)
     const borders = mesh(topo, topo.objects.countries, (a, b) => a !== b)
-    proj.fitExtent([[6, 6], [W - 6, H - 6]], { type: 'Sphere' })
+    // the band fills the frame; the globe's curved sides stay, its top and bottom are cut flat
+    proj.fitExtent([[6, 6], [W - 6, H - 6]], { type: 'MultiPoint', coordinates: [[-180, 0], [180, 0], [0, BAND[0]], [0, BAND[1]]] })
+    svg.select('defs').append('clipPath').attr('id', 'map-band').append('rect').attr('x', 0).attr('y', 6).attr('width', W).attr('height', H - 12)
+    gLand.attr('clip-path', 'url(#map-band)')
     gLand.append('path').attr('class', 'map-sphere').attr('d', path({ type: 'Sphere' }))
     gLand.append('path').attr('class', 'map-grat').attr('d', path(d3.geoGraticule10()))
     gLand.append('path').attr('class', 'map-land').attr('d', path(land))
@@ -196,11 +220,15 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
     for (const [i, p] of insets.entries()) {
       const [x, y, w, h] = p.box
       p.proj.fitExtent([[x + 8, y + 22], [x + w - 8, y + h - 8]], { type: 'Feature', geometry: { type: 'MultiPoint', coordinates: p.bbox } })
-      // the area on the world map, outlined, and a line from it to its inset
-      const [ax0, ay0] = proj([p.bbox[0][0], p.bbox[1][1]]), [ax1, ay1] = proj([p.bbox[1][0], p.bbox[0][1]])
-      const area = [Math.min(ax0, ax1) - 3, Math.min(ay0, ay1) - 3, Math.abs(ax1 - ax0) + 6, Math.abs(ay1 - ay0) + 6]
+      // the area on the world map, outlined round its rings, and a line from it to its inset
+      const xs = [], ys = []
+      for (const c of p.bbox) { const [x, y] = proj(c); xs.push(x - RING, x + RING); ys.push(y - RING, y + RING) }
+      const area = [d3.min(xs) - 3, d3.min(ys) - 3, d3.max(xs) - d3.min(xs) + 6, d3.max(ys) - d3.min(ys) + 6]
       const [cx, cy] = [area[0] + area[2] / 2, area[1] + area[3] / 2]
-      const near = [Math.min(Math.max(cx, x), x + w), Math.min(Math.max(cy, y), y + h)]
+      // the line meets the box on the edge facing the area, clear of its rounded corners
+      const cl = (v, a, b) => Math.min(Math.max(v, a), b), rx = 10
+      const near = cy < y ? [cl(cx, x + rx, x + w - rx), y] : cy > y + h ? [cl(cx, x + rx, x + w - rx), y + h]
+        : [cx < x ? x : x + w, cl(cy, y + rx, y + h - rx)]
       const from = [Math.min(Math.max(near[0], area[0]), area[0] + area[2]), Math.min(Math.max(near[1], area[1]), area[1] + area[3])]
       gLand.append('line').attr('class', 'inset-lead').attr('x1', from[0]).attr('y1', from[1]).attr('x2', near[0]).attr('y2', near[1])
       gLand.append('rect').attr('class', 'inset-area').attr('x', area[0]).attr('y', area[1]).attr('width', area[2]).attr('height', area[3]).attr('rx', 2)
@@ -224,21 +252,38 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
     const wire = sel => sel.attr('tabindex', 0).attr('role', 'button').attr('aria-label', s => `${s.name}: ${fmt(s.n_obs)} positions`)
       .on('click', (ev, s) => show(s, ev.currentTarget))
       .on('keydown', (ev, s) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); show(s, ev.currentTarget) } })
+      .on('mouseenter', (ev, s) => light(s, true)).on('mouseleave', (ev, s) => light(s, false))
+    // An inset's sites are rings on the world map, at their places, all one size (their dots would pile
+    // up there; the inset pulls them apart). A click on a ring opens the card at the site's dot in the
+    // inset; keys reach the site there, so the rings take no tab stop. The rings hold their places and
+    // the other sites are nudged clear of them and of each other (two in Pennsylvania, 100 km apart, would touch).
+    const crowd = order.filter(s => insets.some(p => within(s, p)))
     const world = order.filter(s => !insets.some(p => within(s, p)))
+    const atW = separate([
+      ...crowd.map(s => ({ s, xy: proj([s.lon, s.lat]), r: RING, fixed: true })),
+      ...world.map(s => ({ s, xy: proj([s.lon, s.lat]), r: radius(s) })),
+    ])
+    gRings.selectAll('circle').data(crowd, s => s.name + s.lon).join('circle').attr('class', s => `ring${s === open ? ' open' : ''}`)
+      .attr('cx', s => atW.get(s)[0]).attr('cy', s => atW.get(s)[1]).attr('r', RING)
+    gRingHits.selectAll('circle').data(crowd, s => s.name + s.lon).join('circle').attr('class', 'ring-hit')
+      .attr('cx', s => atW.get(s)[0]).attr('cy', s => atW.get(s)[1]).attr('r', RING_HIT)
+      .on('click', (ev, s) => show(s, twin(s) || ev.currentTarget))
+      .on('mouseenter', (ev, s) => light(s, true)).on('mouseleave', (ev, s) => light(s, false))
     gDots.selectAll('circle').data(world, s => s.name + s.lon).join('circle').attr('class', cls)
-      .attr('cx', s => proj([s.lon, s.lat])[0]).attr('cy', s => proj([s.lon, s.lat])[1]).attr('r', s => radius(s))
+      .attr('cx', s => atW.get(s)[0]).attr('cy', s => atW.get(s)[1]).attr('r', s => radius(s))
       .call(wire)
     gCores.selectAll('circle').data(world.filter(s => s.found.size), s => s.name + s.lon).join('circle').attr('class', 'site-core')
-      .attr('cx', s => proj([s.lon, s.lat])[0]).attr('cy', s => proj([s.lon, s.lat])[1]).attr('r', s => core(s))
+      .attr('cx', s => atW.get(s)[0]).attr('cy', s => atW.get(s)[1]).attr('r', s => core(s))
     for (const p of insets) {
       if (!p.g) continue
       const here = order.filter(s => within(s, p))
-      const at = separate(here.map(s => ({ s, xy: p.proj([s.lon, s.lat]), r: radius(s, 0.5) })))
+      const [bx, by, bw, bh] = p.box
+      const at = separate(here.map(s => ({ s, xy: p.proj([s.lon, s.lat]), r: radius(s) })), 1.5, [bx + 6, by + 22, bx + bw - 6, by + bh - 6])
       p.g.selectAll('circle').data(here, s => s.name + s.lon).join('circle').attr('class', cls)
-        .attr('cx', s => at.get(s)[0]).attr('cy', s => at.get(s)[1]).attr('r', s => radius(s, 0.5))
+        .attr('cx', s => at.get(s)[0]).attr('cy', s => at.get(s)[1]).attr('r', s => radius(s))
         .call(wire)
       p.core.selectAll('circle').data(here.filter(s => s.found.size), s => s.name + s.lon).join('circle').attr('class', 'site-core')
-        .attr('cx', s => at.get(s)[0]).attr('cy', s => at.get(s)[1]).attr('r', s => core(s, 0.5))
+        .attr('cx', s => at.get(s)[0]).attr('cy', s => at.get(s)[1]).attr('r', s => core(s))
       // Rubin, called out to the east of its inset with why: what it alone has found
       // since it opened, and how many of those wait to be seen again (its site also
       // holds Gemini South)
@@ -247,17 +292,21 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
         const g = e.append('g').attr('class', 'rubin-note')
         g.append('path').attr('class', 'rubin-lead')
         g.append('rect').attr('class', 'rubin-box')
-        g.append('text').attr('class', 'rubin-lbl'); g.append('text').attr('class', 'rubin-sub')
+        g.append('text').attr('class', 'rubin-lbl')
+        g.append('text').attr('class', 'rubin-sub'); g.append('text').attr('class', 'rubin-sub')
         return g
       })
       const [nx, ny, nw, nh] = RUBIN_NOTE
-      note.select('path').attr('d', d => { const [dx, dy] = p.proj([d.site.lon, d.site.lat]); return `M${dx + 6},${dy} L${nx},${ny + nh / 2}` })
+      // from the edge of Rubin's dot, where it is drawn
+      note.select('path').attr('d', d => { const [dx, dy] = at.get(d.site); return `M${dx + radius(d.site) + 1},${dy} L${nx},${ny + nh / 2}` })
       note.select('rect').attr('x', nx).attr('y', ny).attr('width', nw).attr('height', nh).attr('rx', 8)
       note.select('.rubin-lbl').attr('x', nx + 10).attr('y', ny + 18).text('Rubin Observatory')
-      // why it is singled out: where the new extreme objects are being found (recent, from pages/data.js)
-      note.select('.rubin-sub').attr('x', nx + 10).attr('y', ny + 34).text(() => !recent ? ''
-        : recent.rubin === recent.all ? `found all ${recent.all} extreme objects discovered since ${recent.since}`
-          : `found ${recent.rubin} of the ${recent.all} extreme objects discovered since ${recent.since}`)
+      // why it is singled out: where the new extreme objects are being found (recent, from pages/data.js),
+      // on two lines so the note fits between Africa's tip and the frame's foot
+      const why = !recent ? ['', '']
+        : [recent.rubin === recent.all ? `found all ${recent.all} extreme objects` : `found ${recent.rubin} of the ${recent.all} extreme objects`,
+          `discovered since ${recent.since}`]
+      note.selectAll('.rubin-sub').attr('x', nx + 10).attr('y', (_, i) => ny + 34 + i * 14).text((_, i) => why[i])
       // the bubble fits its words
       note.each(function () {
         const g = d3.select(this)
@@ -280,6 +329,10 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
     gLink.selectAll('path').data(you && open?.near ? [0] : []).join('path').attr('class', 'near-link')
       .attr('d', () => path({ type: 'LineString', coordinates: [[you.lon, you.lat], [open.lon, open.lat]] }))
   }
+
+  // A site's dot in its inset, and a site's ring and dot lit together while either is pointed at.
+  const twin = s => svg.selectAll('g.inset circle.site').filter(d => d === s).node()
+  const light = (s, on) => svg.selectAll('circle.site, circle.ring').filter(d => d === s).classed('lit', on)
 
   // --- the card -------------------------------------------------------------------
   function show (s, anchor, km = null) {

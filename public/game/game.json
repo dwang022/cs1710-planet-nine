@@ -1,0 +1,228 @@
+{
+ "_what": "Real exposures of distant solar-system objects for the find-the-moving-object game, fetched from the telescope archives and aligned on the stars by scripts/fetch_game_sequences.py, with the object's position in every frame computed from the Minor Planet Center's records (or, for nights it has no positions from, JPL Horizons' orbit fitted to them) and checked against the pixels. Frames are greyscale, or true colour where 'colour' says which filter went into each channel.",
+ "_positions": "Pixels in the saved frame: origin at the top-left corner, x right, y down, pixel centres at +0.5. times are mid-exposure, UT.",
+ "_fetched": "2026-10-31",
+ "rounds": [
+  {
+   "id": "chiminigagua",
+   "object": "Chiminigagua",
+   "date": "7 to 10 May 2013",
+   "telescope": "Dark Energy Camera, 4-metre Blanco telescope, Cerro Tololo",
+   "files": ["chiminigagua-1.jpg", "chiminigagua-2.jpg", "chiminigagua-3.jpg", "chiminigagua-4.jpg", "chiminigagua-5.jpg", "chiminigagua-6.jpg"],
+   "size": [900, 540],
+   "positions": [[461.2, 398.1], [462.5, 396.0], [463.7, 394.1], [469.1, 385.3], [518.8, 302.5], [578.4, 196.9]],
+   "times": ["2013-05-07 23:10 UT", "2013-05-07 23:41 UT", "2013-05-08 00:11 UT", "2013-05-08 02:24 UT", "2013-05-08 23:25 UT", "2013-05-10 02:31 UT"],
+   "frames_are": "single exposures",
+   "filter": "r",
+   "frame_filters": [["r"], ["r"], ["r"], ["r"], ["r"], ["r"]],
+   "colour": null,
+   "scale_arcsec_px": 0.18,
+   "exposure_s": [300, 200, 200, 200, 400, 400],
+   "credit": "DECam data via the Astro Data Archive at NSF NOIRLab (program 2013A-0737, PI Sheppard); NOIRLab/AURA/NSF",
+   "license": "public archive data",
+   "license_url": "https://noirlab.edu/science/about/scientific-acknowledgments#decam",
+   "terms": "public since 2014-10-31, when the NOIRLab proprietary period (usually 18 months) ended",
+   "acknowledgement": "This research draws upon DECam data as distributed by the Astro Data Archive at NSF NOIRLab. NOIRLab is managed by the Association of Universities for Research in Astronomy (AURA) under a cooperative agreement with the U.S. National Science Foundation. This project used data obtained with the Dark Energy Camera (DECam), which was constructed by the Dark Energy Survey (DES) collaboration. Funding for the DES Projects has been provided by the DOE and NSF (USA), MISE (Spain), STFC (UK), HEFCE (UK), NCSA (UIUC), KICP (U. Chicago), CCAPP (Ohio State), MIFPA (Texas A&M), CNPQ, FAPERJ, FINEP (Brazil), MINECO (Spain), DFG (Germany) and the Collaborating Institutions in the Dark Energy Survey, which are Argonne Lab, UC Santa Cruz, University of Cambridge, CIEMAT-Madrid, University of Chicago, University College London, DES-Brazil Consortium, University of Edinburgh, ETH Zürich, Fermilab, University of Illinois, ICE (IEEC-CSIC), IFAE Barcelona, Lawrence Berkeley Lab, LMU München and the associated Excellence Cluster Universe, University of Michigan, NSF NOIRLab, University of Nottingham, Ohio State University, OzDES Membership Consortium, University of Pennsylvania, University of Portsmouth, SLAC National Lab, Stanford University, University of Sussex, and Texas A&M University. Based on observations at NSF Cerro Tololo Inter-American Observatory, a program of NOIRLab (NOIRLab Prop. ID 2013A-0737; PI Sheppard), which is managed by the Association of Universities for Research in Astronomy (AURA) under a cooperative agreement with the U.S. National Science Foundation.",
+   "source": "https://astroarchive.noirlab.edu/api/header/bc6ac8b4671a9239086210cdaaeb468c/",
+   "archive_files": [
+    "c4d_130507_230731_ooi_r_v1.fits.fz[28]",
+    "c4d_130507_233909_ooi_r_v1.fits.fz[28]",
+    "c4d_130508_000855_ooi_r_v1.fits.fz[28]",
+    "c4d_130508_022158_ooi_r_v1.fits.fz[28]",
+    "c4d_130508_232129_ooi_r_v1.fits.fz[28]",
+    "c4d_130510_022750_ooi_r_v1.fits.fz[28]"
+   ],
+   "positions_from": "5 MPC positions of 2013 FY27 from observatory W84 (measured against Gaia DR1), fitted with a degree-2 polynomial in time (rms 0.03\"), through the frames' astrometry fitted to 9 Gaia DR3 stars (rms 0.01\")",
+   "check_offsets_px": [[-1.4, -0.6], [-0.9, -0.4], [-1.4, -0.4], [-0.8, -0.1], [-1.8, -0.5], [-1.6, -0.3]],
+   "check_median_px": 1.45,
+   "check_snr": [25.0, 29.4, 31.0, 26.8, 22.1, 15.2]
+  },
+  {
+   "id": "vz98",
+   "object": "2010 VZ98",
+   "date": "25 to 28 December 2024",
+   "telescope": "MegaCam, 3.6-metre Canada-France-Hawaii Telescope, Maunakea",
+   "files": ["vz98-1.jpg", "vz98-2.jpg", "vz98-3.jpg", "vz98-4.jpg"],
+   "size": [900, 540],
+   "positions": [[169.8, 95.5], [336.2, 115.2], [502.9, 134.4], [669.1, 153.3]],
+   "times": ["2024-12-25 05:37 UT", "2024-12-26 05:02 UT", "2024-12-27 04:49 UT", "2024-12-28 04:54 UT"],
+   "frames_are": "colour composites: one exposure in each of g, r and i, taken within 5 minutes of each other and shown as blue, green and red (times are their mean)",
+   "filter": "g, r, i",
+   "frame_filters": [["g.MP9402", "r.MP9602", "i.MP9703"], ["g.MP9402", "r.MP9602", "i.MP9703"], ["g.MP9402", "r.MP9602", "i.MP9703"], ["g.MP9402", "r.MP9602", "i.MP9703"]],
+   "colour": {
+    "blue": "g",
+    "green": "r",
+    "red": "i",
+    "balance": "each filter scaled to AB flux by Pan-STARRS1 photometry of the stars in its first exposure (zero points g 27.20 from 31 stars, r 27.12 from 43 stars, i 26.62 from 49 stars), so a source of flat spectrum is white; one asinh stretch of their mean, each channel keeping its share",
+    "motion_px": [0.61, 0.62, 0.6, 0.58]
+   },
+   "scale_arcsec_px": 0.4,
+   "exposure_s": [30, 30, 30, 30],
+   "credit": "CFHT MegaCam data via the Canadian Astronomy Data Centre (program 24BQ97, PI QSO Team); NRC/CNRS/University of Hawaiʻi",
+   "license": "public archive data",
+   "license_url": "https://www.cfht.hawaii.edu/en/science/Publications/",
+   "terms": "public since 2023-01-31, when CFHT's proprietary period ended (the REL_DATE in the headers)",
+   "acknowledgement": "Based on observations obtained at the Canada-France-Hawaiʻi Telescope (CFHT) which is operated by the National Research Council of Canada, the Institut National des Sciences de l'Univers of the Centre National de la Recherche Scientifique of France, and the University of Hawaiʻi. CFHT is located on Maunakea on Hawaiʻi Island, a mountain of considerable cultural, natural, and ecological significance. Maunakea is a sacred site to Native Hawaiians, also known as Kānaka ʻŌiwi. Quality observations are made possible by relentless effort of the entire staff at Canada-France-Hawaiʻi Telescope. Based on observations obtained with MegaPrime/MegaCam, a joint project of CFHT and CEA/DAPNIA. This research used the facilities of the Canadian Astronomy Data Centre operated by the National Research Council of Canada with the support of the Canadian Space Agency.",
+   "source": "https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/ssois/results.html?lang=en&object=2010+VZ98&search=bynameall&epoch1=2024+12+27&epoch2=2024+12+29&eellipse=&eunits=arcseconds&extres=yes&xyres=yes",
+   "archive_files": [
+    "3101454p[24] + 3101455p[24] + 3101456p[24]",
+    "3101611p[24] + 3101612p[24] + 3101613p[24]",
+    "3101786p[24] + 3101787p[24] + 3101788p[24]",
+    "3101985p[24] + 3101986p[24] + 3101987p[24]"
+   ],
+   "positions_from": "JPL Horizons' astrometric ephemeris of 2010 VZ98 from site 568 (orbit solution JPL#41 of 2026-Jun-07, fitted to 691 observations from 1998-2026 at the MPC), through the frames' astrometry fitted to 45 Gaia DR3 stars (rms 0.04\")",
+   "check_offsets_px": [[0.3, 0.1], [0.0, 0.2], [-0.0, 0.1], [0.1, -0.1]],
+   "check_median_px": 0.18,
+   "check_snr": [22.3, 20.2, 15.0, 18.1]
+  },
+  {
+   "id": "vp113",
+   "object": "2012 VP113",
+   "date": "9 and 11 October 2021",
+   "telescope": "MegaCam, 3.6-metre Canada-France-Hawaii Telescope, Maunakea",
+   "files": ["vp113-1.jpg", "vp113-2.jpg", "vp113-3.jpg", "vp113-4.jpg", "vp113-5.jpg", "vp113-6.jpg"],
+   "size": [900, 540],
+   "positions": [[166.6, 321.0], [172.3, 323.2], [176.7, 324.9], [181.0, 326.7], [484.7, 452.7], [492.5, 456.1]],
+   "times": ["2021-10-09 10:33 UT", "2021-10-09 11:22 UT", "2021-10-09 12:00 UT", "2021-10-09 12:37 UT", "2021-10-11 10:47 UT", "2021-10-11 12:03 UT"],
+   "frames_are": "single exposures",
+   "filter": "gri.MP9605",
+   "frame_filters": [["gri.MP9605"], ["gri.MP9605"], ["gri.MP9605"], ["gri.MP9605"], ["gri.MP9605"], ["gri.MP9605"]],
+   "colour": null,
+   "scale_arcsec_px": 0.17,
+   "exposure_s": [320, 320, 320, 320, 320, 320],
+   "credit": "CFHT MegaCam data via the Canadian Astronomy Data Centre (program 21BC03, PI Samantha Lawler); NRC/CNRS/University of Hawaiʻi",
+   "license": "public archive data",
+   "license_url": "https://www.cfht.hawaii.edu/en/science/Publications/",
+   "terms": "public since 2023-02-28, when CFHT's proprietary period ended (the REL_DATE in the headers)",
+   "acknowledgement": "Based on observations obtained at the Canada-France-Hawaiʻi Telescope (CFHT) which is operated by the National Research Council of Canada, the Institut National des Sciences de l'Univers of the Centre National de la Recherche Scientifique of France, and the University of Hawaiʻi. CFHT is located on Maunakea on Hawaiʻi Island, a mountain of considerable cultural, natural, and ecological significance. Maunakea is a sacred site to Native Hawaiians, also known as Kānaka ʻŌiwi. Quality observations are made possible by relentless effort of the entire staff at Canada-France-Hawaiʻi Telescope. Based on observations obtained with MegaPrime/MegaCam, a joint project of CFHT and CEA/DAPNIA. This research used the facilities of the Canadian Astronomy Data Centre operated by the National Research Council of Canada with the support of the Canadian Space Agency.",
+   "source": "https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/ssois/results.html?lang=en&object=2012+VP113&search=bynameall&epoch1=2021+10+10&epoch2=2021+10+12&eellipse=&eunits=arcseconds&extres=yes&xyres=yes",
+   "archive_files": [
+    "2662145p[11]",
+    "2662158p[11]",
+    "2662164p[11]",
+    "2662170p[11]",
+    "2662396p[11]",
+    "2662408p[11]"
+   ],
+   "positions_from": "6 MPC positions of 2012 VP113 from observatory T14 (measured against Gaia DR3), fitted with a degree-2 polynomial in time (rms 0.03\"), through the frames' astrometry fitted to 17 Pan-STARRS1 DR2 stars (rms 0.09\")",
+   "check_offsets_px": [[0.6, 0.1], [0.4, -1.0], [-0.4, -0.7], [-0.4, -0.3], [-0.4, -0.7], [0.7, -0.5]],
+   "check_median_px": 0.83,
+   "check_snr": [10.6, 24.6, 22.2, 18.2, 23.4, 25.4]
+  },
+  {
+   "id": "sd106",
+   "object": "2016 SD106",
+   "date": "9 and 11 October 2021",
+   "telescope": "MegaCam, 3.6-metre Canada-France-Hawaii Telescope, Maunakea",
+   "files": ["sd106-1.jpg", "sd106-2.jpg", "sd106-3.jpg", "sd106-4.jpg", "sd106-5.jpg", "sd106-6.jpg", "sd106-7.jpg", "sd106-8.jpg", "sd106-9.jpg", "sd106-10.jpg"],
+   "size": [900, 540],
+   "positions": [[288.2, 148.9], [289.8, 149.6], [292.9, 151.1], [296.7, 152.9], [299.8, 154.4], [657.8, 328.5], [659.3, 329.3], [664.6, 331.8], [666.1, 332.5], [669.2, 334.0]],
+   "times": ["2021-10-09 07:45 UT", "2021-10-09 07:57 UT", "2021-10-09 08:21 UT", "2021-10-09 08:50 UT", "2021-10-09 09:14 UT", "2021-10-11 08:48 UT", "2021-10-11 09:00 UT", "2021-10-11 09:41 UT", "2021-10-11 09:53 UT", "2021-10-11 10:17 UT"],
+   "frames_are": "single exposures",
+   "filter": "r.MP9602",
+   "frame_filters": [["r.MP9602"], ["r.MP9602"], ["r.MP9602"], ["r.MP9602"], ["r.MP9602"], ["r.MP9602"], ["r.MP9602"], ["r.MP9602"], ["r.MP9602"], ["r.MP9602"]],
+   "colour": null,
+   "scale_arcsec_px": 0.3,
+   "exposure_s": [240, 240, 240, 240, 240, 240, 240, 240, 240, 240],
+   "credit": "CFHT MegaCam data via the Canadian Astronomy Data Centre (program 21BD95, PI Shiang-Yu Wang); NRC/CNRS/University of Hawaiʻi",
+   "license": "public archive data",
+   "license_url": "https://www.cfht.hawaii.edu/en/science/Publications/",
+   "terms": "public since 2022-08-30, when CFHT's proprietary period ended (the REL_DATE in the headers)",
+   "acknowledgement": "Based on observations obtained at the Canada-France-Hawaiʻi Telescope (CFHT) which is operated by the National Research Council of Canada, the Institut National des Sciences de l'Univers of the Centre National de la Recherche Scientifique of France, and the University of Hawaiʻi. CFHT is located on Maunakea on Hawaiʻi Island, a mountain of considerable cultural, natural, and ecological significance. Maunakea is a sacred site to Native Hawaiians, also known as Kānaka ʻŌiwi. Quality observations are made possible by relentless effort of the entire staff at Canada-France-Hawaiʻi Telescope. Based on observations obtained with MegaPrime/MegaCam, a joint project of CFHT and CEA/DAPNIA. This research used the facilities of the Canadian Astronomy Data Centre operated by the National Research Council of Canada with the support of the Canadian Space Agency.",
+   "source": "https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/ssois/results.html?lang=en&object=2016+SD106&search=bynameall&epoch1=2021+10+10&epoch2=2021+10+12&eellipse=&eunits=arcseconds&extres=yes&xyres=yes",
+   "archive_files": [
+    "2662109p[23]",
+    "2662111p[23]",
+    "2662114p[23]",
+    "2662118p[23]",
+    "2662121p[23]",
+    "2662380p[23]",
+    "2662382p[23]",
+    "2662387p[23]",
+    "2662389p[23]",
+    "2662392p[23]"
+   ],
+   "positions_from": "JPL Horizons' astrometric ephemeris of 2016 SD106 from site 568 (orbit solution JPL#3 of 2024-Aug-01, fitted to 26 observations from 2013-2019 at the MPC), through the frames' astrometry fitted to 20 Gaia DR3 stars (rms 0.04\")",
+   "check_offsets_px": [[0.3, 0.4], [-0.8, -0.2], [-0.7, -0.3], [-0.3, -0.1], [-0.6, 0.6], [-0.8, -0.5], [-0.6, -0.4], [-0.3, -0.1], [-0.7, 0.0], [-0.7, -0.0]],
+   "check_median_px": 0.71,
+   "check_snr": [11.5, 12.9, 10.7, 12.8, 12.5, 13.8, 12.5, 14.6, 12.3, 16.0]
+  }
+ ],
+ "skipped": [
+  {
+   "id": "so20",
+   "object": "2015 SO20",
+   "why": "set aside for its timing: its frames come in two short runs a day apart, minutes between frames within a night, so the object barely moves for most of the round and then leaps across the frame"
+  },
+  {
+   "id": "fp185",
+   "object": "2001 FP185",
+   "why": "set aside for objects that move further: its only night with many exposures (MegaCam, 14 April 2015, 60 s each over 1.5 hours) shows it cross 4% of a frame even at 0.14 arcseconds a pixel"
+  },
+  {
+   "id": "gt50",
+   "object": "2015 GT50",
+   "why": "set aside for objects that move further: on its discovery night (OSSOS, 13 April 2015, five 300-s MegaCam exposures over 3.4 hours) it crosses 6% of a frame at the camera's own scale, and at a scale fine enough for 10% it is lost in the noise; its other runs of nights (April 2015, March 2016) leave no frame that lies on one CCD in every exposure"
+  },
+  {
+   "id": "kg163",
+   "object": "2015 KG163",
+   "why": "set aside for objects that move further: on its discovery night (OSSOS, 17 May 2015, five 300-s MegaCam exposures) it crosses 5% of a frame, and its other nights that month are single exposures or 40-s DECam ones in which it is too faint to see"
+  },
+  {
+   "id": "tg422",
+   "object": "2007 TG422",
+   "why": "on the second of its two nights in the CFHT Legacy Survey (28 and 29 October 2003, five 500-s g exposures each) the dithered exposures put it at the edge of one CCD or the next, so no frame lies on one CCD in every exposure; the first night alone (35 minutes) shows it move about two seconds of arc"
+  },
+  {
+   "id": "qv89",
+   "object": "2016 QV89",
+   "why": "its only runs of nights with colour are the Dark Energy Survey's supernova fields: in September 2016 cloud and then the full moon hide it, and in August 2017 one visit a night has it on a CCD (g, r and i on 21, 26 and 31 August), five days apart, and its drift of four arcminutes south over those ten days does not fit in a frame that lies on one CCD in all of them"
+  },
+  {
+   "id": "vn112",
+   "object": "Alicanto",
+   "why": "on the second of its two nights with DECam before dawn (14 and 16 July 2024, when it moved east) every exposure has it in a gap between CCDs, which leaves one night of four 50-s exposures in 25 minutes"
+  },
+  {
+   "id": "dr370",
+   "object": "2015 DR370",
+   "why": "too faint to follow by eye: on its three discovery nights (the HiTS survey, 17 to 19 February 2015, ten 86-s DECam g exposures) the computed positions agree with the pixels to half a pixel, but it stands only five to nine times above the noise in each, a speck among the field's faint galaxies"
+  },
+  {
+   "id": "ra109",
+   "object": "2013 RA109",
+   "why": "too faint to follow by eye: the archive's only runs of nights with it in the frame are a standard-star field's 15-s DECam exposures (g, r and i on six nights from 29 July 2019, and again in February 2020), and with all three filters added it stands two to five times above the noise"
+  },
+  {
+   "id": "sy99",
+   "object": "2013 SY99",
+   "why": "too faint to follow by eye: its discovery night's nine 287-s MegaCam exposures (OSSOS, 29 September 2013) show it at r = 24 to 25, three to four times the noise in each, and most are too far apart in time to add"
+  },
+  {
+   "id": "rf98",
+   "object": "2013 RF98",
+   "why": "too faint to follow by eye: on its best-covered night (10 October 2013, thirteen 330-s DECam z exposures in a Dark Energy Survey supernova field) it stands two to five times above the noise even with exposures added in pairs, and its track runs past a brighter galaxy"
+  },
+  {
+   "id": "dy248",
+   "object": "2015 DY248",
+   "why": "too faint to follow by eye: its discovery night (18 February 2015, five 86-s DECam g exposures of the HiTS survey, 1.6 hours apart) shows it at g = 24, four to five times the noise in each"
+  },
+  {
+   "id": "kh163",
+   "object": "2015 KH163",
+   "why": "too faint to follow by eye: on 17 May 2015 (five 300-s MegaCam exposures, OSSOS) it is at r = 24.5 to 25, about three times the noise in each"
+  },
+  {
+   "id": "fe72",
+   "object": "2014 FE72",
+   "why": "its discovery night (26 March 2014) has only three DECam exposures; the archive's other nights with five or more in one filter (DECam, March 2016) last twenty minutes, in which it moves under three pixels, and the MPC has no positions from them"
+  },
+  {
+   "id": "uz224",
+   "object": "2014 UZ224",
+   "why": "the Dark Energy Survey imaged it once or twice a night, each time in a different filter (21 October 2014: r, i, z, z), so no night has five exposures in one filter"
+  }
+ ]
+}

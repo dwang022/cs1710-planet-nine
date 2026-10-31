@@ -11,13 +11,13 @@ import json, os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PHENOMENA = [
-    {"id": "clustering", "label": "Orbits bunched in one direction",
+    {"id": "clustering", "label": "Orbits bunched in one direction", "short": "Bunched",
      "plain": "The distant objects' closest-approach points lean the same way."},
-    {"id": "detached", "label": "Objects cut off from Neptune",
+    {"id": "detached", "label": "Objects cut off from Neptune", "short": "Cut off",
      "plain": "Bodies like Sedna never come close enough for Neptune to have moved them."},
-    {"id": "inclined", "label": "Steeply tilted orbits",
+    {"id": "inclined", "label": "Steeply tilted orbits", "short": "Tilted",
      "plain": "Some distant objects orbit far out of the plane of the planets."},
-    {"id": "nondetection", "label": "Nothing has been found",
+    {"id": "nondetection", "label": "Nothing has been found", "short": "Not found",
      "plain": "A decade of searching has turned up no planet."},
 ]
 
@@ -27,7 +27,7 @@ TAGS = {
     "observational_bias":     {"clustering": "yes", "detached": "no", "inclined": "no", "nondetection": "yes"},
     "self_gravitating_disk":  {"clustering": "yes", "detached": "yes", "inclined": "no", "nondetection": "yes"},
     "inclination_instability":{"clustering": "yes", "detached": "partial", "inclined": "yes", "nondetection": "yes"},
-    "stellar_flyby":          {"clustering": "partial", "detached": "yes", "inclined": "partial", "nondetection": "yes"},
+    "stellar_flyby":          {"clustering": "partial", "detached": "yes", "inclined": "yes", "nondetection": "yes"},
     "primordial_black_hole":  {"clustering": "yes", "detached": "yes", "inclined": "yes", "nondetection": "yes"},
     "modified_gravity":       {"clustering": "partial", "detached": "no", "inclined": "no", "nondetection": "yes"},
     "small_sample":           {"clustering": "yes", "detached": "no", "inclined": "no", "nondetection": "yes"},

@@ -4,56 +4,71 @@
 import * as d3 from 'd3'
 import '../site.js'
 import { loadData, showLoadError } from '../data.js'
-import { makeDistance, fmtAu, lightTime } from '../charts/distance.js'
+import { makeDistance, fmtAu, lightTime, lightDays, KUIPER } from '../charts/distance.js'
+import { drawAuRuler } from '../charts/auruler.js'
 import { scrolly, scrollyProgress } from '../scrolly.js'
-import { PLANET_NINE } from '../orbits.js'
-import { STRICT, selected, withAlignment } from '../sample.js'
+import { planetAt } from '../orbits.js'
+import { STRICT, selected } from '../sample.js'
 
 const $ = s => document.querySelector(s)
-const fmt = d3.format(',.0f')
 
 async function main () {
-  const { etnos, planets, planet_nine_predictions: preds } = await loadData('etnos', 'planets', 'planet_nine_predictions')
-  const PLANETS = planets.planets.map(p => ({ name: p.name, a: p.a, e: p.e, q: p.a * (1 - p.e), Q: p.a * (1 + p.e) }))
+  const { etnos, planets, planet_nine_predictions: preds, positions } = await loadData('etnos', 'planets', 'planet_nine_predictions', 'positions')
+
+  drawAuRuler($('#auRuler'), planets.planets)
 
   // --- the zoom-out ------------------------------------------------------------
-  const bb21 = preds.orbit_predictions.find(p => p.is_default) || {}
+  // Everything on the map is where it was on the catalogue date the positions were built for.
+  const PLANETS = planets.planets.map(p => planetAt(p, positions.epoch_jd))
+  const bb21 = preds.orbit_predictions.find(p => p.is_default)
   const distance = makeDistance($('#chartDist'), {
     planets: PLANETS,
-    p9: { a: PLANET_NINE.a_au, e: PLANET_NINE.e, aErr: bb21.a_au_err || [0, 0], eErr: bb21.e_err || [0, 0] },
+    p9: { a: bb21.a_au, e: bb21.e, varpi: bb21.varpi_deg, aErr: bb21.a_au_err, eErr: bb21.e_err, varpiErr: bb21.varpi_deg_err },
+    voyager: positions.voyager_1,
   })
-  $('#distP9q').textContent = fmt(distance.p9.q); $('#distP9Q').textContent = fmt(distance.p9.Q)
-  $('#distP9min').textContent = fmt(distance.p9.qMin); $('#distP9max').textContent = fmt(distance.p9.QMax)
 
-  // The zoom-out draws one fixed group, the well-measured extreme objects:
-  // briefly observed orbits have far ends too uncertain to put on a ruler.
-  const objs = withAlignment(selected(etnos, STRICT))
+  // The zoom-out draws one fixed group, the extreme objects seen in more than one
+  // season: orbits seen in one season only have far ends too uncertain to draw.
+  const objs = selected(etnos, STRICT)
   const far = objs.reduce((m, o) => (o.Q_au > m.Q_au ? o : m))
-  $('#distFarAu').textContent = `${fmtAu(far.Q_au)} (${far.name || far.provisional_desig || far.id})`
 
-  // The width of the view, in AU, at each card; scrolling eases between them in log space.
-  const as = objs.map(o => o.a_au).sort(d3.ascending)
-  const extreme = Math.max(420, (d3.quantile(as, 0.75) || 500) * 1.6)
-  const keys = [1.75, 11.5, 34, 56, extreme, Math.max(extreme, distance.p9.QMax * 1.12), distance.viewFor(far)]
-  for (let i = 1; i < keys.length; i++) keys[i] = Math.max(keys[i], keys[i - 1] * 1.05)
-
-  let step = 'home', progress = { k: 0, t: 0 }
-  distance.update({ objects: objs, showP9: true, far, step })
+  const order = [...document.querySelectorAll('#distStory .step')].map(s => s.dataset.step)
+  let progress = { k: 0, t: 0 }
+  distance.update({ objects: objs, far, step: order[0] })
+  // Each card has a frame; scrolling through the middle half of a card glides to the next one's.
   function applyView () {
     const { k, t } = progress
-    const a = keys[Math.min(k, keys.length - 1)], b = keys[Math.min(k + 1, keys.length - 1)]
+    const a = order[Math.min(k, order.length - 1)], b = order[Math.min(k + 1, order.length - 1)]
     const u = Math.min(1, Math.max(0, (t - 0.25) / 0.5)), s = u * u * (3 - 2 * u)
-    const view = Math.exp(Math.log(a) + (Math.log(b) - Math.log(a)) * s)
-    distance.setView(view)
-    $('#distReadout').innerHTML = `Sun out to <b>${fmtAu(view)}</b> · light takes <b>${lightTime(view)}</b> to cross this view`
+    distance.glide(a, b, s)
+    const w = distance.width()
+    $('#distReadout').innerHTML = `This view is <b class="k-au">${fmtAu(w)}</b> across · light takes <b>${lightTime(w)}</b> to cross it`
   }
-  scrolly($('#distStory'), { onStep: (i, s) => { step = s; distance.update({ step: s }) } })
+  scrolly($('#distStory'), { onStep: (i, s) => distance.update({ step: s }) })
   scrollyProgress($('#distStory'), (k, t) => { progress = { k, t }; applyView() })
+  applyView()
 
   // --- numbers quoted in the text ------------------------------------------------
-  const nums = { strictN: objs.length }
+  // p9q and p9Q are the head's question: the two ends of Planet Nine's best-fit orbit.
+  const P = Object.fromEntries(PLANETS.map(p => [p.name, p]))
+  const drawn = distance.objects()
+  const nowMax = d3.max(drawn, o => o.now_au)
+  const years = d3.format(',.2r')
+  const nums = {
+    strictN: objs.length,
+    p9q: fmtAu(distance.p9.q), p9Q: fmtAu(distance.p9.Q),
+    rockyAu: fmtAu(Math.ceil(P.Mars.a * (1 + P.Mars.e))), jupAu: fmtAu(Math.round(P.Jupiter.a)),
+    earthLight: lightTime(P.Earth.a),
+    nowMin: fmtAu(d3.min(drawn, o => o.now_au)), nowMax: fmtAu(nowMax),
+    nearN: drawn.filter(o => o.now_au <= KUIPER[1]).length, beltEdge: fmtAu(KUIPER[1]),
+    medQ: fmtAu(d3.median(objs, o => o.Q_au)),
+    minP: years(d3.min(objs, o => o.period_yr)), maxP: years(d3.max(objs, o => o.period_yr)),
+    farAu: fmtAu(100),
+    bandMin: fmtAu(distance.p9.bandMin), bandMax: fmtAu(distance.p9.bandMax),
+    p9Light: `${lightDays(distance.p9.q)} to ${lightDays(distance.p9.Q)} days`,
+    voyAu: fmtAu(positions.voyager_1.r_au),
+  }
   document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
-
 }
 
 main().catch(showLoadError)

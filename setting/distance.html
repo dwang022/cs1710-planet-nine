@@ -3,26 +3,36 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>How far away · The search for Planet Nine</title>
+<meta name="color-scheme" content="dark" />
+<!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
+<style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
+<title>Far from home · The search for Planet Nine</title>
 <meta name="description" content="A zoom-out from Earth to the farthest known orbits: how far the objects behind the Planet Nine argument are, and where the predicted planet itself would sit." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="distance">
 <main>
-  <header class="page-head wrap">
+  <header class="page-head wrap head-split">
     <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
-    <h1>How <em>far away</em></h1>
-    <p class="lede">The objects at the centre of the argument are hundreds of times farther from the Sun than Earth.</p>
+    <!-- The claim and the question on the left; on the right, the ruler for its unit (charts/auruler.js).
+         Planet Nine's two distances are computed on load in pages/distance.js. Every distance in AU on
+         this page is lime (.k-au, --au). -->
+    <div>
+      <h1>Far <em>from home</em></h1>
+      <p class="lede">Planet Nine is thought to orbit between <b class="k-au" data-n="p9q">—</b> and
+      <b class="k-au" data-n="p9Q">—</b> from the Sun.</p>
+      <p class="head-q">Just how far away is that?</p>
+    </div>
+    <figure class="head-fig">
+      <div id="auRuler"></div>
+      <figcaption>One astronomical unit (AU) is Earth's distance from the Sun, about 150 million km.</figcaption>
+    </figure>
   </header>
 
-  <!-- the zoom-out -->
+  <!-- the zoom-out: the head asks how far 322 to 599 AU is; scrolling answers it on a map seen from
+       above, everything where it was in June 2026 (charts/distance.js). Numbers in the cards are
+       filled from the data in pages/distance.js; the chart labels its own distances. -->
   <section class="part story" id="zoom">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2>Zoom out from Earth</h2>
-        <p>The Sun stays at the left edge; everything else sits at its true distance from it. Sizes are not to scale.</p>
-      </div>
-    </div>
     <div class="scrolly wrap wide" id="distStory">
       <div class="scrolly-graphic">
         <div class="viz-head"><div id="distReadout"></div></div>
@@ -30,64 +40,79 @@
       </div>
       <div class="scrolly-steps">
         <div class="step" data-step="home"><div class="step-card">
-          <div class="step-n">1 / 7</div>
-          <h3>Start at Earth</h3>
-          <p>Earth orbits <strong>1 AU</strong> from the Sun: about 150 million km, or eight minutes at the
-          speed of light. That distance, the astronomical unit, is the ruler for everything on this site.</p>
-          <p>Mercury, Venus and Mars all lie within two of them.</p>
+          <div class="step-n">1 / 8</div>
+          <h3>The rocky planets</h3>
+          <ul>
+            <li>Mercury, Venus, Earth and Mars all orbit within <span class="k-au" data-n="rockyAu">—</span> of the Sun.</li>
+            <li>Sunlight reaches Earth in <span data-n="earthLight">—</span>.</li>
+          </ul>
         </div></div>
         <div class="step" data-step="giants"><div class="step-card">
-          <div class="step-n">2 / 7</div>
+          <div class="step-n">2 / 8</div>
           <h3>The giant planets</h3>
-          <p>Jupiter orbits at about 5 AU and Saturn near 10. The four rocky planets are already crowding
-          toward the Sun's glow.</p>
+          <ul>
+            <li>Jupiter orbits at about <span class="k-au" data-n="jupAu">—</span>.</li>
+            <li>Saturn is the farthest planet you can easily see without a telescope.</li>
+          </ul>
         </div></div>
         <div class="step" data-step="neptune"><div class="step-card">
-          <div class="step-n">3 / 7</div>
-          <h3>The edge of the familiar</h3>
-          <p>Uranus at 19 AU, Neptune at <strong>30 AU</strong>. Sunlight takes four hours to reach Neptune.
-          All eight planets fit inside this circle.</p>
+          <div class="step-n">3 / 8</div>
+          <h3>Where the <span class="k-eight">eight</span> planets end</h3>
+          <ul>
+            <li>Neptune was found in 1846 where calculations said it must be, from the tug it had on Uranus.</li>
+            <li>Everything Planet Nine is meant to explain lies farther out.</li>
+          </ul>
         </div></div>
         <div class="step" data-step="pluto"><div class="step-card">
-          <div class="step-n">4 / 7</div>
-          <h3>Pluto and the Kuiper belt</h3>
-          <p>Pluto averages 39 AU, but its orbit is a stretched oval: it passes inside Neptune's orbit at one
-          end and reaches 49 AU at the other. The region it shares with thousands of smaller icy bodies is the
-          Kuiper belt.</p>
+          <div class="step-n">4 / 8</div>
+          <h3>The Kuiper belt</h3>
+          <ul>
+            <li>Beyond Neptune lies a broad ring of thousands of small icy bodies.</li>
+            <li>Pluto is one of them. Its oval orbit dips inside Neptune's at one end.</li>
+          </ul>
         </div></div>
         <div class="step" data-step="extreme"><div class="step-card">
-          <div class="step-n">5 / 7</div>
-          <h3>The extreme objects</h3>
-          <p>Each bar below the planets is one of the <strong><span data-n="strictN">—</span> well-measured
-          distant objects</strong> this site is about, drawn from its nearest point to the Sun to its farthest,
-          and stacked by how far out it goes. The <strong>dot</strong> is where the object is right now.</p>
-          <p class="step-key">Nearly every dot sits at the near end. These objects were all caught close to the
-          Sun, because that is the only place they are bright enough to see.</p>
-          <p>Point at a bar to see its numbers.</p>
+          <div class="step-n">5 / 8</div>
+          <h3>The evidence, close up</h3>
+          <ul>
+            <li>Today the <span data-n="strictN">—</span> objects behind the case for Planet Nine are
+            <span class="k-au" data-n="nowMin">—</span> to <span class="k-au" data-n="nowMax">—</span> from the Sun.</li>
+            <li><span data-n="nearN">—</span> of them are no farther out than the edge of the Kuiper belt,
+            <span class="k-au" data-n="beltEdge">—</span>.</li>
+          </ul>
+          <p class="step-key">None of them stays this close. Point at one to see where its orbit goes.</p>
+        </div></div>
+        <div class="step" data-step="orbits"><div class="step-card">
+          <div class="step-n">6 / 8</div>
+          <h3>Far beyond the belt</h3>
+          <ul>
+            <li>The orbits of these <span data-n="strictN">—</span> objects are long ovals. Half reach farther than <span class="k-au" data-n="medQ">—</span>.</li>
+            <!-- "most of it": by Kepler's equation every one of them spends at least 86% of its orbit beyond 100 AU
+                 (checked against etnos.json on 2026-10-31; recheck if the sample changes) -->
+            <li>One trip round the Sun takes <span data-n="minP">—</span> to <span data-n="maxP">—</span> years, most of it
+            spent beyond <span class="k-au" data-n="farAu">—</span>.</li>
+            <li>Voyager 1, the farthest spacecraft, has travelled only <span class="k-au" data-n="voyAu">—</span> since 1977.</li>
+          </ul>
+          <p class="step-key">We only see them because they are in the one short stretch where they are bright enough to find.</p>
         </div></div>
         <div class="step" data-step="p9"><div class="step-card">
-          <div class="step-n">6 / 7</div>
+          <div class="step-n">7 / 8</div>
           <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Where Planet Nine would be</h3>
-          <p>The prediction is a range, not a point. On its best-fit orbit the planet would travel between
-          <strong>about <span id="distP9q">320</span> and <span id="distP9Q">600</span> AU</strong> from the
-          Sun. Allowing for the uncertainty in that orbit, it could be anywhere from roughly
-          <span id="distP9min">200</span> to <span id="distP9max">900</span> AU out. At those distances
-          sunlight takes days to arrive, and very little of it is reflected back.</p>
+          <ul>
+            <li>The line is its most likely orbit, which never comes nearer than <span class="k-au" data-n="p9q">—</span>.</li>
+            <li>The band covers the range of possible orbits, from <span class="k-au" data-n="bandMin">—</span> to <span class="k-au" data-n="bandMax">—</span>.</li>
+          </ul>
+          <p class="step-key">Sunlight takes <span data-n="p9Light">—</span> to get there, and very little of it
+          comes back.</p>
         </div></div>
         <div class="step" data-step="farthest"><div class="step-card">
-          <div class="step-n">7 / 7</div>
+          <div class="step-n">8 / 8</div>
           <h3>The farthest of them</h3>
-          <p>The most distant of these objects reaches <strong><span id="distFarAu">—</span></strong> from
-          the Sun at the far end of its orbit. At this scale the eight planets sit inside the Sun's glow at the
-          left edge.</p>
+          <ul>
+            <li>At this scale all <span class="k-eight">eight</span> planets sit inside the Sun.</li>
+            <li>From out here the Sun is just one bright star among many.</li>
+          </ul>
         </div></div>
-      </div>
-    </div>
-    <div class="wrap">
-      <div class="primer">
-        <div class="pc"><h4>AU: the ruler</h4><p>One AU is Earth to the Sun, about 93 million miles. Neptune is 30 AU out. These objects reach hundreds. Voyager 1, after 48 years, is at about 170.</p></div>
-        <div class="pc"><h4>Orbits are ovals, not circles</h4><p>Every object has a near end and a far end. It moves fast through the near end and crawls through the far one, so it spends most of its life far away, and dark.</p></div>
-        <div class="pc"><h4>Which way an orbit leans</h4><p>Because the oval is long, it points somewhere. That direction, where the near end sits, is the single number the next part of this site is about.</p></div>
       </div>
     </div>
   </section>

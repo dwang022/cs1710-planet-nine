@@ -46,6 +46,53 @@ export function orbitArc (a, e, iDeg, nodeDeg, argperiDeg, nu0 = -90, nu1 = 90, 
   return pts
 }
 
+/** True anomaly (degrees) from mean anomaly (degrees), solving Kepler's equation by Newton's method. */
+export function trueAnomaly (mDeg, e) {
+  const M = (((mDeg % 360) + 360) % 360) * RAD
+  let E = e < 0.8 ? M : Math.PI
+  for (let k = 0; k < 100; k++) {
+    const d = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E))
+    E -= d
+    if (Math.abs(d) < 1e-12) break
+  }
+  return 2 * Math.atan2(Math.sqrt(1 + e) * Math.sin(E / 2), Math.sqrt(1 - e) * Math.cos(E / 2)) / RAD
+}
+
+/**
+ * An orbit laid flat on the ecliptic: the point at true anomaly nu keeps its
+ * true distance from the Sun and sits in the direction varpi + nu. Only the
+ * tilt is dropped, so every distance on a flat map stays exact. Returns [x, y] in AU.
+ */
+export function flatPoint (a, e, varpiDeg, nuDeg) {
+  const r = a * (1 - e * e) / (1 + e * Math.cos(nuDeg * RAD))
+  const t = (varpiDeg + nuDeg) * RAD
+  return [r * Math.cos(t), r * Math.sin(t)]
+}
+
+/** A whole flat orbit as [x, y] points, spaced evenly in eccentric anomaly so long ovals stay smooth. */
+export function flatOrbit (a, e, varpiDeg, steps = 180) {
+  const b = a * Math.sqrt(1 - e * e), c = Math.cos(varpiDeg * RAD), s = Math.sin(varpiDeg * RAD)
+  const pts = []
+  for (let k = 0; k <= steps; k++) {
+    const E = (k / steps) * 2 * Math.PI
+    const x = a * (Math.cos(E) - e), y = b * Math.sin(E)
+    pts.push([x * c - y * s, x * s + y * c])
+  }
+  return pts
+}
+
+/**
+ * A planet's elements on a Julian date, from the JPL/Standish approximate
+ * elements in planets.json (J2000 values plus rates per century).
+ * Returns { name, a, e, varpi, nu }, angles in degrees.
+ */
+export function planetAt (p, jd) {
+  const T = (jd - 2451545.0) / 36525
+  const at = k => p[k] + (p.rates?.[k] ?? 0) * T
+  const a = at('a'), e = at('e'), varpi = at('varpi')
+  return { name: p.name, a, e, varpi, nu: trueAnomaly(at('L') - varpi, e) }
+}
+
 /** Radius at true anomaly +/-90, the semi-latus rectum - how far the arc reaches. */
 export function semiLatusRectum (a, e) { return a * (1 - e * e) }
 

@@ -50,7 +50,7 @@ export const isBoxed = s => isFinite(s.aMax) || isFinite(s.qMax)
  * change with the updated state. Returns { sync } to push state back into the
  * controls when something else changes it.
  */
-export function renderControls (root, state, onChange, { note = 'Changes every chart below' } = {}) {
+export function renderControls (root, state, onChange, { note = 'Changes every chart below', showP9 = true } = {}) {
   root.innerHTML = `
     <div class="controls" role="group" aria-label="Choose which objects count">
       <div class="controls-head">
@@ -59,28 +59,26 @@ export function renderControls (root, state, onChange, { note = 'Changes every c
       </div>
       <div class="filter-grid">
         <div class="filter">
-          <label class="filter-name" for="aMin">Minimum orbit distance <b><span data-v="aMin">${state.aMin}</span> AU</b></label>
+          <label class="filter-name" for="aMin">Average distance at least <b class="k-au"><span data-v="aMin">${state.aMin}</span> AU</b></label>
           <input type="range" id="aMin" min="100" max="400" step="10" value="${state.aMin}" />
-          <p class="filter-desc">Only objects whose average distance from the Sun is at least this far.</p>
         </div>
         <div class="filter">
-          <label class="filter-name" for="qMin">Minimum closest approach <b><span data-v="qMin">${state.qMin}</span> AU</b></label>
+          <label class="filter-name" for="qMin">Never nearer the Sun than <b class="k-au"><span data-v="qMin">${state.qMin}</span> AU</b></label>
           <input type="range" id="qMin" min="30" max="60" step="1" value="${state.qMin}" />
-          <p class="filter-desc">Only objects that never come closer to the Sun than this.</p>
         </div>
         <div class="filter">
-          <label class="filter-name" for="quality">Only well-measured orbits</label>
+          <label class="filter-name" for="quality">Only objects seen in more than one season</label>
           <label class="toggle" for="quality"><input type="checkbox" id="quality" ${state.quality ? 'checked' : ''} /><span class="box"></span><span class="state"></span></label>
-          <p class="filter-desc">Hides objects observed too briefly for their orbits to be pinned down.</p>
         </div>
-        <div class="filter">
+        <div class="filter"${showP9 ? '' : ' hidden'}>
           <label class="filter-name" for="showP9"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine-mark"/></svg> Show Planet Nine</label>
           <label class="toggle" for="showP9"><input type="checkbox" id="showP9" ${state.showP9 ? 'checked' : ''} /><span class="box"></span><span class="state"></span></label>
           <p class="filter-desc">Draws the predicted planet for comparison. It never changes the numbers.</p>
         </div>
       </div>
     </div>`
-  const $ = s => root.querySelector(s)
+  const box = root.querySelector('.controls')
+  const $ = s => box.querySelector(s)
   const fire = () => { saveSample(state); onChange(state) }
   $('#aMin').addEventListener('input', e => { state.aMin = +e.target.value; state.aMax = Infinity; state.qMax = Infinity; $('[data-v=aMin]').textContent = state.aMin; fire() })
   $('#qMin').addEventListener('input', e => { state.qMin = +e.target.value; state.aMax = Infinity; state.qMax = Infinity; $('[data-v=qMin]').textContent = state.qMin; fire() })
@@ -92,5 +90,5 @@ export function renderControls (root, state, onChange, { note = 'Changes every c
     $('#qMin').value = state.qMin; $('[data-v=qMin]').textContent = Math.round(state.qMin)
     $('#quality').checked = state.quality; $('#showP9').checked = state.showP9
   }
-  return { sync }
+  return { sync, el: box }
 }

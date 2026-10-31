@@ -12,7 +12,6 @@
 
 import * as d3 from 'd3'
 import { orbitPath, orbitArc, perihelionPoint, PLANET_NINE } from '../orbits.js'
-import { showTip, hideTip } from './tooltip.js'
 import { registerHighlight, setHover } from '../highlight.js'
 
 const NEPTUNE = { a: 30.07, e: 0.00859, i: 1.770, node: 131.784, argperi: 273.19 }
@@ -56,6 +55,10 @@ export function makeLean (root) {
   const gNotes = svg.append('g').style('pointer-events', 'none')
   svg.append('use').attr('href', '#art-sun').style('pointer-events', 'none')
     .attr('x', cx - 13).attr('y', cy - 13).attr('width', 26).attr('height', 26)
+
+  // the card an object opens on click, until its close button or Escape
+  const card = d3.select(root).append('div').attr('class', 'pick-card').attr('hidden', true).attr('role', 'dialog')
+  let picked = null
 
   let scene = {}
 
@@ -130,7 +133,7 @@ export function makeLean (root) {
     re.append('text').attr('class', 'axis-label halo').attr('x', cx + 5).attr('y', d => cy - r(d) - 5)
     const ra = re.merge(rings)
     ra.select('circle').transition().duration(T).attr('r', d => r(d))
-    ra.select('text').text(d => `${d3.format(',')(d)} AU`)
+    ra.select('text').attr('class', 'axis-label halo au').text(d => `${d3.format(',')(d)} AU`)
       .transition().duration(T).attr('y', d => cy - r(d) - 5)
     gRings.transition().duration(T).attr('opacity', ring || s.compass ? 0 : 1)
 
@@ -178,7 +181,7 @@ export function makeLean (root) {
     oa.style('pointer-events', d => !ring && visible(d) ? null : 'none')
       .transition().duration(T)
       .attr('opacity', d => ring || !visible(d) ? 0 : (s.dimOthers && d.id !== s.focus ? 0.25 : 1))
-    oa.on('pointerenter', (ev, d) => hover(ev, d)).on('pointerleave', unhover)
+    oa.on('pointerenter', (ev, d) => hover(d)).on('pointerleave', unhover).on('click', (ev, d) => pick(d))
 
     // --- dots: the same elements in both layouts ---------------------------
     const ringPos = ringPositions(objects)
@@ -195,7 +198,7 @@ export function makeLean (root) {
       .attr('cx', d => dotPos(d)[0]).attr('cy', d => dotPos(d)[1])
       .merge(dots)
       .style('pointer-events', d => visible(d) ? null : 'none')
-      .on('pointerenter', (ev, d) => hover(ev, d)).on('pointerleave', unhover)
+      .on('pointerenter', (ev, d) => hover(d)).on('pointerleave', unhover).on('click', (ev, d) => pick(d))
       .transition().duration(T)
       .delay((d, i) => ring || s.stagger ? (d.varpi_deg / 360) * 400 : 0)
       .attr('cx', d => dotPos(d)[0]).attr('cy', d => dotPos(d)[1])
@@ -261,25 +264,23 @@ export function makeLean (root) {
     }
     if (s.labels?.closest && focus && !ring) {
       const p = perihelionPoint(focus)
-      L('closest', cx + r(p[0]) + 14, cy - r(p[1]) - 14, `${nameOf(focus)} — closest point to the Sun`, { anchor: 'start', size: 15 })
+      L('closest', cx + r(p[0]) + 14, cy - r(p[1]) - 14, `${nameOf(focus)}'s closest point`, { anchor: 'start', size: 15 })
     }
     if (s.labels?.half && stats.n >= 3) {
       const ang = stats.meanDeg
       L('half', ax(ang, PLOT_R * 0.72), ay(ang, PLOT_R * 0.72),
-        `${s.halfCount} of ${stats.n} dots in this half`, { size: 17, colour: '#c4b5fd' })
+        `${s.halfCount}`, { size: 22, colour: '#c4b5fd' })
       L('half2', ax(ang + 180, PLOT_R * 0.62), ay(ang + 180, PLOT_R * 0.62),
-        `only ${stats.n - s.halfCount} in this half`, { size: 15, colour: 'var(--text-muted)' })
+        `${stats.n - s.halfCount}`, { size: 18, colour: 'var(--text-muted)' })
     }
     if (s.labels?.mean && stats.n >= 3) {
       const ang = stats.meanDeg
       L('mean', ax(ang, RING_R * stats.R + 26), ay(ang, RING_R * stats.R + 26),
         'average direction', { size: 15, anchor: Math.cos(ang * RAD) < -0.3 ? 'end' : 'start' })
-      L('ring', cx, cy + RING_R * 0.38,
-        'reaching the circle = every object agrees', { size: 13, colour: 'var(--text-muted)', anchor: 'middle' })
     }
     if (s.labels?.p9 && s.p9) {
       if (!ring) {
-        L('p9', cx + r(p9pt[0]), cy - r(p9pt[1]) + 28, 'Planet Nine (predicted)', { size: 15, colour: 'var(--p9)', anchor: 'middle' })
+        L('p9', cx + r(p9pt[0]), cy - r(p9pt[1]) + 28, 'Planet Nine', { size: 15, colour: 'var(--p9)', anchor: 'middle' })
       }
       const a = PLANET_NINE.varpi_deg
       L('p9s', ax(a, RING_R * 0.55) - 12, ay(a, RING_R * 0.55), 'Planet Nine points this way', { size: 13, colour: 'var(--p9)', anchor: 'end' })
@@ -298,21 +299,31 @@ export function makeLean (root) {
       .attr('x', d => d.x).attr('y', d => d.y).attr('opacity', 1)
   }
 
-  function hover (ev, d) {
+  // pointing at an object lights up its orbit; clicking opens its card
+  function hover (d) {
     if (scene.only && !scene.only.has(d.id)) return
     setHover(d.id)
-    showTip(ev, `
-      <div class="t-name">${nameOf(d)}</div>
+  }
+  function unhover () { setHover(picked ? picked.id : null) }
+  function pick (d) {
+    if (scene.only && !scene.only.has(d.id)) return
+    picked = d
+    setHover(d.id)
+    card.attr('hidden', null).html(`
+      <button type="button" class="pick-close" aria-label="Close">×</button>
+      <div class="pick-name">${nameOf(d)}</div>
       <dl>
         <dt>points toward</dt><dd>${d.varpi_deg.toFixed(0)}°</dd>
-        <dt>closest to Sun</dt><dd>${d.q_au.toFixed(0)} AU</dd>
-        <dt>average distance</dt><dd>${d3.format(',.0f')(d.a_au)} AU</dd>
-        <dt>orbit</dt><dd>${d.well_determined ? 'well measured' : 'seen briefly — uncertain'}</dd>
+        <dt>nearest to the Sun</dt><dd class="au">${d.q_au.toFixed(0)} AU</dd>
+        <dt>average distance</dt><dd class="au">${d3.format(',.0f')(d.a_au)} AU</dd>
+        <dt>seasons seen</dt><dd>${d.well_determined ? 'more than one' : 'one, so uncertain'}</dd>
       </dl>`)
+    card.select('.pick-close').on('click', close).node().focus({ preventScroll: true })
   }
-  function unhover () { setHover(null); hideTip() }
+  function close () { picked = null; card.attr('hidden', true); setHover(null) }
+  document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && picked) close() })
 
-  return { update }
+  return { update, close }
 }
 
 /** Compass positions: each dot at its angle, stacked outward where crowded. */

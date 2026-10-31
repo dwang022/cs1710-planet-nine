@@ -23,11 +23,14 @@ random.seed(1710)
 
 CUTS = [
     {"id": "bb16_classic", "label": "a > 250 AU, q > 40 AU", "a_min": 250, "q_min": 40, "quality": False},
-    {"id": "bb16_classic_good", "label": "a > 250 AU, q > 40 AU, well determined", "a_min": 250, "q_min": 40, "quality": True},
+    {"id": "bb16_classic_good", "label": "a > 250 AU, q > 40 AU, multi-opposition", "a_min": 250, "q_min": 40, "quality": True},
     {"id": "etno_150_30", "label": "a > 150 AU, q > 30 AU", "a_min": 150, "q_min": 30, "quality": False},
-    {"id": "etno_150_30_good", "label": "a > 150 AU, q > 30 AU, well determined", "a_min": 150, "q_min": 30, "quality": True},
+    {"id": "etno_150_30_good", "label": "a > 150 AU, q > 30 AU, multi-opposition", "a_min": 150, "q_min": 30, "quality": True},
     {"id": "etno_200_35", "label": "a > 200 AU, q > 35 AU", "a_min": 200, "q_min": 35, "quality": False},
+    {"id": "etno_200_35_good", "label": "a > 200 AU, q > 35 AU, multi-opposition", "a_min": 200, "q_min": 35, "quality": True},
 ]
+# "quality" keeps only objects seen at more than one opposition (well_determined in
+# etnos.json), the sample rule of Brown & Batygin (2019, 2021).
 
 
 def resultant_length(angles_deg):

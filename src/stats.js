@@ -68,8 +68,15 @@ export function seededRandom (seed) {
 }
 
 /** Format a p-value the way a reader can act on. */
+/** The N in "1 in N": whole below 1,000, two significant figures above (1 in 98,000, not 1 in 97,714). */
+export function oneIn (p) {
+  const n = 1 / p
+  return n < 1000 ? Math.max(1, Math.round(n)) : +n.toPrecision(2)
+}
+
 export function formatP (p) {
-  if (p >= 0.2) return { text: p.toFixed(2), odds: `about 1 in ${Math.round(1 / p)}` }
-  if (p >= 0.001) return { text: p.toFixed(3), odds: `about 1 in ${Math.round(1 / p)}` }
-  return { text: p.toExponential(1), odds: `about 1 in ${Math.round(1 / p).toLocaleString()}` }
+  const odds = `about 1 in ${oneIn(p).toLocaleString()}`
+  if (p >= 0.2) return { text: p.toFixed(2), odds }
+  if (p >= 0.001) return { text: p.toFixed(3), odds }
+  return { text: p.toExponential(1), odds }
 }

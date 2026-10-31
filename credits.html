@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
+<style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>Credits · The search for Planet Nine</title>
 <meta name="description" content="Who made The search for Planet Nine, and where its data, photographs and drawings come from." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
@@ -40,10 +43,12 @@
     <ul class="credits-list">
       <li><span><b>JPL Small-Body Database</b><br>Orbits of every known body more than 30 times farther from the Sun than Earth, from the Query API.</span>
         <span class="muted"><a href="https://ssd.jpl.nasa.gov/tools/sbdb_query.html">ssd.jpl.nasa.gov</a></span></li>
-      <li><span><b>Minor Planet Center</b><br>The independent orbit catalogue used to cross-check JPL, and the discovery records of numbered minor planets.</span>
+      <li><span><b>Minor Planet Center</b><br>The independent orbit catalogue used to cross-check JPL, the discovery records of numbered minor planets, every reported position of the 90 extreme objects, and the list of observatory codes that places each telescope.</span>
         <span class="muted"><a href="https://www.minorplanetcenter.net/data">minorplanetcenter.net</a></span></li>
-      <li><span><b>JPL planetary elements</b><br>The planets' own orbits; JPL Horizons was used only to verify our geometry.</span>
+      <li><span><b>JPL planetary elements and Horizons</b><br>The planets' own orbits; Horizons verified our geometry and gave Voyager 1's position.</span>
         <span class="muted"><a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html">ssd.jpl.nasa.gov/planets</a></span></li>
+      <li><span><b>Natural Earth</b><br>The coastlines of the telescope map, through the world-atlas package. Public domain.</span>
+        <span class="muted"><a href="https://www.naturalearthdata.com/">naturalearthdata.com</a></span></li>
       <li><span><b>Crossref and arXiv</b><br>Titles, dates and abstracts of the papers; every claim about a paper was checked against its abstract.</span>
         <span class="muted"><a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/papers/README.md">papers/README.md</a></span></li>
     </ul>
@@ -51,10 +56,17 @@
     <a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/data/SOURCES.md">data/SOURCES.md</a>.</p>
   </section>
 
+  <section class="part wrap" id="papers">
+    <h2>Papers</h2>
+    <p>Every paper the site draws on. A small raised number in the text leads here.</p>
+    <ol class="credits-list" id="paperList"></ol>
+  </section>
+
   <section class="part wrap" id="photos">
     <h2>Photographs and logos</h2>
-    <p>All from Wikimedia Commons. Credit and licence were read from the Commons API, not typed. A logo identifies
-    its organisation and implies no endorsement.</p>
+    <p>The photographs are from Wikimedia Commons, their credit and licence read from the Commons API, not typed,
+    except Keystone College's telescope, used under fair use for this class project. The game's exposures are public data from the NSF NOIRLab Astro Data Archive and the Canadian Astronomy Data
+    Centre, credited as each archive asks. A logo identifies its organisation and implies no endorsement.</p>
     <ul class="credits-list" id="photoCredits"></ul>
   </section>
 

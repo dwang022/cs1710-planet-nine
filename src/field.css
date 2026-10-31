@@ -7,10 +7,10 @@
    --------------------------------------------------------------------------- */
 
 :root {
-  --fl-for: #34d399;     --fl-for-ink: #6ee7b7;      /* the case-for green; Planet Nine itself uses --p9 */
+  --fl-for: var(--p9);   --fl-for-ink: var(--p9-ink); /* the case for a planet: Planet Nine's colour */
   --fl-against: #ff6a3d; --fl-against-ink: #ffa07a;
   --fl-data: #a78bfa;    --fl-data-ink: #c4b5fd;     /* the colour of the objects elsewhere on the page */
-  --fl-next: #f472b6;    --fl-next-ink: #f9a8d4;     /* Rubin's colour on the sky map */
+  --fl-next: var(--series-4); --fl-next-ink: var(--series-4-ink); /* Rubin's colour, as everywhere */
   --fl-art: 236px;                                   /* the drawing's width in a side row */
   --fl-icon: 64px;
 }
@@ -33,7 +33,8 @@
 
 /* --- a year: a gutter label that sticks, and its rows ---------------------- */
 
-.fl { position: relative; max-width: 1180px; margin: 0 auto; }
+/* clip, not hidden: rows waiting to slide in sit 40px to the side and must not widen the page on phones */
+.fl { position: relative; max-width: 1180px; margin: 0 auto; overflow-x: clip; }
 .fy { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 0 18px; padding: 18px 0 24px; border-top: 1px solid var(--rule); }
 .fy-year { align-self: start; position: sticky; top: 16px; }
 .fy-year span {
@@ -68,7 +69,7 @@
 }
 .fr.is-for {
   --lane: var(--fl-for); --ink: var(--fl-for-ink);
-  margin-right: 9%; background: #34d39916; box-shadow: inset 4px 0 0 var(--lane);
+  margin-right: 9%; background: color-mix(in srgb, var(--p9) 9%, transparent); box-shadow: inset 4px 0 0 var(--lane);
 }
 /* against a planet: the mirror image, shifted right */
 .fr.is-against {
@@ -90,7 +91,7 @@
   padding: 22px 28px 18px;
 }
 .fr.is-data { --lane: var(--fl-data); --ink: var(--fl-data-ink); background: #a78bfa16; border: 1px solid #a78bfa48; }
-.fr.is-next { --lane: var(--fl-next); --ink: var(--fl-next-ink); background: #f472b612; border: 1px dashed #f472b670; }
+.fr.is-next { --lane: var(--fl-next); --ink: var(--fl-next-ink); background: color-mix(in srgb, var(--series-4) 7%, transparent); border: 1px dashed color-mix(in srgb, var(--series-4) 45%, transparent); }
 .fr.is-data .fr-icon, .fr.is-next .fr-icon { margin-bottom: 8px; }
 .fr.is-data .fr-body, .fr.is-next .fr-body { max-width: 70ch; }
 .fr.is-data .fr-art, .fr.is-next .fr-art { width: min(100%, 300px); margin: 10px 0 4px; }
@@ -98,7 +99,7 @@
 
 /* key papers: a stronger tint, a border, larger type and drawing */
 .fr.is-key { --fl-art: 320px; }
-.fr.is-key.is-for { background: #34d39928; border: 1px solid #34d39960; padding: 24px 28px 24px 22px; }
+.fr.is-key.is-for { background: color-mix(in srgb, var(--p9) 16%, transparent); border: 1px solid color-mix(in srgb, var(--p9) 38%, transparent); padding: 24px 28px 24px 22px; }
 .fr.is-key.is-against { background: #ff6a3d28; border: 1px solid #ff6a3d60; padding: 24px 22px 24px 28px; }
 .fr.is-key.is-data { background: #a78bfa28; border-color: #a78bfa90; }
 .fr.is-key.is-data .fr-art { width: min(100%, 360px); }
@@ -142,9 +143,9 @@
 
 /* --- credits --------------------------------------------------------------- */
 
-.fl-credits { margin-top: 18px; font-size: .8rem; color: var(--text-muted); }
-.fl-credits summary { cursor: pointer; color: var(--text-secondary); }
-.fl-credits ul { margin: 8px 0 0; padding-left: 18px; }
+/* one dim line; the full credits live on the credits page */
+.fl-credits { margin: 14px 0 0; font-size: .74rem; color: var(--text-muted); max-width: none; }
+.fl-credits a { color: inherit; }
 
 /* --- entrance -------------------------------------------------------------- */
 /* Scoped to html.has-reveal, which scrolly.js only sets when it can reveal
@@ -218,3 +219,7 @@ html.has-reveal .fr:focus-within { opacity: 1; transform: none; }
   .fl.is-compact .fr.is-data, .fl.is-compact .fr.is-next { flex-direction: column; align-items: flex-start; }
   .fl.is-compact .fr.is-data .fr-art { width: min(100%, 220px); }
 }
+/* compact rows that keep their line (the case against, on the alternatives page) */
+.fl.has-lines .fr-title { margin-bottom: 4px; }
+.fl.has-lines .fr-line { font-size: .9rem; line-height: 1.45; }
+.fl.has-lines .fr.is-key .fr-line { font-size: .95rem; }

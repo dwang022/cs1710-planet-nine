@@ -9,9 +9,10 @@
 // row's authors draw a conclusion, it hangs a for/against row of its own
 // beneath the data row, joined by a connector and labelled as their reading.
 //
-// Used on four pages of part 3, each showing the subset it needs:
+// Used on several pages, each showing the subset it needs:
 //   filter    keeps only the entries it returns true for (a hung row follows its data row)
 //   compact   title, icon and year only; drawings only on key papers (the timeline page)
+//   lines     with compact, keep each row's line (the case against, on the alternatives page)
 //   future    include the "what comes next" group (the future page shows nothing else)
 //
 // Content comes from field_timeline.json; titles, journals, citation counts
@@ -19,6 +20,7 @@
 
 import '../field.css'
 import { diagram, icon } from './fieldart.js'
+import { url } from '../data.js'
 
 const LANE = {
   for: { word: 'For a planet', cls: 'is-for', icon: 'planet' },
@@ -33,6 +35,8 @@ const KIND_ICON = {
 }
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+// a distance in AU is gold and kept on one line (.k-au in style.css)
+export const au = html => html.replace(/(\d[\d,.]*(?:\s+to\s+\d[\d,.]*)?)\s+AU\b/g, '<span class="k-au">$1&nbsp;AU</span>')
 
 function paperLink (p) {
   if (!p) return ''
@@ -49,7 +53,10 @@ function links (e, byDoi, compact) {
     for (const l of e.links || []) out.push(`<a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`)
     const p = e.doi && byDoi.get(e.doi)
     if (p && p.citations_crossref != null) out.push(`<span>${p.citations_crossref} citations</span>`)
-  } else if (!e.doi && e.links?.length) out.push(`<a href="${esc(e.links[0].url)}" rel="noopener">${esc(e.links[0].label)}</a>`)
+  } else if (!e.doi) {
+    // no paper to link: keep every source (Rubin's start of survey and its first find)
+    for (const l of e.links || []) out.push(`<a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`)
+  }
   return out.filter(Boolean).join('<span class="fr-sep">·</span>')
 }
 
@@ -65,7 +72,7 @@ function bar (e) {
 }
 
 /** One row. `from` labels a row that hangs off the data row above it. */
-function row (e, byDoi, from = null, compact = false) {
+function row (e, byDoi, from = null, compact = false, lines = !compact) {
   const lane = LANE[e.lane]
   const foot = links(e, byDoi, compact)
   const art = compact ? (e.key && e.diagram ? diagram(e.diagram, e.id) : '') : (e.diagram ? diagram(e.diagram, e.id) : '')
@@ -73,8 +80,8 @@ function row (e, byDoi, from = null, compact = false) {
     <div class="fr-icon" title="${esc(lane.word)}">${icon(KIND_ICON[e.kind] || lane.icon)}</div>
     <div class="fr-body">
       ${from ? `<div class="fr-from"><span aria-hidden="true">↳</span> ${esc(from)}</div>` : ''}
-      <h4 class="fr-title">${esc(e.title)}</h4>
-      ${!compact && e.line ? `<p class="fr-line">${avatars(e)}${esc(e.line)}</p>` : ''}
+      <h4 class="fr-title">${au(esc(e.title))}</h4>
+      ${lines && e.line ? `<p class="fr-line">${avatars(e)}${au(esc(e.line))}</p>` : ''}
     </div>
     <div class="fr-art">${art}</div>
     <div class="fr-meta">${compact ? '' : bar(e)}${foot ? `<div class="fr-foot">${foot}</div>` : ''}</div>
@@ -82,19 +89,18 @@ function row (e, byDoi, from = null, compact = false) {
 }
 
 /** The for/against row a data entry's authors earned it. */
-function branchRow (e, compact) {
+function branchRow (e, compact, lines) {
   const b = e.branch
   return row({ id: e.id + '-branch', lane: b.side, kind: 'branch', title: b.title, line: b.line, diagram: b.diagram, key: e.key },
-    new Map(), b.from || 'What its finders concluded', compact)
+    new Map(), b.from || 'What its finders concluded', compact, lines)
 }
 
+/** The portraits beside the lines: one dim line, the full credits on the credits page. */
 function credits (entries) {
-  const seen = new Map()
-  for (const e of entries) for (const p of e.photos || []) if (p.src && !seen.has(p.src)) seen.set(p.src, p)
-  if (!seen.size) return ''
-  const rows = [...seen.values()].map(p =>
-    `<li>${esc(p.alt)} — ${esc(p.credit)} · ${p.license_url ? `<a href="${esc(p.license_url)}" rel="noopener">${esc(p.license)}</a>` : esc(p.license)}${p.source ? ` · <a href="${esc(p.source)}" rel="noopener">source</a>` : ''}</li>`)
-  return `<details class="fl-credits"><summary>Portrait credits (${rows.length}, Wikimedia Commons)</summary><ul>${rows.join('')}</ul></details>`
+  const licences = new Set()
+  for (const e of entries) for (const p of e.photos || []) if (p.src) licences.add(p.license)
+  if (!licences.size) return ''
+  return `<p class="fl-credits">Portrait · ${[...licences].map(esc).join(', ')} · <a href="${url('credits.html')}#photos">credits</a></p>`
 }
 
 export function legend (lanes = ['for', 'against', 'data', 'next'], { key = true } = {}) {
@@ -105,10 +111,10 @@ export function legend (lanes = ['for', 'against', 'data', 'next'], { key = true
     next: ['is-next', 'next', 'What comes next'],
   }
   return lanes.map(l => items[l]).map(([cls, ic, word]) => `<div class="legend-item ${cls}"><span class="fr-icon">${icon(ic)}</span>${word}</div>`).join('') +
-    (key ? '<div class="legend-item is-muted">Larger rows: the papers the field answers to</div>' : '')
+    (key ? '<div class="legend-item is-muted">Larger rows: key papers</div>' : '')
 }
 
-export function drawField (root, { timeline, papers, legend: legendEl, filter = () => true, compact = false, future = true, dated = true, lanes }) {
+export function drawField (root, { timeline, papers, legend: legendEl, filter = () => true, compact = false, lines = !compact, future = true, dated = true, lanes }) {
   root.__field?.destroy()
   const byDoi = new Map(papers.map(p => [p.doi, p]))
   const kept = timeline.entries.filter(filter)
@@ -125,14 +131,17 @@ export function drawField (root, { timeline, papers, legend: legendEl, filter = 
   const group = (label, entries, cls = '') => `
     <div class="fy ${cls}">
       <div class="fy-year"><span>${label}</span></div>
-      <div class="fy-rows">${entries.map(e => row(e, byDoi, null, compact) + (e.branch ? branchRow(e, compact) : '')).join('')}</div>
+      <div class="fy-rows">${entries.map(e => row(e, byDoi, null, compact, lines) + (e.branch ? branchRow(e, compact, lines) : '')).join('')}</div>
     </div>`
 
   root.classList.toggle('is-compact', compact)
+  root.classList.toggle('has-lines', compact && lines)
   root.innerHTML = years.map(y => group(y.year, y.entries)).join('') +
     (futureEntries.length ? group('Next', futureEntries, 'fy-next') : '') +
-    (compact ? '' : credits(kept))
-  if (legendEl) legendEl.innerHTML = legend(lanes || ['for', 'against', 'data', ...(futureEntries.length ? ['next'] : [])], { key: !compact || true })
+    (lines ? credits(kept) : '')
+  // "Larger rows" only when a larger (key) row is drawn
+  const hasKey = [...datedEntries, ...futureEntries].some(e => e.key)
+  if (legendEl) legendEl.innerHTML = legend(lanes || ['for', 'against', 'data', ...(futureEntries.length ? ['next'] : [])], { key: hasKey })
 
   // --- entrance: each row comes in from its own side; a hung row follows its data row
   const rows = [...root.querySelectorAll('.fr')]
@@ -158,8 +167,9 @@ export function drawField (root, { timeline, papers, legend: legendEl, filter = 
 export const PICK = {
   /** a direct search, a limit, a candidate or a survey */
   searches: e => e.lane !== 'next' && ['search', 'limit', 'candidate', 'survey'].includes(e.kind),
-  /** the case against: bias and alternative-mechanism papers, and discoveries whose finders read them against */
-  against: e => e.lane === 'against' || (e.lane === 'data' && e.branch?.side === 'against'),
+  /** the case against: bias and alternative-mechanism papers, and discoveries whose finders read them against a
+      planet (not those read only against the proposed orbit, branch.of === 'orbit', such as Ammonite) */
+  against: e => e.lane === 'against' || (e.lane === 'data' && e.branch?.side === 'against' && e.branch.of !== 'orbit'),
   /** everything dated */
   all: e => e.lane !== 'next',
   /** only what comes next */

@@ -5,13 +5,49 @@
   "explains": "what this hypothesis accounts for well",
   "struggles_with": "what it does not account for, per its critics",
   "status": "mainstream | viable | fringe | largely-excluded",
-  "key_dois": "entries in papers.json"
+  "key_dois": "entries in papers.json: every DOI cited in explain and struggles",
+  "tag": "a few words under the name in the scorecard",
+  "explain": "what the idea is and what it explains, in plain words: sentences of {text, cite}, cite = DOIs in papers.json, shown as superscripts that link to the credits page",
+  "struggles": "where it falls short, the panel's key line; same shape as explain"
  },
  "alternatives": [
   {
    "id": "planet_nine",
    "name": "A ninth planet",
+   "tag": "its pull steers the orbits",
    "one_liner": "An undiscovered 5-10 Earth-mass planet on a distant, eccentric, anti-aligned orbit shepherds the extreme objects.",
+   "explain": [
+    {
+     "text": "A planet five to ten times Earth's mass, on a stretched, tilted orbit far beyond Neptune, would slowly pull the distant objects' orbits into line.",
+     "cite": [
+      "10.3847/0004-6256/151/2/22",
+      "10.1016/j.physrep.2019.01.009",
+      "10.3847/1538-3881/ac2056"
+     ]
+    },
+    {
+     "text": "The same pull would lift some of them out of Neptune's reach and tip others steeply out of the plane of the planets.",
+     "cite": [
+      "10.1016/j.physrep.2019.01.009",
+      "10.3847/1538-3881/aad042"
+     ]
+    }
+   ],
+   "struggles": [
+    {
+     "text": "Nobody has found it after a decade of searching,",
+     "cite": [
+      "10.3847/1538-3881/ac32dd",
+      "10.3847/1538-3881/ad24e9"
+     ]
+    },
+    {
+     "text": "and surveys that record exactly where they looked see a weaker pattern, or none.",
+     "cite": [
+      "10.3847/PSJ/abe53e"
+     ]
+    }
+   ],
    "mechanism": "Secular and resonant gravitational interaction over hundreds of millions of years confines the longitudes of perihelion of distant objects anti-aligned to the planet's own.",
    "explains": [
     "apsidal clustering of the extreme objects",
@@ -27,7 +63,11 @@
    "key_dois": [
     "10.3847/0004-6256/151/2/22",
     "10.1016/j.physrep.2019.01.009",
-    "10.3847/1538-3881/ac2056"
+    "10.3847/1538-3881/ac2056",
+    "10.3847/1538-3881/aad042",
+    "10.3847/1538-3881/ac32dd",
+    "10.3847/1538-3881/ad24e9",
+    "10.3847/PSJ/abe53e"
    ],
    "sketch_cue": "orbit diagram with a planet",
    "color_hex": "#5B8FF9",
@@ -40,21 +80,54 @@
   },
   {
    "id": "observational_bias",
-   "name": "Observational bias (no pattern at all)",
+   "name": "Where telescopes looked",
+   "tag": "no real pattern at all",
    "one_liner": "There is no real clustering. Telescopes searched particular patches of sky at particular times of year, and that alone shapes which orbits get found.",
+   "explain": [
+    {
+     "text": "Distant objects are faint, so they are mostly found near their closest point to the Sun, and only where telescopes happen to point.",
+     "cite": [
+      "10.3847/1538-3881/aa7aed"
+     ]
+    },
+    {
+     "text": "If the searches favoured some directions, the orbits found would seem to lean the same way even if the real ones point every way.",
+     "cite": [
+      "10.3847/1538-3881/aa7aed"
+     ]
+    },
+    {
+     "text": "Surveys that record exactly where and how deep they looked find their distant objects consistent with no bunching at all.",
+     "cite": [
+      "10.3847/1538-3881/aa7aed",
+      "10.3847/PSJ/abe53e",
+      "10.3847/1538-4365/ac3914"
+     ]
+    }
+   ],
+   "struggles": [
+    {
+     "text": "Allowing for where telescopes looked, the planet's proposers still find only about a 1 in 500 chance of bunching this strong.",
+     "cite": [
+      "10.3847/1538-3881/aaf051"
+     ]
+    }
+   ],
    "mechanism": "Distant objects are only detectable near perihelion. Survey pointings cluster around the ecliptic, around good observing seasons and away from the galactic plane, so the discovered sample inherits that pattern.",
    "explains": [
     "why the apparent clustering is strongest in heterogeneously discovered samples",
     "why OSSOS and DES, which model their own detection efficiency, see a much weaker signal"
    ],
    "struggles_with": [
-    "Batygin & Brown's bias-corrected analyses still find the clustering significant at roughly 1 in 500",
+    "Brown & Batygin's bias-corrected analyses still find the clustering significant at roughly 1 in 500",
     "does not obviously explain the high-inclination population"
    ],
    "status": "viable",
    "key_dois": [
     "10.3847/1538-3881/aa7aed",
-    "10.3847/PSJ/abe53e"
+    "10.3847/PSJ/abe53e",
+    "10.3847/1538-4365/ac3914",
+    "10.3847/1538-3881/aaf051"
    ],
    "sketch_cue": "survey footprint overlay on the sky map",
    "color_hex": "#F6BD16",
@@ -67,8 +140,31 @@
   },
   {
    "id": "self_gravitating_disk",
-   "name": "A massive self-gravitating disk",
+   "name": "A heavy disk of small bodies",
+   "tag": "their combined pull, no planet",
    "one_liner": "A few Earth masses of small bodies spread through the distant belt can confine each other's orbits, with no single planet required.",
+   "explain": [
+    {
+     "text": "Instead of one planet, a broad, lopsided ring of many small icy bodies beyond Neptune could hold the distant orbits in line by their combined pull.",
+     "cite": [
+      "10.3847/1538-3881/aaf0fc"
+     ]
+    },
+    {
+     "text": "It can bunch the orbits and keep them cut off from Neptune, and could make a planet unnecessary.",
+     "cite": [
+      "10.3847/1538-3881/aaf0fc"
+     ]
+    }
+   ],
+   "struggles": [
+    {
+     "text": "It needs about ten Earth masses of material out there, where standard estimates allow only a few tenths of one.",
+     "cite": [
+      "10.3847/1538-3881/aaf0fc"
+     ]
+    }
+   ],
    "mechanism": "Collective secular gravity of a massive disk of planetesimals drives apsidal confinement of embedded orbits.",
    "explains": [
     "apsidal clustering",
@@ -93,8 +189,37 @@
   },
   {
    "id": "inclination_instability",
-   "name": "Inclination instability",
+   "name": "A self-tilting swarm",
+   "tag": "the bodies line themselves up",
    "one_liner": "A sufficiently massive population of eccentric distant bodies spontaneously lifts and aligns itself out of the plane.",
+   "explain": [
+    {
+     "text": "If the distant bodies together weigh enough, their own pull can tip the whole swarm out of the plane of the planets, all leaning the same way, and lift them away from Neptune.",
+     "cite": [
+      "10.3847/1538-3881/aad95c"
+     ]
+    },
+    {
+     "text": "Later simulations found it can also bunch the orbits in one direction, as a planet would.",
+     "cite": [
+      "10.3847/2041-8213/ab91a0"
+     ]
+    }
+   ],
+   "struggles": [
+    {
+     "text": "It needs about twenty Earth masses of small bodies far out to get started,",
+     "cite": [
+      "10.3847/2041-8213/ab91a0"
+     ]
+    },
+    {
+     "text": "far more than is thought to be there.",
+     "cite": [
+      "10.3847/1538-3881/aaf0fc"
+     ]
+    }
+   ],
    "mechanism": "A collective dynamical instability in a disk of high-eccentricity orbits raises inclinations and clusters arguments of perihelion, and later apsidal angles as well.",
    "explains": [
     "clustering in argument of perihelion",
@@ -107,7 +232,8 @@
    "status": "viable",
    "key_dois": [
     "10.3847/1538-3881/aad95c",
-    "10.3847/2041-8213/ab91a0"
+    "10.3847/2041-8213/ab91a0",
+    "10.3847/1538-3881/aaf0fc"
    ],
    "sketch_cue": "cone of orbits tilting together",
    "color_hex": "#78D3F8",
@@ -121,32 +247,92 @@
   {
    "id": "stellar_flyby",
    "name": "A passing star",
+   "tag": "a close pass long ago",
    "one_liner": "A close stellar encounter, in the Sun's birth cluster or more recently, sculpted the distant orbits and then left.",
+   "explain": [
+    {
+     "text": "While the Sun was still among the stars it formed with, one of them may have passed close enough to pull distant orbits away from Neptune.",
+     "cite": [
+      "10.1086/424617",
+      "10.1038/nature13156",
+      "10.1016/j.physrep.2019.01.009"
+     ]
+    },
+    {
+     "text": "A single strong encounter could also leave the orbits pointing one way.",
+     "cite": [
+      "10.1038/nature13156"
+     ]
+    },
+    {
+     "text": "One recent fit, a star a little smaller than the Sun passing about 110 AU away, also reproduces the tilted orbits, even those that run backwards.",
+     "cite": [
+      "10.1038/s41550-024-02349-x"
+     ]
+    }
+   ],
+   "struggles": [
+    {
+     "text": "Left alone, the giant planets would spread the orbits out again in far less time than the age of the solar system.",
+     "cite": [
+      "10.1016/j.physrep.2019.01.009"
+     ]
+    }
+   ],
    "mechanism": "A single impulsive encounter can lift perihelia and imprint a preferred orbital orientation that survives for a long time afterwards.",
    "explains": [
     "detached objects such as Sedna",
-    "a one-off preferred direction"
+    "a one-off preferred direction",
+    "tilted and retrograde orbits"
    ],
    "struggles_with": [
     "the imprint should disperse over billions of years",
     "explains the existence of detached objects better than it explains present-day clustering"
    ],
    "status": "viable",
-   "key_dois": [],
+   "key_dois": [
+    "10.1086/424617",
+    "10.1038/nature13156",
+    "10.1016/j.physrep.2019.01.009",
+    "10.1038/s41550-024-02349-x"
+   ],
    "note": "Widely discussed as an origin for Sedna-like orbits; less favoured as the sole cause of the current clustering.",
    "sketch_cue": "star passing by, orbits dragged",
    "color_hex": "#F6903D",
    "scorecard": {
     "clustering": "partial",
     "detached": "yes",
-    "inclined": "partial",
+    "inclined": "yes",
     "nondetection": "yes"
    }
   },
   {
    "id": "primordial_black_hole",
    "name": "A primordial black hole",
+   "tag": "left over from the early universe",
    "one_liner": "The perturber is real, but it is a grapefruit-sized black hole of the same mass rather than a planet.",
+   "explain": [
+    {
+     "text": "The unseen body could be a black hole left over from the early universe, with a planet's mass but about the size of a grapefruit.",
+     "cite": [
+      "10.1103/PhysRevLett.125.051103"
+     ]
+    },
+    {
+     "text": "Its pull would match a planet's, so it explains everything a planet does, and telescopes looking for reflected sunlight would never see it.",
+     "cite": [
+      "10.1103/PhysRevLett.125.051103"
+     ]
+    }
+   ],
+   "struggles": [
+    {
+     "text": "It needs such black holes to exist and the Sun to have captured one, and it could be confirmed only indirectly, through faint signals from dark matter gathered around it.",
+     "cite": [
+      "10.1103/PhysRevLett.125.051103"
+     ]
+    }
+   ],
    "mechanism": "Identical gravity, so identical dynamics. It would be invisible to reflected-light searches and detectable only through accretion flares, lensing, or occultations.",
    "explains": [
     "everything the planet explains",
@@ -172,18 +358,49 @@
   {
    "id": "modified_gravity",
    "name": "Modified gravity",
+   "tag": "different rules far from the Sun",
    "one_liner": "Gravity itself departs from Newton at the very low accelerations found hundreds of AU out.",
+   "explain": [
+    {
+     "text": "Far from the Sun, where its pull is extremely weak, gravity itself might not follow Newton's law.",
+     "cite": [
+      "10.3847/1538-3881/acef1e"
+     ]
+    },
+    {
+     "text": "One such law, proposed to explain how galaxies spin, would bunch the distant orbits and line them up with the direction of the galaxy's centre, with no extra body to find.",
+     "cite": [
+      "10.3847/1538-3881/acef1e"
+     ]
+    }
+   ],
+   "struggles": [
+    {
+     "text": "Saturn's orbit, tracked closely with the Cassini spacecraft, needs no extra pull to explain it,",
+     "cite": [
+      "10.1051/0004-6361/202037919"
+     ]
+    },
+    {
+     "text": "and simulated over the Sun's lifetime, its most popular form fails to reproduce the comets that fall in from the solar system's far edge, or the orbits cut off from Neptune.",
+     "cite": [
+      "10.3847/1538-4357/ad40a3"
+     ]
+    }
+   ],
    "mechanism": "MOND-like external field effects would alter orbital precession rates in the outer solar system without any extra mass.",
    "explains": [
     "clustering without an undetected body"
    ],
    "struggles_with": [
     "planetary ephemerides constrain deviations from Newtonian gravity very tightly inside Saturn's orbit",
-    "no independent solar-system evidence"
+    "simulated over the Sun's lifetime, the popular AQUAL form fails to reproduce long-period comets and the detached disk"
    ],
    "status": "fringe",
    "key_dois": [
-    "10.1051/0004-6361/202037919"
+    "10.3847/1538-3881/acef1e",
+    "10.1051/0004-6361/202037919",
+    "10.3847/1538-4357/ad40a3"
    ],
    "sketch_cue": "warped grid instead of a mass",
    "color_hex": "#A0A0A0",
@@ -196,8 +413,32 @@
   },
   {
    "id": "small_sample",
-   "name": "Small-number coincidence",
+   "name": "Luck",
+   "tag": "too few orbits to be sure",
    "one_liner": "With only a handful of well-determined extreme orbits, an apparent alignment can simply be luck.",
+   "explain": [
+    {
+     "text": "The case began with six distant objects, and the set with well-known orbits is still small.",
+     "cite": [
+      "10.3847/0004-6256/151/2/22"
+     ]
+    },
+    {
+     "text": "In a set that small, a few orbits lining up by chance is not unusual.",
+     "cite": [
+      "10.3847/1538-3881/aa7aed"
+     ]
+    }
+   ],
+   "struggles": [
+    {
+     "text": "As more objects have been found, the planet's proposers still find the bunching unlikely to be chance.",
+     "cite": [
+      "10.3847/1538-3881/aaf051",
+      "10.3847/1538-3881/ac2056"
+     ]
+    }
+   ],
    "mechanism": "Not a physical mechanism. The original claim rested on six objects, and the human eye finds patterns in small samples readily.",
    "explains": [
     "why the significance has shifted as objects were added and removed from the sample"
@@ -207,8 +448,10 @@
    ],
    "status": "viable",
    "key_dois": [
+    "10.3847/0004-6256/151/2/22",
     "10.3847/1538-3881/aa7aed",
-    "10.3847/PSJ/abe53e"
+    "10.3847/1538-3881/aaf051",
+    "10.3847/1538-3881/ac2056"
    ],
    "sketch_cue": "the Monte Carlo null-hypothesis simulation",
    "color_hex": "#D96E6E",
@@ -224,21 +467,25 @@
   {
    "id": "clustering",
    "label": "Orbits bunched in one direction",
+   "short": "Bunched",
    "plain": "The distant objects' closest-approach points lean the same way."
   },
   {
    "id": "detached",
    "label": "Objects cut off from Neptune",
+   "short": "Cut off",
    "plain": "Bodies like Sedna never come close enough for Neptune to have moved them."
   },
   {
    "id": "inclined",
    "label": "Steeply tilted orbits",
+   "short": "Tilted",
    "plain": "Some distant objects orbit far out of the plane of the planets."
   },
   {
    "id": "nondetection",
    "label": "Nothing has been found",
+   "short": "Not found",
    "plain": "A decade of searching has turned up no planet."
   }
  ],

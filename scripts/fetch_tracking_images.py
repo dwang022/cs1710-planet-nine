@@ -33,17 +33,10 @@ IMAGES = [
     {"id": "sedna", "commons": "File:Sedna Discovery Image.jpg", "panels": 3, "width": 600,
      "trim": [0.0, 0.0, 0.0, 0.0],
      "caption": "Sedna's discovery frames, 14 November 2003, Samuel Oschin Telescope, Palomar: three exposures over three hours.",
-     "dates": ["06:32 UT", "08:05 UT", "09:38 UT"]},
-    {"id": "vp113", "commons": "File:2012 VP113 DECam 2012-11-05 annotated.gif", "keep": True,
-     "caption": "2012 VP113 on 5 November 2012 in the Dark Energy Camera on the 4-metre Blanco telescope, Cerro Tololo: the grey dot that moves between exposures.",
-     "dates": []},
+     "dates": ["14 Nov 2003 · 06:32 UT", "14 Nov 2003 · 08:05 UT", "14 Nov 2003 · 09:38 UT"]},
     {"id": "bp519", "commons": "File:Geyagugv DECam 2015-01-17 annotated.png", "panels": 1, "width": 900,
      "trim": [0.0, 0.0, 0.0, 0.0],
      "caption": "2015 BP519 (circled) on 17 January 2015, the Dark Energy Survey's camera. A survey built for cosmology found one of the most extreme orbits known.",
-     "dates": []},
-    {"id": "comparator", "commons": "File:Zeiss Blink comparator at Lowell Observatory used in the discovery of Pluto by Clyde Tombaugh in 1930.jpg", "panels": 1, "width": 700,
-     "trim": [0.08, 0.05, 0.08, 0.05],
-     "caption": "The Zeiss blink comparator Tombaugh used: two plates, one eyepiece, a shutter that flips between them.",
      "dates": []},
 ]
 

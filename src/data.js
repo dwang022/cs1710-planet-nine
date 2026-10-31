@@ -2,6 +2,8 @@
 // served from (import.meta.env.BASE_URL is '/' in dev and whatever the
 // deployment sets).
 
+import { fontsReady } from './fonts.js'
+
 const BASE = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
 
 /** A root-relative site path ('data/etnos.json', '/art/svg/sun.svg') made absolute for this deployment. */
@@ -19,7 +21,8 @@ async function getJSON (name) {
  * `{ etnos, planets }`. Names are the file names in public/data/ without .json.
  */
 export async function loadData (...names) {
-  const all = await Promise.all(names.map(getJSON))
+  // the charts draw once the data and the fonts are both in (fonts.js)
+  const [all] = await Promise.all([Promise.all(names.map(getJSON)), fontsReady])
   return Object.fromEntries(names.map((n, i) => [n, all[i]]))
 }
 

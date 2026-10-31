@@ -1,6 +1,6 @@
 // The site's small cast of illustrated bodies: the Planet Nine mark (in any of
 // the skins from skins.js), the Sun, the eight planets, a sad Pluto, three
-// generic trans-Neptunian objects, and a telescope for the intro screen.
+// generic trans-Neptunian objects, and an observatory for the intro screen and the data page.
 //
 // Flat shapes, a darker outline in the body's own hue and soft wavy bands,
 // after the Outer Wilds planetary chart, but muted so they sit behind the data
@@ -14,6 +14,7 @@
 // and charts draw a body with <use href="#art-NAME">.
 
 import { skin as skinFor, DEFAULT_SKIN } from './skins.js'
+import { QMARK, LOCKUP_TOP, LOCKUP_BOTTOM } from './glyphs.js'
 
 const R = 40                 // body radius inside the 100 x 100 box
 const HALO_R = 46.5
@@ -43,11 +44,15 @@ const halo = (dashed = false, r = HALO_R) =>
   `<circle cx="50" cy="50" r="${r}" fill="none" stroke="currentColor" stroke-opacity="0.5" stroke-width="1.4"` +
   (dashed ? ' stroke-dasharray="2.5 3.5"' : '') + '/>'
 
-const FONT = "ui-sans-serif, -apple-system, 'SF Pro Text', 'Segoe UI', Inter, system-ui, sans-serif"
+/** Letters traced from Space Grotesk (glyphs.js), set at a baseline (x, y) and a font size, so an
+ *  exported drawing keeps them without the font. */
+const letters = (d, x, y, size, attrs) =>
+  `<path d="${d}" transform="translate(${x} ${y}) scale(${size})" ${attrs}/>`
 
-/** The question mark: Planet Nine is a prediction, and the mark says so at any size. */
+/** The question mark: Planet Nine is a prediction, and the mark says so at any size.
+ *  The outline is 2.5 units wide whatever the size, so it is divided by the scale. */
 const qmark = ({ fill = '#e6f4ef', stroke = '#1b3a32', x = 50, y = 67, size = 48 } = {}) =>
-  `<text x="${x}" y="${y}" text-anchor="middle" font-family="${FONT}" font-size="${size}" font-weight="700" fill="${fill}" stroke="${stroke}" stroke-width="2.5" stroke-linejoin="round" paint-order="stroke">?</text>`
+  letters(QMARK, x, y, size, `fill="${fill}" stroke="${stroke}" stroke-width="${+(2.5 / size).toFixed(4)}" stroke-linejoin="round" paint-order="stroke"`)
 
 // --- Planet Nine -----------------------------------------------------------
 
@@ -82,6 +87,19 @@ function plutoBody (id, sad) {
 // defs(id) for anything that needs a document-unique id, and body(id, opts).
 // `opts.skin` reaches the Planet Nine entries.
 
+// The dome (radius 44 on the drum at y = 74) and its open slit, the band between two meridians.
+const OBS_DOME = 'M36,74 A44,44 0 0 1 124,74 Z'
+const OBS_SLIT = 'M80,30 A37,44 0 0 1 117,74 L100,74 A20,44 0 0 0 80,30 Z'
+// The part of the dome the telescope is hidden behind: everything left of the slit.
+const OBS_BEHIND = 'M80,30 A20,44 0 0 1 100,74 L36,74 A44,44 0 0 1 80,30 Z'
+
+// The observatory's telescope pivots inside the dome at (80, 72), points `angle` degrees above
+// horizontal and ends at `lens`, 67.5 units out, where the intro and the data page start its line of sight.
+export const OBSERVATORY = (() => {
+  const angle = 34, a = angle * Math.PI / 180, pivot = [80, 72]
+  return { angle, pivot, lens: [pivot[0] + 67.5 * Math.cos(a), pivot[1] - 67.5 * Math.sin(a)] }
+})()
+
 export const ART = {
   'planet-nine': {
     label: 'Planet Nine, the predicted planet, marked with a question mark',
@@ -97,15 +115,15 @@ export const ART = {
     label: 'Planet Nine',
     defs: id => clip(id),
     body: () => `<circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" stroke-width="5"/>
-    <text x="50" y="67" text-anchor="middle" font-family="${FONT}" font-size="50" font-weight="700" fill="currentColor">?</text>`,
+    ${letters(QMARK, 50, 67, 50, 'fill="currentColor"')}`,
   },
   'planet-nine-lockup': {
     label: 'The search for Planet Nine',
     box: [360, 100],
     defs: id => clip(id),
     body: (id, o) => `<g transform="translate(50 50) scale(0.88) translate(-50 -50)">${planetNineBody(id, o)}</g>
-    <text x="106" y="43" font-family="${FONT}" font-size="11" font-weight="600" letter-spacing="3.2" fill="currentColor" opacity="0.6">THE SEARCH FOR</text>
-    <text x="106" y="75" font-family="${FONT}" font-size="28" font-weight="700" letter-spacing="2.6" fill="currentColor">PLANET NINE</text>`,
+    ${letters(LOCKUP_TOP, 106, 43, 11, 'fill="currentColor" opacity="0.6"')}
+    ${letters(LOCKUP_BOTTOM, 106, 75, 28, 'fill="currentColor"')}`,
   },
 
   // --- the Sun ---
@@ -279,23 +297,47 @@ export const ART = {
       <circle cx="60" cy="58" r="5" fill="#7d93a3"/><circle cx="44" cy="62" r="2.5" fill="#7d93a3"/>`,
   },
 
-  // --- the telescope on the intro screen, aimed up and to the right ---
-  telescope: {
-    label: 'A telescope on a tripod, pointed at the sky',
+  // --- an observatory, its slit open and its telescope aimed up and to the right ---
+  // (the intro screen, the data page, the Future page's first beat, the map's cards). A white
+  // dome turned toward the target: the shutter slit is the dark band between two meridians on
+  // its right, and the copper telescope is hidden inside the dome until it comes out through the
+  // slit. Below it a white drum, shaded on the same side as the dome, its panels seamed, on a
+  // stone plinth, with a dark door up a step; a low patch of ground under it all. The tube
+  // points OBSERVATORY.angle degrees above horizontal; its far end is OBSERVATORY.lens.
+  observatory: {
+    label: 'An observatory, its dome open and its telescope pointed out through the slit at the sky',
     box: [160, 120],
-    body: () => `
-      <g stroke="#3a3f45" stroke-width="4" stroke-linecap="round" fill="none">
-        <line x1="80" y1="78" x2="46" y2="116"/><line x1="80" y1="78" x2="114" y2="116"/><line x1="80" y1="78" x2="80" y2="112"/>
-        <line x1="62" y1="100" x2="98" y2="100" stroke-width="2.5" opacity=".7"/>
+    defs: id => `<clipPath id="${id}-d"><path d="${OBS_DOME}"/></clipPath>
+      <clipPath id="${id}-t"><path clip-rule="evenodd" d="M0,0 H160 V120 H0 Z ${OBS_BEHIND}"/></clipPath>`,
+    body: id => {
+      const [px, py] = OBSERVATORY.pivot
+      return `
+      <path d="M10,118 Q80,104 150,118 Z" fill="#23272f" stroke="#171a20" stroke-width="2" stroke-linejoin="round"/>
+      <rect x="40" y="74" width="80" height="34" fill="#e1e5eb"/>
+      <rect x="40" y="74" width="15" height="34" fill="#c4ccd7"/>
+      <path d="M62,77 V106 M98,77 V106 M110,77 V106" stroke="#c4ccd7" stroke-width="1.4"/>
+      <rect x="40" y="74" width="80" height="34" fill="none" stroke="#5e6878" stroke-width="2.5"/>
+      <rect x="37" y="105" width="86" height="8" rx="1.5" fill="#8d97a6" stroke="#5e6878" stroke-width="2"/>
+      <path d="M72,105 V91 A8,8 0 0 1 88,91 V105 Z" fill="#2b303b" stroke="#5e6878" stroke-width="2"/>
+      <rect x="68" y="109" width="24" height="5" rx="1" fill="#a7b0bd" stroke="#5e6878" stroke-width="1.8"/>
+      <path d="${OBS_DOME}" fill="#eef1f5"/>
+      <g clip-path="url(#${id}-d)">
+        <path d="M80,30 A44,44 0 0 0 36,74 L50,74 A30,44 0 0 1 80,30 Z" fill="#c9d0da"/>
+        <path d="M58,74 A22,44 0 0 1 80,30" fill="none" stroke="#b7c0cc" stroke-width="1.4"/>
+        <path d="${OBS_SLIT}" fill="#141822"/>
+        <path d="M80,30 A20,44 0 0 1 100,74 M80,30 A37,44 0 0 1 117,74" fill="none" stroke="#ffffff" stroke-width="1.6" opacity=".85"/>
       </g>
-      <circle cx="80" cy="78" r="7" fill="#596270" stroke="#2f343a" stroke-width="2.5"/>
-      <g transform="rotate(-34 80 72)">
-        <rect x="36" y="63" width="92" height="18" rx="6" fill="#55636f" stroke="#2f3a42" stroke-width="2.5"/>
-        <rect x="118" y="60" width="16" height="24" rx="4" fill="#7b8b98" stroke="#2f3a42" stroke-width="2.5"/>
-        <rect x="26" y="67" width="12" height="10" rx="3" fill="#3f4a53" stroke="#2f3a42" stroke-width="2.5"/>
-        <rect x="46" y="66" width="60" height="3" rx="1.5" fill="#8fa0ad" opacity=".55"/>
-        <rect x="60" y="56" width="28" height="7" rx="3" fill="#3f4a53" stroke="#2f3a42" stroke-width="2"/>
-      </g>`,
+      <path d="${OBS_DOME}" fill="none" stroke="#5e6878" stroke-width="2.5" stroke-linejoin="round"/>
+      <rect x="34" y="70" width="92" height="5" rx="2" fill="#9aa4b2" stroke="#5e6878" stroke-width="2"/>
+      <g clip-path="url(#${id}-t)"><g transform="rotate(-${OBSERVATORY.angle} ${px} ${py})">
+        <rect x="${px + 14}" y="${py - 6.5}" width="40" height="13" rx="3" fill="#cf7f3e" stroke="#5f3112" stroke-width="2.2"/>
+        <rect x="${px + 18}" y="${py - 4.2}" width="26" height="2.6" rx="1.3" fill="#f0ad6c" opacity=".8"/>
+        <rect x="${px + 30}" y="${py - 6.5}" width="3" height="13" fill="#7c4018"/>
+        <rect x="${px + 38}" y="${py - 11}" width="12" height="4.5" rx="1.5" fill="#cf7f3e" stroke="#5f3112" stroke-width="1.6"/>
+        <rect x="${px + 52}" y="${py - 8.5}" width="14" height="17" rx="3" fill="#cf7f3e" stroke="#5f3112" stroke-width="2.2"/>
+        <rect x="${px + 64}" y="${py - 7}" width="3.5" height="14" rx="1.5" fill="#1b2230" stroke="#5f3112" stroke-width="1.6"/>
+      </g></g>`
+    },
   },
 }
 

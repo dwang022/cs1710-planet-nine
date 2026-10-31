@@ -274,9 +274,10 @@
    "name": "Vera C. Rubin Observatory / LSST",
    "facility": "Cerro Pachon, Chile",
    "years": [
-    2025,
-    2035
+    2026,
+    2036
    ],
+   "years_src": "The ten-year survey began the night of 29 June 2026. [verified: Rubin early-operations update, 10 July 2026, https://www.rubin.community/t/2026-07-10-early-operations-update-start-of-lsst/12280; the end year is derived: start plus ten years]",
    "band": "r",
    "depth_mag": 24.5,
    "stacked_depth_mag": 27.0,

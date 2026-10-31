@@ -34,12 +34,16 @@ elements joined to the Minor Planet Center's independent solution for the same
 object, so you can show where the two catalogues disagree (`a_disagreement_pct`,
 `mpc_U`). 7,286 of 8,079 cross-match. `varpi_deg` (longitude of perihelion,
 Ω + ω) is the angle the whole clustering argument is about. `well_determined` is
-a boolean quality gate: condition code ≤ 3, at least 3 oppositions, arc ≥ 1 year.
-Use it — one-opposition orbits move a lot.
+the papers' sample rule: seen at more than one opposition (MPC `Num_opps` ≥ 2;
+where the MPC has no count, an arc of a year or more), as in Brown & Batygin
+2019 and 2021. The site calls it "seen in more than one season". Use it —
+one-opposition orbits move a lot. (Until 2026-10-30 the site used a stricter rule
+of its own: condition code ≤ 3, at least 3 oppositions, arc ≥ 1 year, which kept
+44 of the 90.)
 
 **`etnos.json`** — the 90 extreme objects (a > 150 AU, q > 30 AU), with
 `delta_varpi_deg` and `alignment` measured against Planet Nine's predicted
-longitude of perihelion (ϖ₉ = 246.7°). 44 are well determined. Note that
+longitude of perihelion (ϖ₉ = 246.7°). 62 were seen at more than one opposition. Note that
 numbered objects are keyed by number, so `2015 BP519` appears as id `768325`;
 use the `provisional_desig` column to build a search index users can actually
 type into.
@@ -51,7 +55,7 @@ objects have an official MPC discovery record (1,050 of 8,079; 18 of the 90
 extreme objects), so unnumbered ones fall back to JPL's first-observation date.
 The `discovery_source` column says which you are looking at.
 
-**`clustering_null.json`** — the "is this just luck?" numbers. For five cuts on
+**`clustering_null.json`** — the "is this just luck?" numbers. For six cuts on
 the extreme sample it gives the observed mean resultant length R of the
 longitudes of perihelion, a 200,000-trial uniform-random null distribution with
 histogram, and a p-value. The headline result is how much the answer moves with
@@ -60,15 +64,25 @@ the cut:
 | cut | n | R | p |
 |---|---|---|---|
 | a > 250, q > 40 | 23 | 0.170 | 0.52 |
-| a > 250, q > 40, well determined | 15 | 0.453 | 0.043 |
+| a > 250, q > 40, more than one opposition | 21 | 0.192 | 0.47 |
 | a > 150, q > 30 | 90 | 0.082 | 0.55 |
-| a > 150, q > 30, well determined | 44 | 0.332 | 0.007 |
+| a > 150, q > 30, more than one opposition | 62 | 0.249 | 0.020 |
 | a > 200, q > 35 | 42 | 0.124 | 0.53 |
+| a > 200, q > 35, more than one opposition | 36 | 0.195 | 0.26 |
 
 That sensitivity is the story, not a bug. **The null assumes surveys are equally
 likely to find an object pointing in any direction, which is exactly what
 Shankman et al. (2017) and Napier et al. (2021) dispute.** These p-values are an
-upper bound on how surprising the clustering is. Say so on the page.
+upper bound on how surprising the clustering is. Say so on the page. The
+probability page draws its guided piles from these histograms and quotes these
+p-values, so the pile, the count and the odds agree.
+
+**`published_odds.json`** — each study's own answer to "how often would chance
+produce this?", quoted from its abstract (`quote`, `src`): 0.007% (Batygin &
+Brown 2016), 0.2% (Brown & Batygin 2019), 99.6% confidence (Brown & Batygin
+2021, so 0.4%, `derived`), 17% to 94% (Napier et al. 2021), and Shankman et al.
+2017's "consistent with ... a uniform underlying angular distribution", which
+gives no number and is drawn without a mark. Checked against `papers/`.
 
 **`p9_sky_track.json`** — the predicted sky path of Planet Nine, computed from
 Brown & Batygin (2021), plus six variants spanning their 1σ spreads in ϖ, Ω and
@@ -86,7 +100,9 @@ visible directly.
 
 **`surveys.json`** — 9 surveys with footprint, depth, years, and a note on what
 each one does or does not rule out. Footprints are declination bands plus RA
-ranges: a schematic of ragged real boundaries.
+ranges: a schematic of ragged real boundaries. Rubin's years (2026 to 2036,
+`years_src`) follow its survey's start on the night of 29 June 2026; the How and
+Future pages read them from here.
 
 Each band also carries **`dec_range_calibrated`**, squeezed about its centre so
 its solid angle matches the area the survey actually published
@@ -99,26 +115,50 @@ band. Surveys with `footprint_area_verified: false` (OSSOS, whose area we could
 not confirm) are drawn but excluded from depth shading. OSSOS is deliberately given as a whole rather than
 per-block; the real pointings live in the OSSOS Survey Simulator.
 
+**`positions.json`** — where every known body beyond Neptune (the 7,295 of
+class TNO in `tnos.csv`) and Voyager 1 were on JPL's catalogue date,
+2026-06-09, for the distance page's map. Built by
+`scripts/build_positions.py`: each body's mean anomaly is carried to that date
+by two-body motion and its orbit laid flat on the ecliptic, so it keeps its
+true distance from the Sun in the direction ϖ + ν (only the tilt is dropped).
+Positions are in tenths of an AU. Voyager 1's position comes from JPL Horizons
+(target −31) for the same date: 170.8 AU, moving outward 3.6 AU a year.
+
+**`observatories.json`** — every telescope that has reported a position of one
+of the 90 extreme objects, from the Minor Planet Center's observations API
+(4,916 positions from 66 observatory codes; 64 have a place on Earth, Hubble
+is in orbit, and one code marks occultation reports). Each code's place comes
+from the MPC's observatory-code list (longitude and parallax constants,
+converted to geodetic latitude). Per object: positions, nights (as decimal
+years), how many observatories, and JPL's formal uncertainty on its far end
+(`sigma_Q_au`) and average distance (`sigma_a_au`) from the raw JPL query; 16
+objects found in 2025–26 have no uncertainty yet. Built by
+`scripts/build_observatories.py`, which caches the raw API answers in
+`data/raw/mpc_obs/`.
+
 **`planets.json`** — J2000 Keplerian elements plus per-century rates for the
 eight planets and Pluto (JPL/Standish approximate elements, valid 1800–2050),
 with radius, mass and a colour for the solar-system backdrop.
 
-**`planet_nine_predictions.json`** — seven published orbit predictions, 2016 to
-2025, showing how the planet has shrunk and moved closer over a decade;
-physical properties; `search_exclusions` (how much of the space is already
-ruled out); and `designer_slider_ranges` for the Designer page.
+**`planet_nine_predictions.json`** — eight published orbit predictions, 2016 to
+2024 (the last, `brown_batygin_2024`, is the update after the searches), showing
+how the planet has shrunk and moved closer over a decade; physical properties,
+with `brightness_model` (radius, albedo and temperature behind the "put a planet
+out there" score, each value tagged `paper`, `derived` or `ours`);
+`search_exclusions` (how much of the space is already ruled out); and
+`designer_slider_ranges`.
 
 Every numeric field carries a **`src` tag**: `abstract` (quoted from the paper's
 abstract), `paper` (read from its body or figures), `derived` (computed by us
 from published values), or `ours` (our own assumption — *not* a published
 number). Anything tagged `ours` must not be presented to users as a finding.
 
-**`papers.json`** — 28 papers, 2014–2026, pinned to DOIs verified one by one,
+**`papers.json`** — 32 papers, 2004–2026, pinned to DOIs verified one by one,
 with Crossref titles, dates, authors and citation counts. Every summary was
 checked against the paper's own abstract (Luhman 2014, which has no preprint,
 against the journal PDF). `stance` is **our** editorial
 reading (supports / against / alternative / neutral), not a label the authors
-chose. Current split: 10 supports, 8 against, 4 alternative, 6 neutral — a
+chose. Current split: 10 supports, 8 against, 6 alternative, 8 neutral — a
 property of the sample we picked, not a measurement of community opinion.
 
 **`field_timeline.json`** — the rows of the ledger on the part 3 pages (the search,

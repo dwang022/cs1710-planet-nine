@@ -53,14 +53,7 @@ async function main () {
   const P = Object.fromEntries(PLANETS.map(p => [p.name, p]))
   const drawn = distance.objects()
   const nowMax = d3.max(drawn, o => o.now_au)
-  // the share of each orbit's period spent beyond 100 AU (Kepler: time runs with the mean anomaly)
-  const beyond = (o, R) => {
-    const { a_au: a, e } = o
-    if (R <= a * (1 - e)) return 1
-    if (R >= a * (1 + e)) return 0
-    const E0 = Math.acos((1 - R / a) / e)
-    return 1 - (E0 - e * Math.sin(E0)) / Math.PI
-  }
+  const years = d3.format(',.2r')
   const nums = {
     strictN: objs.length,
     p9q: fmtAu(distance.p9.q), p9Q: fmtAu(distance.p9.Q),
@@ -68,8 +61,9 @@ async function main () {
     earthLight: lightTime(P.Earth.a),
     nowMin: fmtAu(d3.min(drawn, o => o.now_au)), nowMax: fmtAu(nowMax),
     nearN: drawn.filter(o => o.now_au <= KUIPER[1]).length, beltEdge: fmtAu(KUIPER[1]),
-    medQ: fmtAu(d3.median(objs, o => o.Q_au)), medP: d3.format(',.2r')(d3.median(objs, o => o.period_yr)),
-    farAu: fmtAu(100), farShare: d3.format('.0%')(d3.median(objs, o => beyond(o, 100))),
+    medQ: fmtAu(d3.median(objs, o => o.Q_au)),
+    minP: years(d3.min(objs, o => o.period_yr)), maxP: years(d3.max(objs, o => o.period_yr)),
+    farAu: fmtAu(100),
     bandMin: fmtAu(distance.p9.bandMin), bandMax: fmtAu(distance.p9.bandMax),
     p9Light: `${lightDays(distance.p9.q)} to ${lightDays(distance.p9.Q)} days`,
     voyAu: fmtAu(positions.voyager_1.r_au),

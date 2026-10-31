@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Planet Nine" style="color:#ffffff"><rect width="100" height="100" rx="16" fill="#0f0f11"/><defs><clipPath id="a4-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#a4-c)"><circle cx="50" cy="50" r="40" fill="#3b6d60"/>
-      <path d="M0,29 C25,26.8 40,31.2 60,29 S90,26.8 100,30.1 L100,39.2 C80,34.8 60,39.2 40,37 S15,34.8 0,38.1 Z" fill="#487f71" opacity="1"/>
-      <path d="M0,46 C25,43.8 40,48.2 60,46 S90,43.8 100,47.1 L100,59.2 C80,54.8 60,59.2 40,57 S15,54.8 0,58.1 Z" fill="#2f5b50" opacity="1"/>
-      <path d="M0,66 C25,63.8 40,68.2 60,66 S90,63.8 100,67.1 L100,74.2 C80,69.8 60,74.2 40,72 S15,69.8 0,73.1 Z" fill="#487f71" opacity="0.9"/>
-      <ellipse cx="37" cy="25" rx="11" ry="5" fill="#6a9d8d" opacity="0.4"/>
-      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.36"/></g>
-  <circle cx="50" cy="50" r="40" fill="none" stroke="#1b3a32" stroke-width="2.5"/>
-  <text x="50" y="67" text-anchor="middle" font-family="ui-sans-serif, -apple-system, 'SF Pro Text', 'Segoe UI', Inter, system-ui, sans-serif" font-size="48" font-weight="700" fill="#e6f4ef" stroke="#1b3a32" stroke-width="2.5" stroke-linejoin="round" paint-order="stroke">?</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Planet Nine" style="color:#ffffff"><rect width="100" height="100" rx="16" fill="#0f0f11"/><defs><clipPath id="a4-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#a4-c)"><circle cx="50" cy="50" r="40" fill="#2aa092"/>
+      <path d="M0,29 C25,26.8 40,31.2 60,29 S90,26.8 100,30.1 L100,39.2 C80,34.8 60,39.2 40,37 S15,34.8 0,38.1 Z" fill="#50c8b0" opacity="1"/>
+      <path d="M0,46 C25,43.8 40,48.2 60,46 S90,43.8 100,47.1 L100,59.2 C80,54.8 60,59.2 40,57 S15,54.8 0,58.1 Z" fill="#1c786b" opacity="1"/>
+      <path d="M0,66 C25,63.8 40,68.2 60,66 S90,63.8 100,67.1 L100,74.2 C80,69.8 60,74.2 40,72 S15,69.8 0,73.1 Z" fill="#50c8b0" opacity="0.9"/>
+      <ellipse cx="37" cy="25" rx="11" ry="5" fill="#b4f5e3" opacity="0.5"/>
+      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.32"/></g>
+  <circle cx="50" cy="50" r="40" fill="none" stroke="#123f36" stroke-width="2.5"/>
+  <path d="M-0.08 -0.23V-0.254Q-0.08 -0.305 -0.0595 -0.338Q-0.039 -0.371 0.007 -0.393L0.024 -0.401Q0.069 -0.422 0.093 -0.446Q0.117 -0.47 0.117 -0.51Q0.117 -0.539 0.1025 -0.5595Q0.088 -0.58 0.062 -0.591Q0.036 -0.602 0.001 -0.602Q-0.035 -0.602 -0.0635 -0.59Q-0.092 -0.578 -0.1085 -0.554Q-0.125 -0.53 -0.125 -0.494V-0.472H-0.255V-0.492Q-0.255 -0.561 -0.221 -0.611Q-0.187 -0.661 -0.129 -0.6875Q-0.071 -0.714 0.001 -0.714Q0.072 -0.714 0.1275 -0.688Q0.183 -0.662 0.215 -0.616Q0.247 -0.57 0.247 -0.51Q0.247 -0.45 0.225 -0.4115Q0.203 -0.373 0.1695 -0.3495Q0.136 -0.326 0.101 -0.309L0.084 -0.301Q0.066 -0.293 0.059 -0.2815Q0.052 -0.27 0.052 -0.248V-0.23ZM-0.01 0.014Q-0.05 0.014 -0.0775 -0.0125Q-0.105 -0.039 -0.105 -0.081Q-0.105 -0.123 -0.0775 -0.1495Q-0.05 -0.176 -0.01 -0.176Q0.031 -0.176 0.058 -0.1495Q0.085 -0.123 0.085 -0.081Q0.085 -0.039 0.058 -0.0125Q0.031 0.014 -0.01 0.014Z" transform="translate(50 67) scale(48)" fill="#e6f4ef" stroke="#1b3a32" stroke-width="0.0521" stroke-linejoin="round" paint-order="stroke"/>
   </svg>

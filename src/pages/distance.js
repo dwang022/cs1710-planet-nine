@@ -65,14 +65,14 @@ async function main () {
     strictN: objs.length,
     p9q: fmtAu(distance.p9.q), p9Q: fmtAu(distance.p9.Q),
     rockyAu: fmtAu(Math.ceil(P.Mars.a * (1 + P.Mars.e))), jupAu: fmtAu(Math.round(P.Jupiter.a)),
-    earthLight: lightTime(P.Earth.a), satLight: lightTime(P.Saturn.a), nepLight: lightTime(P.Neptune.a),
+    earthLight: lightTime(P.Earth.a),
     nowMin: fmtAu(d3.min(drawn, o => o.now_au)), nowMax: fmtAu(nowMax),
     nearN: drawn.filter(o => o.now_au <= KUIPER[1]).length, beltEdge: fmtAu(KUIPER[1]),
     medQ: fmtAu(d3.median(objs, o => o.Q_au)), medP: d3.format(',.2r')(d3.median(objs, o => o.period_yr)),
     farAu: fmtAu(100), farShare: d3.format('.0%')(d3.median(objs, o => beyond(o, 100))),
-    p9Ratio: (distance.p9.q / nowMax).toFixed(1),
     bandMin: fmtAu(distance.p9.bandMin), bandMax: fmtAu(distance.p9.bandMax),
-    p9Light: `${lightDays(distance.p9.q)} to ${lightDays(distance.p9.Q)} days`, farLight: lightTime(far.Q_au),
+    p9Light: `${lightDays(distance.p9.q)} to ${lightDays(distance.p9.Q)} days`,
+    voyAu: fmtAu(positions.voyager_1.r_au),
   }
   document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
 }

@@ -308,11 +308,11 @@ export function makeLuck (root) {
     // the usual bar: 1 in 20
     const bandTop = top + trackDy - 34
     gCuts.append('rect').attr('x', xl(20)).attr('y', bandTop).attr('width', xl(1000) - xl(20))
-      .attr('height', bottom - bandTop - 18).attr('fill', 'var(--series-3)').attr('opacity', 0.08)
+      .attr('height', bottom - bandTop - 18).attr('fill', 'var(--p9)').attr('opacity', 0.08)
     gCuts.append('line').attr('x1', xl(20)).attr('x2', xl(20)).attr('y1', bandTop).attr('y2', bottom - 18)
-      .attr('stroke', 'var(--series-3)').attr('stroke-width', 1.5)
+      .attr('stroke', 'var(--p9)').attr('stroke-width', 1.5)
     gCuts.append('text').attr('x', xl(20) + 8).attr('y', bandTop - 8).attr('font-size', 13)
-      .attr('fill', 'var(--series-3-ink)').attr('font-weight', 600).text('past the usual bar, 1 in 20')
+      .attr('fill', 'var(--p9-ink)').attr('font-weight', 600).text('past the usual bar, 1 in 20')
     const axis = gCuts.append('g').attr('transform', `translate(0,${bottom - 14})`)
       .call(d3.axisBottom(xl).tickValues([1, 2, 5, 20, 100, 1000]).tickFormat(d => `1 in ${d3.format(',')(d)}`))
     axis.selectAll('text').attr('class', 'axis-label').attr('font-size', 12)

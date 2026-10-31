@@ -95,7 +95,7 @@ export function makeLineup (root, { planets }) {
     .on('pointerenter', hover).on('pointermove', hover).on('pointerleave', () => hideTip())
   body.append('use').attr('href', d => `#art-${d.art}`)
     .attr('x', d => -d.size / 2).attr('y', d => -d.size / 2).attr('width', d => d.size).attr('height', d => d.size)
-  body.append('text').attr('class', d => `lu-lbl${d.p9 ? ' p9' : ''}`).attr('text-anchor', 'middle')
+  body.append('text').attr('class', d => `lu-lbl${d.p9 ? ' p9' : ''}`).attr('data-planet', d => d.p9 ? null : d.name).attr('text-anchor', 'middle')
     .attr('y', d => d.size * 0.62 + 20).text(d => d.p9 ? 'Planet Nine?' : d.name)
 
   // A speech bubble w by h with a 16px tail under x = tx, leaning by tdx.

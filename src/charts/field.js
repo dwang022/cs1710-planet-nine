@@ -35,7 +35,7 @@ const KIND_ICON = {
 }
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
-// distances in AU are lime wherever they are written (.k-au in style.css)
+// a distance in AU is gold and kept on one line (.k-au in style.css)
 export const au = html => html.replace(/(\d[\d,.]*(?:\s+to\s+\d[\d,.]*)?)\s+AU\b/g, '<span class="k-au">$1&nbsp;AU</span>')
 
 function paperLink (p) {

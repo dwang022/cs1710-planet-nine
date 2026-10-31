@@ -5,8 +5,9 @@
 // latest, and a tick for every night in between (observatories.json, from the
 // Minor Planet Center's records). To the right, how uncertain its far end is:
 // JPL's own estimate (one standard deviation, sigma_ad in the JPL query) as a
-// share of that distance, on a log scale. The objects the case uses come first,
-// in violet; the ones set aside follow in grey. Each group runs from the best
+// share of that distance, on a log scale. The reliable orbits (seen in more than
+// one season) come first, in violet, each group named in its colour; the ones
+// seen in one season follow in grey. Each group runs from the best
 // known to the least, so the shrinking lines and the growing uncertainty read
 // as one pattern. What a line and a tick are is drawn in the page's key line.
 
@@ -34,11 +35,11 @@ export function drawArcs (root, objects) {
   const s = d3.scaleLog().domain([0.0001, 1]).range([0, SIG_W]).clamp(true)
 
   const svg = d3.select(root).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-    .attr('aria-label', 'For each of the 90 extreme objects, every night it was measured, and how uncertain its orbit\'s far end is. The objects the case uses have been followed for years and their far ends are known to a fraction of a percent; the ones set aside, followed for weeks or months, are uncertain by tens of percent or have no estimate yet.')
+    .attr('aria-label', 'For each of the 90 extreme objects, every night it was measured, and how uncertain its orbit\'s far end is. The reliable orbits, followed for years, have far ends known to a fraction of a percent; those seen in one season, followed for weeks or months, are uncertain by tens of percent or have no estimate yet.')
 
   // the uncertainty column's header, one line above its scale (the rest of the key sits in the page's key line)
   svg.append('text').attr('class', 'axis-label strong').attr('x', M.left + tlW + GAP).attr('y', 14)
-    .text('uncertainty of its far end, JPL\'s ±')
+    .text('uncertainty of its far end')
 
   const g = svg.append('g').attr('transform', `translate(${M.left},${M.top})`)
   const gs = svg.append('g').attr('transform', `translate(${M.left + tlW + GAP},${M.top})`)
@@ -56,8 +57,8 @@ export function drawArcs (root, objects) {
     .attr('x', d => s(d[0])).attr('y', -12).attr('text-anchor', 'middle').text(d => d[1])
 
   // the two groups, named where they start
-  g.append('text').attr('class', 'arc-group used').attr('x', 0).attr('y', yOf(0) - ROW / 2 - 8).text(`the ${nUsed} the case uses`)
-  g.append('text').attr('class', 'arc-group').attr('x', 0).attr('y', yOf(nUsed) - ROW / 2 - 8).text(`the ${rows.length - nUsed} set aside`)
+  g.append('text').attr('class', 'arc-group used').attr('x', 0).attr('y', yOf(0) - ROW / 2 - 8).text(`the ${nUsed} reliable orbits`)
+  g.append('text').attr('class', 'arc-group').attr('x', 0).attr('y', yOf(nUsed) - ROW / 2 - 8).text(`the ${rows.length - nUsed} seen in one season`)
 
   const row = g.selectAll('g.arc-row').data(rows).join('g')
     .attr('class', d => `arc-row${d.well_determined ? ' used' : ''}`)

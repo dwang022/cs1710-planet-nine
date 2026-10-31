@@ -6,3 +6,4 @@ dist/
 data/raw/
 prototypes/node_modules/
 prototypes/dist/
+__pycache__/

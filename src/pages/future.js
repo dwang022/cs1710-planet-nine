@@ -26,7 +26,7 @@ function drawDepth (root, surveys, p9) {
   const y = 160
   svg.append('rect').attr('x', x(p9.min)).attr('width', x(p9.max) - x(p9.min)).attr('y', y - 24).attr('height', 48).attr('rx', 8)
     .attr('fill', 'var(--p9)').attr('opacity', .18)
-  svg.append('text').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('y', y + 72).attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 600).attr('fill', 'var(--p9-ink)')
+  svg.append('text').attr('class', 'p9-svg').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('y', y + 72).attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 600).attr('fill', 'var(--p9-ink)')
     .text('Planet Nine’s predicted brightness')
   svg.append('line').attr('x1', x(19)).attr('x2', x(26.5)).attr('y1', y).attr('y2', y).attr('stroke', 'var(--text-muted)').attr('stroke-width', 1.5)
   svg.selectAll('text.t').data(d3.range(19, 27)).join('text').attr('class', 't axis-label').attr('x', d => x(d)).attr('y', y + 22).attr('text-anchor', 'middle').text(d => d)
@@ -68,7 +68,7 @@ function drawDepthTall (root, surveys, p9) {
   const y = d3.scaleLinear().domain([19, 26.5]).range([60, H - 34])
   // the key: the band's colour and what it is
   svg.append('rect').attr('x', 4).attr('y', 6).attr('width', 16).attr('height', 12).attr('rx', 3).attr('fill', 'var(--p9)').attr('opacity', .35)
-  svg.append('text').attr('x', 28).attr('y', 16).attr('font-size', 12.5).attr('font-weight', 600).attr('fill', 'var(--p9-ink)').text('Planet Nine’s predicted brightness')
+  svg.append('text').attr('class', 'p9-svg').attr('x', 28).attr('y', 16).attr('font-size', 12.5).attr('font-weight', 600).attr('fill', 'var(--p9-ink)').text('Planet Nine’s predicted brightness')
   svg.append('rect').attr('x', AX - 14).attr('width', W - AX + 10).attr('y', y(p9.min)).attr('height', y(p9.max) - y(p9.min)).attr('rx', 8)
     .attr('fill', 'var(--p9)').attr('opacity', .14)
   svg.append('line').attr('x1', AX).attr('x2', AX).attr('y1', y(19)).attr('y2', y(26.5)).attr('stroke', 'var(--text-muted)').attr('stroke-width', 1.5)

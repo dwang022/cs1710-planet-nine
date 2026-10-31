@@ -12,7 +12,8 @@ public/telescopes/CREDITS.md. Pillow is needed; on this machine run it as
 (`... fetch_telescope_photos.py keystone`); the other entries are kept.
 
 A site with no free photograph can use a local one (`local`, a path under
-data/photos/) with its credit, licence and source written in the entry.
+data/photos/) with its credit, licence and source written in the entry; an
+empty licence is left out wherever the credit is shown.
 
 Each entry: the Commons title, the output id, the codes, the name and place
 to print, and `focus`, the point ([x, y] as fractions of the photo) the 3:2
@@ -37,6 +38,9 @@ PHOTOS = [
      "name": "Rubin Observatory", "place": "Cerro Pachón, Chile", "focus": [0.265, 0.36], "zoom": 2.6},
     {"id": "subaru", "commons": "File:Subaru Telescope. Mauna Kea Summit (503947) (21404240034).jpg", "codes": ["T09", "266"],
      "name": "Subaru Telescope", "place": "Maunakea, Hawaiʻi", "focus": [0.5, 0.5]},
+    # the summit's dot: Maunakea's shared code (mostly CFHT's surveys), CFHT and Gemini North; Subaru keeps its own
+    {"id": "maunakea", "commons": "File:Mauna Kea Eastern Telescopes.jpg",
+     "codes": ["568", "T14", "T15"], "name": "Maunakea Observatories", "place": "Hawaiʻi", "focus": [0.5, 0.5]},
     {"id": "magellan", "commons": "File:Magellan-Telescopes-at-LCO-2014-04-19.jpg", "codes": ["304", "269"],
      "name": "Magellan Telescopes", "place": "Las Campanas, Chile", "focus": [0.5, 0.5]},
     {"id": "hubble", "commons": "File:View of Hubble after Being Released from the Shuttle Atlantis (28223588012).jpg", "codes": ["250"],
@@ -53,10 +57,27 @@ PHOTOS = [
      "name": "La Silla Observatory", "place": "Chile", "focus": [0.5, 0.5]},
     {"id": "paranal", "commons": "File:Paranal and the Pacific at sunset (dsc4088, retouched, cropped).jpg", "codes": ["309"],
      "name": "Paranal Observatory", "place": "Chile", "focus": [0.5, 0.5]},
-    # No freely licensed photograph exists; this one, posted by Keystone College, is used for a class project.
+    # A dome at XuYi Station (the photo's coordinates are the station's; Commons calls it the observation
+    # building). Commons has no other exterior of the station, only the main campus in Nanjing.
+    {"id": "purplemountain", "commons": "File:观测楼 - panoramio.jpg", "codes": ["D29"],
+     "name": "Purple Mountain Observatory", "place": "XuYi Station, China", "focus": [0.52, 0.56], "zoom": 1.35},
+    # The Sloan telescope (645); 705 is the same mountaintop's 3.5-metre telescope.
+    {"id": "apachepoint", "commons": "File:SDSS and du Pont Telescopes 01.jpg", "codes": ["645", "705"],
+     "name": "Apache Point Observatory", "place": "New Mexico", "focus": [0.5, 0.4]},
+    {"id": "klet", "commons": "File:Výlet na Klet - 28 srpna 2009 114.JPG", "codes": ["246"],
+     "name": "Kleť Observatory", "place": "Czechia", "focus": [0.5, 0.42]},
+    {"id": "calaralto", "commons": "File:Sierra de los Filabres Observatorium.jpg", "codes": ["Z79"],
+     "name": "Calar Alto Observatory", "place": "Almería, Spain", "focus": [0.45, 0.36], "zoom": 1.1},
+    {"id": "wendelstein", "commons": "File:Wendelstein Domes.jpg", "codes": ["230"],
+     "name": "Wendelstein Observatory", "place": "Bavaria, Germany", "focus": [0.5, 0.42]},
+    {"id": "george", "commons": "File:Brazos Bend State Park 2 Feb 2021 NZ7 1048.jpg", "codes": ["735"],
+     "name": "George Observatory", "place": "Texas", "focus": [0.5, 0.55]},
+    {"id": "lemmon", "commons": "File:Catalina Sky Survey Observatory at Dusk.jpg", "codes": ["G96"],
+     "name": "Catalina Sky Survey", "place": "Mount Lemmon, Arizona", "focus": [0.55, 0.5]},
+    # No freely licensed photograph exists; this one was posted by Keystone College. No licence is printed.
     {"id": "keystone", "local": "data/photos/keystone.jpg", "codes": ["I17"],
      "name": "Thomas G. Cupillari Observatory", "place": "Fleetville, Pennsylvania", "focus": [0.58, 0.6],
-     "credit": "Rob, via Keystone College", "license": "Fair use, class project",
+     "credit": "Rob, via Keystone College", "license": "",
      "source": "https://www.facebook.com/KeystoneCollege/posts/-thank-you-rob-for-these-photos-and-for-sharing-your-experience-of-keystones-cup/1176382641180093/"},
 ]
 
@@ -131,7 +152,7 @@ def main():
         out = f"{ph['id']}.jpg"
         crop32(im, ph["focus"], ph.get("zoom", 1)).save(os.path.join(OUT, out), quality=86, optimize=True, progressive=True)
         credits.append({"id": ph["id"], "file": out, "codes": ph["codes"], "name": ph["name"], "place": ph["place"], **cred})
-        print(f"{out}: {cred['license'] or '?'} · {cred['credit'][:70]}")
+        print(f"{out}: {cred['license'] or '(no licence)'} · {cred['credit'][:70]}")
 
     with open(os.path.join(OUT, "credits.json"), "w", encoding="utf-8") as f:
         json.dump({"_what": "Photographs of the telescopes that measured the extreme objects most, from Wikimedia Commons "
@@ -142,8 +163,9 @@ def main():
         f.write("# Telescope photographs\n\nFetched from Wikimedia Commons by `scripts/fetch_telescope_photos.py`; "
                 "credits as the Commons API gives them; local photographs (data/photos/) carry the credit written in the script.\n\n")
         for c in credits:
-            f.write(f"- **{c['file']}** ({c['name']}, {c['place']}): {c['credit']} · {c['license']}"
-                    f"{' (' + c['license_url'] + ')' if c['license_url'] else ''} · <{c['source']}>\n")
+            lic = c["license"] + (f" ({c['license_url']})" if c["license_url"] else "")
+            f.write(f"- **{c['file']}** ({c['name']}, {c['place']}): "
+                    + " · ".join(x for x in (c["credit"], lic, f"<{c['source']}>") if x) + "\n")
 
 
 main()

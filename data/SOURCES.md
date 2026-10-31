@@ -35,6 +35,8 @@ CFHT MegaCam), found with CADC's Solar System Object Image Search.
 - NOIRLab: <https://astroarchive.noirlab.edu>
 - CADC SSOIS: <https://www.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/en/ssois/>
 - Feeds: `public/game/` (scripts/fetch_game_sequences.py); acknowledgements in `public/game/CREDITS.md`
+- The frames' astrometry is fitted to Gaia DR3 (or Pan-STARRS1 DR2 where Gaia has too few stars); a colour
+  round's three filters are put on one flux scale with Pan-STARRS1 DR2's g, r and i magnitudes (MAST)
 
 **Minor Planet Center — observations API and observatory codes** — every
 reported position of the 90 extreme objects, and where each observatory is.
@@ -56,11 +58,14 @@ discoverer.
 
 **JPL Horizons API** — used to *verify* our coordinate transforms (agreement
 2.5″–4.5″ on four test objects), and for one position: Voyager 1's, on the
-catalogue date, for the distance page's map.
+catalogue date, for the distance page's map. Also the object's track in the
+game rounds whose nights the MPC has no positions from (astrometric RA/Dec from
+the telescope's site, from JPL's orbit fitted to the MPC's observations; each
+round's `positions_from` in `public/game/game.json` names the solution).
 - Endpoint: <https://ssd.jpl.nasa.gov/api/horizons.api>
 - Documentation: <https://ssd-api.jpl.nasa.gov/doc/horizons.html>
 - Web interface: <https://ssd.jpl.nasa.gov/horizons/app.html>
-- Feeds: `voyager_1` in `positions.json`
+- Feeds: `voyager_1` in `positions.json`; the tracks of three rounds in `public/game/game.json`
 
 ### Literature metadata
 

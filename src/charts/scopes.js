@@ -2,12 +2,15 @@
 // the 90 extreme objects, on a world map.
 //
 // One dot per site (codes within SITE_KM of each other share it), sized by how
-// many positions its telescopes reported. Where the sites crowd (Hawaii, the
+// many positions its telescopes reported, with a violet core (the colour of the
+// objects) sized by how many of the extreme objects were first found there. Where the sites crowd (Hawaii, the
 // American Southwest, Europe, northern Chile) an inset laid over empty ocean
 // or empty land enlarges them, joined by a thin line to the area it shows,
 // which the world map outlines instead of drawing its dots. Country borders
-// are drawn faintly. Rubin, the newest, is rose (the site's colour for what
-// comes next) with a callout saying why it stands out. Hubble, the one in
+// are drawn faintly. Rubin, the newest, has a callout with its name in pink (the site's
+// colour for what comes next) saying why it stands out: it has
+// found every extreme object discovered since it opened (`recent`, counted in
+// pages/data.js). Hubble, the one in
 // orbit, sits at the top, above the globe, as a button with its own dot. The
 // bottom-left corner holds the size scale. The reader is a map pin.
 // Clicking a dot (or Hubble) opens a card that stays until it is closed: a
@@ -34,7 +37,7 @@ const W = 960, H = 470
 // (box, in the map's pixels), placed where no site and little land lies under
 // it: Hawaiʻi in the North Pacific above the islands, the Southwest in the
 // South Pacific, Africa to the Indian Ocean, the South Atlantic. RUBIN_NOTE is
-// the callout beside the Chilean inset.
+// the callout beside the Chilean inset (its width is a minimum: it grows to its words).
 const INSETS = [
   { name: 'Hawaiʻi', bbox: [[-156.75, 18.85], [-154.75, 21.05]], box: [16, 22, 108, 94] },
   { name: 'Southwest US', bbox: [[-118, 30.9], [-104.8, 36.1]], box: [10, 212, 252, 156] },
@@ -81,9 +84,11 @@ function sites (obs, photos) {
 }
 
 // A site's name and place come from its photograph if it has one, else from the MPC's name ("name, place").
+// The photograph is its busiest telescope's (the scopes come sorted by positions), so a shared summit
+// shows the telescopes that did the work.
 function describe (s, photos) {
   const codes = s.scopes.map(r => r.code)
-  const photo = photos.find(p => p.codes.some(c => codes.includes(c)))
+  const photo = codes.map(c => photos.find(p => p.codes.includes(c))).find(Boolean)
   const [mpcName, mpcPlace] = s.scopes[0].name.split(/,\s*(?=[^,]+$)/)
   return {
     ...s, photo,
@@ -121,12 +126,15 @@ function separate (pts, gap = 1.5) {
   return new Map(p.map(d => [d.s, [d.x, d.y]]))
 }
 
-export function makeScopeMap (root, obs, photos = []) {
+export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
   const all = sites(obs, photos)
   const hubbleRow = obs.observatories.find(r => r.code === '250')
   const hubble = hubbleRow && describe({ lon: null, lat: null, scopes: [hubbleRow] }, photos)
   const r = d3.scaleSqrt().domain([0, d3.max(all, s => s.n_obs)]).range([0, 22])
   const radius = (s, k = 1) => Math.max(2.6, r(s.n_obs) * k)
+  // the core: objects first found there, never wider than most of its dot
+  const rc = d3.scaleSqrt().domain([0, d3.max(all, s => s.found.size) || 1]).range([0, 9])
+  const core = (s, k = 1) => (s.found.size ? Math.min(radius(s, k) * 0.78, Math.max(1.5, rc(s.found.size) * k)) : 0)
 
   root.classList.add('scope-stage')
   const svg = d3.select(root).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
@@ -134,7 +142,7 @@ export function makeScopeMap (root, obs, photos = []) {
   const card = d3.select(root).append('div').attr('class', 'scope-card').attr('hidden', true).node()
   const proj = d3.geoEqualEarth()
   const path = d3.geoPath(proj)
-  const gLand = svg.append('g'), gLink = svg.append('g'), gDots = svg.append('g'), gYou = svg.append('g')
+  const gLand = svg.append('g'), gLink = svg.append('g'), gDots = svg.append('g'), gCores = svg.append('g').attr('class', 'site-cores'), gYou = svg.append('g')
   const gInsets = svg.append('g'), gKey = svg.append('g').attr('class', 'scope-key')
   svg.append('defs').html(HUBBLE_DEFS)
   const insets = INSETS.map(p => ({ ...p, proj: d3.geoMercator() }))
@@ -152,6 +160,15 @@ export function makeScopeMap (root, obs, photos = []) {
       const rr = Math.max(2.6, r(v))
       g.append('circle').attr('class', 'site key').attr('cx', x + rr).attr('cy', base - rr).attr('r', rr)
       g.append('text').attr('class', 'key-lbl').attr('x', x + rr).attr('y', base + 16).attr('text-anchor', 'middle').text(fmt(v))
+      x += 2 * rr + 20
+    }
+    // objects first found there: violet discs at their own scale
+    x += 16
+    g.append('text').attr('class', 'key-lbl muted').attr('x', x).attr('y', base - 58).text('first found there')
+    for (const v of [1, 5, 20].filter(v => v <= rc.domain()[1])) {
+      const rr = Math.max(1.5, rc(v))
+      g.append('circle').attr('class', 'site-core').attr('cx', x + rr).attr('cy', base - 9).attr('r', rr)
+      g.append('text').attr('class', 'key-lbl').attr('x', x + rr).attr('y', base + 16).attr('text-anchor', 'middle').text(v)
       x += 2 * rr + 20
     }
     if (!hubble) return
@@ -194,6 +211,7 @@ export function makeScopeMap (root, obs, photos = []) {
       g.append('path').attr('class', 'map-border').attr('clip-path', `url(#inset-clip-${i})`).attr('d', d3.geoPath(p.proj)(borders))
       g.append('text').attr('class', 'inset-name').attr('x', x + 9).attr('y', y + 16).text(p.name)
       p.g = g.append('g')
+      p.core = g.append('g').attr('class', 'site-cores')
       p.lbl = g.append('g')
     }
     drawKey()
@@ -206,9 +224,12 @@ export function makeScopeMap (root, obs, photos = []) {
     const wire = sel => sel.attr('tabindex', 0).attr('role', 'button').attr('aria-label', s => `${s.name}: ${fmt(s.n_obs)} positions`)
       .on('click', (ev, s) => show(s, ev.currentTarget))
       .on('keydown', (ev, s) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); show(s, ev.currentTarget) } })
-    gDots.selectAll('circle').data(order.filter(s => !insets.some(p => within(s, p))), s => s.name + s.lon).join('circle').attr('class', cls)
+    const world = order.filter(s => !insets.some(p => within(s, p)))
+    gDots.selectAll('circle').data(world, s => s.name + s.lon).join('circle').attr('class', cls)
       .attr('cx', s => proj([s.lon, s.lat])[0]).attr('cy', s => proj([s.lon, s.lat])[1]).attr('r', s => radius(s))
       .call(wire)
+    gCores.selectAll('circle').data(world.filter(s => s.found.size), s => s.name + s.lon).join('circle').attr('class', 'site-core')
+      .attr('cx', s => proj([s.lon, s.lat])[0]).attr('cy', s => proj([s.lon, s.lat])[1]).attr('r', s => core(s))
     for (const p of insets) {
       if (!p.g) continue
       const here = order.filter(s => within(s, p))
@@ -216,8 +237,11 @@ export function makeScopeMap (root, obs, photos = []) {
       p.g.selectAll('circle').data(here, s => s.name + s.lon).join('circle').attr('class', cls)
         .attr('cx', s => at.get(s)[0]).attr('cy', s => at.get(s)[1]).attr('r', s => radius(s, 0.5))
         .call(wire)
-      // Rubin, called out to the east of its inset with why: it is the newest, and
-      // what it alone has found already (its site also holds Gemini South)
+      p.core.selectAll('circle').data(here.filter(s => s.found.size), s => s.name + s.lon).join('circle').attr('class', 'site-core')
+        .attr('cx', s => at.get(s)[0]).attr('cy', s => at.get(s)[1]).attr('r', s => core(s, 0.5))
+      // Rubin, called out to the east of its inset with why: what it alone has found
+      // since it opened, and how many of those wait to be seen again (its site also
+      // holds Gemini South)
       const rubin = here.filter(s => s.next).map(s => ({ site: s, row: s.scopes.find(t => t.code === RUBIN) }))
       const note = p.lbl.selectAll('g.rubin-note').data(rubin).join(e => {
         const g = e.append('g').attr('class', 'rubin-note')
@@ -230,7 +254,16 @@ export function makeScopeMap (root, obs, photos = []) {
       note.select('path').attr('d', d => { const [dx, dy] = p.proj([d.site.lon, d.site.lat]); return `M${dx + 6},${dy} L${nx},${ny + nh / 2}` })
       note.select('rect').attr('x', nx).attr('y', ny).attr('width', nw).attr('height', nh).attr('rx', 8)
       note.select('.rubin-lbl').attr('x', nx + 10).attr('y', ny + 18).text('Rubin Observatory')
-      note.select('.rubin-sub').attr('x', nx + 10).attr('y', ny + 34).text(d => `the newest, ${d.row.discovered.length} found since ${d.row.first_year}`)
+      // why it is singled out: where the new extreme objects are being found (recent, from pages/data.js)
+      note.select('.rubin-sub').attr('x', nx + 10).attr('y', ny + 34).text(() => !recent ? ''
+        : recent.rubin === recent.all ? `found all ${recent.all} extreme objects discovered since ${recent.since}`
+          : `found ${recent.rubin} of the ${recent.all} extreme objects discovered since ${recent.since}`)
+      // the bubble fits its words
+      note.each(function () {
+        const g = d3.select(this)
+        const tw = d3.max(g.selectAll('text').nodes(), t => t.getComputedTextLength())
+        g.select('rect').attr('width', Math.max(nw, Math.ceil(tw) + 20))
+      })
     }
     // the reader, as a map pin, and a great-circle line to the nearest site
     const youG = gYou.selectAll('g').data(you ? [you] : []).join(e => {
@@ -269,7 +302,7 @@ export function makeScopeMap (root, obs, photos = []) {
           <div><dt>found here</dt><dd>${s.found.size}</dd></div>
         </dl>
         ${scopes}
-        ${s.photo ? `<span class="sc-credit">Photo ${esc(s.photo.credit)} · ${esc(s.photo.license)}</span>` : ''}
+        ${s.photo ? `<span class="sc-credit">Photo ${[s.photo.credit, s.photo.license].filter(Boolean).map(esc).join(' · ')}</span>` : ''}
       </div>`
     card.hidden = false
     card.querySelector('.sc-close').addEventListener('click', close)

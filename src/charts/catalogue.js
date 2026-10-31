@@ -8,7 +8,9 @@
 // "all" to a narrower one), so switching levels never redraws them one by
 // one. The level's own objects are violet dots in an SVG layer above;
 // pointing at one draws its orbit and gives its distances. A toggle draws the
-// orbits of the whole level.
+// orbits of the whole level. The query that picks the level sits on the map's
+// left (pages/data.js); `reserve()` says how much of the width it takes, and the
+// map centres itself in the rest.
 
 import * as d3 from 'd3'
 import { showTip, hideTip } from './tooltip.js'
@@ -22,9 +24,9 @@ const NICE = [5, 10, 20, 50, 100, 200]
 /**
  * @param tnos    { x, y } in tenths of an AU (positions.json)
  * @param objects the extreme objects, each with `levels`, the ids of the levels it belongs to
- * @param asOf    the catalogue's date, printed small in the corner ("June 2026")
+ * @param reserve how many pixels on the left the query panel covers (0 when it sits above the map)
  */
-export function makeCatalogue (root, { tnos, objects, asOf }) {
+export function makeCatalogue (root, { tnos, objects, reserve = () => 0 }) {
   root.classList.add('cat-map')
   const canvas = d3.select(root).append('canvas').node()
   const svg = d3.select(root).append('svg').attr('role', 'img')
@@ -39,11 +41,11 @@ export function makeCatalogue (root, { tnos, objects, asOf }) {
   const R = d3.max(objs, o => o.now_au) * 1.06            // the frame: out to the farthest of them today
 
   let W = 800, H = 500, level = 'all', hot = null, showOrbits = false, painted = null
-  let k = 1, X = x => x, Y = y => y
+  let k = 1, cx = 0, X = x => x, Y = y => y
 
   function paint () {
     const dpr = window.devicePixelRatio || 1
-    const key = `${W}x${H}@${dpr}:${level === 'all'}`
+    const key = `${W}x${H}@${dpr}:${cx}:${level === 'all'}`
     if (key === painted) return
     painted = key
     canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr)
@@ -62,13 +64,16 @@ export function makeCatalogue (root, { tnos, objects, asOf }) {
   }
 
   function draw () {
-    k = (Math.min(W, H) / 2 - 18) / R
-    X = x => W / 2 + x * k; Y = y => H / 2 - y * k
+    // centred in the width the query leaves free
+    const L = Math.min(reserve(), W * 0.45)
+    cx = L + (W - L) / 2
+    k = (Math.min(W - L, H) / 2 - 18) / R
+    X = x => cx + x * k; Y = y => H / 2 - y * k
     paint()
     const sunR = 9
-    gSun.select('use').attr('x', W / 2 - sunR).attr('y', H / 2 - sunR).attr('width', 2 * sunR).attr('height', 2 * sunR)
+    gSun.select('use').attr('x', cx - sunR).attr('y', H / 2 - sunR).attr('width', 2 * sunR).attr('height', 2 * sunR)
     gNep.selectAll('circle').data([NEPTUNE_AU]).join('circle').attr('class', 'dist-orbit')
-      .attr('cx', W / 2).attr('cy', H / 2).attr('r', d => d * k)
+      .attr('cx', cx).attr('cy', H / 2).attr('r', d => d * k)
 
     const inLevel = level === 'all' ? [] : objs.filter(o => o.levels.includes(level))
     const line = o => 'M' + o.pts.map(([x, y]) => `${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join('L')
@@ -88,7 +93,7 @@ export function makeCatalogue (root, { tnos, objects, asOf }) {
     dots.select('.hit').attr('cx', o => X(o.x)).attr('cy', o => Y(o.y))
     dots.filter(o => o.id === hot).raise()
 
-    // a ruler in the lime of distances, and Neptune's orbit named
+    // a ruler in the colours of distances, and Neptune's orbit named
     const nice = NICE.filter(n => n * k <= 130).pop()
     const y0 = H - 16
     gLbl.selectAll('g.dist-ruler').data([0]).join(e => {
@@ -102,10 +107,8 @@ export function makeCatalogue (root, { tnos, objects, asOf }) {
       g.select('.t2').attr('x1', 14 + nice * k).attr('x2', 14 + nice * k).attr('y1', y0 - 5).attr('y2', y0 + 5)
       g.select('text').attr('x', 14).attr('y', y0 - 10).text(fmtAu(nice))
     })
-    gLbl.selectAll('text.asof').data(asOf ? [asOf] : []).join('text').attr('class', 'dist-lbl muted small asof')
-      .attr('x', W - 12).attr('y', 20).attr('text-anchor', 'end').text(d => `JPL catalogue, as of ${d}`)
     gLbl.selectAll('text.nep').data([0]).join('text').attr('class', 'dist-lbl muted small nep')
-      .attr('x', W / 2).attr('y', H / 2 - NEPTUNE_AU * k - 6).attr('text-anchor', 'middle').text("Neptune's orbit")
+      .attr('x', cx).attr('y', H / 2 - NEPTUNE_AU * k - 6).attr('text-anchor', 'middle').text("Neptune's orbit")
   }
 
   function over (ev, o) {

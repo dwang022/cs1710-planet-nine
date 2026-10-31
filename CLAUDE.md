@@ -16,7 +16,7 @@ npm run preview    # serve dist/ on :4173
 ```
 
 Python helpers are stdlib-only except the two image fetchers, which need
-Pillow. On Windows run them as `python -P script.py` (not `-I`, which hides
+Pillow, and `scripts/build_glyphs.py`, which needs fontTools. On Windows run them as `python -P script.py` (not `-I`, which hides
 the user site-packages). Set `PYTHONIOENCODING=utf-8` when a script prints
 non-ASCII.
 
@@ -35,7 +35,7 @@ sources and the inference-not-observation note live on `credits.html`.
 | `index.html` | `pages/intro.js` | Title, an observatory aimed at Planet Nine, shooting stars, Start, three part buttons, the skin carousel on the planet (arrows either side, name beneath) |
 | `setting/planets.html` | `pages/planets.js` | Three beats, lineup scrolly (9 → 8 → 9?), Pluto's reclassification with the sad-face callout, the three requirements with drawings (`charts/rulesart.js`) and the scorecard table |
 | `setting/distance.html` | `pages/distance.js` | Head with Planet Nine's distance (computed on load), the question on its own line, and a to-scale Sun-to-Earth ruler for the AU (`charts/auruler.js`); zoom-out scrolly over a map seen from above, everything where it was in June 2026: the planets on their orbits, the Kuiper belt as a faint ring filled with dots for its icy bodies (decoration, not data; they fade out when the evidence arrives), Voyager 1 (`positions.json`), the extreme objects seen in more than one season as dots (pointing at one draws its orbit; one card shows all the orbits), Planet Nine's best-fit orbit with its icon, and the uncertainty band |
-| `setting/data.html` | `pages/data.js` | Head graphic of an observatory finding an arc, with the page's three numbers as callouts (`charts/datahero.js`); a titled world map of every observatory with country borders and insets laid over empty sea and land (Hawaiʻi above the islands in the North Pacific, a large Southwest US in the South Pacific, Northern Chile in the South Atlantic, Europe over Africa and the Indian Ocean; sites too close to tell apart are nudged a pixel or two so none overlap), a callout to the east for Rubin with why it is singled out, a card per site on click (photograph, or the observatory drawing where no free photograph exists; numbers; telescopes), Hubble as a pill in the top corner, "find the telescope nearest you" with a map pin (`charts/scopes.js`); three drawings from pictures to orbits (`charts/orbitart.js`); the tracking game on real discovery frames, controls on the image (`charts/spotgame.js`); three more discoveries in a row; every known body beyond Neptune narrowed level by level (`charts/catalogue.js`); how long each extreme object was watched against how uncertain its far end is, keyed on one line (`charts/arcs.js`) |
+| `setting/data.html` | `pages/data.js` | Head graphic of an observatory finding an arc, the full width of the page and behind the title on a wide screen, the page's three numbers written beside what they count (no boxes; along the arc for the positions), smaller observatories further along the horizon each looking at an earlier position, stars kept clear of the drawing, shooting stars now and then (`charts/datahero.js`, `meteors.js`); below 840 px it stacks with the numbers in a row; a titled world map of every observatory with country borders and insets laid over empty sea and land (Hawaiʻi above the islands in the North Pacific, a large Southwest US in the South Pacific, Northern Chile in the South Atlantic, Europe over Africa and the Indian Ocean; sites too close to tell apart are nudged a pixel or two so none overlap), the map in Earth's own dark colours (navy sea, green-grey land), each site a sand disc sized by positions reported with a violet core sized by the extreme objects first found there (two scales in the key), Rubin's dot like the rest with its name in pink in a callout saying it found every extreme object discovered since it opened (counted on load), a card per site on click (the photograph of its busiest telescope, every site that found an object has one, or the observatory drawing where no free photograph exists; numbers; telescopes), Hubble as a pill in the top corner, "find the telescope nearest you" with a map pin (`charts/scopes.js`); three drawings from pictures to orbits (`charts/orbitart.js`); the tracking game on real archive frames spanning a few nights (four rounds; the object crosses a quarter to half the frame; one round in colour), controls on the image, every play starting with the arrow on the object, the reveal ringing each stop rather than covering it (`charts/spotgame.js`); three more discoveries in a row; JPL's catalogue (only JPL is named there; its logo on the right in white, `public/logos/jpl-mono.svg`), every known body beyond Neptune on a map the width of the page that fits one screen, with a query panel on it (known objects beyond Neptune › with extreme orbits › and reliable orbits › that first pointed to Planet Nine; choosing a row runs the query to it, its definition beneath; the orbits toggle in the panel) (`charts/catalogue.js`, `pages/data.js`); what makes an orbit reliable, one line on following the papers, then how long each extreme object was watched against how uncertain its far end is, the groups named on the chart (`charts/arcs.js`) |
 | `insights/clustering.html` | `pages/clustering.js` | Three drawings of what an orbit is, from Sedna's real orbit (`charts/orbitintro.js`); lean scrolly (one orbit → compass → arrow → Planet Nine) with a key drawn above it and a card per object on click; on the last step the views (Orbits, Compass, Sample, the brush-to-select scatter) and the filters sit on the picture (in the card on a phone); a collapsed table of every number; the herding exhibit with its controls on the picture and a draggable planet |
 | `insights/probability.html` | `pages/probability.js` | Head as three beats with compasses drawn from the data; luck scrolly (build the null distribution) whose piles and odds come from the stored 200,000-trial simulations, with a panel-shaped layout that stacks on a phone; step 6 compares each distance cut with and without the objects seen once; the streetlight exhibit with its controls on the picture; published odds on one axis, read from `published_odds.json` |
 | `insights/alternatives.html` | `pages/alternatives.js` | Eight explanations × four tests matrix, detail panel, ledger of the case against; closes the Evidence part |
@@ -59,6 +59,8 @@ src/
   site.js        shared chrome: sprite injection, skin persistence, nav, page head, footer, base-URL link fix-up
   site.css       nav, page head, footer, intro screen, catalogue cards
   style.css      design tokens (validated palette), shared components, chart styles
+  fonts.js       the two typefaces, bundled; fontsReady, which loadData() and the page reveal wait for
+  glyphs.js      letters the drawings use, traced from Space Grotesk as paths (generated by scripts/build_glyphs.py)
   art.js         every hand-drawn body as pure SVG strings (Planet Nine in any skin, Sun, planets, TNOs, an observatory)
   skins.js       the seven Planet Nine skins: what the planet might be made of
   data.js        loadData('etnos', ...) → public/data/*.json, honouring BASE_URL
@@ -68,6 +70,7 @@ src/
   orbits.js      Keplerian geometry, verified against JPL Horizons; PLANET_NINE elements
   highlight.js   one object highlighted across every chart on a page
   motion.js      eased number tweens
+  meteors.js     shooting stars, on the intro and the data page's head
   pages/         one module per page
   charts/        one module per visualisation (see headers); field.js is the ledger, fieldart.js its drawings,
                  herd.js and bias.js the two cartoon exhibits, tracking.js the blink players, datahero.js,
@@ -78,9 +81,11 @@ public/field/    portraits for the ledger (scripts/fetch_portraits.py), credits 
 public/tracking/ real discovery photographs for the tracking exhibit (scripts/fetch_tracking_images.py), credits.json
 public/telescopes/ one photograph per busy site, shown in the map's cards (scripts/fetch_telescope_photos.py), credits.json
 public/game/     real archive exposures for the tracking game (DECam via NOIRLab, CFHT MegaCam via CADC), aligned on the stars,
-                 with the object's position and time in each (scripts/fetch_game_sequences.py), game.json; CREDITS.md
+                 with the object's position and time in each, from the MPC's positions or a JPL Horizons ephemeris
+                 (positions_from); a colour round is a g/r/i set per frame (scripts/fetch_game_sequences.py), game.json; CREDITS.md
                  holds each archive's acknowledgement. scripts/fetch_game_frames.py (the older Commons GIFs) is superseded
-public/logos/    the IAU's mark (scripts/fetch_logos.py), credits.json; shown in monochrome beside the planet definition
+public/logos/    the IAU's and JPL's marks (scripts/fetch_logos.py, which also writes JPL's in white, jpl-mono.svg), credits.json;
+                 shown in monochrome beside the planet definition and the JPL catalogue
 data/            processed datasets, README.md (what each file is, what was verified), SOURCES.md (every source)
 scripts/         the Python pipeline; scripts/exploration/ holds teammates' one-off plots
 papers/          README.md indexes every paper read; the PDFs are gitignored
@@ -130,7 +135,8 @@ the register is plain and measured, light touches, no jokes.
 - **Visual hierarchy carries the reading order.** Column heads brighter than
   cells, headings brighter than body, one bold key line per card. Fill the
   width: three requirements side by side, beats across the head, not a
-  paragraph in the left third of the screen.
+  paragraph in the left third of the screen. A section's intro runs up to
+  115ch (`.sec-head p`), so a one-sentence intro stays on one line.
 - **Keys, not captions.** An encoding is explained by a key drawn with the
   chart (the size scale with its values, a colour with its name, a sample
   row with what its parts are), never by a sentence such as "one dot per
@@ -162,41 +168,63 @@ the register is plain and measured, light touches, no jokes.
 
 ### Colour
 
-The "Deep Field" palette (tokens at the top of `src/style.css`): zinc
-surfaces and four accents, each with one meaning everywhere. `--series-1`
-violet is the objects we talk about (and links, the current page);
-`--series-2` ember is the comparison, a warning, the case against;
-`--series-3` aurora green is the case for a planet (ledger lane, check marks,
-"passes the bar"); `--series-4` rose is what comes next (Rubin, proposed
-searches). `-ink` variants are the same hues lifted for small text. The Sun
-keeps its gold and the planets their natural colours. **No blue accents**:
-blue appears only as Earth's and Neptune's own colour in the art, as Hubble's
-solar panels on the data page's map (the user asked for a more colourful
-Hubble), and as the ocean-world skin, which the user asked to be deep blue. Colour follows the
-entity, never its rank, and nothing is encoded in colour alone.
+**Colour carries meaning and nothing else.** Decided with the user on
+2026-10-31 (it replaced the "Deep Field" palette, whose violet also painted
+the interface and whose green clashed with the default skin). Tokens are at
+the top of `src/style.css`. Every hue on the site is one of these, and a new
+coloured thing either takes one of these meanings or stays white and grey:
 
-**Planet Nine is not in the palette.** Everything that stands for it takes
-the chosen skin's colour, `--p9`, which `site.js` publishes from
-`src/skins.js`: the orbit, dot and labels in the lean chart, the herding
-planet, the lineup arc and label, the distance and brightness bands, the
-predicted path on the sky map, `.k-p9`, `.k-ninth`, and every written
-"Planet Nine", which `site.js` wraps in `.p9-name` at load and as content
-arrives (chart text is left to the charts; `data-no-tint` opts an element
-out). A skin may paint its lettering with a pattern through `text`
-(`--p9-text`): gradients and bands only (icy bands, rock strata, cheese
-gloss, the black hole's glow, the nine-ball's stripes), never spots, which
-the thin strokes of letters chop up. On the planets page the three counts
-keep one colour each wherever they appear: the first nine violet (`.k-nine`,
-`--c-nine`), eight ember (`.k-eight`, `--c-eight`), the ninth `--p9`. A skin
-whose colour would be confused with violet or ember swaps that count through
-`counts` (gold for the first nine with the ocean world, rose for eight with
-the iron world and the black hole). Bold text that carries a colour class is
-never painted white by a list rule.
+| What | Colour | Where it is set |
+|---|---|---|
+| The interface: buttons, links, the current page, focus rings, toggles, citation numbers, plain "yes" marks (✓, "accounts for", the game's Found) | white and grey, **no hue** | `--ui`, `--text-*` |
+| Title emphasis | brightness, not hue: a title with `<em>` is grey, its key words white | `.page-head h1:has(em)` |
+| Planet Nine | the chosen skin: its **two-tone gradient** for its name and lettering, its flat colour for thin strokes and dots. The only non-flat colour on the site | `--p9-text`, `#g-p9` in SVG; `--p9` |
+| The case for a planet (ledger lane, verdicts, "past the usual bar", the odds chart's "for" side, a good fit) | Planet Nine's colour | `--p9`, `.k-for` |
+| Each planet | its own flat colour, lifted from its drawing in `art.js` for text: its name wherever written, its chart labels | `--c-earth` …, `.pl-name`, `text[data-planet]` |
+| The Sun | gold, its name too | `--sun` |
+| Distances in AU | **gold, number and unit together** (`150 AU`), the Sun's colour: a distance is measured from the Sun. A gradient on every number was tried and found distracting; the Sun-to-Earth idea lives on the ruler that defines the AU (distance page head), gold at the Sun to blue at Earth. Scale bars are gold | `--au`, `.k-au`, `.au`; `--au` → `--au-2` on the AU ruler |
+| The distant objects | violet, and nothing else | `--series-1` |
+| The case against, a warning, a miss | ember | `--series-2` |
+| What comes next (Rubin, proposed searches) | hot pink `#ff3dc8`, strong so Rubin stands out from the greys (the old soft rose did not); checked against every other colour on the page | `--series-4` |
+| Background | near-black: space | `--surface-0` |
+| The world map (data page) | Earth's own colours, dark and quiet: navy sea, green-grey land; sites are sand discs (positions) with violet cores (objects found there) | `.map-*`, `.site`, `.site-core` |
 
-**Distances in AU are lime**, `--au` (`.k-au` in text, `.au` in chart
-labels, `dd.au` in tooltips): the distance page's head, cards, map labels,
-ruler and readout. Lime is the one hue no planet, accent or skin uses; the
-two yellow skins (cheese, nine-ball) swap it for green through `counts.au`.
+On the planets page the three counts follow the entity: the first nine in
+Pluto's colour (Pluto made it nine, `--c-nine`), eight plain white
+(`--c-eight`), the ninth in Planet Nine's gradient. `-ink` variants are the
+same hues lifted for small text. Colour follows the entity, never its rank,
+and nothing is encoded in colour alone.
+
+Every written "Planet Nine" is wrapped in `.p9-name` by `site.js`, at load and
+as content arrives (`data-no-tint` opts an element out; a line break between
+the words is fine), and lettered in the gradient; every planet's name and "Sun"
+likewise in `.pl-name[data-planet]`, in its colour ("Earth masses", "Earth-mass"
+and "Earth radii" are units and stay plain). The lettering rule is scoped
+`:root :is(...)` so no single-class colour paints over it. Chart code draws its own:
+`fill: url(#g-p9)` for the name (`.p9-svg`), `var(--p9)` for strokes. Skins no
+longer swap any other colour. `site.js` defines Planet Nine's SVG gradient once
+per page (`#g-p9`).
+
+**Blue** appears only as Earth's and Neptune's own colour, the Earth end of
+the AU gradient, Hubble's solar panels on the data page's map (asked for),
+and the ocean-world skin (asked for, deep blue). Bold text that carries a
+colour class is never painted white by a list rule.
+
+### Type
+
+Space Grotesk for text and charts, Space Mono (its sibling) for the small
+uppercase labels: `--font-sans` and `--font-mono` in `style.css`, both bundled
+through `src/fonts.js` (`@fontsource`), so every device draws the same letters.
+Space Mono comes in 400 and 700 only. `loadData()` waits for the fonts, so a
+chart that measures its words measures these letters, and `site.js` shows the
+page once they are in. Chart text follows `--font-sans` through the
+`svg text` rule. The drawings in `art.js` set no text: Planet Nine's question
+mark and the lockup's words are paths traced from Space Grotesk
+(`src/glyphs.js`, from `scripts/build_glyphs.py`), so the exported files and
+the favicon keep the same letters without the font; trace any new letter a
+drawing needs the same way. Space Grotesk draws a straight `"` slanted, so copy
+uses curly quotes (“planet”). The full nav bar is tight between 1280 and 1440 px;
+a new page there needs its width checked.
 
 ### Art
 
@@ -214,9 +242,13 @@ in monochrome, fetched with their credit by `scripts/fetch_logos.py`.
 ### Skins
 
 `src/skins.js` holds the seven skins (ice giant, rock world, ocean world, iron
-world, primordial black hole, cheese, nine-ball), each with `colour` and
-optional `text` and `counts`. The choice is stored in `localStorage` under
-`p9-skin`; `site.js` rebuilds the sprite's Planet Nine symbols, so every
+world, primordial black hole, cheese, nine-ball). Each has a flat `colour`
+(clearly apart from violet, ember and rose, since Planet Nine also stands for
+the case for a planet), a `text` gradient for its lettering (gradients and
+bands only, never spots, which the thin strokes of letters chop up) and
+`stops`, the gradient's two ends for SVG. Each is meant to be unmistakable at
+a glance. The choice is stored in `localStorage` under `p9-skin`; `site.js`
+rebuilds the sprite's Planet Nine symbols, so every
 `<use href="#art-planet-nine">` follows it, and publishes the colours. Chart
 code never hard-codes a skin.
 

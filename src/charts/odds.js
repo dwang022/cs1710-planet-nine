@@ -21,16 +21,16 @@ export function drawOdds (root, rows) {
       .attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
       .attr('aria-label', 'Published odds that the alignment is chance, one row per study: ' + rows.map(r => `${r.label}: ${r.range ? 'consistent with chance' : r.oneIn ? `1 in ${r.oneIn}` : 'consistent with chance'}`).join('; '))
     const x = d3.scaleLog().domain([1, 100000]).range([narrow ? 24 : M.left, W - M.right]).clamp(true)
-    const colour = { for: 'var(--series-3)', against: 'var(--series-2)', ours: 'var(--series-1)' }
-    const ink = { for: 'var(--series-3-ink)', against: 'var(--series-2-ink)', ours: 'var(--series-1-ink)' }
+    const colour = { for: 'var(--p9)', against: 'var(--series-2)', ours: 'var(--series-1)' }
+    const ink = { for: 'var(--p9-ink)', against: 'var(--series-2-ink)', ours: 'var(--series-1-ink)' }
     const end = M.top + rows.length * ROW
 
     svg.selectAll('*').remove()
     // the usual bar: 1 in 20
     svg.append('rect').attr('x', x(20)).attr('y', M.top - 24 + LINE).attr('width', x(100000) - x(20)).attr('height', rows.length * ROW + 12 - LINE)
-      .attr('fill', 'var(--series-3)').attr('opacity', 0.06)
+      .attr('fill', 'var(--p9)').attr('opacity', 0.06)
     svg.append('line').attr('x1', x(20)).attr('x2', x(20)).attr('y1', M.top - 24 + LINE).attr('y2', end - 12)
-      .attr('stroke', 'var(--series-3)').attr('stroke-width', 1.5)
+      .attr('stroke', 'var(--p9)').attr('stroke-width', 1.5)
     svg.append('text').attr('x', x(20) + 8).attr('y', M.top - 30 + (narrow ? -6 : 0)).attr('font-size', 12.5).attr('font-weight', 600).attr('fill', 'var(--series-3-ink)')
       .text('past the usual bar, 1 in 20')
     if (!narrow) {

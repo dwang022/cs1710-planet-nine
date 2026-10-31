@@ -10,7 +10,7 @@
 // row again, its × or Escape closes it.
 //
 // The marks say each verdict twice, by shape and by colour: a full aurora disc
-// (accounts for it), an aurora half disc (partly), an ember ring (does not), so
+// (accounts for it, white), a half disc (partly, white), an ember ring (does not), so
 // ember means "fails" here as it does on the planets page.
 
 import { url } from '../data.js'

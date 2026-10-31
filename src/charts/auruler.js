@@ -1,8 +1,9 @@
 // The distance page's head: the Sun, Mercury, Venus and Earth at their true
 // distances, with a ruler from the Sun to Earth marking one AU. Pure markup in
-// the zoom-out chart's style (dashed orbits, dist-lbl labels, the ruler and
-// its length in the lime of every distance in AU), drawn with the sprite's
-// bodies. Distances come from planets.json; the drawn sizes are not to scale.
+// the zoom-out chart's style (dashed orbits, dist-lbl labels), drawn with the
+// sprite's bodies; each planet named in its own colour, and the ruler running
+// from the Sun's gold to Earth's blue: the AU is the distance between them.
+// Distances come from planets.json; the drawn sizes are not to scale.
 
 const W = 560, H = 176
 const SUN = { x: 58, y: 68, s: 90 }
@@ -28,8 +29,10 @@ export function drawAuRuler (root, planets) {
     ${bodies.map(b => arc(b.a * k)).join('')}
     ${use('sun', SUN.x, SUN.y, SUN.s)}
     ${bodies.map(b => use(b.name.toLowerCase(), SUN.x + b.a * k, SUN.y, b.s) +
-      `<text class="dist-lbl" x="${(SUN.x + b.a * k).toFixed(1)}" y="${SUN.y + b.s * 0.4 + 18}" text-anchor="middle">${b.name}</text>`).join('')}
-    <g class="dist-ruler">
+      `<text class="dist-lbl" data-planet="${b.name}" x="${(SUN.x + b.a * k).toFixed(1)}" y="${SUN.y + b.s * 0.4 + 18}" text-anchor="middle">${b.name}</text>`).join('')}
+    <defs><linearGradient id="au-ruler" gradientUnits="userSpaceOnUse" x1="${SUN.x}" x2="${EARTH_X}" y1="0" y2="0">
+      <stop offset="0" style="stop-color:var(--au)"/><stop offset="1" style="stop-color:var(--au-2)"/></linearGradient></defs>
+    <g class="dist-ruler" style="--ruler:url(#au-ruler)">
       <line x1="${SUN.x}" x2="${lx - 30}" y1="${RULER_Y}" y2="${RULER_Y}"/><line x1="${lx + 30}" x2="${EARTH_X}" y1="${RULER_Y}" y2="${RULER_Y}"/>
       <line x1="${SUN.x}" x2="${SUN.x}" y1="${RULER_Y - 6}" y2="${RULER_Y + 6}"/><line x1="${EARTH_X}" x2="${EARTH_X}" y1="${RULER_Y - 6}" y2="${RULER_Y + 6}"/>
     </g>

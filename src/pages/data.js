@@ -1,6 +1,6 @@
 // Part 1, page 3: a telescope finding an arc (the head graphic), every
 // observatory behind the extreme objects on a map, how an orbit is pinned down
-// from the pictures, a game on real discovery frames, every known body beyond
+// from the pictures, a game on real archive frames, every known body beyond
 // Neptune narrowed to the few the case uses, and how long each was watched.
 
 import * as d3 from 'd3'
@@ -35,7 +35,15 @@ async function main () {
   drawDataHero($('#dataHero'), { nGround: ground.length, nObjects: obs.n_objects, nObs: fmt(obs.n_obs), cut: STRICT.aMin })
 
   // --- the telescopes ---------------------------------------------------------------
-  const map = makeScopeMap($('#scopeMap'), obs, photos?.photos || [])
+  // where the new ones are found: every extreme object first seen since Rubin opened, and how many of them were Rubin's
+  const rubin = obs.observatories.find(r => r.code === 'X05')
+  const firstSeen = new Map(etnos.map(o => [o.id, +String(o.first_obs || '').slice(0, 4)]))
+  const recent = rubin && {
+    since: rubin.first_year,
+    all: new Set(obs.observatories.flatMap(r => r.discovered).filter(id => firstSeen.get(id) >= rubin.first_year)).size,
+    rubin: rubin.discovered.filter(id => firstSeen.get(id) >= rubin.first_year).length,
+  }
+  const map = makeScopeMap($('#scopeMap'), obs, photos?.photos || [], { recent })
   $('#findMe').addEventListener('click', () => {
     const note = $('#findNote')
     if (!navigator.geolocation) { note.textContent = 'This browser cannot share a location.'; return }
@@ -71,26 +79,37 @@ async function main () {
     ...o, levels: ['extreme', ...(o.well_determined ? ['measured'] : []), ...(six(o) ? ['six'] : [])],
   }))
   const count = id => objects.filter(o => o.levels.includes(id)).length
-  const LEVELS = [
-    { id: 'all', name: 'Beyond Neptune', n: positions.tnos.n, note: 'Every known one.' },
-    { id: 'extreme', name: 'Extreme orbits', n: count('extreme'), note: 'Out of Neptune\'s reach.' },
-    { id: 'measured', name: 'Seen again', n: count('measured'), note: 'In more than one season.' },
-    { id: 'six', name: 'The 2016 six', n: count('six'), note: 'Where the idea began.' },
+  // the query on the map: each row adds a condition to the one above; choosing a row runs the query down
+  // to it. Under the rows, the chosen condition's definition (none for "beyond Neptune", which says it):
+  // the sample's cut (sample.js), the papers' rule, the original paper.
+  const au = v => `<span class="k-au">${v} AU</span>`
+  const QUERY = [
+    { id: 'all', cond: 'beyond Neptune', n: positions.tnos.n, def: '' },
+    { id: 'extreme', cond: 'with extreme orbits', n: count('extreme'), def: `Averaging past ${au(STRICT.aMin)}, never within ${au(STRICT.qMin)}.` },
+    { id: 'measured', cond: 'and reliable orbits', n: count('measured'), def: 'Seen in more than one season.' },
+    { id: 'six', cond: 'that first pointed to Planet Nine', n: count('six'), def: `The six of the original paper<sup class="cite"><a href="${url('credits.html')}#cite-batygin-brown-2016">1</a></sup>.` },
   ]
   const asOf = new Date(positions.epoch_cal + 'T00:00:00Z').toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' })
-  const cat = makeCatalogue($('#catMap'), { tnos: positions.tnos, objects, asOf })
-  const levelsEl = $('#catLevels')
-  levelsEl.innerHTML = LEVELS.map((l, i) => `<button type="button" class="cat-level" data-level="${l.id}" aria-pressed="${i === 0}">
-      <span class="n">${fmt(l.n)}</span><b>${l.name}</b><span class="lvl-note">${l.note}</span></button>`).join('')
-  levelsEl.addEventListener('click', ev => {
-    const b = ev.target.closest('[data-level]')
-    if (!b) return
-    levelsEl.querySelectorAll('[data-level]').forEach(x => x.setAttribute('aria-pressed', String(x === b)))
-    cat.setLevel(b.dataset.level)
-    $('#catOrbits').disabled = b.dataset.level === 'all'
-  })
-  $('#catOrbits').disabled = true
+  const query = $('#catQuery')
+  query.innerHTML = `<div class="q-head">JPL › known objects <span>${asOf}</span></div>
+    <ol class="q-rows">${QUERY.map((q, i) => `<li><button type="button" data-level="${q.id}" aria-pressed="${i === 0}">
+      <i class="q-mark" aria-hidden="true"></i><span class="q-cond">${q.cond}</span><span class="q-n">${fmt(q.n)}</span></button></li>`).join('')}</ol>
+    <p class="q-def" aria-live="polite"></p>
+    <label class="q-orbits"><input type="checkbox" id="catOrbits" disabled> Draw their orbits</label>`
+  const cat = makeCatalogue($('#catMap'), { tnos: positions.tnos, objects, reserve: () => matchMedia('(max-width: 700px)').matches ? 0 : query.offsetWidth + 24 })
+  function runQuery (id) {
+    const depth = QUERY.findIndex(q => q.id === id)
+    query.querySelectorAll('[data-level]').forEach((b, i) => {
+      b.setAttribute('aria-pressed', String(i === depth))
+      b.parentElement.classList.toggle('is-on', i <= depth)
+    })
+    query.querySelector('.q-def').innerHTML = QUERY[depth].def
+    $('#catOrbits').disabled = id === 'all'
+    cat.setLevel(id)
+  }
+  query.addEventListener('click', ev => { const b = ev.target.closest('[data-level]'); if (b) runQuery(b.dataset.level) })
   $('#catOrbits').addEventListener('change', ev => cat.setOrbits(ev.target.checked))
+  runQuery('all')
 
   // --- watched longer, known better ---------------------------------------------------
   drawArcs($('#arcChart'), etnos.map(o => ({ ...o, rec: obs.objects[o.id] })).filter(o => o.rec?.nights.length))

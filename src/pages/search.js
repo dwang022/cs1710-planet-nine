@@ -201,7 +201,8 @@ async function main () {
   function renderBuild () {
     drawPlacement($('#chartPlace'), { objects: objs, planet, maxAu: Math.max(maxAu, planet.a * (1 + planet.e) * 0.75) })
     const { total, terms } = scorePlanet(planet, stats.meanDeg, model)
-    const colour = total >= 67 ? 'var(--series-3)' : total >= 34 ? 'var(--series-2)' : 'var(--text-muted)'
+    // a good fit counts for a planet (its colour), a poor one against (ember)
+    const colour = total >= 67 ? 'var(--p9-ink)' : total >= 34 ? 'var(--text-primary)' : 'var(--series-2-ink)'
     $('#scoreBox').innerHTML = `
       <div class="score-head"><span class="num" style="color:${colour}">${total}</span><span class="of">fit, out of 100</span></div>
       ${terms.map(t => `<div class="score-term">

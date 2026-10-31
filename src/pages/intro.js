@@ -6,6 +6,7 @@ import { PAGES, GROUPS, currentSkin, setSkin } from '../site.js'
 import { svgMarkup, OBSERVATORY } from '../art.js'
 import { SKINS, SKIN_IDS } from '../skins.js'
 import { url } from '../data.js'
+import { meteors } from '../meteors.js'
 
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
 
@@ -37,31 +38,6 @@ function scene () {
     <use href="#art-observatory" x="${T.x}" y="${T.y}" width="${T.w}" height="${T.h}"/>
     <g class="p9-float"><g class="p9-swap"><use href="#art-planet-nine" x="${(P9[0] - SIZE / 2).toFixed(0)}" y="${(P9[1] - SIZE / 2).toFixed(0)}" width="${SIZE}" height="${SIZE}" style="color:#fff"/></g></g>
   </svg>`
-}
-
-// --- shooting stars ---------------------------------------------------------
-
-function meteors () {
-  if (reduce.matches) return
-  const sky = document.getElementById('skyCanvas')
-  const one = () => {
-    if (document.hidden) return
-    const m = document.createElement('div')
-    m.className = 'meteor'
-    const w = innerWidth, h = Math.min(innerHeight, 900)
-    m.style.left = `${Math.random() * w * 0.9}px`; m.style.top = `${Math.random() * h * 0.45}px`
-    m.style.setProperty('--angle', `${18 + Math.random() * 22}deg`)
-    m.style.setProperty('--dist', `${260 + Math.random() * 420}px`)
-    m.style.setProperty('--len', `${90 + Math.random() * 120}px`)
-    m.style.setProperty('--dur', `${0.9 + Math.random() * 0.9}s`)
-    sky.appendChild(m)
-    m.addEventListener('animationend', () => m.remove())
-  }
-  const loop = () => { one(); if (Math.random() < 0.25) setTimeout(one, 180 + Math.random() * 300); setTimeout(loop, 1600 + Math.random() * 3200) }
-  setTimeout(loop, 700)
-  // A hidden tab pauses the animations but not the timers, so meteors made
-  // while away would all streak at once on return: clear them instead.
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) sky.querySelectorAll('.meteor').forEach(m => m.remove()) })
 }
 
 // --- the skin carousel: arrows either side of the planet, its name beneath ------
@@ -110,6 +86,6 @@ function parts () {
 }
 
 scene()
-meteors()
+meteors(document.getElementById('skyCanvas'))
 skins()
 parts()

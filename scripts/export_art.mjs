@@ -139,7 +139,7 @@ const sheet = `<!doctype html>
 <p>Everything the site draws by hand, in one place. Every file is an SVG (any size, any background), with PNG rasters beside it for slides and documents. Regenerate with <code>node scripts/export_art.mjs</code>; the drawings themselves live in <code>src/art.js</code>.</p>
 
 <h2>The logo</h2>
-<p>Use <code>planet-nine</code> (disc plus dashed ring) wherever the planet is named. The dashed ring is the point: it is a predicted body, not a seen one. The plain <code>mark</code> is for tiny sizes and inline text; <code>mono</code> takes <code>currentColor</code> for one-colour contexts; the <code>lockup</code> pairs it with a wordmark.</p>
+<p>Use <code>planet-nine</code> wherever the planet is named. The question mark is the point: it is a predicted body, not a seen one. Its letters, like the lockup's, are traced from Space Grotesk, so every file keeps them without the font. The plain <code>mark</code> is for tiny sizes and inline text; <code>mono</code> takes <code>currentColor</code> for one-colour contexts; the <code>lockup</code> pairs it with a wordmark.</p>
 <div class="row">${files.filter(f => f.name === 'planet-nine').map(f => tile(f, 120)).join('')}</div>
 <div class="row" style="margin-top:14px">${files.filter(f => ['planet-nine-mark', 'planet-nine-mono'].includes(f.name)).map(f => tile(f, 72)).join('')}</div>
 <div class="row" style="margin-top:14px">${files.filter(f => f.name === 'planet-nine-lockup').map(f => tile(f, 300)).join('')}</div>

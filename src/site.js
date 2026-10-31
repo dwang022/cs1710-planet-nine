@@ -10,6 +10,7 @@ import './site.css'
 import { sprite, NAMES } from './art.js'
 import { SKINS, DEFAULT_SKIN, skin as skinFor } from './skins.js'
 import { url } from './data.js'
+import { fontsReady } from './fonts.js'
 
 export const PAGES = [
   { id: 'intro', path: 'index.html', title: 'The search for Planet Nine', short: 'Start' },
@@ -50,18 +51,22 @@ export function applySkin (id) {
   publishColour(skinFor(id))
 }
 
-/** Planet Nine's colour everywhere on the page is the chosen skin's; some skins paint the lettering. */
+/** Planet Nine's colour everywhere on the page is the chosen skin's: the flat colour for thin strokes,
+ *  the gradient for its name (--p9-text in HTML, #g-p9's stops in SVG). Nothing else changes with the skin. */
 function publishColour (sk) {
   const st = document.documentElement.style
+  const [c1, c2] = sk.stops || [sk.colour, sk.colour]
   st.setProperty('--p9', sk.colour)
   st.setProperty('--p9-ink', sk.colour)
-  st.setProperty('--p9-text', sk.text || sk.colour)
-  document.documentElement.toggleAttribute('data-skin-text', !!sk.text)
-  st.setProperty('--c-nine', sk.counts?.nine || 'var(--series-1)')
-  st.setProperty('--c-eight', sk.counts?.eight || 'var(--series-2)')
-  if (sk.counts?.au) st.setProperty('--au', sk.counts.au)
-  else st.removeProperty('--au')
+  st.setProperty('--p9-text', sk.text || `linear-gradient(180deg, ${c1}, ${c2})`)
+  st.setProperty('--p9-1', c1)
+  st.setProperty('--p9-2', c2)
 }
+
+// The gradient charts letter Planet Nine's name with (fill: url(#g-p9)), between its skin's two stops.
+const PAINTS = `<svg width="0" height="0" style="position:absolute;width:0;height:0" aria-hidden="true" focusable="false"><defs>
+  <linearGradient id="g-p9" x1="0" x2="0" y1="0" y2="1"><stop offset="0" style="stop-color:var(--p9-1)"/><stop offset="1" style="stop-color:var(--p9-2)"/></linearGradient>
+</defs></svg>`
 
 const pageId = () => document.body.dataset.page || 'intro'
 const here = () => PAGES.find(p => p.id === pageId()) || PAGES[0]
@@ -71,6 +76,7 @@ function injectSprite () {
   div.id = 'artSprite'
   div.innerHTML = sprite(NAMES, { skin: currentSkin() })
   document.body.prepend(div)
+  div.insertAdjacentHTML('afterend', PAINTS)
   document.documentElement.dataset.skin = currentSkin()
   publishColour(skinFor(currentSkin()))
 }
@@ -148,23 +154,36 @@ function footer () {
 // Wherever the words "Planet Nine" are written, they take the planet's colour
 // (--p9, the chosen skin's), in the title, the top bar, headings and running
 // text alike. Chart text is left alone: the charts colour their own labels.
-const NAME = /Planet Nine/
-const LEAVE = 'svg, script, style, textarea, option, .p9-name, .k-p9, [data-no-tint]'
+// Names written in colour (CLAUDE.md, Colour): Planet Nine in its skin's lettering, each planet and the
+// Sun in its own colour. A line break may fall between "Planet" and "Nine" in the source. "Earth masses",
+// "Earth-mass" and "Earth radii" are units, not Earth, and stay plain.
+// The test is a separate, non-global pattern: a global one used with test() keeps the place it stopped,
+// which matchAll() inherits, so the matches would be missed and the text rewritten unchanged, which the
+// watcher below would see and tint again, forever. (It froze the clustering page.)
+const NAME_SRC = String.raw`Planet\s+Nine|\b(?:Mercury|Venus|Earth|Mars|Jupiter|Saturn|Uranus|Neptune|Pluto|Sun)\b(?![\s-](?:mass|radi))`
+const NAME_TEST = new RegExp(NAME_SRC)
+const LEAVE = 'svg, script, style, textarea, option, .p9-name, .k-p9, .pl-name, [data-no-tint]'
 
 function tintName (root) {
   if (!root || root.nodeType !== 1) return
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode: n => NAME.test(n.nodeValue) && !n.parentElement?.closest(LEAVE) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
+    acceptNode: n => NAME_TEST.test(n.nodeValue) && !n.parentElement?.closest(LEAVE) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT,
   })
   const nodes = []
   while (walker.nextNode()) nodes.push(walker.currentNode)
   for (const n of nodes) {
+    const matches = [...n.nodeValue.matchAll(new RegExp(NAME_SRC, 'g'))]
+    if (!matches.length) continue                         // never rewrite a text unchanged: the watcher would loop
     const frag = document.createDocumentFragment()
-    const parts = n.nodeValue.split('Planet Nine')
-    parts.forEach((t, i) => {
-      if (t) frag.append(t)
-      if (i < parts.length - 1) { const s = document.createElement('span'); s.className = 'p9-name'; s.textContent = 'Planet Nine'; frag.append(s) }
-    })
+    let at = 0
+    for (const m of matches) {
+      if (m.index > at) frag.append(n.nodeValue.slice(at, m.index))
+      const s = document.createElement('span')
+      if (/^Planet/.test(m[0])) { s.className = 'p9-name'; s.textContent = 'Planet Nine' } else { s.className = 'pl-name'; s.dataset.planet = m[0]; s.textContent = m[0] }
+      frag.append(s)
+      at = m.index + m[0].length
+    }
+    if (at < n.nodeValue.length) frag.append(n.nodeValue.slice(at))
     n.replaceWith(frag)
   }
 }
@@ -199,4 +218,6 @@ watchName()
 fixLinks()
 // Each page's <head> keeps the body hidden until now, so a click never shows the
 // page unstyled (white, in dev, where the CSS arrives through JS) or without its bar.
-document.documentElement.dataset.ready = ''
+// It waits for the fonts too, at most 600 ms, so the letters do not swap in view.
+Promise.race([fontsReady, new Promise(r => setTimeout(r, 600))])
+  .then(() => { document.documentElement.dataset.ready = '' })

@@ -18,6 +18,25 @@
    "license_url": "",
    "restrictions": "trademarked",
    "source": "https://commons.wikimedia.org/wiki/File%3AIAU_logo.svg"
+  },
+  {
+   "id": "jpl",
+   "file": "jpl.svg",
+   "mono_file": "jpl-mono.svg",
+   "what": "Jet Propulsion Laboratory logo",
+   "shown": "setting/data.html, beside the JPL catalogue section",
+   "url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Jet_Propulsion_Laboratory_logo.svg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "mime": "image/svg+xml",
+   "size": [
+    240,
+    108
+   ],
+   "credit": "The original uploader was King of Hearts at English Wikipedia.",
+   "vectorised_by": "Transferred from en.wikipedia to Commons.",
+   "license": "Public domain",
+   "license_url": "",
+   "restrictions": "trademarked",
+   "source": "https://commons.wikimedia.org/wiki/File%3AJet_Propulsion_Laboratory_logo.svg"
   }
  ]
 }

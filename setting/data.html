@@ -12,10 +12,11 @@
 </head>
 <body data-page="data">
 <main>
-  <header class="page-head wrap">
+  <header class="page-head wrap with-hero">
     <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
     <h1>The <em>data</em></h1>
-    <!-- A telescope finding an object's arc, with the page's three numbers as callouts (charts/datahero.js) -->
+    <!-- A telescope finding an object's arc, the width of the page, with the page's three numbers written
+         beside what they count and shooting stars now and then (charts/datahero.js) -->
     <div id="dataHero"></div>
   </header>
 
@@ -40,13 +41,13 @@
       <h2>From pictures to orbits</h2>
     </div>
     <ol class="definition">
-      <li data-art="find"><div><b>Spot the moving dot</b>The stars stay put. Whatever moves is in the solar system.</div></li>
+      <li data-art="find"><div><b>Spot the moving dot</b>Distant stars hold still from night to night. Anything that moves is in our solar system.</div></li>
       <li data-art="follow"><div><b>Follow it</b>Each night it is found again adds a point to its arc.</div></li>
       <li data-art="fit"><div><b>Fit the oval</b>A short arc fits many orbits. Years of points single one out.</div></li>
     </ol>
   </section>
 
-  <!-- the game on real discovery frames (charts/spotgame.js, public/game/game.json), then three more
+  <!-- the game on real archive frames over a few nights (charts/spotgame.js, public/game/game.json), then three more
        discoveries in a row (charts/tracking.js, public/tracking/credits.json). Credits under images are one
        short dim line; the full citations are on the credits page. -->
   <section class="part wrap" id="spot">
@@ -61,42 +62,41 @@
       <li><figure id="blinkPluto"></figure><span class="beat-y">1930</span>
         <p>Clyde Tombaugh finds Pluto by flipping between two plates taken six days apart.</p></li>
       <li><figure id="blinkSedna"></figure><span class="beat-y">2003</span>
-        <p>Sedna never comes closer to the Sun than <span class="k-au" data-n="sednaQ">—</span>, out of Neptune's
-        reach. Palomar caught it in three exposures over three hours.</p></li>
+        <p>Astronomers find Sedna, which never comes within <span class="k-au" data-n="sednaQ">—</span> of the Sun.</p></li>
       <li><figure id="blinkBP519"></figure><span class="beat-y">2015</span>
         <p>A camera built to study dark energy finds 2015 BP519, one of the most extreme orbits known.</p></li>
     </ol>
   </section>
 
-  <!-- the catalogue: every known body beyond Neptune where it is, narrowed level by level (charts/catalogue.js) -->
+  <!-- the catalogue: every known body beyond Neptune where it is, narrowed level by level (charts/catalogue.js).
+       Only JPL is named here (the orbits are JPL's Small-Body Database); its logo sits on the right, in
+       monochrome, as the IAU's does on the planets page (public/logos, scripts/fetch_logos.py). -->
   <section class="part wrap" id="catalogue">
-    <div class="sec-head">
-      <h2>Thousands of bodies, a few dozen that count</h2>
-      <p>NASA's JPL and the Minor Planet Center keep the orbit of every known body in the solar system.</p>
-    </div>
-    <div class="cat-wrap">
-      <div class="cat-side">
-        <div class="cat-levels" id="catLevels" role="group" aria-label="Which bodies to mark"></div>
-        <label class="cat-toggle"><input type="checkbox" id="catOrbits"> Draw their orbits</label>
+    <div class="sec-head with-logo">
+      <div>
+        <h2>JPL's catalogue</h2>
+        <p>NASA's Jet Propulsion Laboratory (JPL) keeps the orbit of every known body in the solar system.</p>
       </div>
+      <img class="jpl-logo" src="/logos/jpl-mono.svg" alt="Jet Propulsion Laboratory" width="140" height="64" />
+    </div>
+    <!-- the map, the width of the page and sized to fit the screen, with the query on it: each row adds a
+         condition, and the rows down to the chosen one are the query being run (pages/data.js) -->
+    <div class="cat-stage">
+      <div class="cat-query" id="catQuery" role="group" aria-label="Which known objects to show"></div>
       <div id="catMap"></div>
     </div>
   </section>
 
-  <!-- how long each was watched, and how well that pins its orbit (charts/arcs.js); the objects set aside
-       are grey. The bias argument on the probability page starts here: what makes the cut depends on who kept looking. -->
+  <!-- how long each was watched, and how well that pins its orbit (charts/arcs.js); the ones seen in one
+       season are grey. The bias argument on the probability page starts here: what makes the cut depends on who kept looking. -->
   <section class="part wrap" id="arcs">
     <div class="sec-head">
-      <h2>Years of watching pin down an orbit</h2>
-      <p class="lead-key">Whether an object makes the cut depends on telescopes finding it again, year after year.</p>
-      <p>Every position from another season shrinks the uncertainty in its orbit. Like the studies of Planet
-      Nine<sup class="cite"><a href="/credits.html#cite-brown-batygin-2019">1</a>,<a href="/credits.html#cite-brown-batygin-2021">2</a></sup>,
-      this site counts only objects seen in more than one season.</p>
+      <h2>What makes an orbit reliable</h2>
+      <p>Like earlier studies<sup class="cite"><a href="/credits.html#cite-brown-batygin-2019">2</a>,<a href="/credits.html#cite-brown-batygin-2021">3</a></sup>, we count only objects seen in more than one season, since each added season makes an orbit less uncertain.</p>
     </div>
-    <!-- the key on one line: the two groups, no estimate, and a drawn sample row for what a line and a tick are -->
+    <!-- the key on one line: a drawn sample row for what a line and a tick are, and no estimate; the two
+         groups are named on the chart in their colours -->
     <ul class="legend arc-legend">
-      <li class="legend-item"><i class="legend-swatch arc-used"></i>in the sample</li>
-      <li class="legend-item"><i class="legend-swatch arc-unused"></i>set aside</li>
       <li class="legend-item"><svg class="arc-sample" viewBox="0 0 64 12" aria-hidden="true"><line x1="1" y1="6" x2="63" y2="6"/><path d="M1,2v8M9,2v8M13,2v8M30,2v8M47,2v8M51,2v8M63,2v8"/></svg>a tick per night it was measured</li>
       <li class="legend-item"><i class="legend-swatch arc-none"></i>no uncertainty yet</li>
     </ul>

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Build the find-the-moving-object game from the telescope archives: for each
-distant object, five to ten frames of one patch of sky taken over a night
-(or a few), aligned on the stars, with the object's position in every frame
-computed from the Minor Planet Center's own records of it.
+distant object, four to ten frames of one patch of sky taken over a few nights
+(or one), aligned on the stars, with the object's position in every frame
+computed from the Minor Planet Center's records of it (its own positions from
+those nights, or, where it has none, JPL Horizons' orbit fitted to them all)
+and checked against the pixels. Frames are greyscale, or true colour where
+the archive holds one exposure in each of three filters minutes apart.
 
 Sources
   NOIRLab Astro Data Archive, for DECam on the 4-metre Blanco telescope: the
@@ -12,36 +15,56 @@ Sources
     where its HDU table lacks a night, the exposure search and the header
     listing find the CCD.
   Canadian Astronomy Data Centre (CADC), for MegaCam on the 3.6-metre CFHT:
-    Elixir-processed images ("p"), cut out on the server (~3-6 MB each). CADC's
-    Solar System Object Image Search (SSOIS) says which exposures, CCDs and
-    pixels hold the object (and fixes the Elixir header WCS, which is only the
-    telescope's pointing, to tens of arcseconds).
+    Elixir-processed images ("p"), cut out on the server from the CCD's data
+    section (columns 33 to 2080 of the stored pixels). CADC's Solar System
+    Object Image Search (SSOIS) says which exposures, CCDs and pixels hold the
+    object (and fixes the Elixir header WCS, which in older exposures is only
+    the telescope's pointing, to tens of arcseconds). For exposures SSOIS has
+    no astrometry of, CADC's listing of every extension's header finds the CCD
+    through the header WCS (cached as meta_<file>.txt).
   Gaia DR3 (ESA archive TAP) for the astrometry; where fewer than eight Gaia
     stars fall on the CCD, Pan-STARRS1 DR2 (MAST), whose positions are tied to
-    Gaia and go deeper.
+    Gaia and go deeper. Colour frames also take Pan-STARRS1's g, r and i
+    magnitudes, to put the three filters on one flux scale.
   The MPC observations cached in data/raw/mpc_obs/ by build_observatories.py
     (fetched from the MPC observations API if a file is missing).
+  JPL Horizons (ssd.jpl.nasa.gov/api/horizons.api), for rounds whose nights the
+    MPC has no positions from (ephemeris = "horizons"): the astrometric RA and
+    Dec seen from the telescope's site every five minutes, from JPL's orbit,
+    which is fitted to the MPC's observations; the solution and its count of
+    observations go into "positions_from".
 
 How a round is made
-  1. The MPC positions from the listed observatories in the round's window are
-     fitted with a straight line in RA and Dec against time (a parabola when
-     they span more than a day). That gives where the object is at the middle
-     of each exposure. For a night the MPC has no positions from, the window
-     takes the nights round it (mpc_windows) and the fit interpolates.
-  2. Cosmic-ray hits are replaced on the native pixels (a hit is far sharper
-     than a star), then a sky grid is laid down: a tangent plane, north up and
-     east left, SCALE arcsec per saved pixel, with the track's midpoint at PLACE
-     (fractions of the saved frame) so the track sits off-centre; if a CCD edge
-     cuts the frame there, it slides to the nearest clear spot. Every exposure
-     is resampled onto the grid (bicubic) through its WCS (TPV for DECam).
+  1. The track. The MPC positions from the listed observatories in the round's
+     window are fitted with a straight line in RA and Dec against time (a
+     parabola when they span more than a day); for a night the MPC has no
+     positions from, the window takes the nights round it (mpc_windows) and the
+     fit interpolates. Where no nights near enough have MPC positions, or a
+     parabola through them strays (it does over more than a few days near
+     opposition), the track is Horizons' instead. Either gives where the object
+     is at the middle of each exposure.
+  2. Dead pixels and columns are filled from their neighbours in the row and
+     cosmic-ray hits replaced on the native pixels (a hit is far sharper than a
+     star), then a sky grid is laid down: a tangent plane, north up and east
+     left (frames are never rotated or flipped), SCALE arcsec per saved pixel,
+     with the track's midpoint at PLACE (fractions of the saved frame) so the
+     track sits off-centre; if a CCD edge cuts the frame there, it slides to
+     the nearest clear spot. Every exposure is resampled onto the grid
+     (bicubic) through its WCS (TPV for DECam).
   3. Stars found in each resampled exposure are matched to the first one's and
      the exposure is resampled again through the fitted correction, so all agree
      on the stars to a fraction of a pixel (the median residual is printed).
-     Fluxes are scaled to the first exposure by the same stars. With stack = 2,
-     each frame is the mean of two exposures taken minutes apart.
+     Fluxes are scaled to the first exposure in the same filter by the same
+     stars. With stack = 2, each frame is the mean of two exposures taken
+     minutes apart. In a colour round (filter is a list of three: blue, green,
+     red) each frame is one exposure in each filter, all within COLOUR_GAP
+     minutes, the sets with the shortest spans taken first; the frame the rest
+     of the steps work on is the channels' sum, each in units of its sky noise,
+     and how far the object moved while a set was taken is printed and kept
+     (it should be under about a pixel, or the colour frame is not true).
   4. The median of the frames is matched to the catalogue (Gaia propagated to
      the night with its proper motions) and an affine fit gives the grid's true
-     astrometry. Each MPC position goes through it into saved pixels.
+     astrometry. Each position of the track goes through it into saved pixels.
   5. Check: each frame minus the median of the frames where the object is well
      away leaves what moved. Where that residual peaks near the computed
      position, its significance and its offset are printed and kept in
@@ -50,24 +73,30 @@ How a round is made
      residuals far below the noise would otherwise show), the frame is smoothed
      a little (SMOOTH, under the seeing) so a faint source reads as a dot, and
      one asinh stretch serves all frames of a round, in units of the first
-     frame's noise; greyscale JPEG.
+     frame's noise; greyscale JPEG. A colour frame's channels are first put on
+     one scale of AB flux by Pan-STARRS1 photometry of the stars in each
+     filter's first exposure (so a source of flat spectrum is white); the same
+     stretch is applied to their mean, each channel keeps its share of it
+     (after Lupton et al. 2004), the colour is faded to grey where the mean is
+     not clearly above the sky, and saturated pixels are white; RGB JPEG.
 Positions are in saved-frame pixels: origin at the top-left corner, x right,
 y down, pixel centres at +0.5. Times are mid-exposure (mid-pair for stacked
-frames), UT. Objects tried and set aside, and why, go into "skipped".
+frames, the mean of the three for colour frames), UT. Objects tried and set
+aside, and why, go into "skipped".
 
 Writes public/game/<id>-<n>.jpg, public/game/game.json and public/game/CREDITS.md,
 and removes frames no round uses (this replaces the Commons-based rounds of
 fetch_game_frames.py, which now writes elsewhere). Downloads are cached in
-data/raw/game_frames/ (gitignored; about 180 MB for the rounds below).
-Pillow is needed; numpy and astropy are not: FITS, Rice decompression and the
-TPV WCS are done here. On this machine:
+data/raw/game_frames/ (gitignored; about 1.8 GB with the rounds tried and set
+aside). Pillow is needed; numpy and astropy are not: FITS, Rice decompression
+and the TPV WCS are done here. On this machine:
   python -P scripts/fetch_game_sequences.py [--debug] [--only id,id]
 """
 import json, math, os, re, struct, sys, time, urllib.parse, urllib.request
 from array import array
 from collections import Counter, defaultdict
 
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFilter
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "public", "game")
@@ -85,12 +114,17 @@ CADC_CUT = "https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/data/pub/CFHT/{file}.fit
 GAIA_TAP = "https://gea.esac.esa.int/tap-server/tap/sync"
 PS1_CAT = "https://catalogs.mast.stsci.edu/api/v0.1/panstarrs/dr2/mean.csv"
 MPC_OBS = "https://data.minorplanetcenter.net/api/get-obs"
+HORIZONS = "https://ssd.jpl.nasa.gov/api/horizons.api"
+CADC_META = "https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/data/pub/CFHT/{file}.fits.fz?fhead=true"
 
 SIZE = (900, 540)    # saved frame, pixels
 MARGIN = 260         # grid pixels kept round the saved frame for alignment and astrometry
 QUALITY = 88         # JPEG quality
 MAX_FRAMES = 10
+MIN_FRAMES = 5
 STACK_GAP = 7.0      # minutes: the most between two exposures averaged into one frame
+COLOUR_GAP = 20.0    # minutes: the most between the first and last exposure of a colour frame
+SITE = {"noirlab": "W84", "cadc": "568"}    # MPC codes of the Blanco (DECam) and of Maunakea, for Horizons
 
 # Display stretch, in units of the first frame's sky noise: black a little below
 # the sky, an asinh knee, white for the brightest stars.
@@ -144,38 +178,127 @@ TERMS = {
 #   mpc             file in data/raw/mpc_obs; codes: the MPC observatory codes to fit
 #   archive         noirlab (DECam) or cadc (MegaCam)
 #   windows         UT ranges holding the exposures (and the MPC lines that are fitted)
-#   filter          only exposures in this filter, min_exp seconds or longer
+#   mpc_windows     UT ranges of the MPC lines to fit, where they differ from windows
+#   ephemeris       "horizons": the MPC has no positions near these nights, so the track is JPL Horizons'
+#                   ephemeris for the telescope's site (an orbit fitted to the MPC's observations)
+#   filter          only exposures in this filter, min_exp seconds or longer; a list of three (blue, green,
+#                   red) makes a colour round: each frame is one exposure in each, taken within COLOUR_GAP
 #   scale, place    arcsec per saved pixel; where the track's midpoint sits (fractions of the frame)
 #   stack           2: each frame is the mean of two consecutive exposures (STACK_GAP)
+#   max_frames, min_frames   how many frames at most (spread evenly) and at least
 #   drop            exposures left out (file-name prefixes), with the reason beside them
 #   skip            tried and set aside: the reason goes into game.json's "skipped"
 ROUNDS = [
     {"id": "chiminigagua", "object": "Chiminigagua", "desig": "2013 FY27", "mpc": "532037.txt", "codes": ["W84", "807"],
      "archive": "noirlab", "windows": [("2013-05-07 20:00", "2013-05-08 12:00"), ("2013-05-08 20:00", "2013-05-09 12:00"),
                                        ("2013-05-09 20:00", "2013-05-10 12:00")], "filter": "r", "min_exp": 190,
-     "scale": 0.263, "place": (0.60, 0.66),
+     "scale": 0.18, "place": (0.58, 0.55),
      # taken through cloud: its stars at 0.42 of their brightness in the first frame, its noise blown up
      "drop": ["c4d_130510_021735"]},
-    # No MPC positions from this night: the line through the Pan-STARRS positions of the nights round it
-    # (12 to 24 April) gives its place, and the check against the pixels says how well.
+    # In the field of the standard star LB 227 (Hyades), which CFHT's queue team photographs each night in every
+    # filter, 10 s apiece: four nights running with g, r and i a few minutes apart. The MPC's positions round these
+    # nights (Pan-STARRS, 18 to 25 December) end before the last two, and a parabola through them is off by up to
+    # an arcsecond there, so the track is Horizons' orbit, which is fitted to all of the MPC's observations.
+    {"id": "vz98", "object": "2010 VZ98", "desig": "2010 VZ98", "horizons": "445473", "ephemeris": "horizons",
+     "archive": "cadc", "windows": [("2024-12-25 00:00", "2024-12-25 12:00"), ("2024-12-26 00:00", "2024-12-26 12:00"),
+                                    ("2024-12-27 00:00", "2024-12-27 12:00"), ("2024-12-28 00:00", "2024-12-28 12:00")],
+     "filter": ["g", "r", "i"], "min_exp": 10, "scale": 0.4, "place": (0.48, 0.25), "min_frames": 4},
+    # Two nights of MegaCam's wide gri filter, 9 and 11 October 2021; the MPC's positions are from these exposures.
+    # (A third exposure, on the 13th, has the object in the gap between two CCDs.) Its discovery night (DECam,
+    # 5 November 2012, twelve 90-s exposures over 3.7 hours) shows it move only a few seconds of arc.
+    {"id": "vp113", "object": "2012 VP113", "desig": "2012 VP113", "mpc": "2012_VP113.txt", "codes": ["T14"],
+     "archive": "cadc", "windows": [("2021-10-09 08:00", "2021-10-09 16:00"), ("2021-10-11 08:00", "2021-10-11 16:00")],
+     "filter": "GRI.MP9605", "min_exp": 300, "scale": 0.17, "place": (0.55, 0.72),
+     "drop": ["2662402p"]},                          # a satellite's trail across the field
+    # MegaCam, 9 and 11 October 2021, cycling through r, g, r, i, i, r, z (the r exposures, 240 s, are used). Twice
+    # a night there is one exposure in each of g, r and i inside a quarter of an hour, but the exposures are dithered
+    # and share a strip of sky under five arcminutes wide; a frame that fits it has pixels so fine that the object
+    # moves two of them during each set, too far for a true colour frame. The MPC has no positions from these nights.
+    {"id": "sd106", "object": "2016 SD106", "desig": "2016 SD106", "horizons": "DES=54199273", "ephemeris": "horizons",
+     "archive": "cadc", "windows": [("2021-10-09 06:00", "2021-10-09 12:00"), ("2021-10-11 06:00", "2021-10-11 12:00")],
+     "filter": "R.MP9602", "min_exp": 200, "scale": 0.3, "place": (0.5, 0.45)},
+    # Caught by a search for Uranus's outer moons (DECam, 4 to 6 July 2019). Three months before opposition it
+    # still moves east, leftward here. The telescope followed Uranus, which moved east faster, so the object
+    # drifted across the CCD: its first two nights fit on one, and those are used (the 120-s r exposures, in
+    # pairs, up to the morning twilight). Each night also ended with one exposure in each of g, r and i a minute
+    # or two apart, but one colour frame a night is too few for a round. The MPC has no positions from these
+    # nights or near them.
+    {"id": "so20", "object": "2015 SO20", "desig": "2015 SO20", "horizons": "508338", "ephemeris": "horizons",
+     "archive": "noirlab", "windows": [("2019-07-04 00:00", "2019-07-04 10:37"), ("2019-07-05 00:00", "2019-07-05 12:00")],
+     "filter": "r", "min_exp": 100, "scale": 0.25, "place": (0.45, 0.55), "max_frames": 8, "stack": 2,
+     "drop": ["c4d_190704_105255"],                  # cut short at 46 s
+     "skip": "set aside for its timing: its frames come in two short runs a day apart, minutes between frames "
+             "within a night, so the object barely moves for most of the round and then leaps across the frame"},
+
+    # ---- tried and set aside ----
+    # Moves too little: the rounds above replace these.
+    # (No MPC positions from this night: the line through the Pan-STARRS positions of the nights round it.)
     {"id": "fp185", "object": "2001 FP185", "desig": "2001 FP185", "mpc": "82158.txt", "codes": ["F51"],
      "archive": "cadc", "windows": [("2015-04-14 08:00", "2015-04-14 12:00")],
      "mpc_windows": [("2015-04-12 00:00", "2015-04-25 00:00")], "filter": "R.MP9602", "min_exp": 50,
-     "scale": 0.14, "place": (0.22, 0.42),
-     # the telescope stepped the field between visits; in the last two of these the object sits too near the
-     # CCD's edge for a frame that every exposure covers, and the first was taken through cloud (its stars at
-     # 0.46 of their brightness in the first frame)
-     "drop": ["1795604p", "1795611p", "1795612p"], "max_frames": 7},
-    {"id": "vp113", "object": "2012 VP113", "desig": "2012 VP113", "mpc": "2012_VP113.txt", "codes": ["807", "W84"],
-     "archive": "noirlab", "windows": [("2012-11-05 00:00", "2012-11-05 12:00")], "filter": "r", "min_exp": 60,
-     "scale": 0.17, "place": (0.62, 0.34), "stack": 2},
+     "scale": 0.14, "place": (0.22, 0.42), "drop": ["1795604p", "1795611p", "1795612p"], "max_frames": 7,
+     "skip": "set aside for objects that move further: its only night with many exposures (MegaCam, 14 April 2015, "
+             "60 s each over 1.5 hours) shows it cross 4% of a frame even at 0.14 arcseconds a pixel"},
+    # Also tried: two nights of MegaCam's wide gri filter (11 and 12 March 2016), where only one exposure of the
+    # 11th has it on a CCD and on the 12th it nears the CCD's edge, leaving no room for a frame; and its discovery
+    # run, whose fields followed the objects from night to night, so that its nights share too little sky.
     {"id": "gt50", "object": "2015 GT50", "desig": "2015 GT50", "mpc": "2015_GT50.txt", "codes": ["568"],
      "archive": "cadc", "windows": [("2015-04-13 05:00", "2015-04-13 16:00")], "filter": "R.MP9602", "min_exp": 200,
-     "scale": 0.187, "place": (0.30, 0.66)},
+     "scale": 0.105, "place": (0.40, 0.55),
+     "skip": "set aside for objects that move further: on its discovery night (OSSOS, 13 April 2015, five 300-s "
+             "MegaCam exposures over 3.4 hours) it crosses 6% of a frame at the camera's own scale, and at a scale fine "
+             "enough for 10% it is lost in the noise; its other runs of nights (April 2015, March 2016) leave no frame "
+             "that lies on one CCD in every exposure"},
     {"id": "kg163", "object": "2015 KG163", "desig": "2015 KG163", "mpc": "2015_KG163.txt", "codes": ["568"],
      "archive": "cadc", "windows": [("2015-05-17 05:00", "2015-05-17 16:00")], "filter": "R.MP9602", "min_exp": 200,
-     "scale": 0.187, "place": (0.68, 0.64)},
-    # Tried, and too faint to follow by eye in single frames (the check's signal-to-noise in brackets).
+     "scale": 0.187, "place": (0.68, 0.64),
+     "skip": "set aside for objects that move further: on its discovery night (OSSOS, 17 May 2015, five 300-s MegaCam "
+             "exposures) it crosses 5% of a frame, and its other nights that month are single exposures or 40-s DECam "
+             "ones in which it is too faint to see"},
+    # No frame on one CCD in every exposure.
+    # In the CFHT Legacy Survey's wide field W1, four years before its discovery; the track would be Horizons'.
+    {"id": "tg422", "object": "2007 TG422", "desig": "2007 TG422", "horizons": "523622", "ephemeris": "horizons",
+     "archive": "cadc", "windows": [("2003-10-28 06:00", "2003-10-28 16:00"), ("2003-10-29 06:00", "2003-10-29 16:00")],
+     "filter": "G.MP9401", "min_exp": 400, "scale": 0.22, "place": (0.5, 0.45),
+     "skip": "on the second of its two nights in the CFHT Legacy Survey (28 and 29 October 2003, five 500-s g exposures "
+             "each) the dithered exposures put it at the edge of one CCD or the next, so no frame lies on one CCD in "
+             "every exposure; the first night alone (35 minutes) shows it move about two seconds of arc"},
+    # The Dark Energy Survey's supernova field S1, visited on 21, 26 and 31 August 2017 (the moon new, then set)
+    # with one exposure in each of g, r and i (175, 150 and 200 s) inside seven minutes; near its stationary point
+    # it drifts south. The neighbouring field S2, visited the same nights, has it in a gap between CCDs; its
+    # September 2016 visits were taken through cloud and then under a full moon.
+    {"id": "qv89", "object": "2016 QV89", "desig": "2016 QV89", "horizons": "771740", "ephemeris": "horizons",
+     "archive": "noirlab", "windows": [("2017-08-21 00:00", "2017-08-21 12:00"), ("2017-08-26 00:00", "2017-08-26 12:00"),
+                                       ("2017-08-31 00:00", "2017-08-31 12:00")],
+     "filter": ["g", "r", "i"], "min_exp": 100, "scale": 0.7, "place": (0.45, 0.5), "min_frames": 3,
+     "skip": "its only runs of nights with colour are the Dark Energy Survey's supernova fields: in September 2016 "
+             "cloud and then the full moon hide it, and in August 2017 one visit a night has it on a CCD (g, r and i on "
+             "21, 26 and 31 August), five days apart, and its drift of four arcminutes south over those ten days does "
+             "not fit in a frame that lies on one CCD in all of them"},
+    # DECam before dawn, two months after conjunction with the Sun, when it moves east (leftward here).
+    {"id": "vn112", "object": "Alicanto", "desig": "2004 VN112", "horizons": "474640", "ephemeris": "horizons",
+     "archive": "noirlab", "windows": [("2024-07-14 00:00", "2024-07-14 12:00"), ("2024-07-16 00:00", "2024-07-16 12:00")],
+     "filter": "r", "min_exp": 50, "scale": 0.3, "place": (0.5, 0.5),
+     "skip": "on the second of its two nights with DECam before dawn (14 and 16 July 2024, when it moved east) every "
+             "exposure has it in a gap between CCDs, which leaves one night of four 50-s exposures in 25 minutes"},
+    # Too faint to follow by eye in single frames (the check's signal-to-noise in brackets).
+    {"id": "dr370", "object": "2015 DR370", "desig": "2015 DR370", "mpc": "2015_DR370.txt", "codes": ["W84"],
+     "archive": "noirlab", "windows": [("2015-02-17 00:00", "2015-02-17 12:00"), ("2015-02-18 00:00", "2015-02-18 12:00"),
+                                       ("2015-02-19 00:00", "2015-02-19 12:00")],
+     "mpc_windows": [("2015-02-16 00:00", "2015-02-23 00:00")],
+     "filter": "g", "min_exp": 60, "scale": 0.4, "place": (0.5, 0.55),
+     "skip": "too faint to follow by eye: on its three discovery nights (the HiTS survey, 17 to 19 February 2015, ten "
+             "86-s DECam g exposures) the computed positions agree with the pixels to half a pixel, but it stands only "
+             "five to nine times above the noise in each, a speck among the field's faint galaxies"},
+    # A standard-star field (SDSS J0200-0000) that DECam photographed in g, r and i, 15 s apiece, on six nights
+    # between 29 July and 4 August 2019, when the object drifted south near its stationary point.
+    {"id": "ra109", "object": "2013 RA109", "desig": "2013 RA109", "horizons": "765047", "ephemeris": "horizons",
+     "archive": "noirlab", "windows": [(f"2019-{d} 00:00", f"2019-{d} 12:00") for d in
+                                       ("07-29", "07-30", "07-31", "08-01", "08-02", "08-04")],
+     "filter": ["g", "r", "i"], "min_exp": 15, "scale": 0.3, "place": (0.58, 0.5),
+     "skip": "too faint to follow by eye: the archive's only runs of nights with it in the frame are a standard-star "
+             "field's 15-s DECam exposures (g, r and i on six nights from 29 July 2019, and again in February 2020), "
+             "and with all three filters added it stands two to five times above the noise"},
     {"id": "sy99", "object": "2013 SY99", "desig": "2013 SY99", "mpc": "2013_SY99.txt", "codes": ["568"],
      "archive": "cadc", "windows": [("2013-09-29 06:00", "2013-09-29 16:00")], "filter": "R.MP9601", "min_exp": 200,
      "scale": 0.16, "place": (0.66, 0.40),
@@ -652,10 +775,61 @@ def track_fit(lines):
     return (lambda t: tan_deproject(ev(cx, t), ev(cy, t), ra0, de0)), rms, deg
 
 
+def horizons_track(rd):
+    """JPL Horizons' astrometric ephemeris of the object from the telescope's site, every five minutes over the
+    round's windows, interpolated: where(t) -> (ra, dec), and a line saying whose orbit it is."""
+    ta = min(mjd_of(a) for a, _ in rd["windows"]) - 0.05
+    tb = max(mjd_of(b) for _, b in rd["windows"]) + 0.05
+    body = rd.get("horizons", rd["desig"])
+    site = SITE[rd["archive"]]
+    fmt = lambda t: "%04d-%02d-%02d %02d:%02d" % calendar(t)[:5]
+    q = urllib.parse.urlencode({"format": "text", "COMMAND": f"'{body};'", "OBJ_DATA": "YES", "MAKE_EPHEM": "YES",
+                                "EPHEM_TYPE": "OBSERVER", "CENTER": f"'{site}@399'", "START_TIME": f"'{fmt(ta)}'",
+                                "STOP_TIME": f"'{fmt(tb)}'", "STEP_SIZE": "'5 min'", "QUANTITIES": "'1'",
+                                "ANG_FORMAT": "'DEG'", "EXTRA_PREC": "'YES'", "CSV_FORMAT": "'YES'", "TIME_DIGITS": "'SECONDS'"})
+    path = os.path.join(CACHE, "horizons", f"{rd['id']}_{site}_{fmt(ta)[:10]}_{fmt(tb)[:10]}.txt")
+    text = cached(path, f"{HORIZONS}?{q}").decode("utf-8", "replace")
+    if "$$SOE" not in text:                          # no ephemeris (an unknown body): say why, keep nothing
+        os.remove(path)
+        raise RuntimeError("Horizons: " + " ".join(text.split()[6:40]))
+    mon = {m[:3]: i + 1 for i, m in enumerate(MONTHS)}
+    rows = []
+    for line in text.split("$$SOE")[1].split("$$EOE")[0].strip().splitlines():
+        c = [x.strip() for x in line.split(",")]
+        y, mo, d = c[0].split()[0].split("-")
+        hh, mi, ss = (c[0].split()[1].split(":") + ["0"])[:3]
+        rows.append((mjd(int(y), mon[mo], int(d)) + (int(hh) + int(mi) / 60 + float(ss) / 3600) / 24, float(c[3]), float(c[4])))
+    ra0, de0 = rows[len(rows) // 2][1:]
+    pts = [(t,) + tan_project(r, d, ra0, de0) for t, r, d in rows]
+
+    def where(t):
+        i = max(0, min(len(pts) - 2, int((t - pts[0][0]) / (pts[1][0] - pts[0][0]))))
+        (t1, x1, y1), (t2, x2, y2) = pts[i], pts[i + 1]
+        f = (t - t1) / (t2 - t1)
+        return tan_deproject(x1 + f * (x2 - x1), y1 + f * (y2 - y1), ra0, de0)
+    sol = re.search(r"\{source: (JPL#\d+)\}", text)
+    obs = re.search(r"Soln\.date: (\S+)\s+# obs: (\d+) \(([^)]+)\)", text)
+    info = (f"JPL Horizons' astrometric ephemeris of {rd['desig']} from site {site} (orbit solution {sol.group(1) if sol else '?'}"
+            + (f" of {obs.group(1)[:11]}, fitted to {obs.group(2)} observations from {obs.group(3)} at the MPC)" if obs else ")"))
+    return where, info
+
+
 # ---------- the archives -------------------------------------------------------------
 
 class Frame:
     """One exposure: its pixels near the object, WCS, mid-exposure time and provenance."""
+
+
+def band(name):
+    """'r.MP9602' or 'R.MP9602' or 'r DECam SDSS c0002 ...' -> 'r'."""
+    return (name or "").split()[0].split(".")[0].lower() if (name or "").split() else ""
+
+
+def wanted(rd, filt):
+    """Is an exposure in this filter one the round uses? A colour round names bands; a single filter must match exactly."""
+    if isinstance(rd["filter"], list):
+        return band(filt) in rd["filter"]
+    return (filt or "").split()[:1] == [rd["filter"]]
 
 
 def noirlab_frames(rd, where):
@@ -679,7 +853,7 @@ def noirlab_frames(rd, where):
             rows = [dict(r, hdu_idx=None) for r in json.loads(cached(path, f"{SIA_IMG}?{q}"))[1:]]
         by_exp = defaultdict(list)
         for r in rows:
-            if (r["filter"] or "").split()[:1] != [rd["filter"]] or (r["exposure"] or 0) < rd["min_exp"]:
+            if not wanted(rd, r["filter"]) or (r["exposure"] or 0) < rd["min_exp"]:
                 continue
             t = mjd_of(r["file_dateobs"][:19])
             if ta <= t <= tb:
@@ -761,13 +935,41 @@ def ccd_holding(r, where):
 
 
 def ssois_rows(desig, a, b):
-    t0, t1 = calendar(mjd_of(a) - 1), calendar(mjd_of(b) + 1)
-    q = urllib.parse.urlencode({"lang": "en", "object": desig, "search": "bynameall",
-                                "epoch1": "%04d %02d %02d" % t0[:3], "epoch2": "%04d %02d %02d" % t1[:3],
-                                "eellipse": "", "eunits": "arcseconds", "extres": "yes", "xyres": "yes", "format": "tsv"})
-    path = os.path.join(CACHE, "cadc", f"ssois_{desig.replace(' ', '_')}_{a[:10]}.tsv")
-    text = cached(path, f"{SSOIS}?{q}").decode("utf-8", "replace")
-    return [l.split("\t") for l in text.splitlines()[1:] if l.count("\t") >= 10], SSOIS_PAGE + "?" + q.replace("&format=tsv", "")
+    # a day either side; SSOIS sometimes finds nothing in so short a search, and then a month either side
+    for pad, tag in ((1, ""), (30, "_wide")):
+        t0, t1 = calendar(mjd_of(a) - pad), calendar(mjd_of(b) + pad)
+        q = urllib.parse.urlencode({"lang": "en", "object": desig, "search": "bynameall",
+                                    "epoch1": "%04d %02d %02d" % t0[:3], "epoch2": "%04d %02d %02d" % t1[:3],
+                                    "eellipse": "", "eunits": "arcseconds", "extres": "yes", "xyres": "yes", "format": "tsv"})
+        path = os.path.join(CACHE, "cadc", f"ssois_{desig.replace(' ', '_')}_{a[:10]}{tag}.tsv")
+        text = cached(path, f"{SSOIS}?{q}").decode("utf-8", "replace")
+        rows = [l.split("\t") for l in text.splitlines()[1:] if l.count("\t") >= 10]
+        if rows:
+            break
+    return rows, SSOIS_PAGE + "?" + q.replace("&format=tsv", "")
+
+
+def megacam_ccd(name, ra, de):
+    """Which CCD of a MegaCam exposure holds (ra, de), from CADC's listing of every extension's header:
+    (extension, x, y, (first and last data column, last data row)) in the stored pixels, or None."""
+    path = os.path.join(CACHE, "cadc", f"meta_{name}.txt")
+    text = cached(path, CADC_META.format(file=name)).decode("ascii", "replace")
+    hdrs, cur = [], []
+    for line in text.split("\n"):
+        cur.append(line[:80].ljust(80))
+        if line.startswith("END") and not line[3:].strip():
+            blob = "".join(cur).encode()
+            hdrs.append(read_hdus(blob.ljust((len(blob) + 2879) // 2880 * 2880, b" "))[0][0])
+            cur = []
+    for k, h in enumerate(hdrs[1:], 1):
+        if "CRPIX1" not in h:
+            continue
+        m = re.match(r"\[(\d+):(\d+),(\d+):(\d+)\]", str(h.get("DATASEC", "")))
+        xa, xb, ya, yb = map(int, m.groups()) if m else (1, h.get("ZNAXIS1", 2048), 1, h.get("ZNAXIS2", 4612))
+        x, y = WCS(h).sky2pix(ra, de)
+        if xa <= x <= xb and ya <= y <= yb:
+            return k, x, y, (xa, xb, yb)
+    return None
 
 
 def cadc_frames(rd, where, half_arcsec):
@@ -779,14 +981,30 @@ def cadc_frames(rd, where, half_arcsec):
         for p in rows:
             img, ext, x, y, t, filt, exp, ora, ode, target, tel = p[:11]
             name = img.split()[0]
-            if "MegaCam" not in tel or not name.endswith("p") or filt != rd["filter"] or float(exp) < rd["min_exp"]:
+            if "MegaCam" not in tel or not name.endswith("p") or not wanted(rd, filt) or float(exp) < rd["min_exp"]:
                 continue
-            if not ta <= float(t) <= tb or ext == "-9999":
+            if not ta <= float(t) <= tb:
                 continue
-            ext, x, y = int(ext), float(x), float(y)
+            # SSOIS's own astrometry places the object on a CCD (x, y in the data section); for recent
+            # exposures it has none, and the CCD is found from the headers' WCS instead.
+            xa, xb, yb = 33, 2080, 4612                    # the data section (DATASEC), in the stored pixels
+            if ext == "-9999":
+                try:
+                    found = megacam_ccd(name, *where(float(t)))
+                except Exception as e:  # noqa: BLE001 - e.g. a duplicate listing of a proprietary copy
+                    print(f"    {name}: no headers ({e})")
+                    continue
+                if found is None:
+                    print(f"    {name}: no CCD holds the object")
+                    continue
+                ext, x, y, (xa, xb, yb) = found
+                fix = False
+            else:
+                ext, x, y = int(ext), float(x), float(y)
+                fix = True
             r = int(half_arcsec / 0.187) + 40
-            x0, x1 = max(1, int(x - r)), min(2048, int(x + r))
-            y0, y1 = max(1, int(y - r)), min(4612, int(y + r))
+            x0, x1 = max(xa, int(x - r)), min(xb, int(x + r))
+            y0, y1 = max(1, int(y - r)), min(yb, int(y + r))
             url = CADC_CUT.format(file=name, ext=ext, x0=x0, x1=x1, y0=y0, y1=y1)
             path = os.path.join(CACHE, "cadc", f"{name}_{ext}_{x0}_{x1}_{y0}_{y1}.fits")
             data = cached(path, url.replace("[", "%5B").replace("]", "%5D"))
@@ -797,9 +1015,11 @@ def cadc_frames(rd, where, half_arcsec):
             f.wcs = WCS(h)
             # The Elixir header WCS is the telescope's pointing, off by tens of arcseconds; SSOIS's own
             # astrometry of the frame puts its ephemeris position at (x, y). Shift the WCS to agree, then
-            # the catalogue fit below does the rest.
-            px, py = f.wcs.sky2pix(float(ora), float(ode))
-            f.wcs.crpix = (f.wcs.crpix[0] + (x - x0 + 1) - px, f.wcs.crpix[1] + (y - y0 + 1) - py)
+            # the catalogue fit below does the rest. (Where SSOIS has no astrometry, the alignment and the
+            # catalogue fit take out what the header is off by.)
+            if fix:
+                px, py = f.wcs.sky2pix(float(ora), float(ode))
+                f.wcs.crpix = (f.wcs.crpix[0] + (x - x0 + 1) - px, f.wcs.crpix[1] + (y - y0 + 1) - py)
             f.mid = h["MJD-OBS"] + h["EXPTIME"] / 2 / 86400
             f.exptime, f.filter = h["EXPTIME"], h.get("FILTER", filt)
             f.nx, f.ny = h["NAXIS1"], h["NAXIS2"]
@@ -811,7 +1031,7 @@ def cadc_frames(rd, where, half_arcsec):
             nx = f.nx
             # MegaCam reads each CCD through two amplifiers (columns 1-1024 and 1025-2048), and the Elixir
             # images keep a small step in sky level between the halves: level the right half to the left.
-            split = 1024 - (x0 - 1)
+            split = xa - 1 + 1024 - (x0 - 1)
             if 24 <= split <= nx - 24:
                 ny = f.ny
                 left = [pix[r * nx + c] for r in range(0, ny, 3) for c in range(split - 24, split)]
@@ -856,6 +1076,21 @@ def ps1(ra, de, radius):
         r, d, m = (line.split(",") + ["", "", ""])[:3]
         if r and d:
             out.append((float(r), float(d), float(m) if m else 99))
+    return out
+
+
+def ps1_bands(ra, de, radius):
+    """Pan-STARRS1 DR2 mean positions and g, r, i, z PSF magnitudes (sources seen more than five times)."""
+    q = urllib.parse.urlencode({"ra": f"{ra:.6f}", "dec": f"{de:.6f}", "radius": f"{radius:.5f}", "nDetections.gt": 5,
+                                "columns": "[raMean,decMean,gMeanPSFMag,rMeanPSFMag,iMeanPSFMag,zMeanPSFMag]", "pagesize": 50000})
+    path = os.path.join(CACHE, "ps1", f"ps1griz_{ra:.4f}_{de:+.4f}_{radius:.4f}.csv")
+    text = cached(path, f"{PS1_CAT}?{q}").decode()
+    out = []
+    for line in text.splitlines()[1:]:
+        c = (line.split(",") + [""] * 6)[:6]
+        if c[0] and c[1]:
+            mags = {b: float(v) for b, v in zip("griz", c[2:]) if v and float(v) > 0}
+            out.append((float(c[0]), float(c[1]), mags))
     return out
 
 
@@ -983,6 +1218,26 @@ def clean_cosmics(a, w, h, nsig=5.0, sharp=0.6):
     return total
 
 
+def clean_cold(a, w, h, nsig=8.0):
+    """Fill dead pixels and columns (far below the sky, or not a number) in a native-pixel image, in place,
+    from the nearest good pixels either side in the same row. Returns the count."""
+    sky, sig = robust([a[i] for i in range(0, len(a), 41) if a[i] == a[i]])
+    lo = sky - nsig * sig
+    bad = [i for i, v in enumerate(a) if not v >= lo]
+    badset = set(bad)
+    for i in bad:
+        x, y = i % w, i // w
+        near = []
+        for d in range(1, 7):
+            for xx in (x - d, x + d):
+                if 0 <= xx < w and y * w + xx not in badset:
+                    near.append(a[y * w + xx])
+            if near:
+                break
+        a[i] = sum(near) / len(near) if near else sky
+    return len(bad)
+
+
 def flatten(a, w, h, mesh=30):
     """Subtract a smooth background: the clipped median in meshes of MESH pixels, median-filtered and
     interpolated. Smoothing for display lowers the noise several times, and would otherwise turn sky
@@ -1008,7 +1263,9 @@ def destripe(a, w, h, span=31):
     m0, sg = robust([a[i] for i in range(0, len(a), 17)])
     col = []
     for x in range(w):
-        vals = [a[y * w + x] for y in range(0, h, 3) if abs(a[y * w + x] - m0) < 3 * sg]
+        vals = [a[y * w + x] for y in range(0, h, 3)]
+        cm = median(vals)                            # clipped round the column's own level, however far off
+        vals = [v for v in vals if abs(v - cm) < 3 * sg]
         col.append(median(vals) if len(vals) > 10 else m0)
     half = span // 2
     for x in range(w):
@@ -1041,6 +1298,57 @@ def gauss(a, w, h, sigma):
     return array("f", (cols[x][y] for y in range(h) for x in range(w)))
 
 
+def colour_balance(chans, refs, sigs, skies, frames, allmask, rcen, C, to_grid, ra0, de0, half, Wb, Hb):
+    """The flux scale of each filter, from Pan-STARRS1 photometry of the stars in its first exposure: AB zero
+    points (and how many stars gave each), and the factor that puts each channel on the middle one's scale,
+    so that a source of flat spectrum (the same AB magnitude in every filter) comes out white."""
+    cat = [(apply(C, *to_grid(r, d)), mags) for r, d, mags in ps1_bands(ra0, de0, half / 3600 * 1.05)]
+    zp = {}
+    for b, (_, k) in refs.items():
+        st = [x for x in find_stars(chans[k], Wb, Hb, allmask, 0.0, sigs[k], rcen, frames[k].saturate * 0.6 - skies[k])
+              if not x[4] and x[2] > 0]
+        vals = []
+        for (u, v), mags in cat:
+            m = mags.get(b)
+            if m is None or not 15.0 < m < 21.5 or not st:
+                continue
+            d2, fl = min(((x - u) ** 2 + (y - v) ** 2, fl) for x, y, fl, *_ in st)
+            if d2 < 1.5 ** 2:
+                vals.append(m + 2.5 * math.log10(fl))
+        zp[b] = (median(vals) if vals else 0.0, len(vals))
+    bands = sorted(zp, key=lambda b: "ugrizy".find(b))
+    mid = zp[bands[len(bands) // 2]][0]
+    return zp, {b: 10 ** (-0.4 * (zp[b][0] - mid)) for b in zp}
+
+
+def composite(blue, green, red, unit, w, h, s, hot):
+    """RGB bytes from three channels on one flux scale (sky subtracted). The brightness is the greyscale
+    frames' asinh stretch of the channels' mean, in units of its sky noise. The colour is each channel's share
+    of that mean, so a source's colour does not change with its brightness (after Lupton et al. 2004), taken
+    from the channels smoothed over about an arcsecond and faded to grey where the smoothed mean is not
+    clearly above the sky, so that the sky's noise is not painted in colour. Saturated pixels (hot) are white."""
+    top = math.asinh((WHITE - BLACK) / KNEE)
+    sb, sg, sr = (gauss(c, w, h, 0.8 / s) for c in (blue, green, red))
+    ms = array("f", ((b + g + r) / 3 for b, g, r in zip(sb, sg, sr)))
+    us = robust([ms[i] for i in range(0, len(ms), 29)])[1]
+    out = bytearray(3 * len(blue))
+    for i, (b, g, r) in enumerate(zip(blue, green, red)):
+        x = (b + g + r) / 3 / unit - BLACK
+        if x <= 0:
+            continue
+        lum = 255 * math.asinh(x / KNEE) / top
+        sat = 0.0 if hot[i] else min(1.0, max(0.0, (ms[i] / us - 3.0) / 6.0))
+        if sat > 0:
+            v = [lum * (1 + sat * (max(0.0, c[i] / ms[i]) - 1)) for c in (sr, sg, sb)]
+            m = max(v)
+            if m > 255:
+                v = [c * 255 / m for c in v]
+        else:
+            v = (lum, lum, lum)
+        out[3 * i], out[3 * i + 1], out[3 * i + 2] = (min(255, round(c)) for c in v)
+    return bytes(out)
+
+
 def to_image(a, w, h):
     return Image.frombytes("F", (w, h), a.tobytes())
 
@@ -1053,12 +1361,21 @@ def from_image(im):
 
 def build(rd, debug):
     print(f"\n== {rd['id']}: {rd['object']}")
-    lines = mpc_lines(rd)
-    if len(lines) < 2:
-        return None, f"only {len(lines)} MPC positions in the window"
-    where, fit_rms, deg = track_fit(lines)
-    print(f"   MPC: {len(lines)} positions from {sorted({l[3][77:80] for l in lines})}, "
-          f"degree {deg} fit, rms {fit_rms:.2f}\"")
+    if rd.get("ephemeris") == "horizons":
+        lines = []
+        where, track_from = horizons_track(rd)
+        print(f"   track: {track_from}")
+    else:
+        lines = mpc_lines(rd)
+        if len(lines) < 2:
+            return None, f"only {len(lines)} MPC positions in the window"
+        where, fit_rms, deg = track_fit(lines)
+        print(f"   MPC: {len(lines)} positions from {sorted({l[3][77:80] for l in lines})}, "
+              f"degree {deg} fit, rms {fit_rms:.2f}\"")
+        track_from = (f"{len(lines)} MPC positions of {rd['desig']} from observatory "
+                      f"{'/'.join(sorted({l[3][77:80] for l in lines}))} (measured against "
+                      f"{', '.join(sorted({CATALOGUES.get(l[3][71], repr(l[3][71])) for l in lines}))}), fitted with a "
+                      f"degree-{deg} polynomial in time (rms {fit_rms:.2f}\")")
 
     W, H = SIZE
     s = rd["scale"]
@@ -1069,10 +1386,31 @@ def build(rd, debug):
     else:
         frames = cadc_frames(rd, where, half + 10)
     frames = [f for f in frames if not any(f.name.startswith(x) for x in rd.get("drop", []))]
-    # Frames: single exposures, or (stack = 2) the mean of two consecutive exposures taken within
-    # STACK_GAP of each other, for objects too faint to follow in one exposure. An exposure left
-    # without a partner is not used, so every frame has the same depth.
-    if rd.get("stack", 1) == 2:
+    colour = rd["filter"] if isinstance(rd["filter"], list) else None
+    # Frames: single exposures; or (stack = 2) the mean of two consecutive exposures taken within
+    # STACK_GAP of each other, for objects too faint to follow in one exposure (an exposure left
+    # without a partner is not used, so every frame has the same depth); or, in a colour round, one
+    # exposure in each of the three filters, all within COLOUR_GAP: the sets with the shortest spans
+    # are taken first, and no exposure is used twice.
+    if colour:
+        sets = []
+        near = lambda f, b: [j for j, e in enumerate(frames) if band(e.filter) == b and abs(e.mid - f.mid) * 1440 <= COLOUR_GAP]
+        for k, f in enumerate(frames):
+            if band(f.filter) != colour[0]:
+                continue
+            for j1 in near(f, colour[1]):
+                for j2 in near(f, colour[2]):
+                    g = [k, j1, j2]
+                    span = (max(frames[j].mid for j in g) - min(frames[j].mid for j in g)) * 1440
+                    if span <= COLOUR_GAP:
+                        sets.append((span, g))
+        groups, used = [], set()
+        for span, g in sorted(sets):
+            if not used & set(g):
+                groups.append(g)
+                used |= set(g)
+        groups.sort(key=lambda g: min(frames[j].mid for j in g))
+    elif rd.get("stack", 1) == 2:
         groups, k = [], 0
         while k < len(frames) - 1:
             if (frames[k + 1].mid - frames[k].mid) * 1440 <= STACK_GAP:
@@ -1082,7 +1420,7 @@ def build(rd, debug):
                 k += 1
     else:
         groups = [[k] for k in range(len(frames))]
-    if len(groups) < 5:
+    if len(groups) < rd.get("min_frames", MIN_FRAMES):
         return None, f"only {len(groups)} usable frames in the archive"
     most = rd.get("max_frames", MAX_FRAMES)
     if len(groups) > most:                         # evenly spread through the list, first and last kept
@@ -1118,6 +1456,7 @@ def build(rd, debug):
             print(f"    {f.name}: the WCS is not affine over the grid to {res:.2f} px")
         f.box = (x0, x1, y0, y1)
         reg = f.read(x0, x1, y0, y1)
+        clean_cold(reg, x1 - x0, y1 - y0)
         ncr = clean_cosmics(reg, x1 - x0, y1 - y0)
         destripe(reg, x1 - x0, y1 - y0)
         f.region = to_image(reg, x1 - x0, y1 - y0)
@@ -1194,25 +1533,38 @@ def build(rd, debug):
     if spot != (0, 0):
         print(f"   the CCD edge moved the saved frame by {spot} px from PLACE")
 
-    # Photometric scale and sky of every frame, from stars matched to the first frame.
-    skies, ratios, sigs = [], [], []
+    # Photometric scale and sky of every exposure, from stars matched to the first exposure in its filter.
+    skies, ratios, sigs, refs = [], [], [], {}
     for k in range(len(frames)):
         st, sky, sig = stars_of(images[k], masks[k], frames[k].saturate)
         st = [x for x in st if not x[4]]
-        pairs = match(ref_stars, st, search=2, tol=1.0)
-        r = [st[j][2] / ref_stars[i][2] for i, j in pairs if ref_stars[i][2] > 0]
+        b = band(frames[k].filter)
+        if b not in refs:
+            refs[b] = (ref_stars if k == 0 else st[:400], k)
+        pairs = match(refs[b][0], st, search=2, tol=1.0)
+        r = [st[j][2] / refs[b][0][i][2] for i, j in pairs if refs[b][0][i][2] > 0]
         skies.append(sky)
         sigs.append(sig)
         ratios.append(median(r) if r else 1.0)
     norm = [array("f", ((v - skies[k]) / ratios[k] for v in images[k])) for k in range(len(frames))]
     print("   flux scale: " + ", ".join(f"{r:.2f}" for r in ratios))
-    if any(len(g) > 1 for g in groups):          # stacked frames: the mean of their exposures
+    satur = frames[0].saturate * 0.6 - skies[0]
+    chans = None
+    if colour:
+        # colour frames: the channels are kept for display; the frame the rest works on is their sum,
+        # each channel in units of its first exposure's sky noise
+        chans = norm
+        noise = {b: sigs[k] for b, (_, k) in refs.items()}
+        norm = [array("f", (sum(v / noise[band(frames[j].filter)] for v, j in zip(col, g)) for col in zip(*(chans[j] for j in g))))
+                for g in groups]
+        satur /= noise[band(frames[0].filter)]
+    elif any(len(g) > 1 for g in groups):          # stacked frames: the mean of their exposures
         norm = [array("f", (sum(col) / len(col) for col in zip(*(norm[j] for j in g)))) for g in groups]
 
     # Median of the frames, then astrometry against Gaia DR3.
     med = array("f", (median(col) for col in zip(*norm)))
     msky, msig = robust([med[i] for i in range(0, len(med), 37) if allmask[i]])
-    mstars = [x for x in find_stars(med, Wb, Hb, allmask, msky, msig, rcen, frames[0].saturate * 0.6 - skies[0]) if not x[4]]
+    mstars = [x for x in find_stars(med, Wb, Hb, allmask, msky, msig, rcen, satur) if not x[4]]
     epoch = (times[0] + times[-1]) / 2
     on_grid = lambda cat: [p for p in (to_grid(r, d) for r, d, _ in cat)
                            if 0 <= p[0] < Wb and 0 <= p[1] < Hb and allmask[int(p[1]) * Wb + int(p[0])]]
@@ -1240,6 +1592,14 @@ def build(rd, debug):
     xs, ys = [p[0] for p in positions], [p[1] for p in positions]
     if min(xs) < 0.15 * W or max(xs) > 0.85 * W or min(ys) < 0.15 * H or max(ys) > 0.85 * H:
         print("   NOTE: the track comes within 15% of the frame's edge")
+    # how far the object moved while a frame's exposures were taken (a colour frame is only true if it
+    # stayed within about a pixel)
+    smear = []
+    for g in groups:
+        p = [apply(C, *to_grid(*where(frames[j].mid))) for j in g]
+        smear.append(max(math.hypot(a[0] - b[0], a[1] - b[1]) for a in p for b in p))
+    if colour:
+        print("   motion within each colour frame (px): " + ", ".join(f"{d:.2f}" for d in smear))
 
     # Check against the pixels: frame minus median, smoothed with a box about the seeing's size; the peak
     # of that near each computed position, its centroid, and its significance against the same box sum
@@ -1293,10 +1653,22 @@ def build(rd, debug):
     top = math.asinh((WHITE - BLACK) / KNEE)
     lut = lambda x: max(0, min(255, round(255 * math.asinh(max(0.0, x / unit - BLACK) / KNEE) / top)))
     files, saved = [], []
+    if colour:
+        zp, weight = colour_balance(chans, refs, sigs, skies, frames, allmask, rcen, C, to_grid, ra0, de0, half, Wb, Hb)
+        print("   zero points (Pan-STARRS1 AB, stars matched): " + ", ".join(f"{b} {zp[b][0]:.2f} ({zp[b][1]})" for b in colour))
+        smc = [[[v * weight[band(frames[j].filter)] for v in
+                 gauss(flatten(from_image(to_image(chans[j], Wb, Hb).crop(crop)), W, H), W, H, rd.get("smooth", SMOOTH) / s)]
+                for j in g] for g in groups]
+        cunit = robust([sum(c[i] for c in smc[0]) / 3 for i in range(0, W * H, 29)])[1]
+        # near saturation in any of the frame's exposures, and the pixels round them
+        hot = [from_image(to_image(array("f", (float(any(v)) for v in zip(*(
+            (p > frames[j].saturate * 0.5 for p in images[j]) for j in g)))), Wb, Hb).crop(crop).filter(ImageFilter.MaxFilter(5)))
+            for g in groups]
     for k in range(nf):
         g = Image.frombytes("L", (W, H), bytes(lut(v) for v in sm[k]))
         name = f"{rd['id']}-{k + 1}.jpg"
-        g.save(os.path.join(OUT, name), "JPEG", quality=QUALITY, optimize=True, progressive=True)
+        out = Image.frombytes("RGB", (W, H), composite(*smc[k], cunit, W, H, s, hot[k])) if colour else g
+        out.save(os.path.join(OUT, name), "JPEG", quality=QUALITY, optimize=True, progressive=True)
         files.append(name)
         saved.append(g)
 
@@ -1345,37 +1717,55 @@ def build(rd, debug):
         sheet.save(os.path.join(DEBUG_DIR, f"{rd['id']}_track.png"))
 
     f0 = frames[0]
+    # every programme whose exposures the round uses, in the order they first appear
+    progs = list(dict.fromkeys((f.prop, f.pi) for f in frames))
     if rd["archive"] == "noirlab":
-        pi = f"; PI {f0.pi}" if f0.pi else ""
-        credit = f"DECam data via the Astro Data Archive at NSF NOIRLab (program {f0.prop}{', PI ' + f0.pi if f0.pi else ''}); NOIRLab/AURA/NSF"
-        ack = ACK["noirlab"].format(prop=f0.prop, pi=pi)
+        pi = "; ".join(f"{p}{'; PI ' + q if q else ''}" for p, q in progs)
+        credit = ("DECam data via the Astro Data Archive at NSF NOIRLab (" + "; ".join(
+            f"program {p}{', PI ' + q if q else ''}" for p, q in progs) + "); NOIRLab/AURA/NSF")
+        ack = ACK["noirlab"].format(prop=pi, pi="")
         ack_url = ACK_URL["noirlab"]
         terms = TERMS["noirlab"].format(release=max(f.release for f in frames))
         source = f"https://astroarchive.noirlab.edu/api/header/{f0.md5}/"
         telescope = DECAM
     else:
-        credit = f"CFHT MegaCam data via the Canadian Astronomy Data Centre (program {f0.prop}, PI {f0.pi}); NRC/CNRS/University of Hawaiʻi"
+        credit = ("CFHT MegaCam data via the Canadian Astronomy Data Centre (" + "; ".join(
+            f"program {p}, PI {q}" for p, q in progs) + "); NRC/CNRS/University of Hawaiʻi")
         ack, ack_url = ACK["cadc"], ACK_URL["cadc"]
         terms = TERMS["cadc"].format(release=max(f.release for f in frames))
         source = rd.get("_search", "")
         telescope = MEGACAM
+    if colour:
+        frames_are = (f"colour composites: one exposure in each of {', '.join(colour[:-1])} and {colour[-1]}, taken "
+                      f"within {max((max(frames[j].mid for j in g) - min(frames[j].mid for j in g)) * 1440 for g in groups):.0f} "
+                      f"minutes of each other and shown as blue, green and red (times are their mean)")
+    elif any(len(g) > 1 for g in groups):
+        frames_are = "the mean of two consecutive exposures (times are their midpoint)"
+    else:
+        frames_are = "single exposures"
     entry = {
         "id": rd["id"], "object": rd["object"], "date": date_words(times), "telescope": telescope,
         "files": files, "size": [W, H], "positions": positions, "times": [stamp(t) for t in times],
-        "frames_are": ("the mean of two consecutive exposures (times are their midpoint)" if any(len(g) > 1 for g in groups)
-                       else "single exposures"),
-        "filter": f0.filter, "exposure_s": [round(sum(frames[j].exptime for j in g)) for g in groups],
+        "frames_are": frames_are,
+        "filter": ", ".join(colour) if colour else f0.filter,
+        # the filters of the exposures in each frame (blue, green, red in a colour frame)
+        "frame_filters": [[frames[j].filter for j in g] for g in groups],
+        "colour": ({"blue": colour[0], "green": colour[1], "red": colour[2],
+                    "balance": "each filter scaled to AB flux by Pan-STARRS1 photometry of the stars in its first exposure "
+                               "(zero points " + ", ".join(f"{b} {zp[b][0]:.2f} from {zp[b][1]} stars" for b in colour) +
+                               "), so a source of flat spectrum is white; one asinh stretch of their mean, each channel "
+                               "keeping its share",
+                    "motion_px": [round(d, 2) for d in smear]} if colour else None),
+        "scale_arcsec_px": s,
+        "exposure_s": [round(sum(frames[j].exptime for j in g)) for g in groups],
         "credit": credit, "license": "public archive data", "license_url": ack_url, "terms": terms,
         "acknowledgement": ack, "source": source,
         "archive_files": [" + ".join(f"{frames[j].name}[{frames[j].hdu}]" for j in g) for g in groups],
-        "positions_from": (f"{len(lines)} MPC positions of {rd['desig']} from observatory "
-                           f"{'/'.join(sorted({l[3][77:80] for l in lines}))} (measured against "
-                           f"{', '.join(sorted({CATALOGUES.get(l[3][71], repr(l[3][71])) for l in lines}))}), fitted with a "
-                           f"degree-{deg} polynomial in time (rms {fit_rms:.2f}\"), through the frames' astrometry fitted "
-                           f"to {gn} {refcat} stars (rms {grms * s:.2f}\")"),
+        "positions_from": f"{track_from}, through the frames' astrometry fitted to {gn} {refcat} stars (rms {grms * s:.2f}\")",
         # the check: where the frame-minus-median residual peaks, relative to the computed position
         "check_offsets_px": [[round(c[0], 1), round(c[1], 1)] for c in checks],
         "check_median_px": round(median(off), 2),
+        "check_snr": [round(c[2], 1) for c in checks],
     }
     print(f"   {len(files)} frames {W}x{H}, {s}\"/px, {telescope.split(',')[0]}, {entry['date']}")
     return entry, None
@@ -1388,16 +1778,19 @@ def main():
         only = set(sys.argv[sys.argv.index("--only") + 1].split(","))
     os.makedirs(OUT, exist_ok=True)
     path = os.path.join(OUT, "game.json")
-    old = {}
+    old, old_skipped = {}, {}
     if only and os.path.exists(path):
         with open(path, encoding="utf-8") as f:
             prev = json.load(f)
         old = {r["id"]: r for r in prev.get("rounds", [])}
+        old_skipped = {r["id"]: r for r in prev.get("skipped", [])}
     rounds, skipped = [], []
     for rd in ROUNDS:
-        if only and rd["id"] not in only:
+        if only and rd["id"] not in only and not rd.get("skip"):
             if rd["id"] in old:
                 rounds.append(old[rd["id"]])
+            elif rd["id"] in old_skipped:
+                skipped.append(old_skipped[rd["id"]])
             continue
         if rd.get("skip"):
             print(f"\n== {rd['id']}: SKIPPED: {rd['skip']}")
@@ -1414,7 +1807,9 @@ def main():
 
     doc = {"_what": "Real exposures of distant solar-system objects for the find-the-moving-object game, fetched from the "
                     "telescope archives and aligned on the stars by scripts/fetch_game_sequences.py, with the object's "
-                    "position in every frame computed from the Minor Planet Center's records and checked against the pixels.",
+                    "position in every frame computed from the Minor Planet Center's records (or, for nights it has no "
+                    "positions from, JPL Horizons' orbit fitted to them) and checked against the pixels. Frames are "
+                    "greyscale, or true colour where 'colour' says which filter went into each channel.",
            "_positions": "Pixels in the saved frame: origin at the top-left corner, x right, y down, pixel centres at +0.5. "
                          "times are mid-exposure, UT.",
            "_fetched": time.strftime("%Y-%m-%d"), "rounds": rounds, "skipped": skipped}
@@ -1427,10 +1822,12 @@ def main():
     lines = ["# Image credits for the moving-object game", "",
              "Every frame is cut by `scripts/fetch_game_sequences.py` from public archive data; credit, programme and",
              "release dates are read from the archives and the FITS headers, the acknowledgements copied from the",
-             "archives' own pages. Positions come from the Minor Planet Center's observations.", ""]
+             "archives' own pages. Positions come from the Minor Planet Center's observations, or from JPL Horizons' orbit",
+             "fitted to them where the MPC has none from those nights (each round says which).", ""]
     for c in rounds:
         lines.append(f"- `{'`, `'.join(c['files'])}` — {c['credit']} · {c['license']} ({c.get('terms', '')}) · {c['source']}")
         lines.append(f"  - {c['object']}, {c['date']}, {c['telescope']}; archive files: {', '.join(c.get('archive_files', []))}")
+        lines.append(f"  - Filters: {c.get('filter', '')}; positions: {c.get('positions_from', '')}")
         lines.append(f"  - Acknowledgement ({c['license_url']}): {c.get('acknowledgement', '')}")
     with open(os.path.join(OUT, "CREDITS.md"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")

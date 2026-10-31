@@ -188,7 +188,7 @@ export function makeDistance (root, { planets, p9, voyager }) {
     // stays an icon (at 5,000 AU across it would be a thousandth of a pixel).
     const sunR = clamp(SUN_R * Math.pow(1.8 / span, 0.28), 12, SUN_R)
     gSun.select('use').attr('x', sx - sunR).attr('y', sy - sunR).attr('width', sunR * 2).attr('height', sunR * 2)
-    notes.push({ x: sx, y: sy + sunR + 15, text: 'the Sun', cls: 'muted' })
+    notes.push({ x: sx, y: sy + sunR + 15, text: 'the Sun', planet: 'Sun' })
     const outside = r => r * k > sunR * 1.15                       // clear of the Sun's drawing
 
     gLow.attr('transform', world)
@@ -245,7 +245,7 @@ export function makeDistance (root, { planets, p9, voyager }) {
       const y = p.sy + p.size / 2 + 15, w = p.name.length * 8
       if (!p.isFocus && !free(p.sx, y, w)) continue
       taken.push({ x: p.sx, y, w })
-      notes.push({ x: p.sx, y, text: p.name, cls: p.isFocus ? 'focus' : '' })
+      notes.push({ x: p.sx, y, text: p.name, planet: p.name, cls: p.isFocus ? 'focus' : '' })
       if (p.isFocus) {
         notes.push({ x: p.sx, y: y + 17, au: p.name === 'Pluto' ? `${fmtAu(p.q)} to ${fmtAu(p.Q)}` : fmtAu(p.a), cls: 'focus-v' })
         taken.push({ x: p.sx, y: y + 17, w: 90 })
@@ -312,7 +312,7 @@ export function makeDistance (root, { planets, p9, voyager }) {
     if (voyOn) notes.push({ x: vx + 10, y: vy + 4, text: 'Voyager 1', au: fmtAu(voy.r_au), cls: 'muted small', anchor: vx > W - 160 ? 'end' : 'start' })
 
     gNotes.selectAll('text').data(notes).join('text')
-      .attr('class', d => `dist-lbl ${d.cls || ''}`)
+      .attr('class', d => `dist-lbl ${d.cls || ''}`).attr('data-planet', d => d.planet || null)
       .attr('x', d => clamp(d.x, 6, W - 6)).attr('y', d => d.y)
       .attr('text-anchor', d => d.anchor || 'middle')
       .each(function (d) {

@@ -1,16 +1,20 @@
-// Part 1, page 3: "your turn at the telescope", a game on real discovery frames.
+// Part 1, page 3: "your turn at the telescope", a game on real archive frames.
 //
-// Each round is one object's discovery images from public/game/game.json: the
+// Each round is one object's frames over a few nights from public/game/game.json (real
+// exposures from the telescope archives, one round in colour from three filters): the
 // frames, where the object sits in each (measured from the frames), and when
 // each was taken. On the first frame an arrow points at the object and names
-// it; it goes once the frames play. Play runs the frames once, slowly, and
-// stops on the last; the reader clicks where the object is now and submits.
-// The reveal stays on the last frame, still, so there is time to look: a dim
-// trace of the object's path with a point at each stop, an arrow at where it
-// ended (beside it, never on it), the guess, and Found or Missed; the round's
-// button turns green or red. Replay then plays the frames with the arrow
-// following the object. Everything the reader touches sits on the image: the
-// rounds, the count found, replay, and submit (greyed until there is a guess).
+// it, and every play or replay starts there; it goes once the frames move.
+// Play runs the frames once, slowly, and stops on the last; the reader clicks
+// where the object is now and submits. The reveal stays on the last frame,
+// still, so there is time to look: a ring round each place the object stood,
+// wide enough that the object shows inside it, joined by a dim line that stops
+// short of the rings; the ring of the frame on show is bright and an arrow
+// points at it from outside; the guess; Found or Missed; the round's button
+// turns green or red. Replay then plays the frames with the bright ring and
+// the arrow following the object. Everything the reader touches sits on the
+// image: the rounds, the count found, replay, and submit (greyed until there
+// is a guess).
 //
 // The frames are cut with the object's track off-centre (scripts/fetch_game_sequences.py),
 // so clicking the middle wins nothing. A round can still be shown through a
@@ -24,6 +28,7 @@ const FRAME_MS = 1300                 // how long each frame stays up while play
 const WINDOW = 1                      // the window's share of the frame's width
 const EDGE = 0.15                     // the track keeps at least this share of the window from its edges
 const FOUND = 0.035                   // a guess this close (share of the window's width) has found it
+const RING = 0.022                    // the reveal's rings: radius as a share of the window's width
 
 // A window of the frame, the frame's shape, at a random place that keeps the track inside.
 function pickView (r) {
@@ -95,15 +100,23 @@ export function makeSpotGame (root, rounds) {
     over.setAttribute('viewBox', view.map(v => v.toFixed(1)).join(' '))
     framesEl.style.cssText = `width:${(100 * w / vw).toFixed(3)}%;height:${(100 * h / vh).toFixed(3)}%;left:${(-100 * vx / vw).toFixed(3)}%;top:${(-100 * vy / vh).toFixed(3)}%`
     framesEl.innerHTML = r.files.map((f, j) => `<img src="${url(`game/${f}`)}" alt="" decoding="async" class="${j === 0 ? 'is-on' : ''}">`).join('')
-    // its path: a dim line through every stop, shown at the reveal
-    const pts = r.positions
-    over.querySelector('.trace').innerHTML = `<polyline points="${pts.map(p => p.join(',')).join(' ')}"/>` +
-      pts.map(([x, y], j) => `<circle class="${j === pts.length - 1 ? 'end' : ''}" cx="${x}" cy="${y}" r="${vw * (j === pts.length - 1 ? 0.012 : 0.006)}"/>`).join('')
-    // the arrow at where it starts, named at its tail
+    // its path, shown at the reveal: a ring round every stop, joined by lines that stop short of the
+    // rings, so nothing is drawn over the object itself
+    const pts = r.positions, R = vw * RING
+    const links = pts.slice(1).map((p, j) => {
+      const q = pts[j], d = Math.hypot(p[0] - q[0], p[1] - q[1])
+      if (d <= 2 * R + vw * 0.004) return ''
+      const ux = (p[0] - q[0]) / d, uy = (p[1] - q[1]) / d
+      return `<line x1="${q[0] + ux * R}" y1="${q[1] + uy * R}" x2="${p[0] - ux * R}" y2="${p[1] - uy * R}"/>`
+    }).join('')
+    over.querySelector('.trace').innerHTML = links +
+      pts.map(([x, y], j) => `<circle class="stop${j === pts.length - 1 ? ' end' : ''}" cx="${x}" cy="${y}" r="${R}"/>`).join('')
+    // the arrow at where it starts, named at its tail (above the tail, or below it when the arrow comes from below)
     const tail = pointAt(pts[0])
     const [tx, ty] = pct(tail)
     tag.textContent = r.object
     tag.style.left = `${tx}%`; tag.style.top = `${ty}%`
+    tag.classList.toggle('below', tail[1] > pts[0][1])
     src.innerHTML = `${esc(r.telescope?.split(',')[0] || '')}${r.date ? ` · ${esc(r.date)}` : ''}${r.license ? ` · ${esc(r.license)}` : ''} · <a href="${url('credits.html')}#photos">credits</a>`
     guess = null
     set('ready')
@@ -112,8 +125,14 @@ export function makeSpotGame (root, rounds) {
   function show (k) {
     framesEl.querySelectorAll('img').forEach((im, j) => im.classList.toggle('is-on', j === k))
     timeEl.textContent = stamp(rounds[i], k)
-    if (phase === 'reveal') pointAt(rounds[i].positions[k])
-    else if (phase === 'ready') pointAt(rounds[i].positions[0])
+    // every play starts with the arrow and the name on the object, as the round itself does
+    const lead = phase === 'ready' || (phase === 'playing' && k === 0)
+    over.querySelector('.arrow').style.display = lead || phase === 'reveal' ? null : 'none'
+    tag.hidden = !lead
+    if (phase === 'reveal') {
+      over.querySelectorAll('.trace circle').forEach((c, j) => c.classList.toggle('is-now', j === k))
+      pointAt(rounds[i].positions[k], view[2] * (RING + 0.008))
+    } else if (lead) pointAt(rounds[i].positions[0])
   }
 
   // Play the frames once from the first; `then` runs when the last is up.
@@ -132,12 +151,20 @@ export function makeSpotGame (root, rounds) {
   }
   function stop () { clearTimeout(timer); timer = null }
 
-  // An arrow from up and to the left, its tip just short of the object; returns where its tail is.
-  function pointAt ([x, y]) {
-    const L = view[2] * 0.07, gap = view[2] * 0.016, d = Math.SQRT1_2
-    const x1 = x - gap * d, y1 = y - gap * d, x0 = x1 - L * d, y0 = y1 - L * d, hl = view[2] * 0.018
+  // An arrow on a diagonal, its tip `gap` short of the object; returns where its tail is. It comes from up and
+  // to the left unless that would put it (or the name at its tail) off the picture or under the bars along
+  // its top and foot, in which case it comes from whichever other corner is clear.
+  function pointAt ([x, y], gap = view[2] * 0.016) {
+    const L = view[2] * 0.07, d = Math.SQRT1_2, hl = view[2] * 0.018
+    const [vx, vy, vw, vh] = view
+    const clear = ([sx, sy]) => {
+      const tx = x - sx * (gap + L) * d, ty = y - sy * (gap + L) * d
+      return tx > vx + vw * 0.1 && tx < vx + vw * 0.9 && ty > vy + vh * (sy > 0 ? 0.24 : 0.1) && ty < vy + vh * (sy > 0 ? 0.9 : 0.78)
+    }
+    const [sx, sy] = [[1, 1], [-1, 1], [1, -1], [-1, -1]].find(clear) || [1, 1]   // the way the arrow travels
+    const x1 = x - sx * gap * d, y1 = y - sy * gap * d, x0 = x1 - sx * L * d, y0 = y1 - sy * L * d
     over.querySelector('.arrow .shaft').setAttribute('d', `M${x0},${y0} L${x1},${y1}`)
-    over.querySelector('.arrow .head').setAttribute('d', `M${x1 - hl},${y1} L${x1},${y1} L${x1},${y1 - hl}`)
+    over.querySelector('.arrow .head').setAttribute('d', `M${x1 - sx * hl},${y1} L${x1},${y1} L${x1},${y1 - sy * hl}`)
     return [x0, y0]
   }
 
@@ -160,6 +187,7 @@ export function makeSpotGame (root, rounds) {
     tag.hidden = p !== 'ready'
     over.querySelector('.trace').style.display = p === 'reveal' ? null : 'none'
     over.querySelector('.arrow').style.display = p === 'ready' || p === 'reveal' ? null : 'none'
+    // (show() keeps the arrow and the name up on a play's first frame)
     if (p !== 'reveal') verdict.textContent = ''
     stage.dataset.verdict = p === 'reveal' ? results[i] : ''
     if (p === 'ready') show(0)

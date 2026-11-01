@@ -11,7 +11,7 @@ import { drawPlacement, scorePlanet, brightnessModel } from '../charts/placeplan
 import { scrolly } from '../scrolly.js'
 import { resultant } from '../stats.js'
 import { PLANET_NINE, semiLatusRectum } from '../orbits.js'
-import { loadSample, selected, withAlignment } from '../sample.js'
+import { selected, withAlignment, STRICT } from '../sample.js'
 
 const $ = s => document.querySelector(s)
 const fmt = d3.format(',.0f')
@@ -32,7 +32,7 @@ async function main () {
   // Surveys carry no colour of their own: the map shades them by depth, and only Rubin (what comes next) is rose.
   const SURVEYS = sv.surveys.map(s => ({ ...s, short: SHORT[s.id] || s.name }))
   const PERIHELIA = peri.objects
-  const sample = loadSample()
+  const sample = STRICT
   const objs = withAlignment(selected(etnos, sample))
   const visibleIds = new Set(objs.map(o => o.id))
   let story = 'sky', survey = null

@@ -7,7 +7,7 @@
    --------------------------------------------------------------------------- */
 
 :root {
-  --fl-for: var(--p9);   --fl-for-ink: var(--p9-ink); /* the case for a planet: Planet Nine's colour */
+  --fl-for: var(--for);  --fl-for-ink: var(--for-ink); /* the case for a planet: Planet Nine's colour */
   --fl-against: #ff6a3d; --fl-against-ink: #ffa07a;
   --fl-data: #a78bfa;    --fl-data-ink: #c4b5fd;     /* the colour of the objects elsewhere on the page */
   --fl-next: var(--series-4); --fl-next-ink: var(--series-4-ink); /* Rubin's colour, as everywhere */
@@ -20,6 +20,20 @@
 .k-data { color: var(--fl-data-ink); font-weight: 600; }
 .k-next { color: var(--fl-next-ink); font-weight: 600; }
 #ledger .sec-head p { max-width: 78ch; }
+
+/* the sides, over the ledger: for a planet on the left, against on the right, data and searches between.
+   It stays in view while the rows scroll under it. */
+.fl-sides {
+  position: sticky; top: calc(var(--bar-h, 56px) + 6px); z-index: 2; display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 0 18px;
+  max-width: 1180px; margin: 0 auto 4px; padding: 10px 0; background: color-mix(in srgb, var(--surface-0) 92%, transparent);
+  backdrop-filter: blur(6px); border-bottom: 1px solid var(--rule);
+}
+.fl-sides-in { grid-column: 2; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; }
+.fl-side { font: 700 .78rem/1.2 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.fl-side.is-for { color: var(--fl-for-ink); }
+.fl-side.is-data { color: var(--fl-data-ink); text-align: center; }
+.fl-side.is-against { color: var(--fl-against-ink); text-align: right; }
+@media (max-width: 900px) { .fl-sides { display: none; } }
 
 /* legend: the icons, in their colours */
 .fl-legend { gap: 8px 26px; margin: 2px 0 22px; align-items: center; }
@@ -69,14 +83,14 @@
 }
 .fr.is-for {
   --lane: var(--fl-for); --ink: var(--fl-for-ink);
-  margin-right: 9%; background: color-mix(in srgb, var(--p9) 9%, transparent); box-shadow: inset 4px 0 0 var(--lane);
+  margin-right: 30%; background: color-mix(in srgb, var(--for) 9%, transparent); box-shadow: inset 4px 0 0 var(--lane);
 }
 /* against a planet: the mirror image, shifted right */
 .fr.is-against {
   --lane: var(--fl-against); --ink: var(--fl-against-ink);
   grid-template-columns: var(--fl-art) minmax(0, 1fr) var(--fl-icon);
   grid-template-areas: "art body icon" "art meta icon";
-  margin-left: 9%; background: #ff6a3d16; box-shadow: inset -4px 0 0 var(--lane);
+  margin-left: 30%; background: #ff6a3d16; box-shadow: inset -4px 0 0 var(--lane);
   padding: 18px 20px 18px 24px; text-align: right;
 }
 .fr-icon { grid-area: icon; }
@@ -99,7 +113,7 @@
 
 /* key papers: a stronger tint, a border, larger type and drawing */
 .fr.is-key { --fl-art: 320px; }
-.fr.is-key.is-for { background: color-mix(in srgb, var(--p9) 16%, transparent); border: 1px solid color-mix(in srgb, var(--p9) 38%, transparent); padding: 24px 28px 24px 22px; }
+.fr.is-key.is-for { background: color-mix(in srgb, var(--for) 16%, transparent); border: 1px solid color-mix(in srgb, var(--for) 38%, transparent); padding: 24px 28px 24px 22px; }
 .fr.is-key.is-against { background: #ff6a3d28; border: 1px solid #ff6a3d60; padding: 24px 22px 24px 28px; }
 .fr.is-key.is-data { background: #a78bfa28; border-color: #a78bfa90; }
 .fr.is-key.is-data .fr-art { width: min(100%, 360px); }
@@ -168,8 +182,8 @@ html.has-reveal .fr:focus-within { opacity: 1; transform: none; }
 @media (max-width: 1100px) {
   :root { --fl-art: 200px; --fl-icon: 52px; }
   .fr.is-key { --fl-art: 240px; }
-  .fr.is-for { margin-right: 5%; }
-  .fr.is-against { margin-left: 5%; }
+  .fr.is-for { margin-right: 18%; }
+  .fr.is-against { margin-left: 18%; }
 }
 @media (max-width: 900px) {
   :root { --fl-icon: 48px; }

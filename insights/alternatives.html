@@ -12,44 +12,36 @@
 </head>
 <body data-page="alternatives">
 <main>
-  <header class="page-head wrap">
-    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
-    <h1>A planet is <em>not the only explanation</em></h1>
-    <p class="lede">The pattern needs explaining whether or not Planet Nine exists.</p>
+  <!-- the head sets the stage (charts/althead.js): the bunched orbits, and the suspects appearing round them -->
+  <header class="page-head wrap head-split">
+    <div>
+      <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
+      <h1>A planet is <em>not the only explanation</em></h1>
+      <p class="lede">The pattern needs explaining whether or not Planet Nine exists. Astronomers have proposed several
+      causes, and each has to account for the same four clues.</p>
+    </div>
+    <figure class="head-fig" id="altHead"></figure>
   </header>
 
   <section class="part wrap" id="scorecard">
     <div class="sec-head">
       <!-- pages/alternatives.js fills the two counts from alternatives.json -->
-      <h2 id="altTitle">Eight explanations, four tests</h2>
-      <p>Open a row to see how each idea works and where it falls short.</p>
+      <h2 id="altTitle">Eight explanations, four clues</h2>
+      <p>Each mark says whether an idea explains that clue. Open a row to see how the idea works and where it falls short.</p>
     </div>
-    <!-- charts/matrix.js draws the key and the table; each row opens a panel under itself (charts/altart.js drawings) -->
+    <!-- charts/matrix.js draws the key and the table; each row opens a panel under itself (charts/altart.js drawings).
+         The compact ledger of papers against a planet that used to follow was cut: each open row already says where
+         its idea stands, and the timeline holds every paper. -->
     <div class="legend alt-key" id="altKey"></div>
     <div class="alt-wrap"><table class="alt-table" id="altTable"></table></div>
-    <p class="caption">Our reading of the published arguments. “Not found” counts against a planet and for every idea
-    that needs none.</p>
-  </section>
-
-  <section class="part wrap" id="against">
-    <!-- The compact ledger with each row's line. Ammonite's finders argue for a planet farther out, not against one
-         (its branch has "of": "orbit" in field_timeline.json), so PICK.against leaves it to the timeline. -->
-    <div class="sec-head">
-      <h2>The case against</h2>
-      <p>Studies that trace the pattern to where telescopes looked or to something other than a planet, or find an
-      orbit that does not fit.</p>
-    </div>
-    <div class="legend fl-legend" id="againstLegend" aria-hidden="true"></div>
-    <div class="fl" id="againstLedger"></div>
-    <p class="caption">Which side a paper lands on is <strong>our</strong> reading of its abstract. Both sides are on the
-    <a href="/search/timeline.html">timeline</a>.</p>
+    <p class="caption">Our reading of the published arguments. Every paper is on the <a href="/search/timeline.html">timeline</a>.</p>
   </section>
 
   <section class="part wrap">
     <div class="takeaway">
       <div class="takeaway-k">So far</div>
-      <p>Only a planet, or a black hole of the same mass, accounts for all three patterns in the orbits. The surest way
-      to settle the argument is to <strong>find it</strong>.</p>
+      <p>In our reading, only a planet, or a black hole as heavy as one, fully explains the first three clues, and nobody has seen either.
+      The surest way to settle it is to <strong>look</strong>, which is where the search comes in.</p>
     </div>
   </section>
 </main>

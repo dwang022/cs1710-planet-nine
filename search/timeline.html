@@ -20,7 +20,10 @@
   </header>
 
   <section class="part wrap" id="ledger">
-    <div class="legend fl-legend" id="fieldLegend" aria-hidden="true"></div>
+    <!-- the sides, kept in view while the ledger scrolls: for a planet left, against right, data and searches between -->
+    <div class="fl-sides" aria-hidden="true"><div class="fl-sides-in">
+      <span class="fl-side is-for">← For a planet</span><span class="fl-side is-data">Data and searches</span><span class="fl-side is-against">Against a planet →</span>
+    </div></div>
     <div class="fl" id="fieldTimeline"></div>
     <p class="caption">Which lane a paper lands in is <strong>our</strong> reading of its abstract, not a label the
     authors chose · <a href="/credits.html#papers">every paper</a></p>

@@ -55,6 +55,8 @@
   /* Planet Nine: site.js overrides these with the chosen skin's (--p9-1/--p9-2 are its gradient's stops) */
   --p9: #62e2c2;
   --p9-ink: var(--p9);
+  /* the case for a planet: Planet Nine's colour, so it follows the skin */
+  --for: var(--p9); --for-ink: var(--p9-ink);
   --p9-text: var(--p9);
   --p9-1: var(--p9); --p9-2: var(--p9);
   --p9-dim: color-mix(in srgb, var(--p9) 14%, transparent);
@@ -559,13 +561,13 @@ section.story { padding-bottom: 24px; }
 /* a distance in AU: number and unit in gold, even-width digits, kept on one line */
 .k-au { color: var(--au); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* the case for a planet, in text: Planet Nine's colour */
-.k-for { color: var(--p9-ink); font-weight: 600; }
+.k-for { color: var(--for-ink); font-weight: 600; }
 /* a distance inside chart text */
 svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 /* a verdict in an interaction: a word or two and the number */
 .verdict { margin: 14px 0 0; font-size: 1.02rem; color: var(--text-secondary); }
 .verdict b { color: var(--text-primary); }
-.verdict.for b { color: var(--p9-ink); }
+.verdict.for b { color: var(--for-ink); }
 .verdict.against b { color: var(--series-2-ink); }
 /* the case against, in text (ember) */
 .k-against { color: var(--series-2-ink); font-weight: 600; }
@@ -590,56 +592,67 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .pic-btn.primary { background: var(--ui); border-color: var(--ui); color: var(--surface-0); }
 .pic-btn.primary:hover { filter: brightness(1.1); }
 
-/* the probability page: three small compasses in the head, the streetlight beside its readout */
-.head-compass .ring { fill: none; stroke: var(--text-muted); stroke-opacity: .55; stroke-width: 1.2; }
-.head-compass circle.in { fill: var(--series-1); }
-.head-compass circle.out { fill: var(--text-muted); opacity: .45; }
-.head-compass .arrow { stroke: var(--text-primary); stroke-width: 2.4; stroke-linecap: round; }
-.head-compass .sun { fill: var(--sun); }
-.head-compass .wedge { fill: #ece6d8; opacity: .14; }
 .luck-key text { font-size: 12.5px; fill: var(--text-secondary); }
-.bias-stage { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, 1fr); gap: 24px; align-items: start; }
-.bias-pic { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px 10px 64px; }
-.bias-pic svg { display: block; width: 100%; height: auto; max-height: 70vh; }
-.bias-read { display: grid; gap: 14px; }
-.bias-card { background: var(--surface-2); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px 18px; }
-.bias-card .k { display: flex; align-items: center; gap: 10px; font: 600 .72rem/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
-.bias-card .v { margin-top: 10px; font-size: 1.6rem; font-weight: 700; color: var(--text-primary); }
-.bias-card .d { margin-top: 4px; font-size: .9rem; color: var(--text-secondary); }
-.bias-mark { width: 22px; height: 4px; border-radius: 2px; flex: none; }
-.bias-card.found .bias-mark { background: var(--text-primary); }
-.bias-card.all .bias-mark { background: var(--text-muted); }
-.bias-read .verdict { margin: 2px 0 0; }
+.odds-key { margin: 0 0 14px; gap: 8px 22px; }
+.odds-key .legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; }
+.odds-key svg { width: 20px; height: 12px; flex: none; }
+.odds-heading { font: 600 11.5px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; fill: var(--text-muted); }
+#odds .takeaway { margin-top: 28px; }
+
+/* the probability page: three small compasses in the head, the streetlight beside its readout */
 .pic-time { padding: 5px 9px; border-radius: 7px; background: #00000080; color: #fff; font: 600 .74rem/1.2 var(--font-mono); letter-spacing: .04em; }
 .pic-note { position: absolute; top: 12px; left: 14px; pointer-events: none; }
 .pic-note .herd-verdict { margin: 0; padding: 6px 10px; border-radius: 8px; background: #000000b8; }
 .link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--text-primary); text-decoration: underline; cursor: pointer; }
 
-/* the clustering page: the key above the picture, the views and filters on it, the click card */
+/* the clustering page's head: the solar system from above, the distant orbits drawing in, then Planet Nine */
+.lean-head { max-height: 62vh; margin-inline: auto; }
+.lean-head .lh-ring { fill: none; stroke: var(--text-muted); stroke-opacity: .55; stroke-width: 1; }
+.lean-head .lh-orbit {
+  fill: none; stroke: var(--series-1); stroke-width: 2; stroke-opacity: .9;
+  stroke-dasharray: 1; stroke-dashoffset: 1; animation: lh-draw 1.4s ease-out forwards;
+}
+.lean-head .lh-p9 { fill: none; stroke: var(--p9); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; opacity: 0; animation: lh-in 1s ease 3.8s forwards; }
+.lean-head .lh-p9-mark { opacity: 0; animation: lh-in 1s ease 4.2s forwards; }
+.head-fig .lean-key { justify-content: center; margin-top: 4px; }
+.head-fig .lean-key svg { display: inline; width: 20px; height: 12px; }
+.lean-head .lh-lbl { font-size: 14px; font-weight: 600; }
+@keyframes lh-draw { to { stroke-dashoffset: 0; } }
+@keyframes lh-in { to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .lean-head .lh-orbit, .lean-head .lh-p9, .lean-head .lh-p9-mark { animation: none; stroke-dashoffset: 0; opacity: 1; }
+  .lean-head .lh-orbit { stroke-dasharray: none; }
+}
+
+/* the probability page's head: one compass, random skies then the real one */
+.luck-head { max-height: 46vh; margin-inline: auto; }
+.luck-head .ring { fill: none; stroke: var(--text-muted); stroke-opacity: .55; stroke-width: 1.2; }
+.luck-head .dots circle { fill: var(--text-secondary); transition: fill .4s; }
+.luck-head .dots circle.real { fill: var(--series-1); }
+.luck-head .arrow { stroke: var(--text-primary); stroke-width: 4; stroke-linecap: round; }
+.luck-head .name { font-size: 17px; font-weight: 600; fill: var(--text-primary); }
+.luck-head .name.real { fill: var(--series-1-ink); }
+.luck-head .reach { font-size: 14px; fill: var(--text-secondary); }
+/* the alternatives page's head: the bunched orbits, the suspects appearing round them */
+.alt-head { position: relative; aspect-ratio: 1; max-height: 50vh; margin-inline: auto; }
+.head-fig .alt-head > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.head-fig .ah-suspect .alt-ic-box svg.alt-ic { width: 100%; height: 100%; }
+.alt-head .ah-orbit { fill: none; stroke: var(--series-1); stroke-width: 2; stroke-opacity: .9; }
+.ah-suspect {
+  position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 4px;
+  opacity: 0; animation: ah-in .6s ease forwards;
+}
+.ah-suspect .alt-ic-box { width: 42px; height: 42px; display: grid; place-items: center; }
+.ah-name { font-size: .78rem; color: var(--text-secondary); white-space: nowrap; }
+@keyframes ah-in { from { opacity: 0; transform: translate(-50%, -40%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+@media (prefers-reduced-motion: reduce) { .ah-suspect { animation: none; opacity: 1; } }
+@media (max-width: 860px) { .alt-head { width: 78%; } .ah-suspect .alt-ic-box { width: 32px; height: 32px; } .ah-name { font-size: .7rem; } }
+
+/* the clustering page: the key above the picture, the click card */
 .lean-key { margin: 0; gap: 6px 16px; }
 .lean-key .legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; }
 .lean-key svg { width: 20px; height: 12px; flex: none; }
 #chartLean { position: relative; }
-#chartLean.has-bar { padding-bottom: 112px; }
-.lean-views { left: auto; right: 10px; padding: 6px; }
-.lean-views .seg button { padding: 4px 12px; }
-.lean-sample { flex: 1; min-width: 0; display: flex; align-items: center; }
-.lean-sample[hidden] { display: none; }
-.lean-sample svg { width: 100%; height: 100%; }
-.lean-bar { padding: 8px 14px 10px; }
-.lean-bar .controls { border: 0; padding: 0; margin: 0; width: 100%; background: none; }
-.lean-bar .controls-head { margin: 0 0 6px; }
-.lean-bar .controls-head .eyebrow { font-size: .64rem; }
-.lean-bar .btn-reset { padding: 3px 10px; min-height: 0; font-size: .76rem; }
-.lean-bar .filter-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px 20px; }
-.lean-bar .filter { margin: 0 !important; }
-.lean-bar .filter .filter-name {
-  font: 600 .76rem/1.25 var(--font-sans, inherit); letter-spacing: 0; text-transform: none; color: var(--text-secondary);
-  align-items: flex-end; min-height: 2.5em;
-}
-.lean-bar .filter .filter-name .art { width: 16px; height: 16px; flex: none; }
-.lean-bar .filter-desc { display: none; }
-.lean-bar .filter[hidden] { display: none; }
 .pick-card {
   position: absolute; top: 12px; left: 12px; z-index: 3; min-width: 210px; padding: 12px 14px 12px;
   background: var(--surface-2); border: 1px solid var(--text-muted); border-radius: 10px; box-shadow: 0 10px 30px #0008;
@@ -652,25 +665,62 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .pick-card dd.au { color: var(--au); font-variant-numeric: tabular-nums; }
 .pick-close { position: absolute; top: 6px; right: 8px; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--rule); background: var(--surface-3); color: var(--text-primary); cursor: pointer; }
 
+/* what a planet would do (charts/compare.js): two pictures side by side, drawn like the head, the play bar along their foot */
+.cmp-pic { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px 18px 70px; }
+.cmp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 900px; margin-inline: auto; }
+.cmp-panel { margin: 0; }
+.cmp-panel figcaption { text-align: center; font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.cmp-panel + .cmp-panel { border-left: 1px solid var(--rule); padding-left: 20px; }
+.cmp-panel svg { display: block; width: 100%; height: auto; overflow: hidden; }
+.cmp-panel .lh-ring { fill: none; stroke: var(--text-muted); stroke-opacity: .55; stroke-width: 1; }
+.cmp-panel .lh-p9 { fill: none; stroke: var(--p9); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; }
+.cmp-orbit { fill: none; stroke: var(--series-1); stroke-width: 1.6; stroke-opacity: .8; }
+.cmp-key { justify-content: center; margin: 14px 0 0; }
+.cmp-orbit.is-out { stroke: var(--text-primary); stroke-width: 2.2; }
+.cmp-orbit.is-demo { stroke: var(--text-primary); stroke-width: 2.2; stroke-opacity: 1; }
+.cmp-demo .cross { fill: none; stroke: var(--text-primary); stroke-width: 2; stroke-dasharray: 3 3; }
+.cmp-demo .obj { fill: var(--series-1); stroke: #fff; stroke-width: 1.4; }
+.cmp-flung line { stroke: var(--text-primary); stroke-width: 1.6; stroke-dasharray: 2 4; stroke-linecap: round; }
+.cmp-flung .flash { fill: none; stroke: var(--text-primary); stroke-width: 2.5; }
+.cmp-flung .obj { fill: var(--series-1); stroke: #fff; stroke-width: 1.2; }
+.cmp-count { font-size: .84rem; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.cmp-lesson { margin: 14px auto 0; max-width: 80ch; text-align: center; color: var(--text-secondary); }
+/* the pop-ups on the pictures: a few words and, when the run waits, its button */
+.cmp-pop {
+  position: absolute; z-index: 4; width: max-content; max-width: min(280px, 80%); padding: 10px 14px 12px;
+  background: var(--surface-2); border: 1px solid var(--text-muted); border-radius: 10px; box-shadow: 0 10px 30px #000a;
+  animation: cmp-pop-in .25s ease;
+}
+.cmp-pop p { margin: 0; font-size: 1rem; line-height: 1.4; color: var(--text-primary); font-weight: 600; }
+.cmp-pop .pic-btn { margin-top: 10px; }
+.cmp-pop::after {
+  content: ""; position: absolute; left: var(--tail); width: 12px; height: 12px; margin-left: -6px; transform: rotate(45deg);
+  background: var(--surface-2); border: 1px solid var(--text-muted);
+}
+.cmp-pop[data-side="above"]::after { bottom: -7px; border-top: 0; border-left: 0; }
+.cmp-pop[data-side="below"]::after { top: -7px; border-bottom: 0; border-right: 0; }
+.cmp-pop[data-side="left"]::after { left: auto; right: -7px; top: var(--tail); margin: -6px 0 0; border-left: 0; border-bottom: 0; }
+@keyframes cmp-pop-in { from { opacity: 0; transform: translateY(4px); } }
+@media (max-width: 760px) { .cmp-pop { max-width: 70%; padding: 8px 10px 10px; } .cmp-pop p { font-size: .85rem; } }
+/* on a phone the two stay side by side, smaller: the comparison is the point */
+@media (max-width: 760px) {
+  .cmp-pic { padding: 12px 8px; }
+  .cmp-grid { gap: 6px; }
+  .cmp-panel + .cmp-panel { padding-left: 6px; }
+  .cmp-panel figcaption { font-size: .8rem; line-height: 1.2; min-height: 2.4em; }
+  .cmp-pic .pic-bar { position: static; margin-top: 10px; }
+}
+
 /* the herd: the picture full width, its controls along the foot of the panel */
-.herd-pic { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px 10px 70px; }
-.herd-pic svg { display: block; width: 100%; height: auto; max-height: 76vh; }
-.herd-drag { cursor: grab; }
-.herd-drag:active { cursor: grabbing; }
 /* On a phone the 760-unit lean chart is drawn at about half size: its words are set larger so they stay readable. */
 @media (max-width: 640px) {
   #chartLean svg text { font-size: 24px; }
   #chartLean svg text.axis-label { font-size: 21px; }
 }
 @media (max-width: 900px) {
-  .herd-pic { padding-bottom: 10px; }
-  .herd-pic .pic-bar { position: static; margin-top: 8px; }
   .pic-note { top: 8px; left: 8px; }
 }
 @media (max-width: 900px) {
-  .bias-stage { grid-template-columns: 1fr; }
-  .bias-pic { padding-bottom: 10px; }
-  .bias-pic .pic-bar { position: static; margin-top: 8px; }
 }
 .k-nep { color: #aab0c4; font-weight: 600; }
 .k-obj { color: #c4b5fd; font-weight: 600; }
@@ -1097,7 +1147,6 @@ sup.cite a:hover { text-decoration: underline; }
 }
 .btn-primary:hover { filter: brightness(.92); }
 #herdResult .note, #biasResult p { margin: 16px 0 0; }
-#biasResult p { font-size: .95rem; }
 @media (max-width: 900px) { .exhibit { grid-template-columns: 1fr; } }
 
 /* controls inside a story card: one column, tighter */

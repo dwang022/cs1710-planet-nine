@@ -94,6 +94,10 @@ export function makeLean (root) {
     .attr('fill', 'none').attr('stroke', 'var(--neptune)').attr('stroke-width', 2)
 
   // --- the average-direction arrow ----------------------------------------
+  // a faint guide from its tip to the circle: how far it would reach if every dot sat on one side
+  const meanGuide = gMean.append('line')
+    .attr('stroke', 'var(--text-secondary)').attr('stroke-width', 2)
+    .attr('stroke-dasharray', '2 6').attr('stroke-linecap', 'round').attr('opacity', 0)
   const meanLine = gMean.append('line')
     .attr('stroke', 'var(--text-primary)').attr('stroke-width', 4)
     .attr('stroke-linecap', 'round').attr('marker-end', 'url(#lean-head)')
@@ -121,7 +125,7 @@ export function makeLean (root) {
     const shown = objects.filter(visible)
 
     svg.attr('aria-label', ring
-      ? `Compass of the direction ${shown.length} objects point. Average arrow length ${stats.R.toFixed(2)}.`
+      ? `Compass of the direction ${shown.length} objects point. ${Math.round(stats.R * 100)}% aligned.`
       : `${shown.length} orbits seen from above, with the Sun at the centre.`)
 
     // distance rings: only meaningful in the orbit layout
@@ -235,6 +239,12 @@ export function makeLean (root) {
       .attr('opacity', m ? 1 : 0)
       .attr('x2', m ? ax(m.meanDeg, RING_R * m.R) : cx)
       .attr('y2', m ? ay(m.meanDeg, RING_R * m.R) : cy)
+    const g = m && s.labels?.rim
+    if (g) {
+      meanGuide.attr('x1', ax(m.meanDeg, RING_R * m.R + 12)).attr('y1', ay(m.meanDeg, RING_R * m.R + 12))
+        .attr('x2', ax(m.meanDeg, RING_R)).attr('y2', ay(m.meanDeg, RING_R))
+    }
+    meanGuide.transition().duration(T).attr('opacity', g ? 0.8 : 0)
 
     // --- Planet Nine ------------------------------------------------------
     const p9pt = perihelionPoint({ a_au: PLANET_NINE.a_au, e: PLANET_NINE.e, i_deg: PLANET_NINE.i_deg, node_deg: PLANET_NINE.node_deg, argperi_deg: PLANET_NINE.argperi_deg })
@@ -275,8 +285,17 @@ export function makeLean (root) {
     }
     if (s.labels?.mean && stats.n >= 3) {
       const ang = stats.meanDeg
-      L('mean', ax(ang, RING_R * stats.R + 26), ay(ang, RING_R * stats.R + 26),
-        'average direction', { size: 15, anchor: Math.cos(ang * RAD) < -0.3 ? 'end' : 'start' })
+      const side = Math.cos(ang * RAD) < -0.3 ? 'end' : 'start'
+      if (s.labels?.rim) {
+        // beside the arrow rather than at its tip, where the guide runs
+        const off = side === 'start' ? -1 : 1
+        L('mean', ax(ang + off * 9, RING_R * stats.R * 0.7 + 14), ay(ang + off * 9, RING_R * stats.R * 0.7 + 14),
+          'average direction', { size: 15, anchor: side })
+        L('rim', ax(ang, RING_R) + (side === 'start' ? 10 : -10), ay(ang, RING_R) - 12,
+          '100% aligned: every dot on one side', { size: 13, colour: 'var(--text-secondary)', anchor: side })
+      } else {
+        L('mean', ax(ang, RING_R * stats.R + 26), ay(ang, RING_R * stats.R + 26), 'average direction', { size: 15, anchor: side })
+      }
     }
     if (s.labels?.p9 && s.p9) {
       if (!ring) {

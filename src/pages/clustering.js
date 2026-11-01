@@ -28,7 +28,8 @@ async function main () {
   function viewScale (objs) {
     const reach = objs.map(o => semiLatusRectum(o.a_au, o.e)).sort(d3.ascending)
     const objects = Math.max(120, (d3.quantile(reach, 0.95) || 140) * 1.18)
-    return objects
+    // wide enough for Planet Nine's closest point too, on the step that shows it
+    return { objects, withP9: Math.max(objects, PLANET_NINE.a_au * (1 - PLANET_NINE.e) * 1.22) }
   }
 
   // the key: each mark as it appears on the picture
@@ -36,15 +37,17 @@ async function main () {
     dot: '<svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="var(--series-1)"/></svg>closest point to the Sun',
     orbit: '<svg viewBox="0 0 24 14"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--series-1)" stroke-width="2"/></svg>orbit',
     arrow: '<svg viewBox="0 0 24 14"><path d="M2,7 H18 M14,3 L20,7 L14,11" fill="none" stroke="var(--text-primary)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>average direction',
+    p9: '<svg viewBox="0 0 24 14"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--p9)" stroke-width="2.4"/></svg><span><span class="p9-name" data-no-tint>Planet Nine</span>, predicted</span>',
   }
   function drawKey (sc) {
-    const on = ['dot', sc.layout === 'orbits' && 'orbit', sc.mean && 'arrow'].filter(Boolean)
+    const on = ['dot', sc.layout === 'orbits' && 'orbit', sc.mean && 'arrow', sc.p9 && 'p9'].filter(Boolean)
     $('#leanKey').innerHTML = on.map(k => `<li class="legend-item">${KEY[k]}</li>`).join('')
   }
 
   const lean = makeLean($('#chartLean'))
   function renderLean () {
     const { objs, stats } = current(STRICT)
+    const sc = viewScale(objs)
     const halfCount = objs.filter(o => Math.abs(angleDiff(o.varpi_deg, stats.meanDeg)) <= 90).length
     $('#leanReadout').innerHTML = `<b>${stats.n}</b> objects · seen in more than one season`
     const only = new Set([SEDNA])
@@ -55,8 +58,9 @@ async function main () {
       half: { half: true, fadeOrbits: true, labels: { half: true } },
       ring: { layout: 'ring', compass: true },
       arrow: { layout: 'ring', compass: true, mean: true, labels: { mean: true, rim: true } },
+      p9: { maxAu: sc.withP9, mean: true, p9: true, fadeOrbits: true, labels: { p9: true } },
     }
-    const scene = { layout: 'orbits', maxAu: viewScale(objs), focus: SEDNA, halfCount, labels: {}, ...scenes[story] }
+    const scene = { layout: 'orbits', maxAu: sc.objects, focus: SEDNA, halfCount, labels: {}, ...scenes[story] }
     lean.update(objs, stats, scene)
     drawKey(scene)
   }

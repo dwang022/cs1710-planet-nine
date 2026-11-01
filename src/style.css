@@ -677,7 +677,7 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .cmp-orbit { fill: none; stroke: var(--series-1); stroke-width: 1.6; stroke-opacity: .8; }
 .cmp-key { justify-content: center; margin: 14px 0 0; }
 .cmp-orbit.is-out { stroke: var(--text-primary); stroke-width: 2.2; }
-.cmp-orbit.is-demo { stroke: var(--text-primary); stroke-width: 2.2; stroke-opacity: 1; }
+.cmp-orbit.is-demo { stroke: var(--series-1-ink); stroke-width: 4; stroke-opacity: 1; }   /* violet like every object, only bolder: white means flung */
 .cmp-demo .cross { fill: none; stroke: var(--text-primary); stroke-width: 2; stroke-dasharray: 3 3; }
 .cmp-demo .obj { fill: var(--series-1); stroke: #fff; stroke-width: 1.4; }
 .cmp-flung line { stroke: var(--text-primary); stroke-width: 1.6; stroke-dasharray: 2 4; stroke-linecap: round; }

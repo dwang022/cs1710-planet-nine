@@ -17,7 +17,7 @@
 //   start   what the lines are; Start
 //   flung   at the first object flung away, once it has gone
 //   stay    halfway, on one orbit that points away yet crosses the planet's
-//           path on the picture: the crossings are ringed and its object is
+//           path on the picture, drawn bolder in violet: the crossings are ringed and its object is
 //           shown going round in step with the planet (a whole-number rhythm,
 //           as a resonance keeps it), so it is always elsewhere when the planet
 //           reaches a crossing
@@ -65,9 +65,9 @@ const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1])
 const exitFrom = ([x, y]) => { const r = Math.hypot(x - c, y - c) || 1; const f = (c * 1.45) / r; return [c + (x - c) * f, c + (y - c) * f] }
 
 const POPS = {
-  start: { text: 'Each line is the orbit of a small icy world. Watch what the planet does.', btn: '▶ Start' },
+  start: { text: 'Each line is the orbit of a distant object, like Sedna. Watch what the planet does.', btn: '▶ Start' },
   flung: { text: 'Too close! The planet flings this one out of the solar system.', btn: 'Continue' },
-  stay: { text: 'The white orbit crosses the planet’s path (circled), but the two go round in step: when the planet reaches a crossing, the object (dot) is always somewhere else. It is never flung.', btn: 'Continue', side: true },
+  stay: { text: 'The highlighted orbit crosses the planet’s path (circled), but the two go round in step, so the object (dot) is never there when the planet is.', btn: 'Continue', side: true },
   end: { text: 'What’s left all points away from the planet.' },
   none: { text: 'No planet: still every which way.' },
 }
@@ -250,7 +250,7 @@ export function makeCompare ({ root, bar, stage, planets, jd }) {
         }
         if (t >= (demo?.pauseAt ?? 0.55) && !seen.has('stay')) {
           seen.add('stay'); stop(); show()
-          // the bubble sits off the picture's left edge, level with the object, so the white orbit stays in view
+          // the bubble sits off the picture's left edge, level with the object, so the highlighted orbit stays in view
           const o = demo?.o ?? kept[0]
           pop('stay', 'p9', demo ? [0, demo.pos(t)[1]] : farEnd(o, angle(o, t, d3.easeCubicInOut(t))), { onBtn: go }); return
         }

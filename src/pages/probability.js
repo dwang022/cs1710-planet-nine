@@ -90,7 +90,8 @@ async function main () {
     { heading: 'Published studies' },
     ...published.studies.map(d => ({
       label: d.label, detail: d.plain_detail, side: d.side,
-      ...(d.p ? { oneIn: oneIn(d.p) } : d.p_range ? { range: [1 / d.p_range[1], 1 / d.p_range[0]] } : {}),
+      // a study that finds chance is shown as that, in words, whether its abstract gives a range or no number
+      ...(d.p ? { oneIn: oneIn(d.p) } : {}),
     })),
     { heading: 'Our test, above' },
     { label: `${sp.n} objects seen in more than one season`, detail: 'no allowance for where telescopes looked', oneIn: oneIn(sp.p), side: 'ours' },

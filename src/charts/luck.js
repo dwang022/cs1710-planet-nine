@@ -74,7 +74,7 @@ export function makeLuck (root) {
   const gHist = svg.append('g')
   const gAxis = gHist.append('g')
   const axisLabel = gHist.append('text').attr('class', 'axis-label').attr('text-anchor', 'middle').attr('font-size', 13)
-    .text('average arrow length  →  more lined up')
+    .text('alignment  →  more lined up')
   const histTitle = gHist.append('text').attr('font-size', 16).attr('font-weight', 600).attr('fill', 'var(--text-primary)')
   const histSub = gHist.append('text').attr('font-size', 13).attr('fill', 'var(--text-muted)')
   const gBars = gHist.append('g')
@@ -145,7 +145,7 @@ export function makeLuck (root) {
     ringTitle.text(real ? 'The real objects' : 'A fake solar system')
       .attr('fill', real ? 'var(--series-1-ink)' : 'var(--text-primary)')
     ringKey.transition().duration(T).attr('opacity', real && !quality ? 1 : 0)
-    ringFoot.text(`arrow length ${st.R.toFixed(2)}`)
+    ringFoot.text(`${Math.round(st.R * 100)}% aligned`)
       .attr('fill', real ? 'var(--series-1-ink)' : 'var(--text-primary)')
     return st
   }
@@ -192,7 +192,7 @@ export function makeLuck (root) {
     const xMax = Math.min(1, Math.max(s.xMax || 0.5, reach))
     x = d3.scaleLinear().domain([0, xMax]).range([Hs.x0, Hs.x1])
     gAxis.transition().duration(T)
-      .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.1f')))
+      .call(d3.axisBottom(x).ticks(5).tickFormat(d3.format('.0%')))
     gAxis.selectAll('text').attr('class', 'axis-label').attr('font-size', 12)
     gAxis.selectAll('line, path').attr('stroke', 'var(--rule)')
 
@@ -254,7 +254,7 @@ export function makeLuck (root) {
       gObs.select('line').transition().duration(T).attr('x1', ox).attr('x2', ox)
         .attr('y1', Hs.top + 10).attr('y2', Hs.bottom)
       gObs.select('circle').transition().duration(T).attr('cx', ox).attr('cy', Hs.top + 10)
-      obsLabel.text(`the real objects: ${s.observed.toFixed(2)}`)
+      obsLabel.text(`the real objects: ${Math.round(s.observed * 100)}% aligned`)
         .transition().duration(T)
         .attr('x', ox + (right ? -12 : 12)).attr('y', Hs.top + 15)
         .attr('text-anchor', right ? 'end' : 'start')
@@ -308,11 +308,11 @@ export function makeLuck (root) {
     // the usual bar: 1 in 20
     const bandTop = top + trackDy - 34
     gCuts.append('rect').attr('x', xl(20)).attr('y', bandTop).attr('width', xl(1000) - xl(20))
-      .attr('height', bottom - bandTop - 18).attr('fill', 'var(--p9)').attr('opacity', 0.08)
+      .attr('height', bottom - bandTop - 18).attr('fill', 'var(--for)').attr('opacity', 0.08)
     gCuts.append('line').attr('x1', xl(20)).attr('x2', xl(20)).attr('y1', bandTop).attr('y2', bottom - 18)
-      .attr('stroke', 'var(--p9)').attr('stroke-width', 1.5)
+      .attr('stroke', 'var(--for)').attr('stroke-width', 1.5)
     gCuts.append('text').attr('x', xl(20) + 8).attr('y', bandTop - 8).attr('font-size', 13)
-      .attr('fill', 'var(--p9-ink)').attr('font-weight', 600).text('past the usual bar, 1 in 20')
+      .attr('fill', 'var(--for-ink)').attr('font-weight', 600).text('past the usual bar, 1 in 20')
     const axis = gCuts.append('g').attr('transform', `translate(0,${bottom - 14})`)
       .call(d3.axisBottom(xl).tickValues([1, 2, 5, 20, 100, 1000]).tickFormat(d => `1 in ${d3.format(',')(d)}`))
     axis.selectAll('text').attr('class', 'axis-label').attr('font-size', 12)

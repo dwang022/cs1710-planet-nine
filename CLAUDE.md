@@ -4,7 +4,7 @@ CS 1710 (Harvard, data visualization) final project by Daniel Wang, Gabriel
 Gonzalez and Russell Rui Luo. A multi-page, data-grounded walkthrough of the
 case for a ninth planet: every chart is built from real telescope catalogues;
 the only synthetic data is the explicitly labelled random-universe simulation
-and the two cartoon exhibits (herding, streetlight), which say so on the page.
+and the cartoon on the clustering page (no planet beside a planet), which says so on the page.
 
 ## Run it
 
@@ -36,11 +36,11 @@ sources and the inference-not-observation note live on `credits.html`.
 | `setting/planets.html` | `pages/planets.js` | Three beats, lineup scrolly (9 → 8 → 9?), Pluto's reclassification with the sad-face callout, the three requirements with drawings (`charts/rulesart.js`) and the scorecard table |
 | `setting/distance.html` | `pages/distance.js` | Head with Planet Nine's distance (computed on load), the question on its own line, and a to-scale Sun-to-Earth ruler for the AU (`charts/auruler.js`); zoom-out scrolly over a map seen from above, everything where it was in June 2026: the planets on their orbits, the Kuiper belt as a faint ring filled with dots for its icy bodies (decoration, not data; they fade out when the evidence arrives), Voyager 1 (`positions.json`), the extreme objects seen in more than one season as dots (pointing at one draws its orbit; one card shows all the orbits), Planet Nine's best-fit orbit with its icon, and the uncertainty band |
 | `setting/data.html` | `pages/data.js` | Head graphic of an observatory finding an arc, the full width of the page and behind the title on a wide screen, the page's three numbers written beside what they count (no boxes; along the arc for the positions), smaller observatories further along the horizon each looking at an earlier position, stars kept clear of the drawing, shooting stars now and then (`charts/datahero.js`, `meteors.js`); below 840 px it stacks with the numbers in a row; a titled world map of every observatory, cut to the latitudes between 72°N and 56°S and never taller than the screen, with country borders and insets laid over empty sea and land (Hawaiʻi above the islands in the North Pacific, the Southwest US in the South Pacific clear of Central America, Europe over Africa, Northern Chile in the South Atlantic; on the world map an inset's sites are thin, faint white rings, all one size (a place, not a value), inside an outline that marks what the inset enlarges; a ring and its dot in the inset light up together and clicking a ring opens the site's card; one square-root size scale on the map, in the insets and in the key; every other site, on the world map and in the insets, is nudged a pixel or two so none overlap; Europe's inset and Rubin's note share one column), the key compact (circles on a line, values under them, each scale's name under those), the map in Earth's own dark colours (navy sea, green-grey land), each site a sand disc sized by positions reported with a violet core sized by the extreme objects first found there (two scales in the key), Rubin's dot like the rest with its name in pink in a callout saying it found every extreme object discovered since it opened (counted on load), a card per site on click (the photograph of its busiest telescope, every site that found an object has one, or the observatory drawing where no free photograph exists; numbers; telescopes), Hubble as a small card in the top corner, "find the telescope nearest you" with a map pin (`charts/scopes.js`); three drawings from pictures to orbits (`charts/orbitart.js`); the tracking game on real archive frames spanning a few nights (four rounds; the object crosses a quarter to half the frame; one round in colour), controls on the image, every play starting with the arrow on the object, the reveal ringing each stop rather than covering it (`charts/spotgame.js`); three more discoveries in a row; JPL's catalogue (only JPL is named there; its logo on the right in white, `public/logos/jpl-mono.svg`), every known body beyond Neptune on a map that fits one screen, centred and only as wide as the query panel and the square map beside it, with the panel on it (known objects beyond Neptune › with extreme orbits › and reliable orbits › that first pointed to Planet Nine; choosing a row runs the query to it, its definition beneath; the orbits toggle in the panel) (`charts/catalogue.js`, `pages/data.js`); what makes an orbit reliable, one line on following the papers, then how long each extreme object was watched against how uncertain its far end is, the groups named on the chart (`charts/arcs.js`) |
-| `insights/clustering.html` | `pages/clustering.js` | Three drawings of what an orbit is, from Sedna's real orbit (`charts/orbitintro.js`); lean scrolly (one orbit → compass → arrow → Planet Nine) with a key drawn above it and a card per object on click; on the last step the views (Orbits, Compass, Sample, the brush-to-select scatter) and the filters sit on the picture (in the card on a phone); a collapsed table of every number; the herding exhibit with its controls on the picture and a draggable planet |
-| `insights/probability.html` | `pages/probability.js` | Head as three beats with compasses drawn from the data; luck scrolly (build the null distribution) whose piles and odds come from the stored 200,000-trial simulations, with a panel-shaped layout that stacks on a phone; step 6 compares each distance cut with and without the objects seen once; the streetlight exhibit with its controls on the picture; published odds on one axis, read from `published_odds.json` |
-| `insights/alternatives.html` | `pages/alternatives.js` | Eight explanations × four tests matrix, detail panel, ledger of the case against; closes the Evidence part |
+| `insights/clustering.html` | `pages/clustering.js` | The Evidence part's opening picture beside the title: the giant planets' rings, the six orbits that first pointed to Planet Nine drawing in round them (real elements, distances square-rooted), then Planet Nine's orbit on the far side (`charts/leanhead.js`); three drawings of what an orbit is, from Sedna's real orbit (`charts/orbitintro.js`); lean scrolly in six steps (Sedna and why it matters → compass → arrow, with a guide to the circle), always the trusted sample, with a key drawn above it and a card per object on click; a collapsed table of every number; “What a planet would do” (`charts/compare.js`): two pictures drawn like the head, No planet and With a planet, four billion years in one run: without the planet the sixteen make-believe orbits stay scattered; with it, the planet goes round its orbit and each orbit lined up with it is caught when the planet passes (a flash where they meet, the object shoots off past the edge along a dotted trail, its orbit fades, a count on the bar), while the ones pointing away stay and settle opposite it; one survivor whose path crosses the planet's is shown white, its crossings ringed and its object going round in step with the planet, so it is elsewhere whenever the planet reaches a crossing. The explanation is pop-ups on the pictures, a sentence each, the run pausing on each until Continue (what the lines are and Start; the first object flung away, caught alone; the survivor in step, paused when the planet sits on a crossing; at the end, what is left and the picture with no planet); Play again runs straight through. Under it a key, one neutral line handing the question to the next pages, the cartoon caption and “How the cartoon works” folded below (where flung objects go, the resonances). It replaced the herding exhibit, the scrolly's filters and a find-the-planet game, which were too hard for a general reader to learn from |
+| `insights/probability.html` | `pages/probability.js` | Title, a lede with the real arrow's reach, and the question, beside one compass that sets the question (`charts/luckhead.js`: a few random skies with short arrows, then the real sky with its longer one, on a loop); luck walkthrough in six steps (`charts/luck.js`: one fake solar system, then fake solar systems flying onto the pile one after another, the whole 200,000-trial pile, the real arrow in its tail, adding the objects seen once, the distance cuts the papers use), its piles and odds read from the stored simulations; “What the studies conclude”: one odds chart (`charts/odds.js`), the published studies by author with what each counted in plain words, then our test for the trusted sample and every object, read from `published_odds.json` and `clustering_null.json`; a “So far” line. The reader filters, the shuffle-it-yourself version and the streetlight exhibit were cut (where telescopes looked is an explanation on the next page) |
+| `insights/alternatives.html` | `pages/alternatives.js` | Title and lede beside the stage (`charts/althead.js`: the six bunched orbits, fitted by their own extent, and round them each explanation's mark and short name appearing one by one); eight explanations × four clues scorecard (Orbits pointing one way, Orbits beyond Neptune's reach, Steeply tilted orbits, Nothing found yet; marks Explains it, Partly, Doesn't) in plain words, each row opening in place with a drawing and a few short sentences; a “So far” line; closes the Evidence part. The ledger of the case against was cut: each open row already says where its idea stands, and the timeline holds every paper |
 | `search/how.html` | `pages/search.js` | Sky-map scrolly (coverage → depth → Rubin), search stats, ledger of searches, put-a-planet-out-there |
-| `search/timeline.html` | `pages/timeline.js` | Compact ledger of every major paper, how the proposed planet changed |
+| `search/timeline.html` | `pages/timeline.js` | Compact ledger of every major paper under a header pinned below the nav (← For a planet, Data and searches, Against a planet →): for rows hug the left, against rows the right (30% clear of the other side), data and searches full width; how the proposed planet changed |
 | `search/future.html` | `pages/future.js` | Brightness ruler (survey depths vs predicted magnitude), "what comes next" rows, a dated schedule, what would confirm or end it |
 | `credits.html` | `pages/credits.js` | Who made it, the data, every paper cited (from `papers.json`, each with a `cite-` anchor), the photographs (read from the fetch scripts' credit files), drawings and code. `aside: true` in `PAGES`: no group, no Continue leads to it, the nav sets it apart |
 
@@ -64,7 +64,7 @@ src/
   art.js         every hand-drawn body as pure SVG strings (Planet Nine in any skin, Sun, planets, TNOs, an observatory)
   skins.js       the seven Planet Nine skins: what the planet might be made of
   data.js        loadData('etnos', ...) → public/data/*.json, honouring BASE_URL
-  sample.js      which extreme objects count: shared filter state (localStorage), STRICT/LOOSE samples, control rendering
+  sample.js      which extreme objects count: the fixed STRICT/LOOSE samples, selected(), withAlignment()
   scrolly.js     pinned-graphic scrollytelling (step activation, continuous progress)
   stats.js       circular statistics: resultant length, Rayleigh test, Monte Carlo null
   orbits.js      Keplerian geometry, verified against JPL Horizons; PLANET_NINE elements
@@ -73,7 +73,7 @@ src/
   meteors.js     shooting stars, on the intro and the data page's head
   pages/         one module per page
   charts/        one module per visualisation (see headers); field.js is the ledger, fieldart.js its drawings,
-                 herd.js and bias.js the two cartoon exhibits, tracking.js the blink players, datahero.js,
+                 compare.js (no planet beside a planet) the cartoon, shuffle.js the luck test, tracking.js the blink players, datahero.js,
                  scopes.js, spotgame.js, catalogue.js and arcs.js the data page
 public/data/     processed datasets the pages fetch (copies of data/processed/)
 public/art/      the drawings as standalone SVG/PNG with a contact sheet (node scripts/export_art.mjs)
@@ -144,8 +144,8 @@ the register is plain and measured, light touches, no jokes.
 - **Credits under an image are one short, dim line**: the instrument or
   licence, the date, and a link to the credits page. Full citations live on
   `credits.html` only.
-- **Papers are cited by superscript, never by name.** No author names or
-  formal citations in running text or captions; a
+- **Papers are cited by superscript.** No formal citations in running text or
+  captions (researchers may be named where the claim rests on who made it, above); a
   `<sup class="cite"><a href="/credits.html#cite-brown-batygin-2019">1</a></sup>`
   leads to the paper in the credits page's list. The anchor is `cite-` plus the
   paper's `label` in `papers.json`, lowercased and hyphenated. Chart rows that
@@ -153,10 +153,21 @@ the register is plain and measured, light touches, no jokes.
 - **Messages in interactions are a word or two.** "Found", "Missed", a
   count; never a sentence that explains what the picture already shows.
   A verdict (`.verdict`, with `for` or `against`) is a bold word or two and
-  the odds. The last step of a scrolly that hands over the filters is titled
-  "Your turn".
+  the odds.
+- **Plain, not childish.** Decided with the user on 2026-10-31 for the
+  Evidence part: a general adult reader with no astronomy should follow every
+  part, without the page talking down. One idea per picture, the fewest
+  controls that let the reader do the thing, explanation as short pop-ups on
+  the picture at the moment it matters (pausing an animation until Continue)
+  rather than paragraphs under it, plain words over jargon (“allowing for
+  where telescopes looked”, not “bias correction”). A walkthrough that builds
+  a chart in front of the reader (the luck pile) is kept over a do-it-yourself
+  toy. Name the researchers where a claim rests on who made it (“Brown and
+  Batygin still find…”, the odds chart's rows), never “the same team” or “the
+  planet's supporters”. Cut an exhibit that is clever but teaches little. Stay
+  neutral: show what an idea predicts, not which side is right.
 - **Controls sit on the image they control**: play and pause, the date of a
-  frame, levels, replay, submit, the streetlight's coverage, the herd's planet.
+  frame, levels, replay, submit, the comparison's play button, the shuffle buttons.
   Use `.pic` on the panel and `.pic-bar` for the strip of controls along its
   foot (`.pic-btn`, `.pic-time`; `.pic-note` for a word or two on the picture);
   on a phone the bar drops under the picture. Details open on click in a card
@@ -179,7 +190,7 @@ coloured thing either takes one of these meanings or stays white and grey:
 | The interface: buttons, links, the current page, focus rings, toggles, citation numbers, plain "yes" marks (✓, "accounts for", the game's Found) | white and grey, **no hue** | `--ui`, `--text-*` |
 | Title emphasis | brightness, not hue: a title with `<em>` is grey, its key words white | `.page-head h1:has(em)` |
 | Planet Nine | the chosen skin: its **two-tone gradient** for its name and lettering, its flat colour for thin strokes and dots. The only non-flat colour on the site | `--p9-text`, `#g-p9` in SVG; `--p9` |
-| The case for a planet (ledger lane, verdicts, "past the usual bar", the odds chart's "for" side, a good fit) | Planet Nine's colour | `--p9`, `.k-for` |
+| The case for a planet (ledger lane, verdicts, "past the usual bar", the odds chart's "for" side, a good fit) | Planet Nine's colour (it follows the skin; a fixed green was tried on 2026-10-31 and reverted) | `--for` (= `--p9`), `.k-for`, `--fl-for` |
 | Each planet | its own flat colour, lifted from its drawing in `art.js` for text: its name wherever written, its chart labels | `--c-earth` …, `.pl-name`, `text[data-planet]` |
 | The Sun | gold, its name too | `--sun` |
 | Distances in AU | **gold, number and unit together** (`150 AU`), the Sun's colour: a distance is measured from the Sun. A gradient on every number was tried and found distracting; the Sun-to-Earth idea lives on the ruler that defines the AU (distance page head), gold at the Sun to blue at Earth. Scale bars are gold | `--au`, `.k-au`, `.au`; `--au` → `--au-2` on the AU ruler |
@@ -277,10 +288,10 @@ beneath). The footer is one wide, muted Continue button with the credits link
 in its corner and no colophon; credits live on `credits.html`, outside the
 walkthrough. Write root-relative hrefs (`/setting/planets.html`); `site.js`
 rewrites them if `BASE_URL` is not `/`. Data and asset URLs go through
-`url()` in `data.js`. The clustering and probability pages share one sample
-state (`sample.js`, key `p9-sample`); guided steps use the fixed STRICT/LOOSE
-samples so their quoted numbers never move, and only the last "your turn"
-step follows the reader.
+`url()` in `data.js`. The reader never picks which objects count: every page
+uses the fixed STRICT sample (as the papers do) or, where it says so, LOOSE
+(`sample.js`), so quoted numbers never move. A filter panel was tried and cut:
+a general reader learned nothing from it.
 
 ## Verifying a change
 

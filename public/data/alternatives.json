@@ -18,7 +18,7 @@
    "one_liner": "An undiscovered 5-10 Earth-mass planet on a distant, eccentric, anti-aligned orbit shepherds the extreme objects.",
    "explain": [
     {
-     "text": "A planet five to ten times Earth's mass, on a stretched, tilted orbit far beyond Neptune, would slowly pull the distant objects' orbits into line.",
+     "text": "A planet five to ten times Earth's mass, on a stretched, tilted orbit far beyond Neptune, would slowly pull the distant orbits into line.",
      "cite": [
       "10.3847/0004-6256/151/2/22",
       "10.1016/j.physrep.2019.01.009",
@@ -42,7 +42,7 @@
      ]
     },
     {
-     "text": "and surveys that record exactly where they looked see a weaker pattern, or none.",
+     "text": "and surveys that kept careful track of where they looked see a weaker lean, or none.",
      "cite": [
       "10.3847/PSJ/abe53e"
      ]
@@ -76,7 +76,8 @@
     "detached": "yes",
     "inclined": "yes",
     "nondetection": "no"
-   }
+   },
+   "short": "A planet"
   },
   {
    "id": "observational_bias",
@@ -85,19 +86,19 @@
    "one_liner": "There is no real clustering. Telescopes searched particular patches of sky at particular times of year, and that alone shapes which orbits get found.",
    "explain": [
     {
-     "text": "Distant objects are faint, so they are mostly found near their closest point to the Sun, and only where telescopes happen to point.",
+     "text": "Distant objects are faint, so we mostly spot them when they swing closest to the Sun, and only where telescopes happen to point.",
      "cite": [
       "10.3847/1538-3881/aa7aed"
      ]
     },
     {
-     "text": "If the searches favoured some directions, the orbits found would seem to lean the same way even if the real ones point every way.",
+     "text": "If the searches looked more in some directions, the objects found would seem to lean that way, even if the real ones point every way.",
      "cite": [
       "10.3847/1538-3881/aa7aed"
      ]
     },
     {
-     "text": "Surveys that record exactly where and how deep they looked find their distant objects consistent with no bunching at all.",
+     "text": "Surveys that kept careful track of where they looked find no clear lean among their own objects.",
      "cite": [
       "10.3847/1538-3881/aa7aed",
       "10.3847/PSJ/abe53e",
@@ -107,7 +108,7 @@
    ],
    "struggles": [
     {
-     "text": "Allowing for where telescopes looked, the planet's proposers still find only about a 1 in 500 chance of bunching this strong.",
+     "text": "Allowing for where telescopes looked, Brown and Batygin still find only about a 1 in 500 chance of a lean this strong.",
      "cite": [
       "10.3847/1538-3881/aaf051"
      ]
@@ -136,7 +137,8 @@
     "detached": "no",
     "inclined": "no",
     "nondetection": "yes"
-   }
+   },
+   "short": "Where we looked"
   },
   {
    "id": "self_gravitating_disk",
@@ -145,13 +147,13 @@
    "one_liner": "A few Earth masses of small bodies spread through the distant belt can confine each other's orbits, with no single planet required.",
    "explain": [
     {
-     "text": "Instead of one planet, a broad, lopsided ring of many small icy bodies beyond Neptune could hold the distant orbits in line by their combined pull.",
+     "text": "Instead of one planet, a wide, lopsided ring of many small icy bodies could hold the orbits in line with their combined pull.",
      "cite": [
       "10.3847/1538-3881/aaf0fc"
      ]
     },
     {
-     "text": "It can bunch the orbits and keep them cut off from Neptune, and could make a planet unnecessary.",
+     "text": "It can bunch the orbits and keep them away from Neptune, with no planet needed.",
      "cite": [
       "10.3847/1538-3881/aaf0fc"
      ]
@@ -185,7 +187,8 @@
     "detached": "yes",
     "inclined": "no",
     "nondetection": "yes"
-   }
+   },
+   "short": "A heavy disk"
   },
   {
    "id": "inclination_instability",
@@ -194,13 +197,13 @@
    "one_liner": "A sufficiently massive population of eccentric distant bodies spontaneously lifts and aligns itself out of the plane.",
    "explain": [
     {
-     "text": "If the distant bodies together weigh enough, their own pull can tip the whole swarm out of the plane of the planets, all leaning the same way, and lift them away from Neptune.",
+     "text": "If the distant bodies together weigh enough, their own pull can tip the whole swarm out of the plane of the planets and lift it away from Neptune.",
      "cite": [
       "10.3847/1538-3881/aad95c"
      ]
     },
     {
-     "text": "Later simulations found it can also bunch the orbits in one direction, as a planet would.",
+     "text": "Later computer models found it can also bunch the orbits in one direction, as a planet would.",
      "cite": [
       "10.3847/2041-8213/ab91a0"
      ]
@@ -214,7 +217,7 @@
      ]
     },
     {
-     "text": "far more than is thought to be there.",
+     "text": "far more than anyone thinks is there.",
      "cite": [
       "10.3847/1538-3881/aaf0fc"
      ]
@@ -242,7 +245,8 @@
     "detached": "partial",
     "inclined": "yes",
     "nondetection": "yes"
-   }
+   },
+   "short": "A tilting swarm"
   },
   {
    "id": "stellar_flyby",
@@ -259,13 +263,13 @@
      ]
     },
     {
-     "text": "A single strong encounter could also leave the orbits pointing one way.",
+     "text": "One strong pass like that could also leave the orbits pointing one way.",
      "cite": [
       "10.1038/nature13156"
      ]
     },
     {
-     "text": "One recent fit, a star a little smaller than the Sun passing about 110 AU away, also reproduces the tilted orbits, even those that run backwards.",
+     "text": "One recent simulation, a star a little smaller than the Sun passing about 110 AU away, also reproduces the steeply tilted orbits, even those that run backwards.",
      "cite": [
       "10.1038/s41550-024-02349-x"
      ]
@@ -273,7 +277,7 @@
    ],
    "struggles": [
     {
-     "text": "Left alone, the giant planets would spread the orbits out again in far less time than the age of the solar system.",
+     "text": "Left alone afterwards, the giant planets would spread the orbits out again in far less time than the age of the solar system.",
      "cite": [
       "10.1016/j.physrep.2019.01.009"
      ]
@@ -304,12 +308,13 @@
     "detached": "yes",
     "inclined": "yes",
     "nondetection": "yes"
-   }
+   },
+   "short": "A passing star"
   },
   {
    "id": "primordial_black_hole",
    "name": "A primordial black hole",
-   "tag": "left over from the early universe",
+   "tag": "a planet’s mass, the size of a grapefruit",
    "one_liner": "The perturber is real, but it is a grapefruit-sized black hole of the same mass rather than a planet.",
    "explain": [
     {
@@ -327,7 +332,7 @@
    ],
    "struggles": [
     {
-     "text": "It needs such black holes to exist and the Sun to have captured one, and it could be confirmed only indirectly, through faint signals from dark matter gathered around it.",
+     "text": "Such black holes would have to exist and the Sun would have to have captured one, and it could be confirmed only indirectly.",
      "cite": [
       "10.1103/PhysRevLett.125.051103"
      ]
@@ -353,7 +358,8 @@
     "detached": "yes",
     "inclined": "yes",
     "nondetection": "yes"
-   }
+   },
+   "short": "A black hole"
   },
   {
    "id": "modified_gravity",
@@ -368,7 +374,7 @@
      ]
     },
     {
-     "text": "One such law, proposed to explain how galaxies spin, would bunch the distant orbits and line them up with the direction of the galaxy's centre, with no extra body to find.",
+     "text": "One such law, proposed to explain how galaxies spin, would bunch the distant orbits with no extra body to find.",
      "cite": [
       "10.3847/1538-3881/acef1e"
      ]
@@ -376,13 +382,13 @@
    ],
    "struggles": [
     {
-     "text": "Saturn's orbit, tracked closely with the Cassini spacecraft, needs no extra pull to explain it,",
+     "text": "But Saturn's orbit, measured very precisely by the Cassini spacecraft, shows no extra pull,",
      "cite": [
       "10.1051/0004-6361/202037919"
      ]
     },
     {
-     "text": "and simulated over the Sun's lifetime, its most popular form fails to reproduce the comets that fall in from the solar system's far edge, or the orbits cut off from Neptune.",
+     "text": "and in simulations over the Sun's lifetime it fails to reproduce the comets that fall in from the far edge of the solar system, or the orbits cut off from Neptune.",
      "cite": [
       "10.3847/1538-4357/ad40a3"
      ]
@@ -409,7 +415,8 @@
     "detached": "no",
     "inclined": "no",
     "nondetection": "yes"
-   }
+   },
+   "short": "Different gravity"
   },
   {
    "id": "small_sample",
@@ -418,13 +425,13 @@
    "one_liner": "With only a handful of well-determined extreme orbits, an apparent alignment can simply be luck.",
    "explain": [
     {
-     "text": "The case began with six distant objects, and the set with well-known orbits is still small.",
+     "text": "The case began with just six distant objects, and the set with well-known orbits is still small.",
      "cite": [
       "10.3847/0004-6256/151/2/22"
      ]
     },
     {
-     "text": "In a set that small, a few orbits lining up by chance is not unusual.",
+     "text": "In a small set, a few orbits lining up by chance is not unusual, as shuffling the sky on the last page shows.",
      "cite": [
       "10.3847/1538-3881/aa7aed"
      ]
@@ -432,7 +439,7 @@
    ],
    "struggles": [
     {
-     "text": "As more objects have been found, the planet's proposers still find the bunching unlikely to be chance.",
+     "text": "As more objects have been found, Brown and Batygin still find the lean unlikely to be chance.",
      "cite": [
       "10.3847/1538-3881/aaf051",
       "10.3847/1538-3881/ac2056"
@@ -460,31 +467,32 @@
     "detached": "no",
     "inclined": "no",
     "nondetection": "yes"
-   }
+   },
+   "short": "Luck"
   }
  ],
  "phenomena": [
   {
    "id": "clustering",
-   "label": "Orbits bunched in one direction",
-   "short": "Bunched",
-   "plain": "The distant objects' closest-approach points lean the same way."
+   "label": "Orbits pointing one way",
+   "short": "One way",
+   "plain": "Most distant orbits point the same way, as on the clustering page."
   },
   {
    "id": "detached",
-   "label": "Objects cut off from Neptune",
-   "short": "Cut off",
-   "plain": "Bodies like Sedna never come close enough for Neptune to have moved them."
+   "label": "Orbits beyond Neptune’s reach",
+   "short": "Beyond Neptune",
+   "plain": "Some orbits, like Sedna’s, never come near enough for Neptune to have moved them."
   },
   {
    "id": "inclined",
    "label": "Steeply tilted orbits",
    "short": "Tilted",
-   "plain": "Some distant objects orbit far out of the plane of the planets."
+   "plain": "Some distant orbits are tipped far out of the plane of the planets."
   },
   {
    "id": "nondetection",
-   "label": "Nothing has been found",
+   "label": "Nothing found yet",
    "short": "Not found",
    "plain": "A decade of searching has turned up no planet."
   }

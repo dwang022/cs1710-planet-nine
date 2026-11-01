@@ -18,9 +18,9 @@ import { ROW_ART, PANEL_ART } from './altart.js'
 import { au } from './field.js'
 
 export const MARK = {
-  yes: 'Accounts for it',
+  yes: 'Explains it',
   partial: 'Partly',
-  no: 'Does not',
+  no: 'Doesn’t',
 }
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
@@ -67,7 +67,7 @@ export function drawScorecard (table, { alternatives, phenomena, papers }) {
   const cols = phenomena.length + 2
 
   const head = `<thead><tr>
-    <th scope="col" class="alt-h-name">Explanation</th>
+    <th scope="col" class="alt-h-name">The idea</th>
     ${phenomena.map(p => `<th scope="col" class="alt-h-test" title="${esc(p.plain)}"><span class="long">${esc(p.label)}</span><span class="short" aria-hidden="true">${esc(p.short || p.label)}</span></th>`).join('')}
     <th scope="col" class="alt-h-more"><span class="vh">Details</span></th>
   </tr></thead>`

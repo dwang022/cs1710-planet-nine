@@ -14,12 +14,11 @@ import { ORBIT_ART } from '../charts/orbitart.js'
 import { makeCatalogue } from '../charts/catalogue.js'
 import { drawArcs } from '../charts/arcs.js'
 import { STRICT } from '../sample.js'
+import { isOriginalSix } from '../orbits.js'
 
 const $ = s => document.querySelector(s)
 const fmt = d3.format(',')
 
-// The six objects Batygin & Brown (2016) built the proposal on.
-const ORIGINAL_SIX = ['Sedna', '2012 VP113', '2004 VN112', '2010 GB174', '2007 TG422', '2013 RF98']
 
 const getJSON = p => fetch(url(p)).then(r => (r.ok ? r.json() : null)).catch(() => null)
 
@@ -73,7 +72,7 @@ async function main () {
   }
 
   // --- every known body beyond Neptune, level by level --------------------------------
-  const six = o => ORIGINAL_SIX.includes(o.name) || ORIGINAL_SIX.includes(o.provisional_desig)
+  const six = isOriginalSix
   const objects = etnos.map(o => ({
     ...o, levels: ['extreme', ...(o.well_determined ? ['measured'] : []), ...(six(o) ? ['six'] : [])],
   }))

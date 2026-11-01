@@ -114,6 +114,10 @@ export const PLANET_NINE = {
   doi: 'https://doi.org/10.3847/1538-3881/ac2056',
 }
 
+/** The six objects Batygin & Brown (2016) built the proposal on, by name or provisional designation. */
+export const ORIGINAL_SIX = ['Sedna', '2012 VP113', '2004 VN112', '2010 GB174', '2007 TG422', '2013 RF98']
+export const isOriginalSix = o => ORIGINAL_SIX.includes(o.name) || ORIGINAL_SIX.includes(o.provisional_desig)
+
 /** Circular difference a - b, wrapped to [-180, 180]. */
 export function angleDiff (a, b) {
   return ((a - b + 540) % 360) - 180

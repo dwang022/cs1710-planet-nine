@@ -4,6 +4,9 @@ import * as d3 from 'd3'
 import '../site.js'
 import { loadData, showLoadError } from '../data.js'
 import { drawField, PICK } from '../charts/field.js'
+// the site's scroll entrances (.reveal, is-in, --reveal-ease): the ledger's cards below use its easing too
+import '../scrolly.css'
+import { scrollyProgress } from '../scrolly.js'
 
 const $ = s => document.querySelector(s)
 const SKY_SQ_DEG = 41253
@@ -46,7 +49,8 @@ function drawDepth (root, surveys, p9) {
     return x(d.depth_mag) > W - M.right - 60 ? 'end' : x(d.depth_mag) < M.left + 60 ? 'start' : 'middle'
   }
   const lx = d => x(d.depth_mag) + (twin(d).length > 1 ? (anchor(d) === 'end' ? -7 : 7) : 0)
-  const g = svg.selectAll('g.s').data(rows).join('g').attr('class', 's')
+  // --i: each survey's place left to right, for the chart's entrance (style.css)
+  const g = svg.selectAll('g.s').data(rows).join('g').attr('class', 's').style('--i', (d, i) => i)
   g.append('line').attr('x1', d => x(d.depth_mag)).attr('x2', d => x(d.depth_mag))
     .attr('y1', (d, i) => twin(d).length > 1 ? tier(i) - 10 : tier(i) + 20).attr('y2', y)
     .attr('stroke', d => ink(d, p9)).attr('stroke-width', 2).attr('stroke-dasharray', d => d.future ? '4 3' : null)
@@ -83,7 +87,7 @@ function drawDepthTall (root, surveys, p9) {
   const rows = surveys.slice().sort((a, b) => a.depth_mag - b.depth_mag)
   let prev = -Infinity
   for (const d of rows) { d.ly = Math.max(y(d.depth_mag) + 4, prev + 32); prev = d.ly }
-  const g = svg.selectAll('g.s').data(rows).join('g').attr('class', 's')
+  const g = svg.selectAll('g.s').data(rows).join('g').attr('class', 's').style('--i', (d, i) => i)
   g.append('path').attr('d', d => `M${AX},${y(d.depth_mag)} L${AX + 14},${y(d.depth_mag)} L${LX - 6},${d.ly - 4}`)
     .attr('fill', 'none').attr('stroke', d => ink(d, p9)).attr('stroke-width', 1.5).attr('stroke-dasharray', d => d.future ? '4 3' : null)
   g.append('circle').attr('cx', AX).attr('cy', d => y(d.depth_mag)).attr('r', 5).attr('fill', d => ink(d, p9))
@@ -103,7 +107,141 @@ function miniRuler (p9, wide, rubin) {
     ${mark(wide, 'var(--text-secondary)', 18)}${mark(rubin, 'var(--series-4)', 32, '4 3')}</svg>`
 }
 
+/**
+ * Bring elements in as they reach the screen and reset them once they are well off it, so they come in again from
+ * either direction: the ledger's two observers (charts/field.js), the bottom 8% of the screen to enter and 10% past
+ * its edges to leave, so an element on the boundary cannot flicker. The look is scrolly.css's .reveal (or, for the
+ * chart, style.css); readers who ask for less motion get everything shown.
+ */
+function revealOnScroll (els) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return
+  document.documentElement.classList.add('has-reveal')
+  // Put each element in its waiting look at once, with its transition off for that moment: otherwise one already drawn
+  // (the beats, at the top) would start fading out toward it, and come in from part way when it is marked in.
+  for (const el of els) el.style.transition = 'none'
+  for (const el of els) void getComputedStyle(el).opacity
+  for (const el of els) el.style.transition = ''
+  const enter = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) e.target.classList.add('is-in') }, { rootMargin: '0px 0px -8% 0px', threshold: 0 })
+  const leave = new IntersectionObserver(es => { for (const e of es) if (!e.isIntersecting) e.target.classList.remove('is-in') }, { rootMargin: '10% 0px 10% 0px', threshold: 0 })
+  // site.js keeps the page hidden until its fonts are in (data-ready); start watching only then, or what is on screen
+  // at load would play its entrance unseen
+  const root = document.documentElement
+  const start = () => requestAnimationFrame(() => { for (const el of els) { enter.observe(el); leave.observe(el) } })
+  if (root.hasAttribute('data-ready')) return start()
+  const mo = new MutationObserver(() => { if (root.hasAttribute('data-ready')) { mo.disconnect(); start() } })
+  mo.observe(root, { attributes: true, attributeFilter: ['data-ready'] })
+}
+
+/**
+ * What to watch, one card at a time. The cards share one place; a dot per card (bright for the one showing, soft for
+ * those passed), a count, and Previous and Next move between them.
+ *
+ * On a wide screen tall enough for it (and for readers who have not asked for less motion) the whole section, heading
+ * included, stays pinned below the nav while the reader scrolls past one empty step per card, and the scroll position
+ * picks the card (scrollyProgress, scrolly.js: the last step whose middle has passed the middle of the screen, read on
+ * each frame, so it follows the reader both ways and nothing holds the wheel). A button or dot shows its card at once
+ * and scrolls to that card's step; until the scroll gets there the steps it passes are ignored, so the cards between do
+ * not flash by, and any wheel or touch from the reader hands control straight back to the scroll.
+ *
+ * Elsewhere the reader steps through by hand: no pinning, no steps. The cards not showing are inert either way.
+ */
+function watchOneByOne (story) {
+  const cards = [...story.querySelectorAll('#nextLedger .fr')]
+  const n = cards.length
+  if (!n) return
+  const title = c => c.querySelector('.fr-title').textContent
+  story.querySelector('.nx-dots').innerHTML = cards.map((c, i) => `<li><button type="button" class="nx-dot" data-i="${i}"
+    aria-label="${i + 1} of ${n}: ${title(c).replace(/"/g, '&quot;')}"></button></li>`).join('')
+  // one step per card, then a spacer (not a step) so the last card stays as long as the others before the section moves on
+  story.querySelector('.nx-steps').innerHTML = cards.map((c, i) => `<div class="step nx-step" data-step="${i}" aria-hidden="true"></div>`).join('') +
+    '<div class="nx-tail" aria-hidden="true"></div>'
+  const dots = [...story.querySelectorAll('.nx-dot')], steps = [...story.querySelectorAll('.nx-step')]
+  const prev = story.querySelector('.nx-prev'), next = story.querySelector('.nx-next')
+  const count = story.querySelector('.nx-count'), status = story.querySelector('.nx-status')
+  const pin = story.querySelector('.nx-pin')
+  const fits = window.matchMedia('(min-width: 901px) and (min-height: 700px)')
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  let at = -1, pending = null, pendingTimer = 0
+  const scrolled = () => story.classList.contains('is-told')
+
+  function show (k, { announce = true } = {}) {
+    if (k === at) return
+    at = k
+    cards.forEach((c, i) => {
+      c.classList.toggle('is-active', i === k)
+      c.classList.toggle('is-before', i < k)
+      c.inert = i !== k
+    })
+    dots.forEach((d, i) => {
+      d.classList.toggle('is-done', i < k)
+      if (i === k) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current')
+    })
+    count.textContent = `${k + 1} of ${n}`
+    // aria-disabled, not disabled, so a button keeps focus when it reaches the end
+    prev.setAttribute('aria-disabled', String(k === 0))
+    next.setAttribute('aria-disabled', String(k === n - 1))
+    if (announce) status.textContent = `${k + 1} of ${n}. ${title(cards[k])}`
+  }
+
+  function go (k) {
+    k = Math.max(0, Math.min(n - 1, k))
+    show(k)
+    if (!scrolled()) return
+    // scroll so this card's step has just passed the middle of the screen; ignore the steps passed on the way
+    pending = k
+    clearTimeout(pendingTimer)
+    pendingTimer = setTimeout(() => { pending = null }, 1600)
+    const r = steps[k].getBoundingClientRect()
+    window.scrollTo({ top: window.scrollY + r.top + r.height / 2 - window.innerHeight / 2 + 4, behavior: reduce ? 'auto' : 'smooth' })
+  }
+  const release = () => { pending = null }
+  window.addEventListener('wheel', release, { passive: true })
+  window.addEventListener('touchstart', release, { passive: true })
+
+  prev.addEventListener('click', () => { if (at > 0) go(at - 1) })
+  next.addEventListener('click', () => { if (at < n - 1) go(at + 1) })
+  dots.forEach((d, i) => d.addEventListener('click', () => go(i)))
+
+  // the steps start alongside the panel, a little above its foot, so the first card's share of the scroll matches the rest
+  const place = () => story.style.setProperty('--nx-pin-h', `${pin.offsetHeight}px`)
+  function mode () {
+    story.classList.add('is-deck')
+    story.classList.toggle('is-told', fits.matches && !reduce)
+    place()
+  }
+  new ResizeObserver(place).observe(pin)
+  fits.addEventListener('change', mode)
+  mode()
+  show(0, { announce: false })
+  scrollyProgress(story, k => {
+    if (!scrolled()) return
+    if (pending !== null) { if (k === pending) pending = null; return }
+    show(k)
+  })
+}
+
 async function main () {
+  // The entrances: the three beats one after another, left to right; each row of the schedule on its own; the two
+  // verdicts together; the ruler's surveys from brightest to faintest once it is on screen (style.css). Set up before
+  // the data loads, while site.js still keeps the page hidden, so the beats at the top are first painted waiting and
+  // play as the page appears.
+  const beats = [...document.querySelectorAll('.page-head .beats li')]
+  beats.forEach((li, i) => { li.classList.add('reveal'); li.style.setProperty('--reveal-delay', `${i * 170}ms`) })
+  const rows = [...document.querySelectorAll('#when .when li')]
+  const verdicts = $('#verdicts .verdict-cards')
+  const question = $('#finalQuestion')   // its parts follow it in, one after another (style.css)
+  for (const el of [...rows, verdicts, question]) el.classList.add('reveal')
+  revealOnScroll([...beats, ...rows, verdicts, $('#chartDepth'), question])
+
+  // The reader's verdict: one answer at a time, changeable, shown as a line under the buttons. Nothing is kept or sent.
+  question.addEventListener('click', e => {
+    const b = e.target.closest('.cq-btn'); if (!b) return
+    const answer = b.dataset.answer
+    question.querySelectorAll('.cq-btn').forEach(x => x.setAttribute('aria-pressed', String(x === b)))
+    question.querySelectorAll('.cq-answer').forEach(p => p.classList.toggle('is-shown', p.dataset.answer === answer))
+    question.querySelector('.cq-status').textContent = question.querySelector(`.cq-answer[data-answer="${answer}"]`).textContent
+  })
+
   const { surveys: sv, planet_nine_predictions: PRED, field_timeline: FIELD, papers: PAPERS } = await loadData('surveys', 'planet_nine_predictions', 'field_timeline', 'papers')
   const SHORT = { ps1: 'Pan-STARRS1', css: 'Catalina', ztf: 'ZTF', des: 'Dark Energy Survey', ossos: 'OSSOS', hsc_ssp: 'Subaru', lsst: 'Rubin' }
   const optical = sv.surveys.filter(s => s.wavelength === 'optical' && s.depth_mag != null).map(s => ({ ...s, short: SHORT[s.id] || s.name }))
@@ -123,8 +261,10 @@ async function main () {
   draw()
   window.matchMedia(NARROW).addEventListener('change', draw)
 
-  // one lane, so the ledger draws no key
+  // one lane, so the ledger draws no key; its cards come in by themselves (charts/field.js), their drawings after them
   drawField($('#nextLedger'), { timeline: FIELD, papers: PAPERS.papers, filter: PICK.next, dated: false, lanes: ['next'] })
+  watchOneByOne($('#nextStory'))
+
 }
 
 main().catch(showLoadError)

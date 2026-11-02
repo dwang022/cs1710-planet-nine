@@ -4,12 +4,18 @@
 // Every number is from planet_nine_predictions.json, which tags its sources.
 // On phones (640 px and narrower) time runs down instead: one row per paper,
 // its distance and its mass side by side, drawn at the width of the screen.
+//
+// Each paper's marks (its range and value in both strips, or its row on a
+// phone) are a .pg group carrying --i, its place in time order, so the page can
+// bring them in as one wave from 2016 on (the entrance is CSS, in style.css).
 
 import * as d3 from 'd3'
 
-const W = 900, H = 470
-const M = { top: 96, right: 30, bottom: 40, left: 64 }
-const GAP = 70
+// The top margin holds the distance strip's title and, under it, the papers' labels; the gap between the strips holds
+// the mass strip's title. Both strips keep the same height (132) and scales as before the titles were enlarged.
+const W = 900, H = 528
+const M = { top: 124, right: 30, bottom: 40, left: 64 }
+const GAP = 100
 
 function ranges (p) {
   const a = p.a_au_range || p.distance_au_range || (p.a_au != null && p.a_au_err ? [p.a_au + p.a_au_err[0], p.a_au + p.a_au_err[1]] : p.a_au != null ? [p.a_au, p.a_au] : null)
@@ -44,7 +50,11 @@ export function drawProposals (root, predictions) {
 
   const panel = (y, title, unit, ticks, cls = '') => {
     const g = svg.append('g')
-    g.append('text').attr('x', M.left).attr('y', y.range()[1] - (y === yA ? 76 : 16)).attr('font-size', 14).attr('font-weight', 600).attr('fill', 'var(--text-primary)').text(title)
+    // each strip's title: a heading, larger than every other word on the chart, with a short bar in the planet's colour
+    // before it; both start at the same x
+    const ty = y.range()[1] - (y === yA ? 98 : 38)
+    g.append('rect').attr('class', 'pr-accent').attr('x', M.left).attr('y', ty - 19).attr('width', 4).attr('height', 24).attr('rx', 2).attr('fill', 'var(--p9)')
+    g.append('text').attr('class', 'pr-title').attr('x', M.left + 14).attr('y', ty).attr('font-size', 23).attr('font-weight', 700).attr('fill', 'var(--text-primary)').text(title)
     g.selectAll('line').data(ticks).join('line').attr('class', 'gridline').attr('x1', M.left).attr('x2', M.left + iw).attr('y1', d => y(d)).attr('y2', d => y(d))
     g.selectAll('text.t').data(ticks).join('text').attr('class', `t axis-label ${cls}`).attr('x', M.left - 8).attr('y', d => y(d) + 4).attr('text-anchor', 'end').text(d => `${d}${unit}`)
     return g
@@ -58,9 +68,11 @@ export function drawProposals (root, predictions) {
   xa.selectAll('text').attr('class', 'axis-label').attr('font-size', 12)
   xa.selectAll('line, path').attr('stroke', 'var(--rule)')
 
+  // a paper's place left to right, the same in both strips, so its distance and mass come in together
+  const order = rows.slice().sort((a, b) => a.xy - b.xy)
   const strip = (y, key, mid, open) => {
     const g = svg.append('g')
-    const r = g.selectAll('g').data(rows.filter(p => p[key])).join('g')
+    const r = g.selectAll('g').data(rows.filter(p => p[key])).join('g').attr('class', 'pg').style('--i', p => order.indexOf(p))
     r.append('line').attr('x1', p => x(p.xy)).attr('x2', p => x(p.xy))
       .attr('y1', p => y(p[key][0])).attr('y2', p => y(Math.min(y.domain()[1], p[key][1])))
       .attr('stroke', colour).attr('stroke-width', 10).attr('stroke-linecap', 'round').attr('opacity', .45)
@@ -87,7 +99,7 @@ export function drawProposals (root, predictions) {
 /** Phones: one row per paper, time running down; distance and mass side by side, at 1:1 so text stays readable. */
 function drawNarrow (root, rows) {
   const W = Math.max(280, Math.round(root.clientWidth || 320))
-  const ROW = 50, TOP = 52
+  const ROW = 50, TOP = 64
   const H = TOP + rows.length * ROW + 4
   const svg = d3.select(root).selectAll('svg').data([0]).join('svg')
     .attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', ARIA)
@@ -100,13 +112,19 @@ function drawNarrow (root, rows) {
     { x: xM, key: 'm', mid: 'mMid', title: 'Mass (Earth masses)', ticks: [0, 10, 20], unit: '', cls: '' },
   ]
   for (const c of cols) {
-    svg.append('text').attr('x', c.x.range()[0]).attr('y', 14).attr('font-size', 13).attr('font-weight', 600).attr('fill', 'var(--text-primary)').text(c.title)
+    // the same headings as the wide chart, sized to a half-width column
+    svg.append('rect').attr('class', 'pr-accent').attr('x', c.x.range()[0]).attr('y', 1).attr('width', 3).attr('height', 18).attr('rx', 1.5).attr('fill', 'var(--p9)')
+    const t = svg.append('text').attr('class', 'pr-title').attr('x', c.x.range()[0] + 9).attr('y', 16).attr('font-size', 17.5).attr('font-weight', 700).attr('fill', 'var(--text-primary)').text(c.title)
+    // a heading may use the gap after its column; on the narrowest phones it is set smaller rather than run past that
+    const end = c === cols[0] ? cols[1].x.range()[0] - 10 : W - 2
+    const room = end - c.x.range()[0] - 9, len = t.node().getComputedTextLength()
+    if (len > room) t.attr('font-size', (17.5 * room / len).toFixed(1))
     svg.selectAll(null).data(c.ticks).join('line').attr('class', 'gridline').attr('x1', d => c.x(d)).attr('x2', d => c.x(d)).attr('y1', TOP - 14).attr('y2', H)
     svg.selectAll(null).data(c.ticks).join('text').attr('class', `axis-label ${c.cls}`).attr('font-size', 11.5)
       .attr('x', d => c.x(d)).attr('y', TOP - 20).attr('text-anchor', (d, i) => i === 0 ? 'start' : i === c.ticks.length - 1 ? 'end' : 'middle')
       .text(d => `${d}${d ? c.unit : ''}`)
   }
-  const g = svg.selectAll('g.row').data(rows.slice().sort((a, b) => a.year - b.year)).join('g').attr('class', 'row')
+  const g = svg.selectAll('g.row').data(rows.slice().sort((a, b) => a.year - b.year)).join('g').attr('class', 'row pg').style('--i', (p, i) => i)
     .attr('transform', (p, i) => `translate(0,${TOP + i * ROW})`)
   g.append('text').attr('x', 4).attr('y', 16).attr('font-size', 12.5).attr('font-weight', 600)
     .attr('fill', p => p.candidate ? 'var(--series-2-ink)' : 'var(--text-secondary)').text(p => shortLabel(p))

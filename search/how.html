@@ -37,15 +37,17 @@
     </div>
     <div class="scrolly wrap wide" id="skyStory">
       <div class="scrolly-graphic">
-        <div class="viz-head"><div class="legend" id="skyLegend"></div><div class="chip-row" id="surveyChips" hidden></div></div>
+        <div class="viz-head"><div class="legend" id="skyLegend"></div></div>
         <div class="viz" id="chartSky"></div>
+        <!-- the survey chips sit under the map they outline; they keep their room on every step and appear on the last -->
+        <div class="chip-row" id="surveyChips" role="group" aria-label="Outline a survey on the map"></div>
       </div>
       <div class="scrolly-steps">
         <div class="step" data-step="sky"><div class="step-card">
           <div class="step-n">1 / 9</div>
           <h3>This oval is the whole sky</h3>
           <ul>
-            <li>It is flattened the way a world map flattens the globe, with north at the top.</li>
+            <li>Every direction you could look from Earth, flattened the way a world map flattens the globe, with north at the top.</li>
             <li>The faint curve is the <strong>ecliptic</strong>, the path the Sun and planets follow across the sky.</li>
           </ul>
         </div></div>
@@ -62,7 +64,8 @@
           <div class="step-n">3 / 9</div>
           <h3>Telescopes have photographed nearly all of it</h3>
           <ul>
-            <li>Every shaded area is covered by at least one large sky survey.</li>
+            <li>A sky survey is a telescope photographing a large part of the sky, patch by patch.</li>
+            <li>Every shaded area is covered by at least one of them.</li>
           </ul>
           <p class="step-key">So why hasn't anyone spotted it?</p>
         </div></div>
@@ -71,7 +74,8 @@
           <h3>Because a photo can be too shallow</h3>
           <ul>
             <li>Planet Nine would be faint, about <strong>magnitude <span data-n="vMin">—</span> to <span data-n="vMax">—</span></strong>.</li>
-            <li>Bigger magnitudes are fainter. The eye gives out at about 6.</li>
+            <li>Magnitude counts backwards, so bigger numbers are fainter. The eye gives out at about 6.</li>
+            <li>Even at its brightest it would be <span data-n="eyeFactor">—</span> times fainter than that.</li>
           </ul>
           <p class="step-key">Most of the sky has been photographed only to about magnitude <span data-n="wideDepth">—</span>.</p>
         </div></div>
@@ -89,7 +93,7 @@
           <div class="step-n">6 / 9</div>
           <h3>Most of the path has never been searched deeply</h3>
           <ul>
-            <li><span class="k-warn">These stretches</span> cross sky photographed only shallowly.</li>
+            <li><span class="k-warn">These stretches</span> cross sky never photographed to magnitude <span data-n="deepMag">—</span>.</li>
           </ul>
           <p class="step-key">That is <span data-n="thinPct">—</span>% of the path. A faint planet there could have
           slipped through.</p>
@@ -131,7 +135,8 @@
     </div>
   </section>
 
-  <!-- the searches so far: the ledger's search, limit, candidate and survey rows (charts/field.js) -->
+  <!-- the searches so far: the ledger's search, limit, candidate and survey rows, one at a time along a line of
+       years with Previous and Next (charts/searchsteps.js, drawing each row with charts/field.js) -->
   <section class="part wrap" id="searches">
     <div class="sec-head">
       <h2>The searches so far</h2>
@@ -147,7 +152,12 @@
   <section class="part wrap" id="build">
     <div class="sec-head">
       <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Put a planet out there</h2>
-      <p>Score a planet against the real orbits and the searches so far. It starts at the 2021 best fit.</p>
+      <!-- the question says what the reader is testing; the paragraph how to move the planet and what to aim for -->
+      <p class="sec-q">Could you design a Planet Nine that explains the evidence and has escaped detection?</p>
+      <p>Become the astronomer! Adjust your planet’s distance, orbital shape, tilt, direction, and mass using the sliders
+      below. As you experiment, watch its orbit change and see how well your planet matches the observed objects, fits
+      scientific predictions, and could still be hiding from telescopes. Your goal is to find a planet that scores well
+      across all three measures.</p>
     </div>
     <div class="place-stage">
       <div class="pic place-pic">

@@ -95,8 +95,14 @@ function branchRow (e, compact, lines) {
     new Map(), b.from || 'What its finders concluded', compact, lines)
 }
 
+/** One full milestone as the ledger draws it, its hung for/against row included (the search page's stepper,
+    charts/searchsteps.js, shows one at a time). */
+export function milestone (e, byDoi) {
+  return row(e, byDoi) + (e.branch ? branchRow(e, false, true) : '')
+}
+
 /** The portraits beside the lines: one dim line, the full credits on the credits page. */
-function credits (entries) {
+export function credits (entries) {
   const licences = new Set()
   for (const e of entries) for (const p of e.photos || []) if (p.src) licences.add(p.license)
   if (!licences.size) return ''

@@ -7,16 +7,21 @@
 // Nothing here is invented; the footprints are schematic dec/RA bands and are
 // labelled as such in the caption.
 //
-// Clicking a footprint or an object opens a card (.pick-card) that stays until
-// its close button or Escape. On phones (700 px and narrower) the map is cropped
+// Clicking a footprint or an object (or focusing it and pressing Enter, in the
+// explore step) opens a card (.pick-card) that stays until its close button or
+// Escape. Every layer is kept in the DOM and faded in or out per step, so
+// scrolling back up undoes a step as smoothly as scrolling down made it. On phones (700 px and narrower) the map is cropped
 // to the band between declinations -62 and +62, where the path and every survey
 // that matters lie, and its marks are drawn heavier so they survive the scale.
 
 import * as d3 from 'd3'
 import { registerHighlight, setHover } from '../highlight.js'
 
-const W = 940, H = 500
-const M = { top: 26, right: 16, bottom: 34, left: 16 }
+// The plot area is exactly 2:1, the shape of a Mollweide map; the bottom
+// margin holds the right-ascension axis and nothing sits above the oval.
+const W = 940
+const M = { top: 10, right: 16, bottom: 40, left: 16 }
+const H = M.top + (W - M.left - M.right) / 2 + M.bottom
 const D = Math.PI / 180
 
 // J2000 galactic frame constants (IAU): north galactic pole and the galactic
@@ -101,7 +106,8 @@ export const ALL_LAYERS = {
   surveys: 'depth', track: true, unsearched: true, milky: true,
   perihelia: true, future: false, notes: [],
 }
-const T = 650
+// Readers who ask for less motion get the same steps without the fades.
+const T = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650
 
 /** Equatorial [RA, Dec] of a point on the galactic plane, for labels. */
 export const galacticPoint = galacticToEquatorial
@@ -168,6 +174,10 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     card.attr('hidden', null).html(`<button type="button" class="pick-close" aria-label="Close">×</button>${html}`)
     card.select('.pick-close').on('click', closeCard).node().focus({ preventScroll: true })
   }
+  // Enter or Space on a focused mark does what a click does
+  const onKey = fn => (ev, d) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); fn(ev, d) } }
+  const explore = !!L.perihelia
+  svg.classed('is-explore', explore)
   // a new story step shows different layers, so a card left open from the last one goes
   const sceneKey = [L.surveys, L.perihelia, L.future, L.milky, L.unsearched].join('|')
   if (root.__scene !== undefined && root.__scene !== sceneKey && !card.attr('hidden')) closeCard()
@@ -257,24 +267,31 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     if (L.surveys === 'deep') return isDeep(d.s) ? 0.9 : 0.06
     return activeSurvey && activeSurvey !== d.s.id ? 0.25 : 0.62
   }
-  const fp = layers.selectAll('path.fp').data(patches, (d, i) => d.s.id + '-' + i)
-  fp.exit().remove()
-  fp.enter().append('path').attr('class', 'fp').attr('fill-opacity', 0)
-    .merge(fp)
-    .attr('d', d => d3.line()(d.ring) + 'Z')
-    .style('pointer-events', d => fpOpacity(d) > 0.1 ? null : 'none')
-    .attr('stroke', d => d.s.future ? 'var(--series-4)' : activeSurvey === d.s.id ? 'var(--text-primary)' : 'none')
-    .attr('stroke-width', 2 * K)
-    .attr('stroke-dasharray', d => d.s.future ? '6 5' : null)
-    .style('cursor', 'pointer')
-    .on('click', (ev, d) => openCard(`
+  const openSurvey = (ev, d) => openCard(`
       <div class="pick-name">${d.s.short || d.s.name}</div>
       <dl>
         <dt>reaches</dt><dd>${d.s.depth_mag && d.s.wavelength === 'optical' ? 'magnitude ' + d.s.depth_mag : 'infrared only'}</dd>
         <dt>years</dt><dd>${d.s.years[0]}–${d.s.years[1]}</dd>
         ${d.s.area_sq_deg ? `<dt>sky covered</dt><dd>${Math.max(1, Math.round(100 * d.s.area_sq_deg / SKY_SQ_DEG))}%</dd>` : ''}
       </dl>
-      <p class="sky-verdict">${d.s.future ? 'Deep enough, from 2026' : isDeep(d.s) ? 'Deep enough' : 'Too shallow'}</p>`))
+      <p class="sky-verdict">${d.s.future ? 'Deep enough, from 2026' : isDeep(d.s) ? 'Deep enough' : 'Too shallow'}</p>`)
+  const fp = layers.selectAll('path.fp').data(patches, (d, i) => d.s.id + '-' + i)
+  fp.exit().remove()
+  fp.enter().append('path').attr('class', 'fp').attr('fill-opacity', 0).attr('stroke-opacity', 0)
+    .attr('role', 'button')
+    .merge(fp)
+    .classed('is-future', d => !!d.s.future)
+    .attr('d', d => d3.line()(d.ring) + 'Z')
+    .style('pointer-events', d => fpOpacity(d) > 0.1 ? null : 'none')
+    .attr('stroke', d => d.s.future ? 'var(--series-4)' : 'var(--text-primary)')
+    .attr('stroke-width', 2 * K)
+    .attr('stroke-dasharray', d => d.s.future ? '6 5' : null)
+    .style('cursor', 'pointer')
+    // only the explore step puts the footprints in the tab order, where its card says they can be clicked
+    .attr('tabindex', d => explore && fpOpacity(d) > 0.1 ? 0 : null)
+    .attr('aria-label', d => `${d.s.short || d.s.name}: details`)
+    .on('click', openSurvey)
+    .on('keydown', onKey(openSurvey))
     .transition().duration(T)
     .attr('fill', fpFill)
     .attr('fill-opacity', fpOpacity)
@@ -314,17 +331,16 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .attr('stroke-opacity', L.milky ? 0.45 : 0)
 
   // --- predicted Planet Nine path -----------------------------------------
-  const trackData = showTrack ? track.tracks : []
-  const tk = layers.selectAll('path.track').data(trackData, d => d.label)
-  tk.exit().transition().duration(T / 2).attr('opacity', 0).remove()
-  tk.enter().append('path').attr('class', 'track')
-    .attr('opacity', 0).call(e => e.transition().duration(T).attr('opacity', 1))
-    .merge(tk)
+  layers.selectAll('path.track').data(track.tracks, d => d.label)
+    .join(e => e.append('path').attr('class', 'track').attr('opacity', 0))
     .attr('d', d => segmentedPath(d.points.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none')
     .attr('stroke', 'var(--p9)')
     .attr('stroke-width', d => (d.label === 'nominal' ? 2.6 : 1.1) * K)
     .attr('stroke-opacity', d => d.label === 'nominal' ? 1 : 0.4)
+    .style('pointer-events', 'none')
+    .transition().duration(T)
+    .attr('opacity', showTrack ? 1 : 0)
 
   /** Fill between two parallel curves, split at the same wrap points. */
   function bandPath (upper, lower) {
@@ -372,7 +388,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   const P9_MAG = DEEP_MAG
   const nom = track.tracks.find(t => t.label === 'nominal')
   const unsearched = []
-  if (showTrack && L.unsearched && nom) {
+  if (nom) {
     let run = []
     for (const pt of nom.points) {
       const d = deepestAt(surveys, pt.ra_deg, pt.dec_deg)
@@ -381,14 +397,15 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     }
     if (run.length) unsearched.push(run)
   }
-  const us = layers.selectAll('path.unsearched').data(unsearched)
-  us.exit().remove()
-  us.enter().append('path').attr('class', 'unsearched')
-    .merge(us)
+  layers.selectAll('path.unsearched').data(unsearched)
+    .join(e => e.append('path').attr('class', 'unsearched').attr('opacity', 0))
     .attr('d', run => segmentedPath(run.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none').attr('stroke', 'var(--series-2)')
     .attr('stroke-width', 7 * K).attr('stroke-opacity', 0.55)
     .attr('stroke-linecap', 'round')
+    .style('pointer-events', 'none')
+    .transition().duration(T)
+    .attr('opacity', showTrack && L.unsearched ? 1 : 0)
 
   // --- where the predicted path is hardest to search -----------------------
   // The surviving parameter space is concentrated where Planet Nine's orbit
@@ -396,7 +413,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
   // leaving the reader to spot the overlap.
   const nominal = track.tracks.find(t => t.label === 'nominal')
   const buried = []
-  if (showTrack && L.milky && nominal) {
+  if (nominal) {
     let run = []
     for (const pt of nominal.points) {
       if (Math.abs(galacticLatitude(pt.ra_deg, pt.dec_deg)) <= 15) {
@@ -405,52 +422,61 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     }
     if (run.length) buried.push(run)
   }
-  const bd = layers.selectAll('path.buried').data(buried)
-  bd.exit().remove()
-  bd.enter().append('path').attr('class', 'buried')
-    .merge(bd)
+  const showBuried = showTrack && L.milky
+  layers.selectAll('path.buried').data(buried)
+    .join(e => e.append('path').attr('class', 'buried').attr('opacity', 0))
     .attr('d', run => segmentedPath(run.map(p => [p.ra_deg, p.dec_deg])))
     .attr('fill', 'none').attr('stroke', '#dcc48a')
     .attr('stroke-width', 6 * K).attr('stroke-opacity', 0.5)
     .attr('stroke-linecap', 'round')
+    .style('pointer-events', 'none')
+    .transition().duration(T)
+    .attr('opacity', showBuried ? 1 : 0)
 
   const labelled = buried.filter(r => r.length > 6)
-  const bl = layers.selectAll('text.buriedlabel').data(labelled)
-  bl.exit().remove()
-  bl.enter().append('text').attr('class', 'buriedlabel axis-label')
-    .merge(bl)
-    .style('fill', '#dcc48a').attr('font-weight', 600).attr('text-anchor', 'middle')
+  layers.selectAll('text.buriedlabel').data(labelled)
+    .join(e => e.append('text').attr('class', 'buriedlabel axis-label').attr('opacity', 0))
+    .style('fill', '#dcc48a').style('pointer-events', 'none').attr('font-weight', 600).attr('text-anchor', 'middle')
     .attr('x', run => mollweide(clampRA(run[Math.floor(run.length / 2)].ra_deg),
       run[Math.floor(run.length / 2)].dec_deg)[0])
     .attr('y', run => mollweide(clampRA(run[Math.floor(run.length / 2)].ra_deg),
       run[Math.floor(run.length / 2)].dec_deg)[1] - 16)
     .text('lost in the Milky Way')
+    .transition().duration(T)
+    .attr('opacity', showBuried ? 1 : 0)
 
   // --- perihelion directions of the real objects ---------------------------
   const shown = visibleIds
     ? perihelia.filter(d => visibleIds.has(d.id))
     : perihelia
-  const ph = layers.selectAll('circle.ph').data(showPerihelia ? shown : [], d => d.id)
-  ph.exit().remove()
-  ph.enter().append('circle').attr('class', 'ph')
-    .attr('stroke', 'var(--surface-2)')
-    .merge(ph)
-    .attr('r', 4 * K).attr('stroke-width', 1.2 * K)
-    .style('cursor', 'pointer')
-    .attr('cx', d => mollweide(clampRA(d.peri_ra_deg), d.peri_dec_deg)[0])
-    .attr('cy', d => mollweide(clampRA(d.peri_ra_deg), d.peri_dec_deg)[1])
-    .attr('fill', 'var(--series-1)')
-    .attr('opacity', d => d.well_determined ? 0.95 : 0.4)
-    .on('click', (ev, d) => {
-      openCard(`
+  const openObject = (ev, d) => {
+    openCard(`
         <div class="pick-name">${d.name || d.id}</div>
         <dl>
           <dt>average distance</dt><dd class="au">${fmtInt(d.a_au)} AU</dd>
           <dt>closest to the Sun</dt><dd class="au">${fmtInt(d.q_au)} AU</dd>
           <dt>seasons seen</dt><dd>${d.well_determined ? 'more than one' : 'one'}</dd>
         </dl>`)
-      setHover(d.id)
-    })
+    setHover(d.id)
+  }
+  // Kept in the DOM and faded, so they sprinkle in on the explore step and fade out going back.
+  const appearing = showPerihelia && !root.__phShown
+  root.__phShown = showPerihelia
+  layers.selectAll('circle.ph').data(shown, d => d.id)
+    .join(e => e.append('circle').attr('class', 'ph').attr('opacity', 0).attr('role', 'button'))
+    .attr('stroke', 'var(--surface-2)')
+    .attr('r', 4 * K).attr('stroke-width', 1.2 * K)
+    .style('cursor', 'pointer')
+    .style('pointer-events', showPerihelia ? null : 'none')
+    .attr('tabindex', showPerihelia ? 0 : null)
+    .attr('aria-label', d => `${d.name || d.id}: details`)
+    .attr('cx', d => mollweide(clampRA(d.peri_ra_deg), d.peri_dec_deg)[0])
+    .attr('cy', d => mollweide(clampRA(d.peri_ra_deg), d.peri_dec_deg)[1])
+    .attr('fill', 'var(--series-1)')
+    .on('click', openObject)
+    .on('keydown', onKey(openObject))
+    .transition().duration(T).delay((d, i) => appearing ? Math.min(i * 8, 400) : 0)
+    .attr('opacity', d => !showPerihelia ? 0 : d.well_determined ? 0.95 : 0.4)
 
   if (!root.__hl) {
     root.__hl = true
@@ -489,6 +515,14 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .attr('x', M.left + iw / 2).attr('y', M.top + ih + 32)
     .attr('text-anchor', 'middle')
     .text('position around the sky (right ascension)')
+  // north and south, just inside the oval's left edge (north is at the top, as the first card says)
+  let gDec = svg.select('g.sky-dec')
+  if (gDec.empty()) gDec = svg.append('g').attr('class', 'sky-dec').style('pointer-events', 'none')
+  gDec.selectAll('text.decl').data(gratDec).join('text')
+    .attr('class', 'decl axis-label')
+    .attr('x', d => mollweide(359.99, d)[0] + 6).attr('y', d => mollweide(359.99, d)[1] + (d === 0 ? -5 : 4))
+    .attr('text-anchor', 'start')
+    .text(d => d === 0 ? '0°' : `${Math.abs(d)}°${d > 0 ? 'N' : 'S'}`)
 }
 
 /** The same equal-area projection, fitted to a box: for the small drawings in a page head. */

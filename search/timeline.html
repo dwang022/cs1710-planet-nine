@@ -20,6 +20,9 @@
   </header>
 
   <section class="part wrap" id="ledger">
+    <!-- the key: what each lane's colour and icon mean (pages/timeline.js fills it). data-no-tint: the lane names are
+         lettered in their lane's colour, not Planet Nine's -->
+    <ul class="tl-key" id="ledgerKey" aria-label="What the colours mean" data-no-tint></ul>
     <!-- the sides, kept in view while the ledger scrolls: for a planet left, against right, data and searches between -->
     <div class="fl-sides" aria-hidden="true"><div class="fl-sides-in">
       <span class="fl-side is-for">← For a planet</span><span class="fl-side is-data">Data and searches</span><span class="fl-side is-against">Against a planet →</span>

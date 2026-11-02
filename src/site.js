@@ -96,7 +96,7 @@ function nav () {
   const groups = GROUPS.map(g => {
     const pages = PAGES.filter(p => p.group === g)
     return `<li class="nav-group${pages.some(p => p.id === cur.id) ? ' is-here' : ''}">
-      <span class="nav-group-k">${g}</span>
+      <span class="nav-group-k" data-group="${g}">${g}</span>
       <ul>${pages.map(p => `<li><a href="${url(p.path)}"${p.id === cur.id ? ' aria-current="page"' : ''}>${p.short}</a></li>`).join('')}</ul>
     </li>`
   }).join('')

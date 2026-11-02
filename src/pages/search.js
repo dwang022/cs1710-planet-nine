@@ -6,7 +6,8 @@ import * as d3 from 'd3'
 import '../site.js'
 import { loadData, showLoadError, url } from '../data.js'
 import { drawSkyMap, depthColour, deepestAt, galacticPoint, eclipticPoint, DEEP_MAG, skyThumb } from '../charts/skymap.js'
-import { drawField, PICK } from '../charts/field.js'
+import { PICK, legend } from '../charts/field.js'
+import { drawSearchSteps } from '../charts/searchsteps.js'
 import { drawPlacement, scorePlanet, brightnessModel } from '../charts/placeplanet.js'
 import { scrolly } from '../scrolly.js'
 import { resultant } from '../stats.js'
@@ -65,25 +66,33 @@ async function main () {
   // Each label is its own span: the legend items are flex rows, and site.js wraps "Planet Nine" in a
   // span of its own, which would otherwise become a separate flex item with a gap after it.
   const briefOnly = PERIHELIA.some(d => visibleIds.has(d.id) && !d.well_determined)
+  // Items new to this step fade in; the ones already there stay still, so the eye goes to what changed.
+  let legendShown = new Set()
   function renderSkyLegend (L) {
     const sw = (bg, extra = '') => `<span class="legend-swatch" style="background:${bg};${extra}"></span>`
+    // lines in the map get a line in the key
+    const ln = (bg, h = 3) => `<span class="legend-line" style="background:${bg};height:${h}px"></span>`
     const ramp = `linear-gradient(90deg, ${d3.range(0, 1.01, 0.1).map(t => depthColour(20 + t * 6)).join(',')})`
     const items = []
-    if (L.track) items.push(`${sw('var(--p9)')}<span>Planet Nine’s predicted path</span>`)
+    if (L.track) items.push(`${ln('var(--p9)')}<span>Planet Nine’s predicted path</span>`)
     if (L.surveys === 'coverage') items.push(`${sw('#4a4852')}<span>photographed by a sky survey</span>`)
     if (L.surveys === 'depth' || L.surveys === 'deep') items.push(`<span>shallow photos</span><span class="depth-ramp" style="background:${ramp}"></span><span>deep</span>`)
-    if (L.unsearched) items.push(`${sw('var(--series-2)')}<span>path not yet searched deeply</span>`)
+    if (L.unsearched) items.push(`${ln('var(--series-2)', 7)}<span>path not yet searched deeply</span>`)
     if (L.milky) items.push(`${sw('#dcc48a')}<span>Milky Way</span>`)
     if (L.future) items.push(`${sw('transparent', 'border:2px dashed var(--series-4)')}<span>Rubin Observatory</span>`)
     if (L.perihelia) items.push(`${sw('var(--series-1)', 'border-radius:50%')}<span>direction each object points</span>`)
     if (L.perihelia && briefOnly) items.push(`${sw('var(--series-1)', 'border-radius:50%;opacity:.4')}<span>seen in one season only</span>`)
-    $('#skyLegend').innerHTML = items.map(i => `<div class="legend-item">${i}</div>`).join('')
+    $('#skyLegend').innerHTML = items.map(i => `<div class="legend-item${legendShown.has(i) ? '' : ' is-new'}">${i}</div>`).join('')
+    legendShown = new Set(items)
   }
   function renderSky () {
     const scene = skyScene(story)
     drawSkyMap($('#chartSky'), { surveys: SURVEYS, track: SKY, perihelia: PERIHELIA, activeSurvey: story === 'explore' ? survey : null, visibleIds, scene })
     renderSkyLegend(scene)
-    $('#surveyChips').hidden = story !== 'explore'
+    // the chips keep their room on every step (so the map never jumps) and appear on the last one
+    const chips = $('#surveyChips')
+    chips.classList.toggle('is-shown', story === 'explore')
+    chips.inert = story !== 'explore'
   }
   // Only surveys the map actually draws get a chip (OSSOS has no verified footprint).
   $('#surveyChips').innerHTML = SURVEYS.filter(s => s.dec_range && s.ra_ranges && s.footprint_area_verified !== false).map(s =>
@@ -104,6 +113,10 @@ async function main () {
   const thin = nom.filter(pt => { const d = deepestAt(SURVEYS, pt.ra_deg, pt.dec_deg); return d === null || d < DEEP_MAG })
   const rubin = thin.filter(pt => (deepestAt(SURVEYS, pt.ra_deg, pt.dec_deg, { includeFuture: true }) ?? 0) >= DEEP_MAG)
   const V = PREDICTIONS.physical_properties.apparent_V_mag
+  // how many times fainter than the faintest star the eye can see (magnitude 6, as the card says) the
+  // brightest predicted Planet Nine is: five magnitudes are a factor of 100
+  const eye = 10 ** (0.4 * (V.min - 6))
+  const eyeWords = eye >= 1e6 ? `${eye < 1.5e6 ? 'a' : d3.format('.2~r')(eye / 1e6)} million` : d3.format(',.2r')(eye)
   const ruled = PREDICTIONS.search_exclusions.ps1_2024_cumulative.fraction_excluded
   const nums = {
     deepPct: Math.round(100 * deepArea / SKY_SQ_DEG),
@@ -112,7 +125,7 @@ async function main () {
     ruledPct: Math.round(100 * ruled),
     deepN: word(deepSurveys.length),
     deepMag: DEEP_MAG,
-    vMin: V.min, vMax: V.max,
+    vMin: V.min, vMax: V.max, eyeFactor: eyeWords,
     // the deepest any survey covering more than half the sky reaches
     wideDepth: d3.max(optical.filter(v => (v.area_sq_deg ?? 0) > SKY_SQ_DEG / 2), v => v.depth_mag),
     lsstMag: SURVEYS.find(v => v.future)?.depth_mag,
@@ -140,9 +153,12 @@ async function main () {
   window.matchMedia('(max-width: 700px)').addEventListener('change', renderSky)
 
   // --- the searches so far -----------------------------------------------------------------------
+  // One milestone at a time along a line of years (charts/searchsteps.js), each drawn as the ledger draws it.
   // The key lists only the lanes these rows use (a search's finders may hang a for or against reading off it).
-  const used = new Set(FIELD.entries.filter(PICK.searches).flatMap(e => [e.lane, e.branch?.side]))
-  drawField($('#searchLedger'), { timeline: FIELD, papers: PAPERS.papers, legend: $('#searchLegend'), filter: PICK.searches, future: false, lanes: ['data', 'for', 'against'].filter(l => used.has(l)) })
+  const searches = FIELD.entries.filter(PICK.searches)
+  const used = new Set(searches.flatMap(e => [e.lane, e.branch?.side]))
+  $('#searchLegend').innerHTML = legend(['data', 'for', 'against'].filter(l => used.has(l)), { key: searches.some(e => e.key) })
+  drawSearchSteps($('#searchLedger'), { timeline: FIELD, papers: PAPERS.papers, filter: PICK.searches })
 
   // --- put a planet out there -----------------------------------------------------------------------
   const model = brightnessModel(PREDICTIONS.physical_properties.brightness_model)

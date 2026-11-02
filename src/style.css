@@ -1175,10 +1175,57 @@ sup.cite a:hover { text-decoration: underline; }
 .legend-line { width: 18px; height: 3px; border-radius: 2px; flex: none; }
 /* the sky map's click card (charts/skymap.js) sits on the map, like the clustering page's */
 #chartSky { position: relative; }
+/* the photographed sky (#sky): a narrower card column, the map drawn at its own shape (no letterbox) and centred
+   in the pinned column, the key above it and the survey chips under it each keeping their room on every step,
+   so the map never jumps as the cards change it. The chart is clipped to its panel. */
+#skyStory { grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 36px; }
+#skyStory .step { min-height: 74vh; }
+#skyStory .step:first-child { min-height: 56vh; }
+#skyStory .scrolly-graphic { justify-content: center; gap: 12px; }
+#skyStory .viz-head { min-height: 3.6rem; align-items: flex-end; }
+#skyStory .viz-head .legend { gap: 8px 20px; align-content: flex-end; }
+#skyStory .legend-item { font-size: .9rem; }
+#skyStory .legend-swatch { width: 12px; height: 12px; }
+#skyStory .legend-item.is-new { animation: sky-key-in .5s var(--reveal-ease) both; }
+@keyframes sky-key-in { from { opacity: 0; transform: translateY(4px); } }
+#skyStory .viz { flex: none; padding: 10px; }
+#chartSky svg { height: auto; max-height: calc(100vh - var(--bar-h) - 204px); overflow: hidden; }
+#chartSky text.axis-label { font-size: 13px; fill: var(--text-secondary); }
+#chartSky text.ralt { font-size: 12.5px; fill: var(--text-muted); }
+#chartSky text.decl { font-size: 12px; }
+#chartSky text.buriedlabel { font-size: 14px; }
+/* the marks the reader can click: an outline on hover (footprints only on the explore step, where the card says
+   they can be clicked) and on keyboard focus */
+#chartSky svg.is-explore path.fp:not(.is-future):hover,
+#chartSky path.fp:not(.is-future):focus-visible { stroke-opacity: .85; }
+#chartSky path.fp:focus-visible, #chartSky circle.ph:focus-visible { outline: none; }
+#chartSky path.fp.is-future:focus-visible { stroke-width: 4px; }
+#chartSky circle.ph:hover, #chartSky circle.ph:focus-visible { stroke: var(--ui); stroke-width: 2.5px; }
+/* survey chips: compact, a clear hover, a pressed state that reads at a glance, a focus ring */
+#surveyChips { min-height: 72px; align-content: flex-start; margin: 0;
+  opacity: 0; visibility: hidden; transition: opacity .4s ease, visibility 0s linear .4s; }
+#surveyChips.is-shown { opacity: 1; visibility: visible; transition: opacity .4s ease; }
+#surveyChips .chip { min-height: 32px; padding: 5px 12px; font-size: .84rem;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease; }
+#surveyChips .chip:hover { background: #ffffff0d; border-color: var(--text-secondary); color: var(--text-primary); }
+#surveyChips .chip[aria-pressed="true"] { background: #ffffff1f; border-color: var(--text-primary);
+  box-shadow: inset 0 0 0 1px var(--text-primary); color: var(--text-primary); }
+#surveyChips .chip:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+@media (max-width: 900px) {
+  #skyStory .scrolly-graphic { height: auto; justify-content: flex-start; }
+  #skyStory .viz-head { min-height: 0; }
+  #chartSky svg { max-height: calc(56vh - 110px); }
+  /* on a phone the chips keep to one line that scrolls sideways, like the key, and take no room until needed */
+  #surveyChips { min-height: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
+  #surveyChips:not(.is-shown) { display: none; }
+  #surveyChips .chip { flex: none; white-space: nowrap; }
+}
 .sky-verdict { margin: 8px 0 0; font-size: .86rem; font-weight: 600; color: var(--text-primary); }
 /* the head's small sky drawings */
 .sky-thumb { overflow: visible; }
 
+/* put a planet out there: the section's question, brighter and larger than the paragraph under it */
+.sec-head p.sec-q { font-size: 1.22rem; font-weight: 600; line-height: 1.35; color: var(--text-primary); margin-bottom: 8px; }
 /* put a planet out there: the picture in a panel with its dials on it (like the herd), the score beside it */
 .place-stage { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr); gap: 22px; align-items: start; }
 .place-pic { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 12px 132px; }
@@ -1220,13 +1267,87 @@ sup.cite a:hover { text-decoration: underline; }
 /* ledger rows slide in from the side; off screen, that offset must not widen the page on a phone */
 body[data-page="search"] #searches, body[data-page="timeline"] #ledger, body[data-page="future"] #next { overflow-x: clip; }
 
+/* ten years of argument (search/timeline.html, pages/timeline.js): the key over the ledger, then the ledger told as a
+   story down a line of years. The line runs down the year gutter and fills to where the reader is; each year has a
+   marker on it (passed years filled, the year being read lit) and its label stays in view while its rows scroll by.
+   The rows keep the ledger's design and entrance (field.css); here they slide in sideways, a beat apart in a year. */
+.tl-key { list-style: none; margin: 0 auto 22px; padding: 0; max-width: 1180px;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 28px; }
+.tl-key li { display: flex; align-items: flex-start; gap: 12px; }
+.tl-key .fr-icon { width: 36px; height: 36px; flex: none; }
+.tl-key .fr-icon .fi { width: 64%; height: 64%; }
+.tl-key .is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); }
+.tl-key .is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); }
+.tl-key .is-data { --lane: var(--fl-data); --ink: var(--fl-data-ink); }
+.tl-key b { display: block; color: var(--ink); font-size: .95rem; margin: 1px 0 2px; }
+.tl-key b + span { display: block; font-size: .84rem; line-height: 1.45; color: var(--text-secondary); }
+
+/* the ledger's easing lives in scrolly.css; given here too, so the rows never depend on another module having loaded
+   it (without it every transition naming it is dropped and the rows pop in) */
+#fieldTimeline { --reveal-ease: cubic-bezier(.2, .7, .2, 1); }
+#ledger .fl-sides, #fieldTimeline .fy { grid-template-columns: 96px minmax(0, 1fr); }
+#fieldTimeline .fy { padding: 14px 0 18px; }
+/* the line, and its fill (scaled in JS, so moving it costs no layout); 3px in from the edge, where the ledger clips,
+   so the lit marker's enlargement is not cut */
+#fieldTimeline .tl-line { position: absolute; left: 9px; top: 14px; bottom: 0; width: 2px; border-radius: 1px; background: var(--rule); pointer-events: none; }
+#fieldTimeline .tl-line i { display: block; height: 100%; border-radius: 1px; background: var(--text-muted); transform-origin: top; transform: scaleY(0);
+  transition: transform .25s ease-out; }   /* set every frame while scrolling; the transition glides over a fast flick */
+/* a year's label stays in view below the nav and the pinned lane names, its marker riding the line with it */
+#fieldTimeline .fy-year { position: sticky; top: calc(var(--bar-h, 56px) + 58px); z-index: 1; }
+#fieldTimeline .fy-year span {
+  padding: 6px 0 8px 27px; font-size: 1rem; color: var(--text-muted);
+  transition: color .4s ease, font-size .4s ease;
+}
+#fieldTimeline .fy-year::before {
+  content: ""; position: absolute; left: 3px; top: 7px; width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%;
+  background: var(--surface-0); border: 2px solid var(--text-muted);
+  transition: background-color .4s ease, border-color .4s ease, transform .4s var(--reveal-ease);
+}
+#fieldTimeline .fy.is-past .fy-year::before { background: var(--text-muted); }
+#fieldTimeline .fy.is-past .fy-year span { color: var(--text-secondary); }
+#fieldTimeline .fy.is-current .fy-year::before { background: var(--ui); border-color: var(--ui); transform: scale(1.3); }
+#fieldTimeline .fy.is-current .fy-year span { color: var(--text-primary); font-size: 1.12rem; }
+/* the entrance (charts/field.js sets is-in; pages/timeline.js sets is-dim and data-from): a row fades in and rises
+   18px into place, a beat apart within a year; scrolling back up, a row that left by the top comes back down from
+   there. Above the reading area a row dims to stay rereadable, and brightens again as it comes back into it. Leaving
+   happens out of view, so it is quick and has no stagger. Opacity and transform only. */
+html.has-reveal #fieldTimeline .fr { transition: opacity .3s ease, transform .3s ease; }
+html.has-reveal #fieldTimeline .fr:not(.is-in) { transform: translate3d(0, 18px, 0); }
+html.has-reveal #fieldTimeline .fr[data-from="above"]:not(.is-in) { transform: translate3d(0, -18px, 0); }
+html.has-reveal #fieldTimeline .fr.is-in {
+  transition: opacity .5s var(--reveal-ease) calc(var(--i, 0) * 90ms), transform .55s var(--reveal-ease) calc(var(--i, 0) * 90ms);
+}
+html.has-reveal #fieldTimeline .fr.is-in.is-dim:not(:focus-within) { opacity: .45; transition: opacity .6s ease-out; }
+/* a year's label and marker come and go with their year, the same way */
+html.has-reveal #fieldTimeline .fy-year { transition: opacity .5s var(--reveal-ease), transform .55s var(--reveal-ease); }
+html.has-reveal #fieldTimeline .fy:not(.is-seen) .fy-year { opacity: 0; transform: translate3d(0, 18px, 0); }
+html.has-reveal #fieldTimeline .fy[data-from="above"]:not(.is-seen) .fy-year { transform: translate3d(0, -18px, 0); }
+
+@media (max-width: 900px) {
+  .tl-key { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  /* the year sits over its rows, which keep clear of the line; its label stays at the top while they scroll under it */
+  #fieldTimeline .fy { grid-template-columns: minmax(0, 1fr); }
+  #fieldTimeline .fy-rows { padding-left: 27px; }
+  /* the pinned year is a full-width strip, so cards pass cleanly under it rather than under a tab over their corner */
+  #fieldTimeline .fy-year { position: sticky; top: var(--bar-h, 56px); z-index: 2; padding-top: 6px; background: var(--surface-0); }
+  #fieldTimeline .fy-year::before { top: 13px; }
+  /* every row with its icon beside its title, the drawing and the paper under them: data rows put a lone icon on a
+     line of its own, and an against row with no drawing laid its icon over its title */
+  #fieldTimeline .fr.is-data, #fieldTimeline .fr.no-art.is-for, #fieldTimeline .fr.no-art.is-against {
+    display: grid; grid-template-columns: var(--fl-icon) minmax(0, 1fr); grid-template-areas: "icon body" "art art" "meta meta";
+    align-items: center; gap: 8px 14px;
+  }
+  #fieldTimeline .fr.is-data .fr-art { width: min(100%, 220px); }
+}
+
 /* phones: the sky map is cropped to the band around the path and drawn at about 0.4 scale, so its labels
    are set larger, the right-ascension axis (which no card refers to) is left off, the pinned panel shrinks
    to the map, and a click card opens under the map instead of over it */
 @media (max-width: 700px) {
   #chartSky text.note { font-size: 30px; }
   #chartSky text.buriedlabel { font-size: 24px; }
-  #chartSky text.ral, #chartSky text.ralt { display: none; }
+  #chartSky text.ral, #chartSky text.ralt, #chartSky text.decl { display: none; }
+  #chartSky circle.ph:hover, #chartSky circle.ph:focus-visible { stroke-width: 4.5px; }
   #skyStory .scrolly-graphic { height: auto; top: var(--bar-h, 0px); }
   #skyStory .viz { flex: none; }
   #chartSky .pick-card { top: calc(100% + 6px); left: 0; right: 0; }
@@ -1344,4 +1465,141 @@ body[data-page="search"] #searches, body[data-page="timeline"] #ledger, body[dat
   .mk { width: 20px; height: 20px; }
   .alt-panel { padding: 4px 12px 18px; }
   .alt-explain, .alt-short { font-size: .95rem; }
+}
+
+/* how the proposal changed (search/timeline.html #proposals, charts/proposals.js, pages/timeline.js): the papers' marks
+   come in once as a wave from 2016 on, each paper's distance and mass together, fading in and sliding 12px from the
+   left, 150ms apart (about 1.7s in all). `translate`, not `transform`, so it adds to the phone rows' own placement.
+   Opacity and translate only; the frame (titles, axes, gridlines, labels) never moves. */
+#chartProposals .pg {
+  transition: opacity .55s ease-out calc(var(--i, 0) * 150ms), translate .6s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 150ms);
+}
+#chartProposals.is-waiting .pg { opacity: 0; translate: -12px 0; }
+
+/* what comes next (search/future.html, pages/future.js): the scroll entrances. The beats, the schedule's rows and the
+   verdicts use scrolly.css's .reveal; here, the ruler's surveys come in from brightest to faintest (left to right, or
+   top to bottom on a phone), 120ms apart, once it is on screen, and each "what to watch" card's drawing comes in just
+   after its card (the card's own entrance is the ledger's). All of it plays again on coming back, from either side. */
+html.has-reveal #chartDepth g.s {
+  transition: opacity .6s ease-out calc(var(--i, 0) * 120ms), translate .6s var(--reveal-ease) calc(var(--i, 0) * 120ms);
+}
+html.has-reveal #chartDepth:not(.is-in) g.s { opacity: 0; translate: 0 10px; }
+html.has-reveal #nextLedger .fr .fr-art { transition: opacity .6s ease-out .3s, transform .65s var(--reveal-ease) .3s; }
+html.has-reveal #nextLedger .fr:not(.is-in) .fr-art { opacity: 0; transform: translate3d(0, 10px, 0) scale(.97); }
+
+/* the final question (search/future.html #yours, pages/future.js): one centred panel. The panel comes in with
+   scrolly.css's .reveal and its parts follow, a beat apart; the three answers share one grid cell, so changing answer
+   crossfades in place and nothing below moves. The chosen button takes the planet's colour, as YOU does. */
+.cq {
+  max-width: 820px; margin: 0 auto; padding: 48px 40px 40px; text-align: center;
+  background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius);
+}
+.cq-eyebrow { margin: 0 auto 14px; font: 700 .74rem/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); }
+.cq-title { margin: 0 0 16px; font-size: clamp(2rem, 4.4vw, 3rem); line-height: 1.12; letter-spacing: -.02em; }
+.cq-you { color: var(--p9-ink); }
+.cq-lede { margin: 0 auto 28px; max-width: 54ch; font-size: 1.1rem; line-height: 1.55; }
+.cq-choices { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
+.cq-btn {
+  min-width: 140px; min-height: 48px; padding: 0 22px; border-radius: 12px; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--surface-2); color: var(--text-primary);
+  font: inherit; font-size: 1.02rem; font-weight: 600;
+  transition: background-color .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.cq-btn:hover { border-color: var(--text-muted); background: var(--surface-3); }
+.cq-btn[aria-pressed="true"] {
+  border-color: var(--p9); box-shadow: inset 0 0 0 1px var(--p9);
+  background: color-mix(in srgb, var(--p9) 14%, var(--surface-2));
+}
+.cq-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 3px; }
+.cq-answers { display: grid; margin: 24px auto 0; max-width: 54ch; min-height: 1.6em; }
+.cq-answer {
+  grid-area: 1 / 1; margin: 0; max-width: none; font-size: 1.15rem; font-weight: 600; line-height: 1.45; color: var(--text-primary);
+  opacity: 0; transform: translate3d(0, 6px, 0); transition: opacity .35s ease, transform .45s var(--reveal-ease, ease);
+}
+.cq-answer.is-shown { opacity: 1; transform: none; transition-delay: .08s; }
+.cq-status { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.cq-coda { margin: 14px auto 0; max-width: 54ch; font-size: .95rem; color: var(--text-muted); }
+/* the parts follow the panel in: eyebrow, title, paragraph, buttons, a beat apart (and reset with it) */
+html.has-reveal .cq > :is(.cq-eyebrow, .cq-title, .cq-lede, .cq-choices) {
+  transition: opacity .6s var(--reveal-ease) var(--cq-d), transform .65s var(--reveal-ease) var(--cq-d);
+}
+html.has-reveal .cq:not(.is-in) > :is(.cq-eyebrow, .cq-title, .cq-lede, .cq-choices) { opacity: 0; transform: translate3d(0, 12px, 0); }
+.cq-eyebrow { --cq-d: .15s; } .cq-title { --cq-d: .27s; } .cq-lede { --cq-d: .39s; } .cq-choices { --cq-d: .51s; }
+@media (max-width: 560px) {
+  .cq { padding: 34px 18px 28px; }
+  .cq-btn { min-width: 0; flex: 1 1 0; padding: 0 10px; }
+}
+
+/* what to watch, one card at a time (search/future.html #nextStory, pages/future.js). .is-deck: the cards share one
+   grid cell (so the stage is as tall as the tallest and nothing jumps), with dots, a count and Previous / Next.
+   .is-told adds the scroll: the whole section, heading included, pinned below the nav while the reader scrolls past one
+   empty step per card. A change is clearly two moves: the card showing fades and lifts away, then the next rises in, its
+   drawing a beat after its words. Dots and the primary button in Rubin's pink: bright for the card showing, soft for
+   those passed. The ledger's year gutter ("Next") is left out: these are not dated. Without scripts, the stack. */
+#nextStory:not(.is-deck) :is(.nx-progress, .nx-nav), #nextStory:not(.is-told) .nx-steps { display: none; }
+#nextStory.is-deck .nx-body {
+  display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "progress stage" ". nav";
+  gap: 18px 24px; align-items: center; max-width: 960px; margin: 0 auto;
+}
+#nextStory.is-deck .nx-progress { grid-area: progress; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+#nextStory.is-deck #nextLedger { grid-area: stage; margin: 0; width: 100%; }
+#nextStory.is-deck .nx-nav { grid-area: nav; display: flex; justify-content: space-between; gap: 12px; }
+#nextStory.is-told .nx-pin { position: sticky; top: calc(var(--bar-h, 56px) + 14px); z-index: 1; }
+#nextStory.is-told .nx-pin .sec-head { margin-bottom: 18px; }
+#nextStory .nx-step { display: block; min-height: 0; height: 72vh; pointer-events: none; }
+/* a card is picked at its step's middle, and the panel lets go when its foot meets the end of the steps: this spacer,
+   sized from the panel, gives the last card the same share of the scroll as the others */
+#nextStory .nx-tail { height: calc(var(--nx-pin-h, 560px) + 70px - 14vh); pointer-events: none; }
+#nextStory.is-told .nx-steps { margin-top: calc(-1 * var(--nx-pin-h, 600px) + 12vh); }
+#nextStory.is-deck .fy { display: block; padding: 0; border: 0; }
+#nextStory.is-deck .fy-year { display: none; }
+#nextStory.is-deck .fy-rows { display: grid; }
+#nextStory.is-deck #nextLedger .fr {
+  grid-area: 1 / 1; align-self: stretch; justify-content: center;   /* every card the tallest one's height, its content centred */
+  opacity: 0; visibility: hidden; transform: translate3d(0, 28px, 0);
+  transition: opacity .3s ease-in, transform .45s cubic-bezier(.4, 0, .9, .5), visibility 0s linear .45s;
+}
+#nextStory.is-deck #nextLedger .fr.is-before { transform: translate3d(0, -28px, 0); }
+#nextStory.is-deck #nextLedger .fr.is-active {
+  opacity: 1; visibility: visible; transform: none;
+  transition: opacity .5s ease-out .28s, transform .6s var(--reveal-ease) .28s, visibility 0s;
+}
+#nextStory.is-deck #nextLedger .fr .fr-art { opacity: 0; transform: translate3d(0, 14px, 0) scale(.96); transition: opacity .25s ease, transform .25s ease; }
+#nextStory.is-deck #nextLedger .fr.is-active .fr-art {
+  opacity: 1; transform: none; transition: opacity .5s ease-out .6s, transform .6s var(--reveal-ease) .6s;
+}
+/* the dots: a thin line joining them, each a button with a 28px target; the count under them */
+.nx-dots { position: relative; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.nx-dots::before { content: ""; position: absolute; top: 14px; bottom: 14px; left: 50%; width: 2px; transform: translateX(-50%); background: var(--rule); }
+.nx-dot { position: relative; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
+.nx-dot::before {
+  content: ""; width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%;
+  background: var(--surface-0); border: 2px solid var(--text-muted);
+  transition: background-color .4s ease, border-color .4s ease, transform .4s var(--reveal-ease);
+}
+.nx-dot:hover::before { border-color: var(--text-secondary); transform: scale(1.15); }
+.nx-dot.is-done::before { background: color-mix(in srgb, var(--series-4) 40%, var(--surface-0)); border-color: color-mix(in srgb, var(--series-4) 55%, var(--surface-0)); }
+.nx-dot[aria-current="step"]::before { background: var(--series-4); border-color: var(--series-4); transform: scale(1.35); }
+.nx-dot:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+.nx-count { margin: 0; font: 700 .72rem/1 var(--font-mono); letter-spacing: .08em; color: var(--series-4-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* Previous / Next: Next is the primary, in Rubin's pink */
+.nx-btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--surface-1); color: var(--text-primary); font: inherit; font-size: .92rem; font-weight: 600;
+  transition: background-color .2s ease, border-color .2s ease, opacity .2s ease, filter .2s ease;
+}
+.nx-btn:hover { background: var(--surface-2); border-color: var(--text-muted); }
+.nx-next { background: var(--series-4); border-color: var(--series-4); color: var(--surface-0); }
+.nx-next:hover { background: var(--series-4); border-color: var(--series-4); filter: brightness(1.12); }
+.nx-btn[aria-disabled="true"] { opacity: .35; cursor: default; filter: none; }
+.nx-prev[aria-disabled="true"]:hover { background: var(--surface-1); border-color: var(--rule); }
+.nx-next[aria-disabled="true"]:hover { filter: none; }
+.nx-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+.nx-status { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* narrower screens step by hand: the dots in a row above the card, the buttons under it */
+@media (max-width: 900px) {
+  #nextStory.is-deck .nx-body { grid-template-columns: minmax(0, 1fr); grid-template-areas: "progress" "stage" "nav"; gap: 14px; }
+  #nextStory.is-deck .nx-progress { flex-direction: row; justify-content: center; }
+  #nextStory.is-deck .nx-dots { flex-direction: row; gap: 14px; }
+  #nextStory.is-deck .nx-dots::before { top: 50%; bottom: auto; left: 14px; right: 14px; width: auto; height: 2px; transform: translateY(-50%); }
 }

@@ -237,3 +237,118 @@ html.has-reveal .fr:focus-within { opacity: 1; transform: none; }
 .fl.has-lines .fr-title { margin-bottom: 4px; }
 .fl.has-lines .fr-line { font-size: .9rem; line-height: 1.45; }
 .fl.has-lines .fr.is-key .fr-line { font-size: .95rem; }
+
+/* --- one milestone at a time (the search page, charts/searchsteps.js) -------------------------
+   A line of markers, one per milestone, the line filling up to the chosen one; the chosen milestone
+   under it as the ledger draws it, laid out wide (words left, drawing right); Previous and Next
+   beneath. The interface is white and grey, as everywhere; the card keeps its lane's colours. */
+.fl.st { max-width: 1100px; }
+.st-rail-wrap { overflow-x: auto; scrollbar-width: thin; margin: 0 0 18px; padding: 4px 4px 6px; }
+.st-rail {
+  position: relative; display: grid; grid-template-columns: repeat(var(--n), minmax(84px, 1fr));
+  min-width: calc(var(--n) * 84px); list-style: none; margin: 0; padding: 0;
+}
+.st-line {
+  position: absolute; top: 17px; left: calc(50% / var(--n)); right: calc(50% / var(--n)); height: 2px;
+  border-radius: 1px; background: var(--rule); pointer-events: none;
+}
+.st-line i {
+  display: block; height: 100%; border-radius: 1px; background: var(--text-muted);
+  width: calc(var(--st-progress, 0) * 100%); transition: width .45s var(--reveal-ease);
+}
+.st-mark-li { display: flex; justify-content: center; }
+.st-mark {
+  display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 10px 6px;
+  background: none; border: 0; border-radius: 10px; color: var(--text-muted); font: inherit; cursor: pointer;
+  transition: color .2s ease, background-color .2s ease;
+}
+/* centred on the line: 6px padding + 4px margin + half of 14px = 17px */
+.st-dot {
+  position: relative; z-index: 1; width: 14px; height: 14px; margin: 4px 0; border-radius: 50%;
+  background: var(--surface-0); border: 2px solid var(--text-muted);
+  transition: background-color .2s ease, border-color .2s ease, transform .25s var(--reveal-ease);
+}
+.st-year { font: 700 .92rem/1 var(--font-mono); letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+.st-kind { font: 400 .64rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.st-mark.is-past .st-dot { background: var(--text-muted); }
+.st-mark:hover { color: var(--text-primary); background: #ffffff0a; }
+.st-mark:hover .st-dot { border-color: var(--text-secondary); }
+.st-mark[aria-selected="true"] { color: var(--text-primary); }
+.st-mark[aria-selected="true"] .st-dot { background: var(--ui); border-color: var(--ui); transform: scale(1.3); }
+.st-mark[aria-selected="true"] .st-kind { color: var(--text-secondary); }
+.st-mark:focus-visible, .st-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+
+/* every card sits in the same cell; the stage takes the chosen card's height (set in JS), eased */
+.st-stage { display: grid; align-items: start; overflow: hidden; transition: height .4s var(--reveal-ease); }
+.st-card {
+  grid-area: 1 / 1; min-width: 0; display: flex; flex-direction: column; gap: 14px;
+  opacity: 0; visibility: hidden; transform: translate3d(24px, 0, 0);
+  transition: opacity .25s ease, transform .35s var(--reveal-ease), visibility 0s linear .35s;
+}
+.st-card.is-before { transform: translate3d(-24px, 0, 0); }
+.st-card.is-active {
+  opacity: 1; visibility: visible; transform: none;
+  transition: opacity .35s ease .1s, transform .45s var(--reveal-ease) .1s;
+}
+.st .fr.is-data {
+  display: grid; grid-template-columns: var(--fl-icon) minmax(0, 1fr) minmax(0, 400px);
+  grid-template-areas: "icon body art" "icon meta art"; align-items: center; align-content: center;
+  gap: 6px 28px; padding: 28px 30px; text-align: left;
+}
+.st .fr.is-data .fr-icon { margin: 0; }
+.st .fr.is-data .fr-body { max-width: 60ch; align-self: end; }
+.st .fr.is-data .fr-meta { align-items: flex-start; align-self: start; }
+.st .fr.is-data .fr-foot { justify-content: flex-start; }
+.st .fr.is-data .fr-art, .st .fr.is-key.is-data .fr-art { width: 100%; margin: 0; }
+.st .fr.is-branch { margin: 0; --fl-art: 300px; }
+/* a milestone's hung reading (the 2025 candidate's "What it would mean") slides down from behind its card when the
+   milestone is chosen, and tucks back behind it when the reader moves on. The card sits above it and is made opaque
+   (its tint over the page colour, so it looks the same) so the reading cannot show through on its way out. */
+.st-card > .fr.is-data { z-index: 1; background-color: var(--surface-0); background-image: linear-gradient(#a78bfa16, #a78bfa16); }
+.st-card > .fr.is-key.is-data { background-image: linear-gradient(#a78bfa28, #a78bfa28); }
+.st-card > .fr.is-branch {
+  z-index: 0; opacity: 0; transform: translate3d(0, calc(-100% - 14px), 0);
+  transition: transform .3s cubic-bezier(.5, 0, .75, 0), opacity .25s ease-in;
+}
+.st-card.is-active > .fr.is-branch {
+  opacity: 1; transform: none;
+  transition: transform .52s cubic-bezier(.16, 1, .3, 1) .18s, opacity .4s ease-out .18s;
+}
+
+.st-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 16px; }
+.st-btn {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 10px;
+  border: 1px solid var(--rule); background: var(--surface-1); color: var(--text-primary);
+  font: inherit; font-size: .92rem; font-weight: 600; cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, opacity .2s ease;
+}
+.st-btn:hover { background: var(--surface-2); border-color: var(--text-muted); }
+.st-next { background: var(--ui); border-color: var(--ui); color: var(--surface-0); }
+.st-next:hover { background: var(--text-secondary); border-color: var(--text-secondary); }
+.st-btn[aria-disabled="true"] { opacity: .35; cursor: default; }
+.st-btn[aria-disabled="true"]:hover { background: var(--surface-1); border-color: var(--rule); }
+.st-count { font: 600 .74rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+/* for screen readers only: which milestone is showing, said when it changes */
+.st-status { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .st-card, .st-card.is-before, .st-card > .fr.is-branch { transform: none; }
+}
+@media (max-width: 900px) {
+  .st .fr.is-data {
+    grid-template-columns: var(--fl-icon) minmax(0, 1fr); grid-template-areas: "icon body" "art art" "meta meta";
+    gap: 12px 16px; padding: 20px 18px; align-content: start;
+  }
+  .st .fr.is-data .fr-body { align-self: center; }
+  .st .fr.is-data .fr-art { width: min(100%, 420px); justify-self: center; }
+  /* the ledger caps drawings small on narrow screens; one card at a time has the room */
+  .st .fr.is-data .fr-art { max-width: none; }
+  .st .fr.is-branch .fr-art { max-width: 320px; width: 100%; }
+}
+@media (max-width: 560px) {
+  .st-rail { grid-template-columns: repeat(var(--n), minmax(56px, 1fr)); min-width: calc(var(--n) * 56px); }
+  .st-mark { padding-inline: 2px; }
+  .st-year { font-size: .84rem; }
+  .st-kind { font-size: .56rem; letter-spacing: .06em; }
+  .st-btn { padding: 0 14px; }
+}

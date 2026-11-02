@@ -31,11 +31,21 @@
   display: flex; gap: 14px; align-items: center;
 }
 .nav-group { display: flex; align-items: center; gap: 6px; }
+/* the group names are labels, not links: small mono capitals in a cool white, each with a short underline in its own
+   hue (an absolute ::after, so it takes no room and the bar does not move); the group the reader is in, brighter */
 .nav-group-k {
+  position: relative;
   font: 600 .64rem/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase;
-  color: var(--text-muted); white-space: nowrap;
+  color: #d1d5db; white-space: nowrap;
 }
-.nav-group.is-here .nav-group-k { color: var(--text-secondary); }
+.nav-group-k::after {
+  content: ""; position: absolute; left: 0; bottom: -5px; width: 14px; height: 2px; border-radius: 1px;
+  background: var(--nav-k, #d1d5db); opacity: .75;
+}
+.nav-group-k[data-group="Background"] { --nav-k: #93c5fd; }   /* light blue */
+.nav-group-k[data-group="Evidence"] { --nav-k: #c4b5fd; }     /* lavender */
+.nav-group-k[data-group="The search"] { --nav-k: #5eead4; }   /* teal */
+.nav-group.is-here .nav-group-k { color: var(--text-primary); }
 .nav-group ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 2px; }
 .nav-group a {
   display: inline-block; padding: 6px 7px; border-radius: 8px; font-size: .82rem; white-space: nowrap;

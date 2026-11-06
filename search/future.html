@@ -43,32 +43,14 @@
     </div>
   </section>
 
-  <!-- what to watch: the ledger's "next" rows (charts/field.js); one lane, so no key. Shown one at a time (pages/future.js):
-       on a wide, tall enough screen the whole section stays pinned while the reader scrolls past one empty step per
-       card; elsewhere, and for readers who ask for less motion, the reader steps through them with the buttons and dots.
-       Without scripts the cards are simply stacked. -->
+  <!-- what to watch: the ledger's "next" rows (charts/field.js); one lane, so no key. All four shown together as
+       numbered windows, two by two (one column on narrow screens); style.css #next. -->
   <section class="part wrap" id="next">
-    <div class="nx-story" id="nextStory">
-      <div class="nx-pin">
-        <div class="sec-head">
-          <h2>What to watch</h2>
-          <p>Searches running or proposed, and what each could settle.</p>
-        </div>
-        <div class="nx-body">
-          <div class="nx-progress">
-            <ol class="nx-dots" aria-label="Searches to watch"></ol>
-            <p class="nx-count" aria-hidden="true"></p>
-          </div>
-          <div class="fl" id="nextLedger"></div>
-          <div class="nx-nav">
-            <button type="button" class="nx-btn nx-prev"><span aria-hidden="true">←</span> Previous</button>
-            <button type="button" class="nx-btn nx-next">Next <span aria-hidden="true">→</span></button>
-          </div>
-        </div>
-        <p class="nx-status" aria-live="polite"></p>
-      </div>
-      <div class="nx-steps"></div>
+    <div class="sec-head">
+      <h2>What to watch</h2>
+      <p>Searches running or proposed, and what each could settle.</p>
     </div>
+    <div class="fl nx-grid" id="nextLedger"></div>
   </section>
 
   <!-- when: the start date and the first find are sourced in field_timeline.json (rubin-2026); the later
@@ -110,26 +92,23 @@
   </section>
 
   <!-- the reader's own verdict: a reflection, not a poll. Nothing is stored or sent and no tallies are shown;
-       pages/future.js only shows the line for the chosen answer, which can be changed at any time. -->
+       pages/future.js marks the chosen answer, enables Submit, then swaps the question for a thank-you in place. -->
   <section class="part wrap" id="yours">
     <div class="cq" id="finalQuestion">
-      <p class="cq-eyebrow">The final question</p>
-      <h2 class="cq-title">Do <span class="cq-you">YOU</span> believe in Planet Nine?</h2>
-      <p class="cq-lede">You’ve seen the strange orbits, the competing explanations, and the searches still underway. Now it’s
-      your turn to decide.</p>
-      <div class="cq-choices" role="group" aria-label="Do you believe in Planet Nine?">
-        <button type="button" class="cq-btn" data-answer="yes" aria-pressed="false">Yes</button>
-        <button type="button" class="cq-btn" data-answer="unsure" aria-pressed="false">Not sure</button>
-        <button type="button" class="cq-btn" data-answer="no" aria-pressed="false">No</button>
+      <div class="cq-ask">
+        <p class="cq-eyebrow">The final question</p>
+        <h2 class="cq-title">Do <span class="cq-you">YOU</span> believe in Planet Nine?</h2>
+        <div class="cq-choices" role="group" aria-label="Do you believe in Planet Nine?">
+          <button type="button" class="cq-btn" data-answer="yes" aria-pressed="false">Yes</button>
+          <button type="button" class="cq-btn" data-answer="no" aria-pressed="false">No</button>
+          <button type="button" class="cq-btn" data-answer="maybe" aria-pressed="false">Maybe</button>
+        </div>
+        <button type="button" class="cq-btn cq-submit" disabled>Submit</button>
       </div>
-      <!-- the three answers share one place, so changing answer never moves what is below -->
-      <div class="cq-answers" aria-hidden="true">
-        <p class="cq-answer" data-answer="yes">The evidence has convinced you—for now.</p>
-        <p class="cq-answer" data-answer="unsure">The mystery remains open, and so does your verdict.</p>
-        <p class="cq-answer" data-answer="no">You’re not convinced by the evidence so far.</p>
+      <div class="cq-thanks" role="status" tabindex="-1">
+        <p class="cq-thanks-title">Thanks for submitting!</p>
+        <p class="cq-thanks-note">Results coming soon.</p>
       </div>
-      <p class="cq-status" aria-live="polite"></p>
-      <p class="cq-coda">Whatever you believe, the next discoveries will help test the hypothesis.</p>
     </div>
   </section>
 </main>

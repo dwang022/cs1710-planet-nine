@@ -1488,118 +1488,99 @@ html.has-reveal #nextLedger .fr .fr-art { transition: opacity .6s ease-out .3s, 
 html.has-reveal #nextLedger .fr:not(.is-in) .fr-art { opacity: 0; transform: translate3d(0, 10px, 0) scale(.97); }
 
 /* the final question (search/future.html #yours, pages/future.js): one centred panel. The panel comes in with
-   scrolly.css's .reveal and its parts follow, a beat apart; the three answers share one grid cell, so changing answer
-   crossfades in place and nothing below moves. The chosen button takes the planet's colour, as YOU does. */
+   scrolly.css's .reveal and its parts follow, a beat apart. The question and the thank-you share one grid cell, so
+   submitting swaps them in place and the card keeps its size. The chosen button takes the planet's colour, as YOU does. */
 .cq {
-  max-width: 820px; margin: 0 auto; padding: 48px 40px 40px; text-align: center;
+  display: grid; max-width: 820px; margin: 0 auto; padding: 48px 40px 40px; text-align: center;
   background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius);
 }
+.cq-ask, .cq-thanks { grid-area: 1 / 1; }
 .cq-eyebrow { margin: 0 auto 14px; font: 700 .74rem/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); }
-.cq-title { margin: 0 0 16px; font-size: clamp(2rem, 4.4vw, 3rem); line-height: 1.12; letter-spacing: -.02em; }
+.cq-title { margin: 0 0 28px; font-size: clamp(2rem, 4.4vw, 3rem); line-height: 1.12; letter-spacing: -.02em; }
 .cq-you { color: var(--p9-ink); }
-.cq-lede { margin: 0 auto 28px; max-width: 54ch; font-size: 1.1rem; line-height: 1.55; }
 .cq-choices { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
 .cq-btn {
   min-width: 140px; min-height: 48px; padding: 0 22px; border-radius: 12px; cursor: pointer;
   border: 1px solid var(--rule); background: var(--surface-2); color: var(--text-primary);
   font: inherit; font-size: 1.02rem; font-weight: 600;
-  transition: background-color .25s ease, border-color .25s ease, box-shadow .25s ease;
+  transition: background-color .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .25s ease;
 }
-.cq-btn:hover { border-color: var(--text-muted); background: var(--surface-3); }
+.cq-btn:hover:not(:disabled) { border-color: var(--text-muted); background: var(--surface-3); }
 .cq-btn[aria-pressed="true"] {
   border-color: var(--p9); box-shadow: inset 0 0 0 1px var(--p9);
   background: color-mix(in srgb, var(--p9) 14%, var(--surface-2));
 }
 .cq-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 3px; }
-.cq-answers { display: grid; margin: 24px auto 0; max-width: 54ch; min-height: 1.6em; }
-.cq-answer {
-  grid-area: 1 / 1; margin: 0; max-width: none; font-size: 1.15rem; font-weight: 600; line-height: 1.45; color: var(--text-primary);
-  opacity: 0; transform: translate3d(0, 6px, 0); transition: opacity .35s ease, transform .45s var(--reveal-ease, ease);
-}
-.cq-answer.is-shown { opacity: 1; transform: none; transition-delay: .08s; }
-.cq-status { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.cq-coda { margin: 14px auto 0; max-width: 54ch; font-size: .95rem; color: var(--text-muted); }
-/* the parts follow the panel in: eyebrow, title, paragraph, buttons, a beat apart (and reset with it) */
-html.has-reveal .cq > :is(.cq-eyebrow, .cq-title, .cq-lede, .cq-choices) {
+.cq-submit { display: block; margin: 24px auto 0; }
+.cq-submit:disabled { opacity: .4; cursor: not-allowed; }
+/* submitted: the question steps out, the thank-you takes its place, centred in the same cell */
+.cq-thanks { align-self: center; visibility: hidden; opacity: 0; transform: translate3d(0, 6px, 0); }
+.cq-thanks:focus { outline: none; }
+.cq-thanks-title { margin: 0 0 8px; max-width: none; font-size: clamp(1.5rem, 3.2vw, 2.1rem); font-weight: 700; line-height: 1.2; color: var(--text-primary); }
+.cq-thanks-note { margin: 0; max-width: none; font-size: 1.1rem; font-weight: 600; color: var(--text-muted); }
+.cq.is-submitted .cq-ask { visibility: hidden; opacity: 0; transition: opacity .3s ease, visibility 0s linear .3s; }
+.cq.is-submitted .cq-thanks { visibility: visible; opacity: 1; transform: none; transition: opacity .4s ease .2s, transform .5s var(--reveal-ease, ease) .2s; }
+/* the parts follow the panel in: eyebrow, title, buttons, Submit, a beat apart (and reset with it) */
+html.has-reveal .cq-ask > :is(.cq-eyebrow, .cq-title, .cq-choices, .cq-submit) {
   transition: opacity .6s var(--reveal-ease) var(--cq-d), transform .65s var(--reveal-ease) var(--cq-d);
 }
-html.has-reveal .cq:not(.is-in) > :is(.cq-eyebrow, .cq-title, .cq-lede, .cq-choices) { opacity: 0; transform: translate3d(0, 12px, 0); }
-.cq-eyebrow { --cq-d: .15s; } .cq-title { --cq-d: .27s; } .cq-lede { --cq-d: .39s; } .cq-choices { --cq-d: .51s; }
+html.has-reveal .cq:not(.is-in) .cq-ask > :is(.cq-eyebrow, .cq-title, .cq-choices, .cq-submit) { opacity: 0; transform: translate3d(0, 12px, 0); }
+.cq-eyebrow { --cq-d: .15s; } .cq-title { --cq-d: .27s; } .cq-choices { --cq-d: .39s; } .cq-submit { --cq-d: .51s; }
 @media (max-width: 560px) {
   .cq { padding: 34px 18px 28px; }
-  .cq-btn { min-width: 0; flex: 1 1 0; padding: 0 10px; }
+  .cq-choices .cq-btn { min-width: 0; flex: 1 1 0; padding: 0 10px; }
 }
 
-/* what to watch, one card at a time (search/future.html #nextStory, pages/future.js). .is-deck: the cards share one
-   grid cell (so the stage is as tall as the tallest and nothing jumps), with dots, a count and Previous / Next.
-   .is-told adds the scroll: the whole section, heading included, pinned below the nav while the reader scrolls past one
-   empty step per card. A change is clearly two moves: the card showing fades and lifts away, then the next rises in, its
-   drawing a beat after its words. Dots and the primary button in Rubin's pink: bright for the card showing, soft for
-   those passed. The ledger's year gutter ("Next") is left out: these are not dated. Without scripts, the stack. */
-#nextStory:not(.is-deck) :is(.nx-progress, .nx-nav), #nextStory:not(.is-told) .nx-steps { display: none; }
-#nextStory.is-deck .nx-body {
-  display: grid; grid-template-columns: 64px minmax(0, 1fr); grid-template-areas: "progress stage" ". nav";
-  gap: 18px 24px; align-items: center; max-width: 960px; margin: 0 auto;
+/* what to watch (search/future.html #next): the ledger's four "next" cards as numbered windows, two by two (one column
+   below 1000px). Inside, a compact grid instead of the ledger's centred stack: the number and a small lane badge, then
+   the title and line on the left, the drawing on the right scaled into a fixed box (never cropped or stretched), and
+   the sources along the foot. Cards in a row share its height. The ledger's year gutter ("Next") is left out. */
+#next .nx-grid { max-width: 1180px; }
+#next .nx-grid .fy { display: block; padding: 0; border: 0; }
+#next .nx-grid .fy-year { display: none; }
+#next .nx-grid .fy-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 18px; counter-reset: nx; }
+#next .nx-grid .fr.is-next {
+  counter-increment: nx; display: grid; align-items: start; text-align: left;
+  grid-template-columns: auto minmax(0, 1fr) minmax(150px, 38%);
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas: "num icon art" "body body art" "meta meta meta";
+  gap: 8px 22px; padding: 16px 22px 12px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--series-4) 32%, transparent);
+  transition: border-color .25s ease, translate .25s ease;
 }
-#nextStory.is-deck .nx-progress { grid-area: progress; display: flex; flex-direction: column; align-items: center; gap: 14px; }
-#nextStory.is-deck #nextLedger { grid-area: stage; margin: 0; width: 100%; }
-#nextStory.is-deck .nx-nav { grid-area: nav; display: flex; justify-content: space-between; gap: 12px; }
-#nextStory.is-told .nx-pin { position: sticky; top: calc(var(--bar-h, 56px) + 14px); z-index: 1; }
-#nextStory.is-told .nx-pin .sec-head { margin-bottom: 18px; }
-#nextStory .nx-step { display: block; min-height: 0; height: 72vh; pointer-events: none; }
-/* a card is picked at its step's middle, and the panel lets go when its foot meets the end of the steps: this spacer,
-   sized from the panel, gives the last card the same share of the scroll as the others */
-#nextStory .nx-tail { height: calc(var(--nx-pin-h, 560px) + 70px - 14vh); pointer-events: none; }
-#nextStory.is-told .nx-steps { margin-top: calc(-1 * var(--nx-pin-h, 600px) + 12vh); }
-#nextStory.is-deck .fy { display: block; padding: 0; border: 0; }
-#nextStory.is-deck .fy-year { display: none; }
-#nextStory.is-deck .fy-rows { display: grid; }
-#nextStory.is-deck #nextLedger .fr {
-  grid-area: 1 / 1; align-self: stretch; justify-content: center;   /* every card the tallest one's height, its content centred */
-  opacity: 0; visibility: hidden; transform: translate3d(0, 28px, 0);
-  transition: opacity .3s ease-in, transform .45s cubic-bezier(.4, 0, .9, .5), visibility 0s linear .45s;
+html.has-reveal #next .nx-grid .fr.is-next {
+  transition: opacity .55s var(--reveal-ease), transform .65s var(--reveal-ease), border-color .25s ease, translate .25s ease;
 }
-#nextStory.is-deck #nextLedger .fr.is-before { transform: translate3d(0, -28px, 0); }
-#nextStory.is-deck #nextLedger .fr.is-active {
-  opacity: 1; visibility: visible; transform: none;
-  transition: opacity .5s ease-out .28s, transform .6s var(--reveal-ease) .28s, visibility 0s;
+#next .nx-grid .fr.is-next::before {
+  content: counter(nx, decimal-leading-zero); grid-area: num; align-self: center;
+  font: 700 .72rem/1 var(--font-mono); letter-spacing: .1em; color: var(--text-muted); font-variant-numeric: tabular-nums;
 }
-#nextStory.is-deck #nextLedger .fr .fr-art { opacity: 0; transform: translate3d(0, 14px, 0) scale(.96); transition: opacity .25s ease, transform .25s ease; }
-#nextStory.is-deck #nextLedger .fr.is-active .fr-art {
-  opacity: 1; transform: none; transition: opacity .5s ease-out .6s, transform .6s var(--reveal-ease) .6s;
+#next .nx-grid .fr.is-next .fr-icon { grid-area: icon; justify-self: start; width: 30px; height: 30px; margin: 0; }
+#next .nx-grid .fr.is-next .fr-body { grid-area: body; max-width: none; }
+#next .nx-grid .fr.is-next .fr-art {
+  grid-area: art; align-self: center; justify-self: stretch; display: flex; align-items: center; justify-content: center;
+  width: auto; max-width: none; height: 170px; margin: 0;
 }
-/* the dots: a thin line joining them, each a button with a 28px target; the count under them */
-.nx-dots { position: relative; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: 18px; }
-.nx-dots::before { content: ""; position: absolute; top: 14px; bottom: 14px; left: 50%; width: 2px; transform: translateX(-50%); background: var(--rule); }
-.nx-dot { position: relative; display: grid; place-items: center; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: pointer; }
-.nx-dot::before {
-  content: ""; width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%;
-  background: var(--surface-0); border: 2px solid var(--text-muted);
-  transition: background-color .4s ease, border-color .4s ease, transform .4s var(--reveal-ease);
+#next .nx-grid .fr.is-next .fr-art .fd { width: 100%; height: 100%; max-height: 170px; }
+#next .nx-grid .fr.is-next .fr-meta {
+  grid-area: meta; align-items: flex-start; padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--series-4) 16%, transparent);
 }
-.nx-dot:hover::before { border-color: var(--text-secondary); transform: scale(1.15); }
-.nx-dot.is-done::before { background: color-mix(in srgb, var(--series-4) 40%, var(--surface-0)); border-color: color-mix(in srgb, var(--series-4) 55%, var(--surface-0)); }
-.nx-dot[aria-current="step"]::before { background: var(--series-4); border-color: var(--series-4); transform: scale(1.35); }
-.nx-dot:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
-.nx-count { margin: 0; font: 700 .72rem/1 var(--font-mono); letter-spacing: .08em; color: var(--series-4-ink); white-space: nowrap; font-variant-numeric: tabular-nums; }
-/* Previous / Next: Next is the primary, in Rubin's pink */
-.nx-btn {
-  display: inline-flex; align-items: center; gap: 8px; min-height: 42px; padding: 0 18px; border-radius: 10px; cursor: pointer;
-  border: 1px solid var(--rule); background: var(--surface-1); color: var(--text-primary); font: inherit; font-size: .92rem; font-weight: 600;
-  transition: background-color .2s ease, border-color .2s ease, opacity .2s ease, filter .2s ease;
+#next .nx-grid .fr.is-next .fr-foot { margin-top: 0; justify-content: flex-start; }
+#next .nx-grid .fr.is-next:is(:hover, :focus-within) { border-color: color-mix(in srgb, var(--series-4) 60%, transparent); }
+@media (prefers-reduced-motion: no-preference) {
+  #next .nx-grid .fr.is-next:hover { translate: 0 -3px; }
 }
-.nx-btn:hover { background: var(--surface-2); border-color: var(--text-muted); }
-.nx-next { background: var(--series-4); border-color: var(--series-4); color: var(--surface-0); }
-.nx-next:hover { background: var(--series-4); border-color: var(--series-4); filter: brightness(1.12); }
-.nx-btn[aria-disabled="true"] { opacity: .35; cursor: default; filter: none; }
-.nx-prev[aria-disabled="true"]:hover { background: var(--surface-1); border-color: var(--rule); }
-.nx-next[aria-disabled="true"]:hover { filter: none; }
-.nx-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
-.nx-status { position: absolute; width: 1px; height: 1px; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-/* narrower screens step by hand: the dots in a row above the card, the buttons under it */
-@media (max-width: 900px) {
-  #nextStory.is-deck .nx-body { grid-template-columns: minmax(0, 1fr); grid-template-areas: "progress" "stage" "nav"; gap: 14px; }
-  #nextStory.is-deck .nx-progress { flex-direction: row; justify-content: center; }
-  #nextStory.is-deck .nx-dots { flex-direction: row; gap: 14px; }
-  #nextStory.is-deck .nx-dots::before { top: 50%; bottom: auto; left: 14px; right: 14px; width: auto; height: 2px; transform: translateY(-50%); }
+@media (max-width: 1000px) {
+  #next .nx-grid .fy-rows { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+/* phones: the drawing moves under the words */
+@media (max-width: 560px) {
+  #next .nx-grid .fy-rows { grid-auto-rows: auto; }
+  #next .nx-grid .fr.is-next {
+    grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto;
+    grid-template-areas: "num icon" "body body" "art art" "meta meta"; padding: 14px 16px 12px;
+  }
+  #next .nx-grid .fr.is-next .fr-art { height: 150px; }
+  #next .nx-grid .fr.is-next .fr-art .fd { max-height: 150px; }
 }

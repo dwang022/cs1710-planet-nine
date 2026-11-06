@@ -28,31 +28,31 @@
 .nav-menu summary::-webkit-details-marker { display: none; }
 .nav-groups {
   list-style: none; margin: 0; padding: 0;
-  display: flex; gap: 14px; align-items: center;
+  display: flex; gap: 18px; align-items: center;
 }
-.nav-group { display: flex; align-items: center; gap: 6px; }
-/* the group names are labels, not links: small mono capitals in a cool white, each with a short underline in its own
-   hue (an absolute ::after, so it takes no room and the bar does not move); the group the reader is in, brighter */
+/* each part is a small stack: the part's name centred on top over a thin rule, both in the part's hue, then its page
+   links in one row under them. Links look like controls (bright text, a hover fill, the current page outlined); the
+   names are quiet labels with no hover. */
+.nav-group { display: flex; flex-direction: column; align-items: stretch; gap: 2px; }
+.nav-group:has(.nav-group-k[data-group="Background"]) { --nav-k: #93c5fd; }   /* light blue */
+.nav-group:has(.nav-group-k[data-group="Evidence"]) { --nav-k: #c4b5fd; }     /* lavender */
+.nav-group:has(.nav-group-k[data-group="The search"]) { --nav-k: #5eead4; }   /* teal */
 .nav-group-k {
-  position: relative;
-  font: 600 .64rem/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase;
-  color: #d1d5db; white-space: nowrap;
+  display: block; padding: 6px 0 3px; text-align: center; cursor: default; user-select: none;
+  font: 700 .825rem/1 var(--font-mono); letter-spacing: .14em; text-transform: uppercase; white-space: nowrap;
+  color: var(--nav-k, #d1d5db); opacity: .7;
+  border-bottom: 1px solid color-mix(in srgb, var(--nav-k, #d1d5db) 45%, transparent);
 }
-.nav-group-k::after {
-  content: ""; position: absolute; left: 0; bottom: -5px; width: 14px; height: 2px; border-radius: 1px;
-  background: var(--nav-k, #d1d5db); opacity: .75;
-}
-.nav-group-k[data-group="Background"] { --nav-k: #93c5fd; }   /* light blue */
-.nav-group-k[data-group="Evidence"] { --nav-k: #c4b5fd; }     /* lavender */
-.nav-group-k[data-group="The search"] { --nav-k: #5eead4; }   /* teal */
-.nav-group.is-here .nav-group-k { color: var(--text-primary); }
-.nav-group ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 2px; }
+.nav-group.is-here .nav-group-k { opacity: 1; border-bottom-color: color-mix(in srgb, var(--nav-k, #d1d5db) 80%, transparent); }
+.nav-group ul { list-style: none; margin: 0; padding: 0; display: flex; justify-content: center; gap: 2px; }
 .nav-group a {
-  display: inline-block; padding: 6px 7px; border-radius: 8px; font-size: .82rem; white-space: nowrap;
-  color: var(--text-secondary); text-decoration: none; border: 1px solid transparent;
+  display: inline-block; padding: 4px 7px; border-radius: 7px; font-size: .82rem; font-weight: 500; white-space: nowrap;
+  color: var(--text-primary); opacity: .78; text-decoration: none; border: 1px solid transparent; cursor: pointer;
+  transition: background-color .15s ease, opacity .15s ease;
 }
-.nav-group a:hover { color: var(--text-primary); background: #ffffff0a; }
-.nav-group a[aria-current="page"] { color: var(--text-primary); background: #ffffff14; border-color: #ffffff4d; }
+.nav-group a:hover { opacity: 1; background: #ffffff12; }
+.nav-group a[aria-current="page"] { opacity: 1; background: #ffffff14; border-color: #ffffff4d; }
+.nav-group a:focus-visible { outline: 2px solid var(--ui, #fff); outline-offset: 1px; }
 /* pages outside the walkthrough sit apart, after a rule, in smaller muted type */
 .nav-aside { border-left: 1px solid var(--rule); padding-left: 12px; }
 .nav-aside a {
@@ -64,11 +64,14 @@
 @media (min-width: 1280px) and (max-width: 1439px) {
   .site-nav-in { gap: 12px; }
   .nav-home { font-size: .88rem; }
-  .nav-groups { gap: 8px; }
+  .nav-groups { gap: 10px; }
   .nav-aside { padding-left: 8px; }
-  .nav-group a, .nav-aside a { padding: 6px 6px; font-size: .78rem; }
+  .nav-group a { padding: 4px 6px; font-size: .78rem; }
+  .nav-aside a { padding: 6px 6px; font-size: .78rem; }
 }
 .nav-aside a[aria-current="page"] { color: var(--text-primary); border-color: var(--rule); }
+/* the full bar: a little room under the page links, so the larger part names don't push them onto the bar's edge */
+@media (min-width: 1280px) { .site-nav-in { padding-bottom: 4px; } }
 
 @media (max-width: 1279px) {
   .nav-menu { position: relative; }
@@ -77,13 +80,14 @@
   }
   .nav-menu summary span { display: block; width: 18px; height: 2px; background: var(--text-secondary); border-radius: 1px; }
   .nav-menu nav {
-    position: absolute; right: 0; top: calc(100% + 8px); min-width: 260px;
+    position: absolute; right: 0; top: calc(100% + 8px); min-width: min(300px, calc(100vw - 2 * var(--gutter)));
     background: var(--surface-2); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px;
     box-shadow: 0 18px 50px #000a;
   }
   .nav-groups { flex-direction: column; align-items: stretch; gap: 12px; }
-  .nav-group { flex-direction: column; align-items: flex-start; gap: 6px; }
-  .nav-group ul { flex-wrap: wrap; }
+  .nav-group { gap: 4px; }
+  .nav-group ul { justify-content: flex-start; }
+  .nav-group-k { text-align: left; padding-top: 0; padding-bottom: 5px; }
   .nav-aside { border-left: 0; padding: 10px 0 0; border-top: 1px solid var(--rule); }
 }
 

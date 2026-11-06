@@ -6,7 +6,6 @@ import { loadData, showLoadError } from '../data.js'
 import { drawField, PICK } from '../charts/field.js'
 // the site's scroll entrances (.reveal, is-in, --reveal-ease): the ledger's cards below use its easing too
 import '../scrolly.css'
-import { scrollyProgress } from '../scrolly.js'
 
 const $ = s => document.querySelector(s)
 const SKY_SQ_DEG = 41253
@@ -132,94 +131,6 @@ function revealOnScroll (els) {
   mo.observe(root, { attributes: true, attributeFilter: ['data-ready'] })
 }
 
-/**
- * What to watch, one card at a time. The cards share one place; a dot per card (bright for the one showing, soft for
- * those passed), a count, and Previous and Next move between them.
- *
- * On a wide screen tall enough for it (and for readers who have not asked for less motion) the whole section, heading
- * included, stays pinned below the nav while the reader scrolls past one empty step per card, and the scroll position
- * picks the card (scrollyProgress, scrolly.js: the last step whose middle has passed the middle of the screen, read on
- * each frame, so it follows the reader both ways and nothing holds the wheel). A button or dot shows its card at once
- * and scrolls to that card's step; until the scroll gets there the steps it passes are ignored, so the cards between do
- * not flash by, and any wheel or touch from the reader hands control straight back to the scroll.
- *
- * Elsewhere the reader steps through by hand: no pinning, no steps. The cards not showing are inert either way.
- */
-function watchOneByOne (story) {
-  const cards = [...story.querySelectorAll('#nextLedger .fr')]
-  const n = cards.length
-  if (!n) return
-  const title = c => c.querySelector('.fr-title').textContent
-  story.querySelector('.nx-dots').innerHTML = cards.map((c, i) => `<li><button type="button" class="nx-dot" data-i="${i}"
-    aria-label="${i + 1} of ${n}: ${title(c).replace(/"/g, '&quot;')}"></button></li>`).join('')
-  // one step per card, then a spacer (not a step) so the last card stays as long as the others before the section moves on
-  story.querySelector('.nx-steps').innerHTML = cards.map((c, i) => `<div class="step nx-step" data-step="${i}" aria-hidden="true"></div>`).join('') +
-    '<div class="nx-tail" aria-hidden="true"></div>'
-  const dots = [...story.querySelectorAll('.nx-dot')], steps = [...story.querySelectorAll('.nx-step')]
-  const prev = story.querySelector('.nx-prev'), next = story.querySelector('.nx-next')
-  const count = story.querySelector('.nx-count'), status = story.querySelector('.nx-status')
-  const pin = story.querySelector('.nx-pin')
-  const fits = window.matchMedia('(min-width: 901px) and (min-height: 700px)')
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  let at = -1, pending = null, pendingTimer = 0
-  const scrolled = () => story.classList.contains('is-told')
-
-  function show (k, { announce = true } = {}) {
-    if (k === at) return
-    at = k
-    cards.forEach((c, i) => {
-      c.classList.toggle('is-active', i === k)
-      c.classList.toggle('is-before', i < k)
-      c.inert = i !== k
-    })
-    dots.forEach((d, i) => {
-      d.classList.toggle('is-done', i < k)
-      if (i === k) d.setAttribute('aria-current', 'step'); else d.removeAttribute('aria-current')
-    })
-    count.textContent = `${k + 1} of ${n}`
-    // aria-disabled, not disabled, so a button keeps focus when it reaches the end
-    prev.setAttribute('aria-disabled', String(k === 0))
-    next.setAttribute('aria-disabled', String(k === n - 1))
-    if (announce) status.textContent = `${k + 1} of ${n}. ${title(cards[k])}`
-  }
-
-  function go (k) {
-    k = Math.max(0, Math.min(n - 1, k))
-    show(k)
-    if (!scrolled()) return
-    // scroll so this card's step has just passed the middle of the screen; ignore the steps passed on the way
-    pending = k
-    clearTimeout(pendingTimer)
-    pendingTimer = setTimeout(() => { pending = null }, 1600)
-    const r = steps[k].getBoundingClientRect()
-    window.scrollTo({ top: window.scrollY + r.top + r.height / 2 - window.innerHeight / 2 + 4, behavior: reduce ? 'auto' : 'smooth' })
-  }
-  const release = () => { pending = null }
-  window.addEventListener('wheel', release, { passive: true })
-  window.addEventListener('touchstart', release, { passive: true })
-
-  prev.addEventListener('click', () => { if (at > 0) go(at - 1) })
-  next.addEventListener('click', () => { if (at < n - 1) go(at + 1) })
-  dots.forEach((d, i) => d.addEventListener('click', () => go(i)))
-
-  // the steps start alongside the panel, a little above its foot, so the first card's share of the scroll matches the rest
-  const place = () => story.style.setProperty('--nx-pin-h', `${pin.offsetHeight}px`)
-  function mode () {
-    story.classList.add('is-deck')
-    story.classList.toggle('is-told', fits.matches && !reduce)
-    place()
-  }
-  new ResizeObserver(place).observe(pin)
-  fits.addEventListener('change', mode)
-  mode()
-  show(0, { announce: false })
-  scrollyProgress(story, k => {
-    if (!scrolled()) return
-    if (pending !== null) { if (k === pending) pending = null; return }
-    show(k)
-  })
-}
-
 async function main () {
   // The entrances: the three beats one after another, left to right; each row of the schedule on its own; the two
   // verdicts together; the ruler's surveys from brightest to faintest once it is on screen (style.css). Set up before
@@ -233,13 +144,18 @@ async function main () {
   for (const el of [...rows, verdicts, question]) el.classList.add('reveal')
   revealOnScroll([...beats, ...rows, verdicts, $('#chartDepth'), question])
 
-  // The reader's verdict: one answer at a time, changeable, shown as a line under the buttons. Nothing is kept or sent.
-  question.addEventListener('click', e => {
+  // The reader's verdict: one answer at a time, changeable until Submit, then a thank-you in the question's place.
+  // Nothing is kept or sent, and no tallies are shown.
+  const submit = question.querySelector('.cq-submit')
+  question.querySelector('.cq-choices').addEventListener('click', e => {
     const b = e.target.closest('.cq-btn'); if (!b) return
-    const answer = b.dataset.answer
-    question.querySelectorAll('.cq-btn').forEach(x => x.setAttribute('aria-pressed', String(x === b)))
-    question.querySelectorAll('.cq-answer').forEach(p => p.classList.toggle('is-shown', p.dataset.answer === answer))
-    question.querySelector('.cq-status').textContent = question.querySelector(`.cq-answer[data-answer="${answer}"]`).textContent
+    question.querySelectorAll('.cq-choices .cq-btn').forEach(x => x.setAttribute('aria-pressed', String(x === b)))
+    submit.disabled = false
+  })
+  submit.addEventListener('click', () => {
+    question.classList.add('is-submitted')
+    question.querySelector('.cq-ask').inert = true
+    question.querySelector('.cq-thanks').focus({ preventScroll: true })
   })
 
   const { surveys: sv, planet_nine_predictions: PRED, field_timeline: FIELD, papers: PAPERS } = await loadData('surveys', 'planet_nine_predictions', 'field_timeline', 'papers')
@@ -263,7 +179,6 @@ async function main () {
 
   // one lane, so the ledger draws no key; its cards come in by themselves (charts/field.js), their drawings after them
   drawField($('#nextLedger'), { timeline: FIELD, papers: PAPERS.papers, filter: PICK.next, dated: false, lanes: ['next'] })
-  watchOneByOne($('#nextStory'))
 
 }
 

@@ -1,16 +1,15 @@
-// Evidence, last page: the competing explanations, as a scorecard
-// (charts/matrix.js) whose rows open a panel each, then one line of where that
-// leaves things.
+// Evidence, last page: the clues any explanation must fit, a drawing each
+// (charts/clueart.js), then the competing explanations as a scorecard
+// (charts/matrix.js) the reader filters by clue, whose rows open a panel each.
 
 import '../site.js'
 import { loadData, showLoadError } from '../data.js'
 import { drawScorecard, markKey } from '../charts/matrix.js'
 import { altHead } from '../charts/althead.js'
+import { clueArt } from '../charts/clueart.js'
 import { isOriginalSix } from '../orbits.js'
 
 const $ = s => document.querySelector(s)
-const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve']
-const word = n => WORDS[n] ?? String(n)
 
 async function main () {
   const { alternatives: ALTS, papers: PAPERS, etnos } = await loadData('alternatives', 'papers', 'etnos')
@@ -18,9 +17,10 @@ async function main () {
   // the head: the six bunched orbits, the suspects round them
   altHead($('#altHead'), { six: etnos.filter(isOriginalSix), alternatives: ALTS.alternatives })
 
-  // the counts in the heading come from the data
-  const t = `${word(ALTS.alternatives.length)} explanations, ${word(ALTS.phenomena.length)} clues`
-  $('#altTitle').textContent = t[0].toUpperCase() + t.slice(1)
+  // the clues, a drawing and a line each
+  const art = clueArt({ six: etnos.filter(isOriginalSix), sedna: etnos.find(o => o.id === '90377') })
+  $('#clueCards').innerHTML = ALTS.phenomena.map(p => `<li><figure class="rule-fig" aria-hidden="true">${art[p.id]?.() || ''}</figure>
+    <div><b>${p.label}</b>${p.plain}</div></li>`).join('')
 
   $('#altKey').innerHTML = markKey()
   drawScorecard($('#altTable'), { alternatives: ALTS.alternatives, phenomena: ALTS.phenomena, papers: PAPERS.papers })

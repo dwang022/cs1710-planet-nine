@@ -477,6 +477,9 @@ text[data-planet="Pluto"][data-planet] { fill: var(--c-pluto); } text[data-plane
 .rule-fig svg { display: block; width: 100%; height: auto; }
 .definition b { display: block; color: var(--text-primary); font-size: 1.2em; letter-spacing: -0.01em; margin-bottom: 6px; }
 .definition b::before { content: counter(req) ". "; }
+.definition.four { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; }
+@media (max-width: 1100px) { .definition.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .definition.four { grid-template-columns: 1fr; } }
 @media (max-width: 760px) {
   .definition { grid-template-columns: 1fr; gap: 0; }
   .definition li { padding: 18px 0 22px; border-bottom: 0; row-gap: 12px; }
@@ -658,7 +661,7 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .alt-head .ah-orbit { fill: none; stroke: var(--series-1); stroke-width: 2; stroke-opacity: .9; }
 .ah-suspect {
   position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 4px;
-  opacity: 0; animation: ah-in .6s ease forwards;
+  opacity: 0; animation: ah-in .35s ease forwards;
 }
 .ah-suspect .alt-ic-box { width: 42px; height: 42px; display: grid; place-items: center; }
 .ah-name { font-size: .78rem; color: var(--text-secondary); white-space: nowrap; }
@@ -1418,7 +1421,7 @@ html.has-reveal #fieldTimeline .fy[data-from="above"]:not(.is-seen) .fy-year { t
 /* insights/alternatives.html: the key and the scorecard (charts/matrix.js), the panel that opens under a row and its
    drawings (charts/altart.js). The table follows the planets page's .criteria; the marks say each verdict by shape
    and by colour: a white disc (accounts for it), a white half disc (partly), an ember ring (does not). */
-.alt-key { gap: 8px 28px; margin: 0 0 14px; }
+.alt-key { gap: 8px 28px; margin: 14px 0 0; }
 .alt-key .legend-item { font-size: .88rem; gap: 9px; }
 .mk { display: inline-block; width: 22px; height: 22px; flex: none; overflow: visible; vertical-align: middle; }
 .mk circle, .mk path { fill: var(--text-primary); stroke: none; }
@@ -1438,6 +1441,32 @@ html.has-reveal #fieldTimeline .fy[data-from="above"]:not(.is-seen) .fy-year { t
 .alt-table thead .alt-h-name { width: 34%; padding-left: 16px; text-align: left; }
 .alt-table thead .alt-h-more { width: 112px; }
 .alt-h-test .short { display: none; }
+
+/* the clue filter: each clue head is a toggle (a tick box above its name); a required clue is bright and underlined */
+.alt-h-btn { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 7px; width: 100%;
+  cursor: pointer; color: var(--text-secondary); font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: center; }
+.alt-h-btn:hover { color: var(--text-primary); }
+.alt-h-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 4px; border-radius: 4px; }
+.alt-h-btn .tick { width: 14px; height: 14px; border: 1.5px solid var(--text-muted); border-radius: 4px; display: grid; place-items: center; flex: none; }
+.alt-h-btn:hover .tick { border-color: var(--text-primary); }
+.alt-h-btn[aria-pressed="true"] { color: var(--text-primary); }
+.alt-h-btn[aria-pressed="true"] .tick { background: #fff; border-color: #fff; }
+.alt-h-btn[aria-pressed="true"] .tick::after { content: ""; width: 7px; height: 4px; border: solid #0f0f11; border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg); }
+.alt-table thead th.alt-h-test { vertical-align: top; }
+.alt-table thead th.is-req { box-shadow: inset 0 -2px 0 var(--text-primary); }
+.alt-hint { display: block; margin-top: 6px; font: 400 .8rem/1.2 var(--font-sans); letter-spacing: 0; text-transform: none; color: var(--text-muted); transition: opacity .3s; }
+.alt-hint::after { content: " →"; }
+.alt-table.was-filtered .alt-hint { opacity: 0; }
+.alt-f-count { font: 600 .9rem/1 var(--font-sans); letter-spacing: 0; text-transform: none; color: var(--text-primary); white-space: nowrap; }
+.alt-table .alt-row { transition: opacity .3s ease; }
+.alt-table .alt-row.is-out { opacity: .28; }
+.alt-table .alt-row.is-out:hover { opacity: .6; }
+
+/* the easter egg: a reader who chose the black-hole skin opens the black hole's row, and the rest falls in */
+.alt-table .is-sucked { transition: transform .75s cubic-bezier(.55, 0, .9, .45), opacity .75s ease-in; }
+.alt-table .is-spat { transition: transform .6s cubic-bezier(.2, 1.4, .4, 1), opacity .4s ease-out; }
+.alt-egg { display: block; font-size: .78rem; font-weight: 600; color: var(--text-primary); opacity: 0; transition: opacity .3s; }
+.alt-egg.show { opacity: 1; }
 
 /* a row: the whole of it opens its panel; the pill at the end says so */
 .alt-table .alt-row { cursor: pointer; }
@@ -1510,6 +1539,7 @@ html.has-reveal #fieldTimeline .fy[data-from="above"]:not(.is-seen) .fy-year { t
 @media (max-width: 760px) {
   .alt-h-test .long { display: none; }
   .alt-h-test .short { display: inline; }
+  .alt-f-count { font-size: .72rem; }
   .alt-table thead th { padding: 10px 2px; font-size: .62rem; letter-spacing: .05em; }
   .alt-table thead .alt-h-name { width: auto; padding-left: 10px; }
   .alt-table thead .alt-h-test { width: 12%; }

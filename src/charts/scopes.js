@@ -15,15 +15,22 @@
 // found every extreme object discovered since it opened (`recent`, counted in
 // pages/data.js). Hubble, the one in
 // orbit, sits in the top right corner the globe leaves empty, as a button with
-// its own dot. The South Pacific, bottom left, holds the size scale. The reader is a map pin.
-// Clicking a dot (or Hubble) opens a card that stays until it is closed: a
-// photograph where we have one (public/telescopes, read from credits.json),
-// what the site measured, and its telescopes. locate() puts the reader on the
-// map and opens the nearest site's card.
+// its own dot. Under it, on the map, a pin button finds the site nearest the
+// reader (a pulse at the pin's tip until it is used); the reader then appears as
+// a map pin joined to that site. The South Pacific, bottom left, holds the size scale.
+// Pointing at a dot (or Hubble) opens its card, which stays while the pointer
+// is on the dot or the card; a click keeps it open until it is closed (readers
+// did not think to click). The card: a photograph where we have one
+// (public/telescopes, read from credits.json), what the site measured, and the
+// names of the objects discovered there. Readers mixed up
+// "positions" and "found here", so the two are "positions measured" (every time
+// a telescope measured where one of the objects was) and "objects discovered"
+// (the first to see it).
 //
 // Every number comes from observatories.json (scripts/build_observatories.py),
 // which reads the Minor Planet Center's own records. The reader's location is
-// used in the browser only, to measure distances; it is never sent anywhere.
+// used in the browser only, to measure distances; it is never sent anywhere
+// (said here, not on the page).
 
 import * as d3 from 'd3'
 import { feature, mesh } from 'topojson-client'
@@ -147,7 +154,11 @@ function separate (pts, gap = 1.5, bounds = null) {
   return new Map(p.map(d => [d.s, [d.x, d.y]]))
 }
 
-export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
+// The objects' names in a card: named ones first (Sedna), then by designation, which runs by year.
+const byName = (a, b) => (/^\d/.test(a) - /^\d/.test(b)) || a.localeCompare(b, 'en', { numeric: true })
+
+/** names: object id → the name to show (pages/data.js, from etnos.json). */
+export function makeScopeMap (root, obs, photos = [], { recent = null, names = new Map() } = {}) {
   const all = sites(obs, photos)
   const hubbleRow = obs.observatories.find(r => r.code === '250')
   const hubble = hubbleRow && describe({ lon: null, lat: null, scopes: [hubbleRow] }, photos)
@@ -173,6 +184,7 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
   const insets = INSETS.map(p => ({ ...p, proj: d3.geoMercator() }))
 
   let you = null, open = null
+  let pinned = false, closing = null           // a click keeps the card; pointing only shows it
 
   // the size scale in the South Pacific, bottom left; Hubble in the top right corner, over the open sea
   // Each scale is a row of circles standing on one line, its values under them and its name under those.
@@ -188,22 +200,67 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
       g.append('text').attr('class', 'key-lbl muted').attr('x', x0 + slot * values.length / 2).attr('y', base + 27).attr('text-anchor', 'middle').text(name)
       return x0 + slot * values.length
     }
-    const x = scale(14, 'positions reported', [10, 100, 1000].filter(v => v <= r.domain()[1]), 'site key', v => Math.max(2.6, r(v)))
-    // objects first found there: violet discs at their own scale
-    scale(x + 18, 'first found there', [1, 5, 20].filter(v => v <= rc.domain()[1]), 'site-core', v => Math.max(1.5, rc(v)))
+    const x = scale(14, 'positions measured', [10, 100, 1000].filter(v => v <= r.domain()[1]), 'site key', v => Math.max(2.6, r(v)))
+    // objects discovered there: violet discs at their own scale
+    scale(x + 18, 'objects discovered', [1, 5, 20].filter(v => v <= rc.domain()[1]), 'site-core', v => Math.max(1.5, rc(v)))
+    drawFind()
     if (!hubble) return
     // two rows, the dot and the drawing over the name, so it fits the corner the globe leaves empty
     const h = gKey.append('g').attr('class', 'hubble').attr('tabindex', 0).attr('role', 'button')
-      .attr('aria-label', `Hubble Space Telescope, in orbit: ${hubble.n_obs} positions`).attr('transform', `translate(${W - 106},6)`)
+      .attr('aria-label', `Hubble Space Telescope, in orbit: ${hubble.n_obs} positions measured`).attr('transform', `translate(${W - 106},6)`)
     h.append('rect').attr('class', 'hubble-pill').attr('width', 100).attr('height', 90).attr('rx', 16)
     h.append('circle').attr('class', 'site').attr('cx', 22).attr('cy', 30).attr('r', radius(hubble))
     h.append('g').attr('transform', 'translate(66,30) scale(.56)').html(HUBBLE)
     h.append('text').attr('class', 'key-lbl strong').attr('x', 12).attr('y', 66).text('Hubble')
     h.append('text').attr('class', 'key-lbl muted').attr('x', 12).attr('y', 80).text('in orbit')
     h.append('text').attr('class', 'key-lbl more').attr('x', 84).attr('y', 77).attr('text-anchor', 'middle').text('›')
-    h.on('click', ev => show(hubble, ev.currentTarget))
-      .on('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); show(hubble, ev.currentTarget) } })
+    hoverable(h, () => hubble)
   }
+
+  // The reader's way onto the map: a pill under Hubble, the same width and lined up with it, holding a
+  // map pin (a pulse at its tip until it is used) and a word or two; the pin and the words are centred
+  // in it whatever they say. Pressed, it finds the site nearest the reader.
+  const FIND = { x: W - 106, y: 104, w: 100, h: 34 }
+  function drawFind () {
+    const f = gKey.append('g').attr('class', 'find-me').attr('tabindex', 0).attr('role', 'button')
+      .attr('aria-label', 'Show the telescope nearest you').attr('transform', `translate(${FIND.x},${FIND.y})`)
+    f.append('rect').attr('class', 'find-pill').attr('width', FIND.w).attr('height', FIND.h).attr('rx', FIND.h / 2)
+    const icon = f.append('g')
+    icon.append('circle').attr('class', 'find-pulse').attr('cy', 8).attr('r', 3)
+    icon.append('path').attr('class', 'find-pin').attr('d', pin(0, 0)).attr('transform', 'translate(0,8) scale(.7)')
+    icon.append('circle').attr('class', 'find-pin-eye').attr('cy', 8 - 16 * 0.7).attr('r', 2.3)
+    const lbl = f.append('text').attr('class', 'find-lbl').attr('y', FIND.h / 2 + 4.5)
+    const say = t => {
+      lbl.text(t)
+      const tw = lbl.node().getComputedTextLength?.() || t.length * 6.5, iw = 12, gap = 7
+      const x0 = (FIND.w - (iw + gap + tw)) / 2
+      icon.attr('transform', `translate(${(x0 + iw / 2).toFixed(1)},${(FIND.h / 2 - 1).toFixed(1)})`)
+      lbl.attr('x', (x0 + iw + gap).toFixed(1))
+    }
+    say('Near me')
+    const go = () => {
+      f.classed('used', true)
+      if (!navigator.geolocation) { say('Unavailable'); return }
+      say('Locating…')
+      navigator.geolocation.getCurrentPosition(p => {
+        say('Near me')
+        locate(p.coords.latitude, p.coords.longitude)
+      }, () => say('No location'), { timeout: 15000, maximumAge: 600000 })
+    }
+    f.on('click', go).on('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go() } })
+  }
+
+  // Pointing opens the card; leaving the dot (and not moving onto the card) lets it go; a click keeps it.
+  function hoverable (sel, site, at = el => el) {
+    sel.on('mouseenter.card', (ev, d) => { clearTimeout(closing); const s = site(d); if (open !== s) { pinned = false; show(s, at(ev.currentTarget, s)) } })
+      .on('mouseleave.card', () => { if (!pinned) { clearTimeout(closing); closing = setTimeout(close, 260) } })
+      .on('click.card', (ev, d) => { clearTimeout(closing); const s = site(d); if (open !== s) show(s, at(ev.currentTarget, s)); pinned = true })
+      .on('keydown.card', (ev, d) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); show(site(d), at(ev.currentTarget, site(d))); pinned = true } })
+  }
+  card.addEventListener('mouseenter', () => clearTimeout(closing))
+  card.addEventListener('mouseleave', () => { if (!pinned) closing = setTimeout(close, 260) })
+  // a click on the open sea or land puts a kept card away
+  svg.on('click.away', ev => { if (open && !ev.target.closest('.site, .ring-hit, .hubble, .find-me')) close() })
 
   // The 1:50m outlines keep Maui and La Palma, which carry telescopes; they load only on this page.
   import('world-atlas/countries-50m.json').then(({ default: topo }) => {
@@ -249,12 +306,12 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
   function drawDots () {
     const order = all.slice().sort((a, b) => b.n_obs - a.n_obs)     // small dots on top, so every one can be picked
     const cls = s => `site${s.next ? ' next' : ''}${s === open ? ' open' : ''}`
-    const wire = sel => sel.attr('tabindex', 0).attr('role', 'button').attr('aria-label', s => `${s.name}: ${fmt(s.n_obs)} positions`)
-      .on('click', (ev, s) => show(s, ev.currentTarget))
-      .on('keydown', (ev, s) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); show(s, ev.currentTarget) } })
+    const wire = sel => sel.attr('tabindex', 0).attr('role', 'button')
+      .attr('aria-label', s => `${s.name}: ${fmt(s.n_obs)} positions measured, ${s.found.size} objects discovered`)
       .on('mouseenter', (ev, s) => light(s, true)).on('mouseleave', (ev, s) => light(s, false))
+      .call(hoverable, s => s)
     // An inset's sites are rings on the world map, at their places, all one size (their dots would pile
-    // up there; the inset pulls them apart). A click on a ring opens the card at the site's dot in the
+    // up there; the inset pulls them apart). Pointing at a ring opens the card at the site's dot in the
     // inset; keys reach the site there, so the rings take no tab stop. The rings hold their places and
     // the other sites are nudged clear of them and of each other (two in Pennsylvania, 100 km apart, would touch).
     const crowd = order.filter(s => insets.some(p => within(s, p)))
@@ -267,8 +324,8 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
       .attr('cx', s => atW.get(s)[0]).attr('cy', s => atW.get(s)[1]).attr('r', RING)
     gRingHits.selectAll('circle').data(crowd, s => s.name + s.lon).join('circle').attr('class', 'ring-hit')
       .attr('cx', s => atW.get(s)[0]).attr('cy', s => atW.get(s)[1]).attr('r', RING_HIT)
-      .on('click', (ev, s) => show(s, twin(s) || ev.currentTarget))
       .on('mouseenter', (ev, s) => light(s, true)).on('mouseleave', (ev, s) => light(s, false))
+      .call(hoverable, s => s, (el, s) => twin(s) || el)
     gDots.selectAll('circle').data(world, s => s.name + s.lon).join('circle').attr('class', cls)
       .attr('cx', s => atW.get(s)[0]).attr('cy', s => atW.get(s)[1]).attr('r', s => radius(s))
       .call(wire)
@@ -339,8 +396,11 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
     open = s
     s.near = km != null
     const years = s.first === s.last ? `${s.first}` : `${s.first}–${s.last}`
-    const scopes = s.scopes.length > 1
-      ? `<ul class="sc-scopes">${s.scopes.map(t => `<li><span>${esc(t.name)}</span><b>${fmt(t.n_obs)}</b></li>`).join('')}</ul>` : ''
+    // (the card once listed a shared summit's telescopes one by one; readers did not need them)
+    // the objects discovered here, by name, in the objects' violet
+    const found = [...s.found].map(id => names.get(id) || id).sort(byName)
+    const foundList = found.length
+      ? `<div class="sc-found"><span class="sc-found-k">Discovered here</span><ul>${found.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>` : ''
     card.innerHTML = `
       <button type="button" class="sc-close" aria-label="Close">×</button>
       ${s.photo ? `<img src="${url(`telescopes/${s.photo.file}`)}" alt="" width="720" height="480">`
@@ -350,11 +410,11 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
         <b class="sc-name">${esc(s.name)}</b>
         <span class="sc-place">${s.place ? `${esc(s.place)} · ` : ''}${years}</span>
         <dl class="sc-stats">
-          <div><dt>positions</dt><dd>${fmt(s.n_obs)}</dd></div>
-          <div><dt>objects</dt><dd>${s.objects.size}</dd></div>
-          <div><dt>found here</dt><dd>${s.found.size}</dd></div>
+          <div><dt>positions measured</dt><dd>${fmt(s.n_obs)}</dd></div>
+          <div><dt>objects followed</dt><dd>${s.objects.size}</dd></div>
+          <div><dt>objects discovered</dt><dd>${s.found.size}</dd></div>
         </dl>
-        ${scopes}
+        ${foundList}
         ${s.photo ? `<span class="sc-credit">Photo ${[s.photo.credit, s.photo.license].filter(Boolean).map(esc).join(' · ')}</span>` : ''}
       </div>`
     card.hidden = false
@@ -364,7 +424,7 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
     place(anchor)
     if (img && !img.complete) img.addEventListener('load', () => place(anchor), { once: true })
   }
-  function close () { card.hidden = true; if (open) open.near = false; open = null; drawDots() }
+  function close () { clearTimeout(closing); pinned = false; card.hidden = true; if (open) open.near = false; open = null; drawDots() }
   document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && open) close() })
 
   // Beside the dot where there is room; on a narrow map, docked along the bottom.
@@ -387,6 +447,7 @@ export function makeScopeMap (root, obs, photos = [], { recent = null } = {}) {
     drawDots()
     const dot = svg.selectAll('circle.site').filter(s => s === nearest).node() || root
     show(nearest, dot, km(you, nearest))
+    pinned = true
   }
 
   return { locate }

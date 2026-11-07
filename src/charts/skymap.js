@@ -455,7 +455,7 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
         <dl>
           <dt>average distance</dt><dd class="au">${fmtInt(d.a_au)} AU</dd>
           <dt>closest to the Sun</dt><dd class="au">${fmtInt(d.q_au)} AU</dd>
-          <dt>seasons seen</dt><dd>${d.well_determined ? 'more than one' : 'one'}</dd>
+          <dt>years seen</dt><dd>${d.well_determined ? 'more than one' : 'one'}</dd>
         </dl>`)
     setHover(d.id)
   }

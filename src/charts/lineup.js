@@ -20,7 +20,11 @@ const SLOTS = [
   { name: 'Uranus', size: 46, dy: 12 }, { name: 'Neptune', size: 44, dy: -14 }, { name: 'Pluto', size: 22, dy: 22, dwarf: true },
 ]
 const X0 = 150, DX = 84, P9X = 910
-const DROP = 74            // how far Pluto falls when it stops being a planet
+const DROP = 104           // how far Pluto falls when it stops being a planet: below the count, out of it
+// The count: a number on each planet's own arc, all on one line under the names, like beads on the
+// orbits. The last one is larger and in the count's colour (nine in Pluto's, eight white, the ninth in
+// Planet Nine's), as the title's three words are.
+const NUM_Y = 340
 
 const FACTS = {
   Mercury: 'Known since antiquity.', Venus: 'Known since antiquity.', Earth: 'You are here.',
@@ -45,7 +49,7 @@ function lcg (seed) { let s = seed >>> 0; return () => { s = (Math.imul(s, 16645
 export function makeLineup (root, { planets }) {
   const au = new Map(planets.map(p => [p.name, p.a]))
   const svg = d3.select(root).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-    .attr('aria-label', 'A chart of the planets in a row from the Sun, with Pluto at the end. As the story advances, Pluto is reclassified and a ninth planet appears with a question mark.')
+    .attr('aria-label', 'A chart of the planets in a row from the Sun, with Pluto at the end, each numbered. As the story advances, Pluto is reclassified and loses its number, leaving eight, and a ninth planet appears with a question mark.')
 
   svg.append('clipPath').attr('id', 'lu-clip').append('rect').attr('width', W).attr('height', H)
   const g = svg.append('g').attr('clip-path', 'url(#lu-clip)')
@@ -60,6 +64,7 @@ export function makeLineup (root, { planets }) {
 
   const gArcs = g.append('g')
   const gKbo = g.append('g').attr('opacity', 0)
+  const gNums = g.append('g').attr('aria-hidden', 'true').style('pointer-events', 'none')
   const gSun = g.append('g')
   const gBodies = g.append('g')
   const gNotes = g.append('g').style('pointer-events', 'none')
@@ -75,6 +80,15 @@ export function makeLineup (root, { planets }) {
     .attr('cx', SUN.x).attr('cy', SUN.y).attr('r', dist)
     .attr('stroke', d => d.p9 ? 'var(--p9)' : colour[d.name])
     .attr('opacity', d => d.p9 ? 0 : 1)
+
+  // The count, each number where its body's arc crosses the line NUM_Y (the arcs are centred on the Sun).
+  const onArc = b => SUN.x + Math.sqrt(dist(b) ** 2 - (NUM_Y - SUN.y) ** 2)
+  const nums = gNums.selectAll('g').data([...slots.map((s, i) => ({ ...s, n: `${i + 1}` })), { ...p9, n: '9?' }], d => d.name).join('g')
+    .attr('class', d => `lu-num${d.p9 ? ' p9' : ''}`)
+    .attr('transform', d => `translate(${onArc(d).toFixed(1)},${NUM_Y})`)
+    .attr('opacity', d => d.p9 ? 0 : 1)
+  nums.append('circle').attr('r', 14).attr('stroke', d => d.p9 ? 'var(--p9)' : colour[d.name])
+  nums.append('text').attr('text-anchor', 'middle').attr('dy', '0.36em').text(d => d.n)
 
   // Pluto's neighbours: a speckle along its arc.
   const rnd = lcg(2006)
@@ -150,15 +164,21 @@ export function makeLineup (root, { planets }) {
       .transition().duration(T).attr('opacity', showP9 ? 1 : 0)
     gArcs.selectAll('circle').transition().duration(T).attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0.4 : 1)
 
-    // Notes beside Pluto: the crowd, then the three checks. The drawing carries
+    // The count: Pluto's 9 goes when Pluto drops, Neptune's 8 is then the last, and the ninth comes with a question mark.
+    const last = showP9 ? 'Planet Nine' : dropped ? 'Neptune' : 'Pluto'
+    nums.classed('last', d => d.name === last).attr('data-count', d => d.name !== last ? null : showP9 ? 'ninth' : dropped ? 'eight' : 'nine')
+    nums.transition().duration(T).attr('opacity', d => d.p9 ? (showP9 ? 1 : 0) : d.dwarf && dropped ? 0 : 1)
+    nums.select('circle').transition().duration(T).attr('r', d => d.name === last ? 20 : 14)
+
+    // Notes under Pluto, below the count: the crowd, then the three checks. The drawing carries
     // the rest (the faded Pluto, the dashed Planet Nine); the card says what it means.
     const notes = []
     const nx = pluto.x, ny = pluto.y + (dropped ? DROP : 0)
-    if (step === 'neighbours') notes.push({ x: nx - 40, y: ny + 70, t: 'and thousands of others: Eris, Makemake, Haumea…', cls: '' })
+    if (step === 'neighbours') notes.push({ x: nx - 40, y: ny + 124, t: 'and thousands of others: Eris, Makemake, Haumea…', cls: '' })
     if (step === 'rules') {
-      notes.push({ x: nx, y: ny + 62, t: 'orbits the Sun ✓', cls: 'good' })
-      notes.push({ x: nx, y: ny + 80, t: 'round ✓', cls: 'good' })
-      notes.push({ x: nx, y: ny + 98, t: 'cleared its orbit ✗', cls: 'bad' })
+      notes.push({ x: nx, y: ny + 120, t: 'orbits the Sun ✓', cls: 'good' })
+      notes.push({ x: nx, y: ny + 138, t: 'round ✓', cls: 'good' })
+      notes.push({ x: nx, y: ny + 156, t: 'cleared its orbit ✗', cls: 'bad' })
     }
     gNotes.selectAll('text').data(notes, d => d.t).join(
       enter => enter.append('text').attr('class', d => `lu-note ${d.cls}`).attr('text-anchor', 'middle')

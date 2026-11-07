@@ -1,6 +1,6 @@
 // The intro screen: an observatory looking at Planet Nine, shooting stars, the
 // skin carousel (arrows either side of the planet, its name beneath), Start,
-// and one button per part.
+// and the three parts as words under it.
 
 import { PAGES, GROUPS, currentSkin, setSkin } from '../site.js'
 import { svgMarkup, OBSERVATORY } from '../art.js'
@@ -76,12 +76,14 @@ function skins () {
   show()
 }
 
-// --- one button per part --------------------------------------------------------
+// --- the parts, as words under Start ----------------------------------------------
+// Not buttons: readers took three buttons beside Start for three ways to begin. Each
+// part's name is in its hue, as in the top bar.
 
 function parts () {
-  document.getElementById('parts').innerHTML = GROUPS.map(g => {
+  document.getElementById('parts').innerHTML = `<span class="parts-lead">or skip to</span>` + GROUPS.map(g => {
     const first = PAGES.find(p => p.group === g)
-    return `<a class="btn-part" href="${url(first.path)}">${g}</a>`
+    return `<a class="part-link" data-group="${g}" href="${url(first.path)}">${g}</a>`
   }).join('')
 }
 

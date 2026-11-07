@@ -49,7 +49,7 @@ async function main () {
     const { objs, stats } = current(STRICT)
     const sc = viewScale(objs)
     const halfCount = objs.filter(o => Math.abs(angleDiff(o.varpi_deg, stats.meanDeg)) <= 90).length
-    $('#leanReadout').innerHTML = `<b>${stats.n}</b> objects · seen in more than one season`
+    $('#leanReadout').innerHTML = `<b>${stats.n}</b> objects · seen in more than one year`
     const only = new Set([SEDNA])
     const scenes = {
       one: { only, labels: { sun: true, neptune: true, closest: true } },

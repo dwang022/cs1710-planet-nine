@@ -27,13 +27,33 @@ function arrow (x0, y0, x1, y1, colour = INK) {
 const open = '<svg viewBox="0 0 300 170" aria-hidden="true">'
 
 export const ORBIT_ART = {
-  // 1. Find the mover: the stars stay; one dot has shifted between two exposures.
-  find: () => `${open}
-    ${stars(7, 26)}
-    <circle cx="118" cy="98" r="4" fill="${VIOLET}" opacity=".3"/>
-    ${arrow(126, 93, 166, 72, VIOLET)}
-    <circle cx="174" cy="68" r="4.5" fill="${VIOLET}"/>
-  </svg>`,
+  // 1. Find the mover: the same patch of sky on two nights, side by side. The stars
+  // are the same in both frames, star for star; only the dot has moved, and the
+  // second frame rings where it was. (One picture with a faint dot and an arrow
+  // did not say that the stars were the same; readers asked why they would not move.)
+  find: () => {
+    const F = [[8, 26], [156, 26]], S = 136                    // the two frames' corners, and their size
+    const A = [50, 86], B = [86, 56]                           // the dot on night 1 and night 2, in a frame
+    const rnd = lcg(7)
+    const field = []
+    while (field.length < 13) {
+      const x = 10 + rnd() * (S - 20), y = 10 + rnd() * (S - 20), r = 0.9 + rnd() * 1.5, o = 0.4 + rnd() * 0.5
+      if (Math.hypot(x - A[0], y - A[1]) > 14 && Math.hypot(x - B[0], y - B[1]) > 14) field.push([x, y, r, o])
+    }
+    const at = ([ox, oy], [x, y]) => [ox + x, oy + y]
+    const frame = ([ox, oy], k) => `
+      <rect x="${ox}" y="${oy}" width="${S}" height="${S}" rx="8" fill="#0b0b0e" stroke="${FAINT}"/>
+      <text class="oa-lbl" x="${ox + S / 2}" y="16" text-anchor="middle">Night ${k + 1}</text>
+      ${field.map(([x, y, r, o]) => `<circle cx="${(ox + x).toFixed(1)}" cy="${(oy + y).toFixed(1)}" r="${r.toFixed(1)}" fill="${INK}" opacity="${o.toFixed(2)}"/>`).join('')}`
+    const [a1, a2] = [at(F[0], A), at(F[1], A)], b2 = at(F[1], B)
+    return `${open}
+      ${F.map(frame).join('')}
+      <circle cx="${a1[0]}" cy="${a1[1]}" r="4.5" fill="${VIOLET}"/>
+      <circle cx="${a2[0]}" cy="${a2[1]}" r="6" fill="none" stroke="${VIOLET}" stroke-width="1.2" stroke-dasharray="2 2.5" opacity=".7"/>
+      ${arrow(a2[0] + 7, a2[1] - 6, b2[0] - 7, b2[1] + 6, VIOLET)}
+      <circle cx="${b2[0]}" cy="${b2[1]}" r="4.5" fill="${VIOLET}"/>
+    </svg>`
+  },
 
   // 2. Follow it: a position on each night it is found again, strung into an arc.
   follow: () => {

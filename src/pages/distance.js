@@ -28,7 +28,7 @@ async function main () {
   })
 
   // The zoom-out draws one fixed group, the extreme objects seen in more than one
-  // season: orbits seen in one season only have far ends too uncertain to draw.
+  // year: orbits seen in one year only have far ends too uncertain to draw.
   const objs = selected(etnos, STRICT)
   const far = objs.reduce((m, o) => (o.Q_au > m.Q_au ? o : m))
 

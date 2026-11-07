@@ -17,12 +17,16 @@ Writes data/processed/observatories.json and the copy in public/data/:
                  and JPL's formal uncertainty on its far end (sigma_ad, AU) and
                  average distance (sigma_a), for the arc timeline. The
                  uncertainties come from the team's raw JPL download
-                 (../FinalProject/data/raw, falling back to data/raw).
+                 (../FinalProject/data/raw, falling back to data/raw), and
+                 only where that download's orbit is the one the site draws
+                 (see SIGMA_RULE); elsewhere they are null, "no estimate yet".
 
 Raw API answers are cached in data/raw/mpc_obs/ (gitignored); delete the
 folder to fetch afresh. Stdlib only: python -P scripts/build_observatories.py
+With --sigmas-only it re-reads just the uncertainties into the existing output,
+with no network and nothing else changed.
 """
-import collections, json, math, os, time, urllib.request
+import collections, json, math, os, sys, time, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -75,8 +79,19 @@ def obs_codes():
     return out
 
 
-def jpl_sigmas():
-    """pdes -> (sigma_ad, sigma_a) from the raw JPL query, if it is on this machine."""
+SIGMA_RULE = ("JPL's uncertainty is kept only where the raw download's orbit covers the same observed arc as the "
+              "orbit in etnos.json (within 15%); elsewhere it describes another solution and is left out.")
+ARC_MATCH = 0.15
+
+
+def jpl_sigmas(etnos):
+    """object id -> (sigma_ad, sigma_a) from the raw JPL query, if it is on this machine.
+
+    The raw query is a later download than the orbits the site draws (etnos.json), and JPL can change an
+    orbit between the two. A sigma is kept only when the raw solution covers the same observed arc (within
+    ARC_MATCH): one from another solution describes another orbit. 2015 DR370 is the case that showed it:
+    the site's orbit spans 2015 to 2026, with Rubin's 2026 nights; the raw file's, re-solved by JPL on
+    2026-10-07, rests on five days of 2015 alone, so its "uncertainty" read 37,000% of the far end."""
     for d in RAW_DIRS:
         for n in JPL_FILES:
             path = os.path.join(d, n)
@@ -86,8 +101,20 @@ def jpl_sigmas():
                 fields = raw["fields"]
                 if "sigma_ad" not in fields:
                     continue
-                rows = (dict(zip(fields, r)) for r in raw["data"])
-                return {r["pdes"]: (r["sigma_ad"], r["sigma_a"]) for r in rows}
+                rows = {r["pdes"]: r for r in (dict(zip(fields, row)) for row in raw["data"])}
+                out, other = {}, []
+                for o in etnos:
+                    r = rows.get(o["id"]) or rows.get(o.get("provisional_desig") or "")
+                    if not r:
+                        continue
+                    arc, site = num(r.get("data_arc")), o.get("data_arc_days")
+                    if arc and site and abs(arc - site) <= ARC_MATCH * site:
+                        out[o["id"]] = (r["sigma_ad"], r["sigma_a"])
+                    else:
+                        other.append(f"{o['id']} (raw arc {arc} d, site's {site} d)")
+                if other:
+                    print("uncertainty left out, the raw file's orbit is not the site's:", "; ".join(other))
+                return out
     print("no raw JPL file with sigma_ad found; uncertainties left out")
     return {}
 
@@ -109,7 +136,7 @@ def main():
     with open(ETNOS, encoding="utf-8") as f:
         etnos = json.load(f)
     codes = obs_codes()
-    sigmas = jpl_sigmas()
+    sigmas = jpl_sigmas(etnos)
 
     per_code = collections.defaultdict(lambda: {"n_obs": 0, "objects": set(), "years": set(), "discovered": []})
     objects = {}
@@ -158,14 +185,41 @@ def main():
                  "from the MPC observations API. Built by scripts/build_observatories.py.",
         "_source": f"{OBS_API} (80-column observations) and {CODES_URL} (observatory codes)",
         "_fetched": time.strftime("%Y-%m-%d"),
+        "_sigma_rule": SIGMA_RULE,
         "n_objects": len(objects), "n_obs": sum(r["n_obs"] for r in rows), "n_observatories": len(rows),
         "observatories": rows, "objects": objects,
     }
-    for p in OUTS:
-        with open(p, "w", encoding="utf-8") as f:
-            json.dump(out, f, separators=(",", ":"))
+    write(out)
     print(f"{out['n_obs']} positions of {len(objects)} objects from {len(rows)} observatories "
           f"({sum(1 for r in rows if r['lat'] is None)} without a place on Earth)")
 
 
-main()
+def write(out):
+    for p in OUTS:
+        with open(p, "w", encoding="utf-8") as f:
+            json.dump(out, f, separators=(",", ":"))
+
+
+def refresh_sigmas():
+    """Only the uncertainties, re-read into the existing output: no network, every other value as it was."""
+    with open(ETNOS, encoding="utf-8") as f:
+        etnos = json.load(f)
+    with open(OUTS[0], encoding="utf-8") as f:
+        old = json.load(f)
+    sigmas = jpl_sigmas(etnos)
+    for oid, rec in old["objects"].items():
+        s = sigmas.get(oid, (None, None))
+        rec["sigma_Q_au"], rec["sigma_a_au"] = num(s[0]), num(s[1])
+    out = {k: v for k, v in old.items() if k != "_sigma_rule"}
+    keys = list(out)
+    at = keys.index("_fetched") + 1 if "_fetched" in keys else len(keys)
+    out = dict(list(out.items())[:at] + [("_sigma_rule", SIGMA_RULE)] + list(out.items())[at:])
+    write(out)
+    print(f"uncertainties for {sum(1 for r in out['objects'].values() if r['sigma_Q_au'] is not None)} "
+          f"of {len(out['objects'])} objects")
+
+
+if "--sigmas-only" in sys.argv:
+    refresh_sigmas()
+else:
+    main()

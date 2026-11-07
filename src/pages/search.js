@@ -81,7 +81,7 @@ async function main () {
     if (L.milky) items.push(`${sw('#dcc48a')}<span>Milky Way</span>`)
     if (L.future) items.push(`${sw('transparent', 'border:2px dashed var(--series-4)')}<span>Rubin Observatory</span>`)
     if (L.perihelia) items.push(`${sw('var(--series-1)', 'border-radius:50%')}<span>direction each object points</span>`)
-    if (L.perihelia && briefOnly) items.push(`${sw('var(--series-1)', 'border-radius:50%;opacity:.4')}<span>seen in one season only</span>`)
+    if (L.perihelia && briefOnly) items.push(`${sw('var(--series-1)', 'border-radius:50%;opacity:.4')}<span>seen in one year only</span>`)
     $('#skyLegend').innerHTML = items.map(i => `<div class="legend-item${legendShown.has(i) ? '' : ' is-new'}">${i}</div>`).join('')
     legendShown = new Set(items)
   }
@@ -182,7 +182,7 @@ async function main () {
 
   $('#placeLegend').innerHTML = `
     <div class="legend-item"><i class="legend-line" style="background:var(--p9)"></i><span>your planet</span></div>
-    <div class="legend-item"><i class="legend-line" style="background:var(--series-1)"></i><span>${objs.length} extreme objects${sample.quality ? ' seen in more than one season' : ''}</span></div>`
+    <div class="legend-item"><i class="legend-line" style="background:var(--series-1)"></i><span>${objs.length} extreme objects${sample.quality ? ' seen in more than one year' : ''}</span></div>`
 
   const dials = [
     { k: 'a', label: 'Average distance', min: 200, max: 1200, step: 10, unit: ' AU', cls: 'k-au' },

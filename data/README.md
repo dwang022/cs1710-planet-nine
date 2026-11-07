@@ -36,7 +36,7 @@ object, so you can show where the two catalogues disagree (`a_disagreement_pct`,
 Ω + ω) is the angle the whole clustering argument is about. `well_determined` is
 the papers' sample rule: seen at more than one opposition (MPC `Num_opps` ≥ 2;
 where the MPC has no count, an arc of a year or more), as in Brown & Batygin
-2019 and 2021. The site calls it "seen in more than one season". Use it —
+2019 and 2021. The site calls it "seen in more than one year". Use it —
 one-opposition orbits move a lot. (Until 2026-10-30 the site used a stricter rule
 of its own: condition code ≤ 3, at least 3 oppositions, arc ≥ 1 year, which kept
 44 of the 90.)
@@ -131,10 +131,17 @@ is in orbit, and one code marks occultation reports). Each code's place comes
 from the MPC's observatory-code list (longitude and parallax constants,
 converted to geodetic latitude). Per object: positions, nights (as decimal
 years), how many observatories, and JPL's formal uncertainty on its far end
-(`sigma_Q_au`) and average distance (`sigma_a_au`) from the raw JPL query; 16
-objects found in 2025–26 have no uncertainty yet. Built by
+(`sigma_Q_au`) and average distance (`sigma_a_au`) from the raw JPL query; 17
+objects have none: 16 found in 2025–26, and 2015 DR370. An uncertainty is kept
+only where the raw query's orbit covers the same observed arc as the orbit in
+`etnos.json`, within 15% (`_sigma_rule` in the file). 2015 DR370 is why: the
+site's orbit spans 2015–2026 with Rubin's 2026 nights, but JPL re-solved it on
+2026-10-07 from five days of 2015 alone (checked against JPL's live API on
+2026-11-07; the MPC still links the 2026 nights to it), and that solution's
+uncertainty read 37,000% of the far end. Built by
 `scripts/build_observatories.py`, which caches the raw API answers in
-`data/raw/mpc_obs/`.
+`data/raw/mpc_obs/`; `--sigmas-only` re-reads just the uncertainties, with no
+network.
 
 **`planets.json`** — J2000 Keplerian elements plus per-century rates for the
 eight planets and Pluto (JPL/Standish approximate elements, valid 1800–2050),

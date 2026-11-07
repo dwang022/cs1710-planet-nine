@@ -21,7 +21,8 @@
 // Every orbit is laid flat on the ecliptic (orbits.js flatPoint): each point
 // keeps its true distance from the Sun and only the tilt is dropped, so the
 // map is a true ruler in every direction. The drawn sizes of the bodies are
-// not to scale. Distances in AU are lime (--au) wherever they are written.
+// not to scale. Distances in AU are gold (--au) wherever they are written, and
+// every planet with room for a name has its distance under it.
 
 import * as d3 from 'd3'
 import { showTip, hideTip } from './tooltip.js'
@@ -79,9 +80,13 @@ const boxOf = pts => union([0, 0, 0, 0], ...pts.map(([x, y]) => [x, y, x, y]))
  */
 export function makeDistance (root, { planets, p9, voyager }) {
   const svg = d3.select(root).append('svg').attr('role', 'img')
-    .attr('aria-label', 'A map of the solar system seen from above, zooming out as you scroll: the planets where they are, the Kuiper belt, the distant objects behind the case for Planet Nine and their orbits, and the orbits predicted for Planet Nine itself.')
+    .attr('aria-label', 'A map of the solar system seen from above, zooming out as you scroll: the planets where they are, the Kuiper belt, the distant objects behind the case for Planet Nine and their orbits, and the orbits predicted for Planet Nine itself. At the farthest view the Sun is one star in a sky of them.')
   let W = 900, H = 600
 
+  // The last card's sky: many dim stars in the panel's pixels (decoration, not data, like the belt's
+  // dots), fading in as the camera reaches the farthest view, where the Sun becomes one star among them.
+  const gSky = svg.append('g').attr('class', 'dist-sky').attr('aria-hidden', 'true').style('pointer-events', 'none')
+  let skyFor = ''
   const gLow = svg.append('g')                 // in AU: the Kuiper belt, Planet Nine's band and orbit
   const belt = gLow.append('path').attr('class', 'dist-belt')
   const gBelt = gLow.append('g').attr('class', 'belt-bodies')   // in AU: the belt's icy bodies, as dots
@@ -97,6 +102,7 @@ export function makeDistance (root, { planets, p9, voyager }) {
   const gRuler = svg.append('g').style('pointer-events', 'none')
 
   gSun.append('use').attr('href', '#art-sun')
+  gSun.append('circle').attr('class', 'sun-star')        // the Sun as a star, on the last card
 
   // --- what is drawn in AU, built once ------------------------------------------
   const PL = planets.map(p => {
@@ -167,6 +173,22 @@ export function makeDistance (root, { planets, p9, voyager }) {
   let cam = [0, 0, 4]                          // [x, y] at the centre of the view and its width, in AU
   let glideArgs = ['home', 'home', 0]
 
+  // The sky, rebuilt only when the panel changes size: about one star per 600 square pixels, most
+  // of them faint, a few brighter, seeded so it is the same on every visit; three paths of
+  // zero-length round-capped strokes, one per brightness.
+  function drawSky () {
+    const key = `${W}x${H}`
+    if (key === skyFor) return
+    skyFor = key
+    const rnd = lcg(1610), d = ['', '', '']
+    const n = Math.round(W * H / 600)
+    for (let i = 0; i < n; i++) {
+      const x = rnd() * W, y = rnd() * H, b = rnd()
+      d[b < 0.8 ? 0 : b < 0.97 ? 1 : 2] += `M${x.toFixed(1)},${y.toFixed(1)}h0`
+    }
+    gSky.selectAll('path').data(d).join('path').attr('class', (_, i) => `sky-star s${i}`).attr('d', p => p)
+  }
+
   function viewOf ([x0, y0, x1, y1]) {
     const k = Math.min((W - 2 * PAD) / (x1 - x0), (H - 2 * PAD) / (y1 - y0))
     return [(x0 + x1) / 2, (y0 + y1) / 2, W / k]
@@ -184,11 +206,21 @@ export function makeDistance (root, { planets, p9, voyager }) {
     const objOn = OBJ_STEPS.includes(S.step), p9On = P9_STEPS.includes(S.step)
     const notes = []        // { x, y, text, au, cls, anchor }
 
+    // How far the camera has come into the last card's view, 0 to 1: the sky fills with stars, the Sun
+    // turns from its drawing into one of them, and every object but the farthest leaves.
+    const [gFrom, gTo, gS] = glideArgs
+    const deep = gFrom === 'farthest' ? 1 : gTo === 'farthest' ? gS : 0
+    drawSky()
+    gSky.style('opacity', deep).style('display', deep > 0 ? null : 'none')
+
     // The Sun shrinks as the view opens out, so the zoom reads as a zoom; it
     // stays an icon (at 5,000 AU across it would be a thousandth of a pixel).
+    // On the last card it is a star, a little brighter than the brightest round it.
     const sunR = clamp(SUN_R * Math.pow(1.8 / span, 0.28), 12, SUN_R)
-    gSun.select('use').attr('x', sx - sunR).attr('y', sy - sunR).attr('width', sunR * 2).attr('height', sunR * 2)
-    notes.push({ x: sx, y: sy + sunR + 15, text: 'the Sun', planet: 'Sun' })
+    const starR = 3.4
+    gSun.select('use').attr('x', sx - sunR).attr('y', sy - sunR).attr('width', sunR * 2).attr('height', sunR * 2).style('opacity', 1 - deep)
+    gSun.select('.sun-star').attr('cx', sx).attr('cy', sy).attr('r', starR).style('opacity', deep)
+    notes.push({ x: sx, y: sy + sunR + (starR - sunR) * deep + 15, text: 'the Sun', planet: 'Sun' })
     const outside = r => r * k > sunR * 1.15                       // clear of the Sun's drawing
 
     gLow.attr('transform', world)
@@ -237,19 +269,23 @@ export function makeDistance (root, { planets, p9, voyager }) {
       .attr('x', d => d.x - d.size / 2).attr('y', d => d.y - d.size / 2)
       .attr('width', d => d.size).attr('height', d => d.size)
 
-    // labels: the card's body first, then the biggest, skipping any that would overlap
-    const taken = []
-    const free = (x, y, w) => !taken.some(t => Math.abs(t.x - x) < (t.w + w) / 2 + 6 && Math.abs(t.y - y) < 18)
+    // labels: the card's body first, then the biggest. Every labelled body has its distance under
+    // its name (the card's body a size larger); a label is two lines, so each takes a block of both,
+    // under its body or, where that is taken (by the Sun, a body or another label), over it.
+    const taken = [{ x: sx, y0: sy - sunR, y1: sy + sunR + 17, w: Math.max(2 * sunR, 64) },     // the Sun and its name
+      ...shown.map(p => ({ id: p.name, x: p.sx, y0: p.sy - p.size / 2, y1: p.sy + p.size / 2, w: p.size }))]
+    const free = (id, x, y0, y1, w) => !taken.some(t => t.id !== id && Math.abs(t.x - x) < (t.w + w) / 2 + 6 && y0 < t.y1 + 4 && t.y0 < y1 + 4)
     for (const p of shown.slice().sort((a, b) => (b.isFocus - a.isFocus) || (b.size - a.size))) {
-      if (!p.isFocus && (p.size < 12 || p.r < 60)) continue
-      const y = p.sy + p.size / 2 + 15, w = p.name.length * 8
-      if (!p.isFocus && !free(p.sx, y, w)) continue
-      taken.push({ x: p.sx, y, w })
+      if (!p.isFocus && p.r < 40) continue
+      const dy = p.isFocus ? 17 : 15
+      const au = p.name === 'Pluto' ? `${fmtAu(p.q)} to ${fmtAu(p.Q)}` : fmtAu(p.a)
+      const w = Math.max(p.name.length * 8, au.length * 7)
+      const below = p.sy + p.size / 2 + 15, above = p.sy - p.size / 2 - 8 - dy
+      const y = [below, above].find(y => y + dy < H - 6 && y > 14 && free(p.name, p.sx, y - 12, y + dy, w)) ?? (p.isFocus ? below : null)
+      if (y == null) continue
+      taken.push({ x: p.sx, y0: y - 12, y1: y + dy, w })
       notes.push({ x: p.sx, y, text: p.name, planet: p.name, cls: p.isFocus ? 'focus' : '' })
-      if (p.isFocus) {
-        notes.push({ x: p.sx, y: y + 17, au: p.name === 'Pluto' ? `${fmtAu(p.q)} to ${fmtAu(p.Q)}` : fmtAu(p.a), cls: 'focus-v' })
-        taken.push({ x: p.sx, y: y + 17, w: 90 })
-      }
+      notes.push({ x: p.sx, y: y + dy, au, cls: p.isFocus ? 'focus-v' : 'small' })
     }
 
     // --- the extreme objects: a dot where each is now, and its orbit when it is
@@ -265,7 +301,11 @@ export function makeDistance (root, { planets, p9, voyager }) {
       g.append('path').attr('class', 'hit').attr('d', o => o.path)
       return g
     })
+    // on the last card every object but the farthest fades away (inline, over the stylesheet's dimming)
+    const farId = S.far?.id
+    const leave = o => (deep === 0 || o.id === farId ? null : (anyHot && o.id !== hotId ? 0.25 : 1) * (1 - deep))
     og.attr('class', o => `obj-orbit${cls(o)}`)
+      .style('opacity', leave).style('pointer-events', o => (deep > 0.5 && o.id !== farId ? 'none' : null))
       .on('pointerenter', hover).on('pointermove', hover).on('pointerleave', unhover)
     og.filter(o => o.id === hotId).raise()
 
@@ -276,8 +316,12 @@ export function makeDistance (root, { planets, p9, voyager }) {
       return g
     })
     dots.attr('class', o => `obj${cls(o)}`)
+      .style('opacity', leave).style('pointer-events', o => (deep > 0.5 && o.id !== farId ? 'none' : null))
       .on('pointerenter', hover).on('pointermove', hover).on('pointerleave', unhover)
+    // on the last card the farthest object keeps its violet until pointed at, so its white does not
+    // compete with the Sun's star beside it
     dots.select('.now').attr('cx', o => X(o.x)).attr('cy', o => Y(o.y)).attr('r', o => (o.id === hotId ? 4.5 : 3))
+      .style('fill', o => (deep > 0 && !S.hot && o.id === farId ? 'var(--series-1)' : null))
     dots.select('.hit').attr('cx', o => X(o.x)).attr('cy', o => Y(o.y))
     dots.filter(o => o.id === hotId).raise()
 
@@ -285,8 +329,13 @@ export function makeDistance (root, { planets, p9, voyager }) {
     // far end is off the map, the distance sits where the orbit leaves it
     const hot = objs.find(o => o.id === hotId)
     if (hot) {
+      // the object pointed at: how far it is now, beside its dot (its far end is labelled below)
+      if (S.hot === hot.id) {
+        const dx = X(hot.x), right = dx < W - 120
+        notes.push({ x: dx + (right ? 9 : -9), y: Y(hot.y) + 4, text: 'now', au: fmtAu(hot.now_au), cls: 'focus-v strong', anchor: right ? 'start' : 'end', plain: true })
+      }
       const [ax, ay] = hot.aph, r = Math.hypot(ax, ay)
-      let x = X(ax + (ax / r) * 14 / k), y = Y(ay + (ay / r) * 14 / k) + 5, text = S.hot ? '' : nameOf(hot)
+      let x = X(ax + (ax / r) * 14 / k), y = Y(ay + (ay / r) * 14 / k) + 5, text = S.hot ? 'farthest' : nameOf(hot)
       if (!onScreen(X(ax), Y(ay), -12)) {
         const half = hot.pts.slice(0, hot.pts.length >> 1)
         const i = half.findIndex(([px, py]) => !onScreen(X(px), Y(py), -40))
@@ -295,7 +344,7 @@ export function makeDistance (root, { planets, p9, voyager }) {
       }
       x = clamp(x, 10, W - 10); y = clamp(y, 16, H - 30)
       const anchor = x < sx - 20 ? 'end' : x > sx + 20 ? 'start' : 'middle'
-      notes.push({ x, y, text, au: fmtAu(hot.Q_au), cls: 'focus-v strong', anchor, plain: text === 'out to' })
+      notes.push({ x, y, text, au: fmtAu(hot.Q_au), cls: 'focus-v strong', anchor, plain: text === 'out to' || text === 'farthest' })
     }
 
     // --- Voyager 1, for a human-made yardstick ----------------------------------

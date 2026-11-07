@@ -50,13 +50,13 @@ export function makeLuck (root) {
   // --- one solar system ---------------------------------------------------
   const gRing = svg.append('g')
   const ringTitle = gRing.append('text').attr('text-anchor', 'middle').attr('font-size', 16).attr('font-weight', 600)
-  // the key for the faint dots, shown when objects seen in one season are counted
+  // the key for the faint dots, shown when objects seen in one year only are counted
   const ringKey = gRing.append('g').attr('class', 'luck-key').attr('opacity', 0)
   const k1 = ringKey.append('g'), k2 = ringKey.append('g')
   k1.append('circle').attr('r', 4.5).attr('fill', 'var(--series-1)')
-  k1.append('text').attr('x', 9).attr('y', 4).text('seen in more than one season')
+  k1.append('text').attr('x', 9).attr('y', 4).text('seen in more than one year')
   k2.append('circle').attr('r', 4.5).attr('fill', 'var(--series-1)').attr('opacity', 0.4)
-  k2.append('text').attr('x', 9).attr('y', 4).text('one season')
+  k2.append('text').attr('x', 9).attr('y', 4).text('one year only')
   const ringCircle = gRing.append('circle').attr('fill', 'none').attr('stroke', 'var(--text-muted)').attr('stroke-opacity', 0.5)
   const ringSun = gRing.append('circle').attr('r', 3.5).attr('fill', 'var(--sun)')
   const gRingDots = gRing.append('g')
@@ -282,7 +282,7 @@ export function makeLuck (root) {
 
   /**
    * One row per distance cut, each with two marks on one odds axis: the
-   * objects seen in more than one season (a violet dot) and every object (a
+   * objects seen in more than one year (a violet dot) and every object (a
    * grey ring). Their odds sit above and below the line so they never collide.
    * rows: [{ title, good: { oneIn }, all: { oneIn } }]
    */
@@ -301,7 +301,7 @@ export function makeLuck (root) {
     // the key: the two marks
     const key = gCuts.append('g').attr('class', 'luck-key').attr('transform', `translate(${left},${tall ? 40 : 70})`)
     key.append('circle').attr('cx', 6).attr('r', 6).attr('fill', 'var(--series-1)')
-    key.append('text').attr('x', 18).attr('y', 4).text('seen in more than one season')
+    key.append('text').attr('x', 18).attr('y', 4).text('seen in more than one year')
     key.append('circle').attr('cx', 236).attr('r', 5.5).attr('fill', 'none').attr('stroke', 'var(--text-secondary)').attr('stroke-width', 2)
     key.append('text').attr('x', 248).attr('y', 4).text('every object')
 

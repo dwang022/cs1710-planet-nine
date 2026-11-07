@@ -63,6 +63,8 @@
   /* the planets page's counts: nine in Pluto's colour (Pluto made it nine), eight plain */
   --c-nine: var(--c-pluto);
   --c-eight: var(--text-primary);
+  /* the three parts' own hues: their names in the top bar and the intro's part links (a teammate's choice, 2026-11-02) */
+  --part-background: #93c5fd; --part-evidence: #c4b5fd; --part-search: #5eead4;
   --neptune: #8d93a8;
 
   /* bundled in fonts.js; the system fonts after them only fill in a missing glyph */
@@ -386,6 +388,12 @@ h2 .art, h3 .art { width: 1.05em; height: 1.05em; margin-right: .14em; }
 .dist-lbl.au, .dist-lbl .au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .dist-orbit { fill: none; stroke: #ffffff; stroke-opacity: .16; stroke-width: 1; stroke-dasharray: 3 5; }
 .dist-orbit.dwarf { stroke: #c8ad94; stroke-opacity: .45; }
+/* the last card's sky: dim stars, a few brighter, and the Sun as one of them, a little brighter still */
+.sky-star { fill: none; stroke: #ffffff; stroke-linecap: round; }
+.sky-star.s0 { stroke-width: 1.1; stroke-opacity: .28; }
+.sky-star.s1 { stroke-width: 1.7; stroke-opacity: .5; }
+.sky-star.s2 { stroke-width: 2.4; stroke-opacity: .85; }
+.sun-star { fill: #ffe7a3; }
 .voy path { fill: var(--text-muted); }
 .voy .hit { fill: #ffffff; fill-opacity: 0; pointer-events: all; cursor: help; }
 .dist-ruler line { stroke: var(--ruler, var(--au)); stroke-width: 1.5; }   /* the AU ruler sets --ruler to its Sun-to-Earth gradient */
@@ -418,6 +426,17 @@ text[data-planet="Pluto"][data-planet] { fill: var(--c-pluto); } text[data-plane
 .lu-note.bad { fill: var(--series-2); font-weight: 600; }
 .lu-note.good { fill: var(--text-primary); font-weight: 600; }
 .lu-note.p9 { fill: var(--p9-ink); }
+/* the count: a bead on each orbit, threaded by its arc; the last one larger and in the count's colour */
+.lu-num circle { fill: var(--surface-1); stroke-width: 1.2; stroke-opacity: .7; }
+.lu-num text { font-family: var(--font-mono); font-size: 15px; font-weight: 700; fill: var(--text-secondary); transition: font-size .65s ease; }
+.lu-num.last circle { stroke-width: 2.2; stroke-opacity: 1; }
+.lu-num.last text { font-size: 21px; }
+.lu-num[data-count="nine"] circle { stroke: var(--c-nine); }
+.lu-num[data-count="nine"] text { fill: var(--c-nine); }
+.lu-num[data-count="eight"] circle { stroke: var(--c-eight); }
+.lu-num[data-count="eight"] text { fill: var(--c-eight); }
+.lu-num.p9 text { fill: url(#g-p9); }
+.lu-num.p9 circle { stroke-dasharray: 3 3; }   /* predicted, like its dashed arc */
 
 /* the three-test table */
 .sub-title { margin: 30px 0 8px; font-size: 1.3rem; }
@@ -597,7 +616,6 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .odds-key .legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; }
 .odds-key svg { width: 20px; height: 12px; flex: none; }
 .odds-heading { font: 600 11.5px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; fill: var(--text-muted); }
-#odds .takeaway { margin-top: 28px; }
 
 /* the probability page: three small compasses in the head, the streetlight beside its readout */
 .pic-time { padding: 5px 9px; border-radius: 7px; background: #00000080; color: #fff; font: 600 .74rem/1.2 var(--font-mono); letter-spacing: .04em; }
@@ -737,12 +755,6 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .k-warn { color: #ffa07a; font-weight: 600; }
 .k-lsst { color: var(--series-4); font-weight: 600; }
 
-.takeaway {
-  border-left: 3px solid var(--text-muted); background: #ffffff08;
-  border-radius: 0 var(--radius) var(--radius) 0; padding: 18px 22px; margin: 8px 0 22px; max-width: 900px;
-}
-.takeaway .takeaway-k { color: #6ee7b7; }
-.takeaway p { margin: 0; font-size: 1.08rem; max-width: none; }
 
 details.more > summary { font-size: .95rem; }
 
@@ -823,6 +835,8 @@ details.more > summary { font-size: .95rem; }
    timeline (charts/arcs.js). Controls sit on the images; credits under an
    image are one short dim line. */
 section.part.flush { border-top: 0; padding-top: 4px; }
+/* the frames' names in the "spot the moving dot" drawing (charts/orbitart.js) */
+.oa-lbl { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; fill: var(--text-muted); }
 
 /* the head graphic: an observatory finding an arc, the width of the page, its three numbers
    written beside what they count; on a phone the numbers drop into a plain row below */
@@ -868,12 +882,10 @@ section.part.flush { border-top: 0; padding-top: 4px; }
 
 /* the telescope map */
 .scope-map { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 16px 12px; }
-.scope-map-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin-bottom: 6px; }
-.scope-map-bar .map-note { font-size: .82rem; color: var(--text-muted); }
 .scope-stage { position: relative; }
-/* never taller than the screen leaves under the bar, the heading and the button row (170px); on a wide,
+/* never taller than the screen leaves under the bar and the heading (130px); on a wide,
    short screen the map keeps its shape and centres in its panel */
-.scope-stage svg { display: block; width: 100%; height: auto; max-height: max(280px, calc(100svh - var(--bar-h, 57px) - 170px)); }
+.scope-stage svg { display: block; width: 100%; height: auto; max-height: max(280px, calc(100svh - var(--bar-h, 57px) - 130px)); }
 /* the map is of Earth, so Earth's own colours, kept dark and quiet: a deep navy sea, dark green-grey land */
 .map-sphere { fill: #0d1620; }
 .map-grat { fill: none; stroke: #ffffff0c; stroke-width: .6; }
@@ -915,6 +927,18 @@ section.part.flush { border-top: 0; padding-top: 4px; }
 .hubble:hover .hubble-pill, .hubble:focus-visible .hubble-pill { stroke: var(--text-primary); fill: #26262c; }
 .hubble:focus-visible { outline: none; }
 .hubble .site { pointer-events: none; }
+/* "nearest to you": a pill under Hubble with a map pin, a pulse at its tip until it is used */
+.find-me { cursor: pointer; }
+.find-me:focus-visible { outline: none; }
+.find-pill { fill: var(--surface-2); stroke: #ffffffb0; stroke-width: 1.2; }
+.find-me:hover .find-pill, .find-me:focus-visible .find-pill { fill: #2c2c33; stroke: #ffffff; }
+.find-pin { fill: #ffffff; stroke: #121215; stroke-width: 1.2; }
+.find-pin-eye { fill: #121215; }
+.find-lbl { font-size: 12px; font-weight: 600; fill: var(--text-primary); }
+.find-pulse { fill: none; stroke: #ffffff; stroke-width: 1.2; transform-box: fill-box; transform-origin: center; animation: find-pulse 2.2s ease-out infinite; }
+.find-me.used .find-pulse { display: none; }
+@keyframes find-pulse { 0% { transform: scale(1); opacity: .9; } 70%, 100% { transform: scale(3.4); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .find-pulse { animation: none; opacity: .6; } }
 /* a site's card: opens on click, stays until closed */
 .scope-card {
   position: absolute; z-index: 5; width: 300px; overflow: hidden;
@@ -940,9 +964,13 @@ section.part.flush { border-top: 0; padding-top: 4px; }
 .sc-stats div { display: grid; gap: 1px; }
 .sc-stats dt { font-size: .68rem; letter-spacing: .04em; color: var(--text-muted); order: 2; }
 .sc-stats dd { margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.sc-scopes { list-style: none; margin: 10px 0 0; padding: 8px 0 0; border-top: 1px solid var(--rule); display: grid; gap: 3px; font-size: .8rem; color: var(--text-secondary); }
-.sc-scopes li { display: flex; justify-content: space-between; gap: 10px; }
-.sc-scopes b { color: var(--text-primary); font-variant-numeric: tabular-nums; }.sc-credit { margin-top: 8px; font-size: .68rem; color: var(--text-muted); }
+.sc-credit { margin-top: 8px; font-size: .68rem; color: var(--text-muted); }
+/* the objects discovered at a site, by name, in the objects' violet; a long list scrolls */
+.sc-found { margin: 10px 0 0; padding: 8px 0 0; border-top: 1px solid var(--rule); }
+.sc-found-k { display: block; font-size: .68rem; letter-spacing: .04em; color: var(--text-muted); margin-bottom: 3px; }
+.sc-found ul { list-style: none; margin: 0; padding: 0; max-height: 5.4em; overflow-y: auto; font-size: .8rem; line-height: 1.35; color: var(--series-1-ink); }
+.sc-found li { display: inline; }
+.sc-found li + li::before { content: ", "; color: var(--text-muted); }
 
 /* the blink player: the pause button and the frame's date sit on the image */
 figure.blink { margin: 0; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; }
@@ -1036,6 +1064,34 @@ figure.blink figcaption { padding: 8px 12px 10px; font-size: .84rem; line-height
 .game-stage[data-verdict="found"] .game-verdict { background: #ffffffe0; color: var(--surface-0); }
 .game-stage[data-verdict="missed"] .game-verdict { background: #ff6a3dd8; color: #2b0d03; }
 .game-src { margin: 0; }
+/* the easy rounds' lane: two dashed rails either side of the object's track, never over it */
+.game-over .lane { fill: none; stroke: var(--series-1-ink); stroke-opacity: .55; stroke-width: 1.4; stroke-dasharray: 5 6; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.game-left { display: inline-flex; align-items: center; gap: 10px; }
+/* the round buttons read as levels: the word before them, and the hard ones set a little apart */
+.game-levels { align-items: center; }
+.game-levels-k { padding: 0 2px 0 4px; color: #fff; font: 700 .72rem/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; text-shadow: 0 0 4px #000, 0 0 8px #000; }
+.game-levels button.first-hard { margin-left: 8px; }
+.game-mode { padding: 5px 9px; border-radius: 7px; background: #000000b0; color: var(--text-secondary); font: 600 .74rem/1.2 var(--font-mono); letter-spacing: .04em; white-space: nowrap; pointer-events: none; }
+.game-mode[data-level="hard"] { color: #fff; border: 1px solid #ffffff60; }
+.game-mode:empty { display: none; }
+/* the picture waiting for a click: its edge pulses, a pointer taps in the bar; then Submit pulses */
+.game-stage.is-waiting { animation: game-wait 1.6s ease-in-out infinite; }
+@keyframes game-wait { 0%, 100% { box-shadow: 0 0 0 0 #ffffff00, inset 0 0 0 1px #ffffff30; } 50% { box-shadow: 0 0 0 3px #ffffff70, inset 0 0 0 2px #ffffffc0; } }
+.game-hint { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: #000000c8; border: 1px solid #ffffff59; pointer-events: none; }
+.game-hint[hidden] { display: none; }
+.game-hint svg { width: 42px; height: 42px; overflow: visible; }
+.game-hint .cur { fill: #ffffff; stroke: #121215; stroke-width: 1.2; stroke-linejoin: round; transform-box: view-box; transform-origin: 14px 12px; animation: game-tap 1.6s ease-in-out infinite; }
+.game-hint .rip { fill: none; stroke: #ffffff; stroke-width: 1.8; transform-box: view-box; transform-origin: 14px 12px; opacity: 0; animation: game-rip 1.6s ease-out infinite; }
+.game-hint .rip.r2 { animation-delay: .25s; }
+@keyframes game-tap { 0%, 30%, 100% { transform: scale(1); } 40% { transform: scale(.86); } 55% { transform: scale(1); } }
+@keyframes game-rip { 0%, 38% { transform: scale(.3); opacity: 0; } 42% { opacity: .9; } 90%, 100% { transform: scale(1.9); opacity: 0; } }
+.game-btn.primary.is-ready { animation: game-ready 1.4s ease-in-out infinite; }
+@keyframes game-ready { 0%, 100% { box-shadow: 0 0 0 0 #ffffff00; } 50% { box-shadow: 0 0 0 4px #ffffff66; } }
+@media (prefers-reduced-motion: reduce) {
+  .game-stage.is-waiting { animation: none; box-shadow: 0 0 0 2px #ffffff90; }
+  .game-hint .rip { opacity: .7; animation: none; transform: scale(1.2); }
+  .game-hint .cur, .game-btn.primary.is-ready { animation: none; }
+}
 @media (max-width: 600px) {
   .game-levels button, .game-btn { min-width: 30px; height: 30px; padding: 0 9px; font-size: .78rem; }
   .game-score, .game-time { font-size: .64rem; }
@@ -1097,18 +1153,25 @@ figure.blink figcaption { padding: 8px 12px 10px; font-size: .84rem; line-height
 
 /* watched longer, known better */
 .lead-key { color: var(--text-primary); font-weight: 600; font-size: 1.12rem; border-left: 3px solid var(--text-muted); padding-left: 12px; }
-.arc-legend { list-style: none; padding: 0; margin: 0 0 6px; flex-wrap: wrap; gap: 6px 20px; }
-.arc-sample { width: 52px; height: 10px; flex: none; }
-.arc-sample line, .arc-sample path { stroke: var(--series-1-ink); stroke-width: 1.3; fill: none; }
 /* a citation: a small superscript number that goes to the paper on the credits page */
 sup.cite { font-size: .68em; line-height: 0; margin-left: 1px; }
 sup.cite a { color: var(--text-secondary); text-decoration: none; padding: 0 1px; }
 sup.cite a:hover { text-decoration: underline; }
-.legend-swatch.arc-used { background: var(--series-1-ink); }
-.legend-swatch.arc-unused { background: #8c8b83; }
-.legend-swatch.arc-none { background: none; border-top: 2px dashed #8c8b83; border-radius: 0; height: 0; width: 14px; }
 #arcChart { overflow-x: auto; }
-#arcChart svg { width: 100%; min-width: 720px; height: auto; }
+/* with the section's title and line over it (--arc-head, measured in pages/data.js), never taller than the screen */
+#arcChart svg { display: block; width: 100%; min-width: 720px; height: auto; max-height: max(420px, calc(100svh - var(--bar-h, 57px) - var(--arc-head, 190px))); }
+.arc-key-lead { stroke: #8c8b83; stroke-width: 1; }
+.arc-end { font-size: 11px; font-weight: 600; }
+.arc-end.good { fill: #8f8e88; }
+.arc-end.bad { fill: #ff7a4a; }
+/* the key in the chart: the colour bar, the sample row's words, the barely-known zone, the rows with no estimate */
+.arc-heat { fill: url(#arc-heat); }
+.arc-key-lbl { font-size: 11.5px; fill: var(--text-secondary); }
+.arc-bad-zone { fill: #ff6a3d; fill-opacity: .07; }
+#arc-hatch line { stroke: #8c8b83; stroke-opacity: .4; stroke-width: 1.4; }
+.arc-none { fill: url(#arc-hatch); stroke: #8c8b83; stroke-opacity: .3; }
+.arc-none-lbl { font-size: 11px; font-weight: 600; fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-0); stroke-width: 4px; stroke-linejoin: round; }
+.arc-none-lbl.small { font-size: 10px; font-weight: 500; fill: var(--text-muted); }
 .arc-row .span, .arc-key .span { stroke: #4a4a46; stroke-width: 1; }
 .arc-row .nights, .arc-key .nights { stroke: #8c8b83; stroke-width: 1.2; }
 .arc-row.used .span, .arc-key .span { stroke: var(--series-1); stroke-opacity: .5; }
@@ -1119,11 +1182,7 @@ sup.cite a:hover { text-decoration: underline; }
 .arc-group.used { fill: var(--series-1-ink); }
 .arc-row .hit { fill: transparent; pointer-events: all; }
 .arc-row.hot .span, .arc-row.hot .nights { stroke: #ffffff; stroke-opacity: 1; }
-.sig line { stroke: #4a4a46; stroke-width: 1; }
-.sig circle { fill: #8c8b83; }
-.sig.used line { stroke: var(--series-1); stroke-opacity: .5; }
-.sig.used circle { fill: var(--series-1-ink); }
-.sig line.unknown { stroke: #8c8b83; stroke-opacity: .5; stroke-dasharray: 2 3; }
+/* each uncertainty takes its own colour and weight, dim grey to bright ember (charts/arcs.js sets them inline) */
 
 /* --- exhibits with their own controls (charts/herd.js, charts/bias.js) ---- */
 .herd-verdict { margin: 16px 0 0; font-size: 1.02rem; color: var(--text-secondary); }

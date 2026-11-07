@@ -335,7 +335,7 @@ export function makeLean (root) {
         <dt>points toward</dt><dd>${d.varpi_deg.toFixed(0)}°</dd>
         <dt>nearest to the Sun</dt><dd class="au">${d.q_au.toFixed(0)} AU</dd>
         <dt>average distance</dt><dd class="au">${d3.format(',.0f')(d.a_au)} AU</dd>
-        <dt>seasons seen</dt><dd>${d.well_determined ? 'more than one' : 'one, so uncertain'}</dd>
+        <dt>years seen</dt><dd>${d.well_determined ? 'more than one' : 'one, so uncertain'}</dd>
       </dl>`)
     card.select('.pick-close').on('click', close).node().focus({ preventScroll: true })
   }

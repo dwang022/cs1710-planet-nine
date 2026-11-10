@@ -6,30 +6,50 @@
 <meta name="color-scheme" content="dark" />
 <!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
 <style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
-<title>Ten years of argument · The search for Planet Nine</title>
-<meta name="description" content="The argument over Planet Nine, year by year: one line per paper, for and against, with the data and searches between them, and how the proposed planet itself has shrunk and moved closer." />
+<title>The Planet Nine debate · The search for Planet Nine</title>
+<meta name="description" content="The argument over Planet Nine, year by year: one dot per paper, for a planet inside the circle and against it outside, and how the proposed planet itself has shrunk and moved closer." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="timeline">
 <main>
   <header class="page-head wrap">
     <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
-    <h1>Ten years <em>of argument</em></h1>
-    <p class="lede">The major papers, one line each, from the first hint in 2014 to the start of the search that
-    could settle it.</p>
+    <h1>The Planet Nine <em>debate</em></h1>
+    <p class="lede">Every paper in our sample that argues for or against a ninth planet, from the first hint in 2014 to the
+    start of the survey that could settle it.</p>
   </header>
 
-  <section class="part wrap" id="ledger">
-    <!-- the key: what each lane's colour and icon mean (pages/timeline.js fills it). data-no-tint: the lane names are
-         lettered in their lane's colour, not Planet Nine's -->
-    <ul class="tl-key" id="ledgerKey" aria-label="What the colours mean" data-no-tint></ul>
-    <!-- the sides, kept in view while the ledger scrolls: for a planet left, against right, data and searches between -->
-    <div class="fl-sides" aria-hidden="true"><div class="fl-sides-in">
-      <span class="fl-side is-for">← For a planet</span><span class="fl-side is-data">Data and searches</span><span class="fl-side is-against">Against a planet →</span>
-    </div></div>
-    <div class="fl" id="fieldTimeline"></div>
-    <p class="caption">Which lane a paper lands in is <strong>our</strong> reading of its abstract, not a label the
-    authors chose · <a href="/credits.html#papers">every paper</a></p>
+  <!-- the debate (charts/debate.js): one dot per paper in papers.json from 2014 on, for a planet inside the circle,
+       against outside, revealed a year at a time. Sides are papers.json's stances (our reading); neutral papers are left
+       out of the picture, not out of the data. Headlines and the lines not in field_timeline.json are in debate.json. -->
+  <section class="part wrap" id="debate">
+    <!-- two marks for the same papers, kept side by side while the team decides between them (charts/debate.js):
+         version 1 a coloured dot per paper, version 2 a thumb, up for and down against. One layout for both. The
+         choice is kept in localStorage (p9-debate-marker) and can be set with ?v=1 or ?v=2. -->
+    <div class="db-tools">
+      <div class="seg db-version" role="group" aria-label="How each paper is marked">
+        <button type="button" data-marker="dots" aria-pressed="true">Version 1 · Dots</button><button type="button" data-marker="thumbs" aria-pressed="false">Version 2 · Thumbs</button>
+      </div>
+    </div>
+    <div class="db-top">
+      <div class="db-year" id="dbYear" aria-live="polite"></div>
+      <p class="db-headline" id="dbHeadline" aria-live="polite"></p>
+      <dl class="db-counts" data-no-tint>
+        <div class="is-for"><dt>For</dt><dd id="dbFor">0</dd></div>
+        <div class="is-against"><dt>Against</dt><dd id="dbAgainst">0</dd></div>
+      </dl>
+    </div>
+    <div class="db-grid">
+      <div class="db-stage" id="dbStage"></div>
+      <aside class="db-panel" id="dbPanel" aria-live="polite"></aside>
+    </div>
+    <nav class="db-time" aria-label="Years">
+      <button class="pic-btn db-step" type="button" id="dbPrev" aria-label="Previous year">←</button>
+      <ol class="db-years" id="dbYears"></ol>
+      <button class="pic-btn db-step" type="button" id="dbNext" aria-label="Next year">→</button>
+      <button class="pic-btn db-play" type="button" id="dbPlay">Play</button>
+    </nav>
+    <p class="caption" id="dbCaption"></p>
   </section>
 
   <!-- how the planet itself changed (charts/proposals.js, planet_nine_predictions.json, each value src-tagged).
@@ -37,13 +57,26 @@
        as its abstract's headline numbers and as the full fit from its Figure 8, which the rest of the site draws. The 2024
        point is the papers' update after the ZTF, DES and PS1 searches ruled out 78% of the 2021 predictions. -->
   <section class="part wrap" id="proposals">
+    <!-- two versions kept while the team compares them (2026-11-10): 1 the original charts (charts/proposals.js),
+         unchanged; 2 one paper at a time (charts/proposals2.js). Stored as p9-proposals-version, ?pv=1|2. -->
+    <div class="pv-tools">
+      <div class="seg pv-version" role="group" aria-label="Which version of this chart">
+        <button type="button" data-v="1" aria-pressed="false">Version 1 · Original</button><button type="button" data-v="2" aria-pressed="true">Version 2 · Interactive</button>
+      </div>
+    </div>
     <div class="sec-head">
       <h2>How the proposal changed</h2>
       <p>Over the decade the proposed planet has grown lighter and moved closer, and the searches since 2021 have
       pushed it back out a little.</p>
     </div>
+    <div id="proposalsV1" hidden>
     <div class="card"><div id="chartProposals"></div></div>
     <p class="caption">As each paper's abstract or figures give them · <a href="/credits.html#papers">sources</a></p>
+    </div>
+    <div id="proposalsV2">
+      <div id="chartProposals2"></div>
+      <p class="caption">As each paper's abstract or figures give them · <a href="/credits.html#papers">sources</a></p>
+    </div>
   </section>
 </main>
 <script type="module" src="/src/pages/timeline.js"></script>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="A planet for the answer Maybe: a misty blue-violet world" style="color:#ffffff"><defs><clipPath id="am-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#am-c)">
+      <circle cx="50" cy="50" r="40" fill="#4a4db5"/>
+      <path d="M0,24 C25,21.8 40,26.2 60,24 S90,21.8 100,25.1 L100,35.2 C80,30.8 60,35.2 40,33 S15,30.8 0,34.1 Z" fill="#6b5fd2" opacity="0.75"/>
+      <path d="M0,50 C25,47.8 40,52.2 60,50 S90,47.8 100,51.1 L100,58.2 C80,53.8 60,58.2 40,56 S15,53.8 0,57.1 Z" fill="#3a3c96" opacity="0.8"/>
+      <path d="M0,66 C25,63.8 40,68.2 60,66 S90,63.8 100,67.1 L100,76.2 C80,71.8 60,76.2 40,74 S15,71.8 0,75.1 Z" fill="#7d6fe0" opacity="0.5"/>
+      <ellipse cx="40" cy="40" rx="22" ry="9" fill="#ffffff" opacity="0.13"/>
+      <ellipse cx="60" cy="62" rx="18" ry="6" fill="#ffffff" opacity="0.09"/>
+      <path d="M30,56 C36,50 46,52 46,58 C46,63 38,64 37,59" fill="none" stroke="#c9c2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.32"/>
+    </g><circle cx="50" cy="50" r="40" fill="none" stroke="#2b2d7a" stroke-width="2.5"/></svg>

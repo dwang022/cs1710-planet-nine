@@ -20,120 +20,13 @@
          deep slivers, the predicted path and its shallow stretches, and the share of predictions searched away. -->
     <ol class="beats">
       <li id="beatSky"><span class="beat-y">The sky</span>
-        <p>Photographed almost everywhere, but only <strong><span data-n="deepPct">—</span>%</strong> of it deeply enough.</p></li>
+        <p>Photographed almost everywhere, but only <strong><span data-n="deepPct">—</span>%</strong> of it to magnitude <span data-n="deepMag">—</span> or fainter.</p></li>
       <li id="beatPath"><span class="beat-y">The path</span>
-        <p><strong class="k-warn"><span data-n="thinPct">—</span>%</strong> of where Planet Nine should be has only shallow photos.</p></li>
+        <p>The best-fit planet would be too faint for the searches so far for <strong class="k-warn"><span data-n="aHidden">—</span>%</strong> of its orbit.</p></li>
       <li id="beatSearch"><span class="beat-y">The searches</span>
         <p>Even so, they have ruled out <strong><span data-n="ruledPct">—</span>%</strong> of the planets the prediction allows.</p></li>
     </ol>
   </header>
-
-  <!-- the sky: coverage, then depth, then the gaps, then Rubin (charts/skymap.js) -->
-  <section class="part story" id="sky">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2>The photographed sky</h2>
-      </div>
-    </div>
-    <div class="scrolly wrap wide" id="skyStory">
-      <div class="scrolly-graphic">
-        <div class="viz-head"><div class="legend" id="skyLegend"></div></div>
-        <div class="viz" id="chartSky"></div>
-        <!-- the survey chips sit under the map they outline; they keep their room on every step and appear on the last -->
-        <div class="chip-row" id="surveyChips" role="group" aria-label="Outline a survey on the map"></div>
-      </div>
-      <div class="scrolly-steps">
-        <div class="step" data-step="sky"><div class="step-card">
-          <div class="step-n">1 / 9</div>
-          <h3>This oval is the whole sky</h3>
-          <ul>
-            <li>Every direction you could look from Earth, flattened the way a world map flattens the globe, with north at the top.</li>
-            <li>The faint curve is the <strong>ecliptic</strong>, the path the Sun and planets follow across the sky.</li>
-          </ul>
-        </div></div>
-        <div class="step" data-step="track"><div class="step-card">
-          <div class="step-n">2 / 9</div>
-          <h3>Planet Nine would be somewhere on <span class="k-p9">this line</span></h3>
-          <ul>
-            <li>Its predicted orbit, traced across the sky<sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">1</a></sup>.</li>
-            <li>The thin lines show how uncertain the prediction is.</li>
-          </ul>
-          <p class="step-key">Nobody knows where on the line it is now.</p>
-        </div></div>
-        <div class="step" data-step="coverage"><div class="step-card">
-          <div class="step-n">3 / 9</div>
-          <h3>Telescopes have photographed nearly all of it</h3>
-          <ul>
-            <li>A sky survey is a telescope photographing a large part of the sky, patch by patch.</li>
-            <li>Every shaded area is covered by at least one of them.</li>
-          </ul>
-          <p class="step-key">So why hasn't anyone spotted it?</p>
-        </div></div>
-        <div class="step" data-step="depth"><div class="step-card">
-          <div class="step-n">4 / 9</div>
-          <h3>Because a photo can be too shallow</h3>
-          <ul>
-            <li>Planet Nine would be faint, about <strong>magnitude <span data-n="vMin">—</span> to <span data-n="vMax">—</span></strong>.</li>
-            <li>Magnitude counts backwards, so bigger numbers are fainter. The eye gives out at about 6.</li>
-            <li>Even at its brightest it would be <span data-n="eyeFactor">—</span> times fainter than that.</li>
-          </ul>
-          <p class="step-key">Most of the sky has been photographed only to about magnitude <span data-n="wideDepth">—</span>.</p>
-        </div></div>
-        <div class="step" data-step="deep"><div class="step-card">
-          <div class="step-n">5 / 9</div>
-          <h3>Only these slivers are deep enough</h3>
-          <ul>
-            <!-- DEEP_MAG in charts/skymap.js: our bar for catching a faint planet, not a published number -->
-            <li>Just <span data-n="deepN">—</span> surveys reach magnitude <span data-n="deepMag">—</span>, the depth
-            we take as enough to catch a faint Planet Nine.</li>
-            <li>Together they cover about <strong><span data-n="deepPct">—</span>% of the sky</strong>.</li>
-          </ul>
-        </div></div>
-        <div class="step" data-step="unsearched"><div class="step-card warn">
-          <div class="step-n">6 / 9</div>
-          <h3>Most of the path has never been searched deeply</h3>
-          <ul>
-            <li><span class="k-warn">These stretches</span> cross sky never photographed to magnitude <span data-n="deepMag">—</span>.</li>
-          </ul>
-          <p class="step-key">That is <span data-n="thinPct">—</span>% of the path. A faint planet there could have
-          slipped through.</p>
-        </div></div>
-        <div class="step" data-step="milky"><div class="step-card">
-          <div class="step-n">7 / 9</div>
-          <h3>And part of it is lost in the Milky Way</h3>
-          <ul>
-            <li>The pale band is our own galaxy, seen edge-on.</li>
-            <li>Where the path crosses it, one faint, slow dot hides among crowds of stars, even in a deep photo.</li>
-          </ul>
-        </div></div>
-        <div class="step" data-step="future"><div class="step-card">
-          <div class="step-n">8 / 9</div>
-          <h3>The search that could settle it</h3>
-          <ul>
-            <!-- the years are surveys.json's (lsst, years_src) -->
-            <li>The <span class="k-lsst">Vera C. Rubin Observatory</span> is surveying the southern sky to magnitude
-            <span data-n="lsstMag">—</span> from <span data-n="lsstStart">—</span> to <span data-n="lsstEnd">—</span>.</li>
-            <li>It covers <span data-n="lsstPct">—</span>% of the unsearched stretches.</li>
-          </ul>
-          <p class="step-key">It should find Planet Nine or leave it very few places to hide.</p>
-        </div></div>
-        <div class="step" data-step="explore"><div class="step-card explore">
-          <div class="step-n">9 / 9</div>
-          <h3>Your turn</h3>
-          <ul>
-            <li><span class="k-obj">Each dot</span> is the direction one extreme object points.</li>
-            <li>Click a dot, or a shaded area, for its details.</li>
-            <li>Click a survey's name to outline its area.</li>
-          </ul>
-        </div></div>
-      </div>
-    </div>
-    <div class="wrap">
-      <!-- The footprints are declination bands squeezed to each survey's published area
-           (scripts/calibrate_footprints.py). OSSOS has no area we could verify, so it is left off the map. -->
-      <p class="caption">Footprints simplified to bands of sky, each the area its survey published.</p>
-    </div>
-  </section>
 
   <!-- the searches so far: the ledger's search, limit, candidate and survey rows, one at a time along a line of
        years with Previous and Next (charts/searchsteps.js, drawing each row with charts/field.js) -->
@@ -146,10 +39,172 @@
     <div class="fl" id="searchLedger"></div>
   </section>
 
+  <!-- the sky, in three stages on one pinned picture (charts/skysearch.js): from Earth to the sky (an observatory
+       photographing one patch; the sky as a sphere unrolled into the oval; the celestial equator and the ecliptic),
+       how deeply we have searched (the path shaded by how faint the planet would be, beside the surveys shaded by how
+       faint their photos reach, on one colour scale), and where it could still be hiding (the path marked where the
+       photos are deep enough and where not; the Milky Way; Rubin). Every number in the cards is computed on load in
+       pages/search.js (data-n). Survey outlines are schematic, so no percentage is computed from them: the quoted
+       shares come from the brightness model (time spent fainter than the searches' limit) or from the papers. -->
+  <section class="part story" id="sky">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>The photographed sky</h2>
+        <p>How astronomers search for the planet, and where it could still be hiding.</p>
+      </div>
+    </div>
+    <div class="scrolly wrap wide" id="skyStory">
+      <div class="scrolly-graphic">
+        <div class="viz-head"><div class="legend" id="skyLegend"></div></div>
+        <div class="ss" id="skySearch">
+          <div class="ss-panel ss-earth" aria-hidden="true"><p class="ss-title"></p><svg></svg></div>
+          <div class="ss-panel ss-a pic">
+            <p class="ss-title">How faint might Planet Nine be?</p>
+            <svg role="img" aria-label="The whole sky as an oval, with Planet Nine's predicted path shaded by how faint the planet would be along it"></svg>
+            <div class="pic-bar ss-bar" id="skyPlanet" role="group" aria-label="Which planet to test">
+              <div class="seg" id="skyPlanetSeg"></div>
+            </div>
+          </div>
+          <div class="ss-panel ss-b pic">
+            <p class="ss-title">How deeply have we searched?</p>
+            <svg role="img" aria-label="The whole sky as an oval, with each survey shaded by how faint its photos reach"></svg>
+            <div class="pick-card sky-card" id="skyCard" hidden role="dialog"></div>
+          </div>
+          <p class="ss-read" aria-live="polite"></p>
+        </div>
+        <!-- the survey chips, on the last step: each outlines its survey on the right-hand map -->
+        <div class="chip-row" id="surveyChips" role="group" aria-label="Outline a survey on the map"></div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="step" data-step="patch"><div class="step-card">
+          <div class="step-n">From Earth to the sky</div>
+          <h3>One patch of sky at a time</h3>
+          <ul>
+            <li>From any spot on Earth, half the sky is below the horizon, and a telescope photographs only a small
+            patch of the other half at a time.</li>
+            <li>Astronomers picture the sky as a sphere around Earth: every direction is a point on it.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="flatten"><div class="step-card">
+          <div class="step-n">From Earth to the sky</div>
+          <h3>Unrolling the sphere</h3>
+          <ul>
+            <li>To show every direction at once, the sphere is unrolled into an oval, the way a world map unrolls the
+            globe.</li>
+            <li>Across the oval is position around the sky. Up and down is how far north or south of the
+            <strong>celestial equator</strong>, the sky’s own equator, straight above Earth’s.</li>
+          </ul>
+          <p class="step-key">Astronomers call the two right ascension and declination.</p>
+        </div></div>
+        <div class="step" data-step="ecliptic"><div class="step-card">
+          <div class="step-n">From Earth to the sky</div>
+          <h3>The planets’ path across the sky</h3>
+          <ul>
+            <li>The <strong>ecliptic</strong> is the line the Sun and planets follow across the sky: the plane of
+            Earth’s orbit, seen from inside it.</li>
+            <li>Earth’s axis is tilted <span data-n="tilt">—</span>° to that plane, so the ecliptic is tilted against
+            the celestial equator, and unrolling the sphere bends it into a wave.</li>
+          </ul>
+          <p class="step-key">Planet Nine’s predicted path never strays more than <span data-n="pathLat">—</span>° from it.</p>
+        </div></div>
+        <div class="step" data-step="path"><div class="step-card">
+          <div class="step-n">How deeply have we searched?</div>
+          <h3>Where the prediction puts it</h3>
+          <ul>
+            <li>This line is the orbit that best fits the distant objects, from Brown and Batygin’s
+            analysis<sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">1</a></sup>.</li>
+            <li>The thinner lines are other orbits the fit still allows.</li>
+          </ul>
+          <p class="step-key">Where along it the planet is now, nobody knows.</p>
+        </div></div>
+        <div class="step" data-step="faint"><div class="step-card">
+          <div class="step-n">How deeply have we searched?</div>
+          <h3>How faint might it be?</h3>
+          <ul>
+            <li>Brightness is measured in <strong>magnitudes</strong>, and the scale runs backwards: bigger numbers are
+            fainter, and 5 steps is 100 times fainter. The eye stops at about 6.</li>
+            <li>How bright the planet looks depends on its size, how much sunlight it reflects and its distance: twice
+            as far is 16 times fainter.</li>
+            <li>The best fit, <span data-n="aMass">—</span> Earth masses and as reflective as Neptune, would be
+            magnitude <span data-n="aBright">—</span> at its closest and <span data-n="aFaint">—</span> at its
+            farthest<sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">1</a></sup>. A smaller, darker
+            planet the fit also allows would be <span data-n="bBright">—</span> to <span data-n="bFaint">—</span>.</li>
+          </ul>
+          <p class="step-key">Switch between the two on the map.</p>
+        </div></div>
+        <div class="step" data-step="deep"><div class="step-card">
+          <div class="step-n">How deeply have we searched?</div>
+          <h3>How deeply have we searched?</h3>
+          <ul>
+            <li>A survey’s <strong>limiting magnitude</strong> is the faintest thing one of its photos can show.</li>
+            <li>The wide surveys reach magnitude <span data-n="wideLo">—</span> to <span data-n="wideHi">—</span>. A few
+            small fields go much deeper: the Dark Energy Survey to <span data-n="desMag">—</span>, Subaru to
+            <span data-n="hscMag">—</span>.</li>
+          </ul>
+          <p class="step-key">Both maps use one scale: where the right is at least as light as the left, the photos
+          could have shown the planet.</p>
+        </div></div>
+        <div class="step" data-step="compare"><div class="step-card warn">
+          <div class="step-n">Where could it still be hiding?</div>
+          <h3>Photographed is not the same as ruled out</h3>
+          <ul>
+            <li data-n-html="coverLine">—</li>
+            <li>A stretch counts only where the photos reach as faint as the planet would be there:
+            <strong class="k-deep">deep enough</strong> or <strong class="k-warn">too shallow</strong>.</li>
+            <li>Switch the planet: the smaller, darker one slips through along much more of the path.</li>
+          </ul>
+          <p class="step-key">Deep photos still have to be searched for one slow-moving dot.</p>
+        </div></div>
+        <div class="step" data-step="milky"><div class="step-card">
+          <div class="step-n">Where could it still be hiding?</div>
+          <h3>What the searches have left</h3>
+          <ul>
+            <li>Searches of the Pan-STARRS1, ZTF and Dark Energy Survey photos catch half of planets as faint as
+            magnitude <span data-n="limitV">—</span><sup class="cite"><a href="/credits.html#cite-brown-batygin-2024">2</a></sup>.</li>
+            <li>Together they ruled out <strong><span data-n="ruledPct">—</span>%</strong> of the planets the 2021
+            prediction allowed: of its combinations of mass, orbit and position, not of the sky.</li>
+            <li>The best fit is fainter than <span data-n="limitV">—</span> for <span data-n="aHidden">—</span>% of its
+            orbit; the smaller, darker planet for <span data-n="bHidden">—</span>%.</li>
+          </ul>
+          <p class="step-key">What is left is faint, and much of it lies where the path crosses the
+          <span class="k-milky">Milky Way</span>, whose crowded star fields hide a faint moving dot even in deep photos.</p>
+        </div></div>
+        <div class="step" data-step="rubin"><div class="step-card explore">
+          <div class="step-n">Where could it still be hiding?</div>
+          <h3>The search that could settle it</h3>
+          <ul>
+            <!-- the years are surveys.json's (lsst, years_src) -->
+            <li>The <span class="k-lsst">Vera C. Rubin Observatory</span> is photographing the southern sky to
+            magnitude <span data-n="lsstMag">—</span>, again and again, from <span data-n="lsstStart">—</span> to
+            <span data-n="lsstEnd">—</span>.</li>
+            <li data-n-html="rubinLine">—</li>
+            <li>Point at the path to compare the two maps there; click a survey’s name to outline it.</li>
+          </ul>
+        </div></div>
+      </div>
+    </div>
+    <div class="wrap">
+      <!-- The footprints are declination bands squeezed to each survey's published area
+           (scripts/calibrate_footprints.py). OSSOS has no area we could verify, so it is left off the map. -->
+      <p class="caption">The patch of sky in the first pictures is an illustration. Survey outlines are simplified bands,
+      each the area its survey published, and each depth is a single photo’s limit, so read the marks on the path as a
+      sketch, not a measurement. Only surveys in visible light are shown.</p>
+    </div>
+  </section>
+
   <!-- put a planet out there, laid out like the herd on the clustering page: the picture in a panel with its
        dials on it, the score and the planet's numbers beside it (charts/placeplanet.js). The brightness model and
        every number in it come from planet_nine_predictions.json (physical_properties.brightness_model). -->
   <section class="part wrap" id="build">
+    <!-- two versions kept side by side while the team compares them: 1 the original orbit simulator (unchanged), 2 Hide
+         Planet Nine (charts/hideplanet.js), a detection game. The choice is kept in localStorage (p9-build-version)
+         and ?game=1 or ?game=2 sets it. -->
+    <div class="build-tools">
+      <div class="seg" id="buildVersion" role="group" aria-label="Which version of the activity">
+        <button type="button" data-v="1" aria-pressed="true">Version 1</button><button type="button" data-v="2" aria-pressed="false">Version 2</button>
+      </div>
+    </div>
+    <div id="buildV1">
     <div class="sec-head">
       <h2><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Put a planet out there</h2>
       <!-- the question says what the reader is testing; the paragraph how to move the planet and what to aim for -->
@@ -171,6 +226,19 @@
       </div>
     </div>
     <p class="caption" id="propNote"></p>
+    </div>
+    <div id="buildV2" hidden>
+      <div class="sec-head">
+        <h2>Hide Planet Nine</h2>
+        <p class="sec-q">Can you hide Planet Nine from our telescopes?</p>
+        <p>Change its size, distance and reflectivity, place it on the sky, and see whether today’s telescopes could have
+        spotted it.</p>
+      </div>
+      <div id="hideGame"></div>
+      <!-- the assumptions and sources, folded under the game so the game fits one screen -->
+      <details class="hp-notes"><summary>How the brightness and the verdict are worked out</summary>
+        <p class="caption" id="hideNote"></p></details>
+    </div>
   </section>
 </main>
 <script type="module" src="/src/pages/search.js"></script>

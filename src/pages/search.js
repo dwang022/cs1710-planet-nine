@@ -5,11 +5,13 @@
 import * as d3 from 'd3'
 import '../site.js'
 import { loadData, showLoadError, url } from '../data.js'
-import { drawSkyMap, depthColour, deepestAt, galacticPoint, eclipticPoint, DEEP_MAG, skyThumb } from '../charts/skymap.js'
+import { deepestAt, DEEP_MAG, skyThumb } from '../charts/skymap.js'
+import { drawSkySearch, STEPS, magColour, MAG_DOMAIN, OBLIQUITY_DEG } from '../charts/skysearch.js'
 import { PICK, legend } from '../charts/field.js'
 import { drawSearchSteps } from '../charts/searchsteps.js'
 import { drawPlacement, scorePlanet, brightnessModel } from '../charts/placeplanet.js'
-import { scrolly } from '../scrolly.js'
+import { drawHideGame } from '../charts/hideplanet.js'
+import { scrolly, scrollyProgress } from '../scrolly.js'
 import { resultant } from '../stats.js'
 import { PLANET_NINE, semiLatusRectum } from '../orbits.js'
 import { selected, withAlignment, STRICT } from '../sample.js'
@@ -28,80 +30,117 @@ const SHORT = {
 }
 
 async function main () {
-  const { etnos, surveys: sv, p9_sky_track: SKY, etno_perihelion_sky: peri, planet_nine_predictions: PREDICTIONS, field_timeline: FIELD, papers: PAPERS, planets: PLANETS } =
-    await loadData('etnos', 'surveys', 'p9_sky_track', 'etno_perihelion_sky', 'planet_nine_predictions', 'field_timeline', 'papers', 'planets')
-  // Surveys carry no colour of their own: the map shades them by depth, and only Rubin (what comes next) is rose.
+  const { etnos, surveys: sv, p9_sky_track: SKY, planet_nine_predictions: PREDICTIONS, field_timeline: FIELD, papers: PAPERS, planets: PLANETS } =
+    await loadData('etnos', 'surveys', 'p9_sky_track', 'planet_nine_predictions', 'field_timeline', 'papers', 'planets')
+  // Surveys carry no colour of their own: the map shades them by depth, and only Rubin (what comes next) is pink.
   const SURVEYS = sv.surveys.map(s => ({ ...s, short: SHORT[s.id] || s.name }))
-  const PERIHELIA = peri.objects
   const sample = STRICT
   const objs = withAlignment(selected(etnos, sample))
-  const visibleIds = new Set(objs.map(o => o.id))
-  let story = 'sky', survey = null
 
-  // --- the sky map -----------------------------------------------------------------------
-  function skyScene (step) {
-    const at = (ra, dec, text, o = {}) => ({ ra, dec, text, ...o })
-    const [eRa, eDec] = eclipticPoint(150)
-    const [gRa, gDec] = galacticPoint(150, 0)
-    // The legend names the predicted path; the map labels only what the cards introduce.
-    const ecl = at(eRa, eDec, 'ecliptic', { dy: 24, colour: 'var(--text-secondary)', size: 14 })
-    const mw = at(gRa, gDec, 'Milky Way', { dy: -18, colour: '#dcc48a', size: 16 })
-    const des = at(15, -52, 'Dark Energy Survey', { colour: '#ece6d8', size: 14 })
-    const hsc = at(180, 19, 'Subaru (HSC)', { dy: -16, colour: '#ece6d8', size: 14 })
-    const lsst = at(110, -40, 'Rubin Observatory', { colour: 'var(--series-4-ink)', size: 15 })
-    const off = { surveys: 'none', track: false, unsearched: false, milky: false, perihelia: false, future: false, notes: [] }
-    const scenes = {
-      sky: { notes: [ecl] },
-      track: { track: true, notes: [ecl] },
-      coverage: { surveys: 'coverage', track: true },
-      depth: { surveys: 'depth', track: true },
-      deep: { surveys: 'deep', track: true, notes: [des, hsc] },
-      unsearched: { surveys: 'deep', track: true, unsearched: true },
-      milky: { surveys: 'depth', track: true, unsearched: true, milky: true, notes: [mw] },
-      future: { surveys: 'depth', track: true, unsearched: true, milky: true, future: true, notes: [lsst] },
-      explore: { surveys: 'depth', track: true, unsearched: true, milky: true, perihelia: true },
+  // --- the photographed sky: three stages on one pinned picture (charts/skysearch.js) ------------------------
+  // The two planets the reader can test, both on the 2021 best-fit orbit (the one the sky path traces) and both inside
+  // that fit's published ranges: its median mass and Neptune's albedo (the model the search papers use), and its 1σ
+  // lower mass with the paper's lowest albedo. Brightness follows brightnessModel (charts/placeplanet.js).
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const model = brightnessModel(PREDICTIONS.physical_properties.brightness_model)
+  const fit = PREDICTIONS.orbit_predictions.find(p => p.is_default)
+  const smallMass = +(fit.mass_earths + fit.mass_earths_err[0]).toFixed(1)
+  const darkAlbedo = fit.albedo_range[0]
+  const TESTED = {
+    fit: { label: 'Best fit', mass: fit.mass_earths, albedo: model.albedo },
+    faint: { label: 'Smaller, darker', mass: smallMass, albedo: darkAlbedo },
+  }
+  for (const p of Object.values(TESTED)) p.magnitude = r => model.magnitude(p.mass, r, p.albedo)
+  // the share of its orbit, by time, a planet spends fainter than the searches' 50% limit: each point of the orbit
+  // counts by the time spent there (uniform steps in mean anomaly), since where on it the planet is now is unknown
+  const hiddenShare = p => {
+    const n = 720; let k = 0
+    for (let j = 0; j < n; j++) {
+      const M = 2 * Math.PI * (j + 0.5) / n; let E = M
+      for (let it = 0; it < 30; it++) E -= (E - fit.e * Math.sin(E) - M) / (1 - fit.e * Math.cos(E))
+      if (p.magnitude(fit.a_au * (1 - fit.e * Math.cos(E))) > model.limitV) k++
     }
-    return { ...off, ...scenes[step] }
+    return k / n
   }
-  // Each label is its own span: the legend items are flex rows, and site.js wraps "Planet Nine" in a
-  // span of its own, which would otherwise become a separate flex item with a gap after it.
-  const briefOnly = PERIHELIA.some(d => visibleIds.has(d.id) && !d.well_determined)
-  // Items new to this step fade in; the ones already there stay still, so the eye goes to what changed.
-  let legendShown = new Set()
-  function renderSkyLegend (L) {
-    const sw = (bg, extra = '') => `<span class="legend-swatch" style="background:${bg};${extra}"></span>`
-    // lines in the map get a line in the key
-    const ln = (bg, h = 3) => `<span class="legend-line" style="background:${bg};height:${h}px"></span>`
-    const ramp = `linear-gradient(90deg, ${d3.range(0, 1.01, 0.1).map(t => depthColour(20 + t * 6)).join(',')})`
+  const nomPts = SKY.tracks.find(t => t.label === 'nominal').points
+  const rMin = d3.min(nomPts, p => p.r_au), rMax = d3.max(nomPts, p => p.r_au)
+
+  const chipSurveys = SURVEYS.filter(s => s.wavelength === 'optical' && s.ra_ranges && s.dec_range && s.footprint_area_verified !== false && s.depth_mag != null)
+  const card = $('#skyCard')
+  function closeCard () { card.hidden = true; card.innerHTML = '' }
+  function openSurvey (s) {
+    const V = TESTED[tested]
+    const deepFor = s.depth_mag >= V.magnitude(rMax) ? 'Deep enough all along the path' : s.depth_mag >= V.magnitude(rMin) ? 'Deep enough where the planet is brightest' : 'Too shallow anywhere on the path'
+    card.hidden = false
+    card.innerHTML = `<button type="button" class="pick-close" aria-label="Close">×</button>
+      <div class="pick-name">${s.short}</div>
+      <dl><dt>reaches</dt><dd>magnitude ${s.depth_mag}</dd><dt>years</dt><dd>${s.years[0]}–${s.years[1]}</dd>
+        ${s.area_sq_deg ? `<dt>sky covered</dt><dd>${Math.max(1, Math.round(100 * s.area_sq_deg / 41253))}%</dd>` : ''}</dl>
+      <p class="sky-verdict">${s.future ? 'From 2026 · ' : ''}${deepFor}</p>`
+    card.querySelector('.pick-close').addEventListener('click', closeCard)
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !card.hidden) closeCard() })
+
+  let tested = 'fit'
+  const sky = drawSkySearch($('#skySearch'), { surveys: SURVEYS, track: SKY, planets: TESTED, onPick: s => openSurvey(s) })
+
+  // the planet being tested: a switch on the left-hand map
+  $('#skyPlanetSeg').innerHTML = Object.entries(TESTED).map(([k, p]) =>
+    `<button type="button" data-k="${k}" aria-pressed="${k === tested}">${p.label}</button>`).join('')
+  $('#skyPlanetSeg').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return
+    tested = b.dataset.k
+    $('#skyPlanetSeg').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x === b)))
+    sky.planet(tested)
+    if (!card.hidden) closeCard()
+  })
+
+  // the key above the picture: what each mark on screen means, new items easing in. The magnitude ramp is drawn with
+  // the same scale as both maps, its numbers under it.
+  const rampKey = () => {
+    const [m0, m1] = MAG_DOMAIN, w = 150
+    const stops = d3.range(0, 1.001, 0.1).map(t => `<stop offset="${t}" stop-color="${magColour(m0 + t * (m1 - m0))}"/>`).join('')
+    const ticks = [20, 22, 24, 26].map(m => `<text x="${((m - m0) / (m1 - m0) * w).toFixed(1)}" y="25">${m}</text>`).join('')
+    return `<span>magnitude</span><span class="mag-ends">brighter</span><svg class="mag-key" viewBox="-8 0 ${w + 16} 28" style="width:${w + 16}px;height:28px" aria-hidden="true">
+      <defs><linearGradient id="mag-ramp">${stops}</linearGradient></defs>
+      <rect x="0" y="1" width="${w}" height="10" rx="2" fill="url(#mag-ramp)"/>${ticks}</svg><span class="mag-ends">fainter</span>`
+  }
+  const sw = (bg, extra = '') => `<span class="legend-swatch" style="background:${bg};${extra}"></span>`
+  const ln = (bg, h = 3, extra = '') => `<span class="legend-line" style="background:${bg};height:${h}px;${extra}"></span>`
+  let keyShown = new Set()
+  function renderKey (step) {
+    const at = i => STEPS.indexOf(step) >= STEPS.indexOf(i)
     const items = []
-    if (L.track) items.push(`${ln('var(--p9)')}<span>Planet Nine’s predicted path</span>`)
-    if (L.surveys === 'coverage') items.push(`${sw('#4a4852')}<span>photographed by a sky survey</span>`)
-    if (L.surveys === 'depth' || L.surveys === 'deep') items.push(`<span>shallow photos</span><span class="depth-ramp" style="background:${ramp}"></span><span>deep</span>`)
-    if (L.unsearched) items.push(`${ln('var(--series-2)', 7)}<span>path not yet searched deeply</span>`)
-    if (L.milky) items.push(`${sw('#dcc48a')}<span>Milky Way</span>`)
-    if (L.future) items.push(`${sw('transparent', 'border:2px dashed var(--series-4)')}<span>Rubin Observatory</span>`)
-    if (L.perihelia) items.push(`${sw('var(--series-1)', 'border-radius:50%')}<span>direction each object points</span>`)
-    if (L.perihelia && briefOnly) items.push(`${sw('var(--series-1)', 'border-radius:50%;opacity:.4')}<span>seen in one season only</span>`)
-    $('#skyLegend').innerHTML = items.map(i => `<div class="legend-item${legendShown.has(i) ? '' : ' is-new'}">${i}</div>`).join('')
-    legendShown = new Set(items)
+    if (step === 'patch' || step === 'flatten') items.push(`${sw('#ffffff40', 'border:1px solid #ffffffa0')}<span>one patch of sky</span>`)
+    if (at('flatten') && !at('faint')) items.push(`${ln('#ffffffb0', 2)}<span>celestial equator</span>`)
+    if (at('ecliptic')) items.push(`${ln('#8c8b83', 2)}<span>ecliptic</span>`)
+    if (at('path')) items.push(`${ln('var(--p9)')}<span>predicted path</span>`, `${ln('var(--p9)', 1, 'opacity:.5')}<span>other orbits the fit allows</span>`)
+    if (at('faint')) items.push(rampKey())
+    if (at('deep')) items.push(`${sw('var(--sky-empty)', 'border:1px solid #ffffff38')}<span>no survey photos in our data</span>`)
+    if (at('compare')) items.push(`${ln('#ffffff', 5)}<span>deep enough</span>`, `${ln('var(--series-2)', 5)}<span>too shallow</span>`)
+    if (at('milky')) items.push(`${sw('#dcc48a', 'opacity:.6')}<span>Milky Way</span>`)
+    if (at('rubin')) items.push(`${sw('transparent', 'border:2px dashed var(--series-4)')}<span>Rubin, to ${nums.lsstMag}</span>`)
+    $('#skyLegend').innerHTML = items.map(i => `<div class="legend-item${keyShown.has(i) ? '' : ' is-new'}">${i}</div>`).join('')
+    keyShown = new Set(items)
   }
-  function renderSky () {
-    const scene = skyScene(story)
-    drawSkyMap($('#chartSky'), { surveys: SURVEYS, track: SKY, perihelia: PERIHELIA, activeSurvey: story === 'explore' ? survey : null, visibleIds, scene })
-    renderSkyLegend(scene)
-    // the chips keep their room on every step (so the map never jumps) and appear on the last one
+  function onSkyStep (step) {
+    sky.step(step)
+    renderKey(step)
     const chips = $('#surveyChips')
-    chips.classList.toggle('is-shown', story === 'explore')
-    chips.inert = story !== 'explore'
+    chips.classList.toggle('is-shown', step === 'rubin')
+    chips.inert = step !== 'rubin'
+    if (step !== 'rubin') { if (!card.hidden) closeCard() }
+    // with less motion the sphere is either whole or unrolled, never in between
+    if (reduceMotion.matches) sky.morph(STEPS.indexOf(step) >= 1 ? 1 : 0)
   }
-  // Only surveys the map actually draws get a chip (OSSOS has no verified footprint).
-  $('#surveyChips').innerHTML = SURVEYS.filter(s => s.dec_range && s.ra_ranges && s.footprint_area_verified !== false).map(s =>
+  $('#surveyChips').innerHTML = chipSurveys.map(s =>
     `<button class="chip" data-id="${s.id}" aria-pressed="false">${s.future ? '<span class="dot" style="background:var(--series-4)"></span>' : ''}${s.short}</button>`).join('')
+  let survey = null
   $('#surveyChips').addEventListener('click', e => {
     const b = e.target.closest('.chip'); if (!b) return
     survey = survey === b.dataset.id ? null : b.dataset.id
     $('#surveyChips').querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.id === survey)))
-    renderSky()
+    sky.survey(survey)
   })
 
   // --- numbers quoted in the text ----------------------------------------------------------
@@ -109,30 +148,38 @@ async function main () {
   const optical = SURVEYS.filter(v => v.wavelength === 'optical' && !v.future && v.depth_mag != null)
   const deepSurveys = optical.filter(v => v.depth_mag >= DEEP_MAG && v.area_sq_deg && v.footprint_area_verified !== false)
   const deepArea = d3.sum(deepSurveys, v => v.area_sq_deg)
-  const nom = SKY.tracks.find(t => t.label === 'nominal').points
-  const thin = nom.filter(pt => { const d = deepestAt(SURVEYS, pt.ra_deg, pt.dec_deg); return d === null || d < DEEP_MAG })
-  const rubin = thin.filter(pt => (deepestAt(SURVEYS, pt.ra_deg, pt.dec_deg, { includeFuture: true }) ?? 0) >= DEEP_MAG)
-  const V = PREDICTIONS.physical_properties.apparent_V_mag
-  // how many times fainter than the faintest star the eye can see (magnitude 6, as the card says) the
-  // brightest predicted Planet Nine is: five magnitudes are a factor of 100
-  const eye = 10 ** (0.4 * (V.min - 6))
-  const eyeWords = eye >= 1e6 ? `${eye < 1.5e6 ? 'a' : d3.format('.2~r')(eye / 1e6)} million` : d3.format(',.2r')(eye)
   const ruled = PREDICTIONS.search_exclusions.ps1_2024_cumulative.fraction_excluded
+  const wide = optical.filter(v => (v.area_sq_deg ?? 0) > SKY_SQ_DEG / 2)
+  const byId = id => SURVEYS.find(v => v.id === id)
+  const lsst = SURVEYS.find(v => v.future)
+  const f1 = v => v.toFixed(1)
+  const A = TESTED.fit, B = TESTED.faint
+  // is every stretch of the path photographed by some survey in visible light? (schematic outlines, said so)
+  const unphotographed = nomPts.filter(p => deepestAt(SURVEYS, p.ra_deg, p.dec_deg) === null).length
   const nums = {
     deepPct: Math.round(100 * deepArea / SKY_SQ_DEG),
-    thinPct: Math.round(100 * thin.length / nom.length),
-    lsstPct: Math.round(100 * rubin.length / Math.max(1, thin.length)),
-    ruledPct: Math.round(100 * ruled),
-    deepN: word(deepSurveys.length),
     deepMag: DEEP_MAG,
-    vMin: V.min, vMax: V.max, eyeFactor: eyeWords,
-    // the deepest any survey covering more than half the sky reaches
-    wideDepth: d3.max(optical.filter(v => (v.area_sq_deg ?? 0) > SKY_SQ_DEG / 2), v => v.depth_mag),
-    lsstMag: SURVEYS.find(v => v.future)?.depth_mag,
-    lsstStart: SURVEYS.find(v => v.future)?.years[0],
-    lsstEnd: SURVEYS.find(v => v.future)?.years[1],
+    ruledPct: Math.round(100 * ruled),
+    tilt: OBLIQUITY_DEG.toFixed(1),
+    pathLat: Math.ceil(d3.max(nomPts, p => Math.abs(p.ecl_lat_deg))),
+    aMass: A.mass, aBright: f1(A.magnitude(rMin)), aFaint: f1(A.magnitude(rMax)),
+    bBright: f1(B.magnitude(rMin)), bFaint: f1(B.magnitude(rMax)),
+    wideLo: d3.min(wide, v => v.depth_mag), wideHi: d3.max(wide, v => v.depth_mag),
+    desMag: byId('des')?.depth_mag, hscMag: byId('hsc_ssp')?.depth_mag,
+    limitV: model.limitV,
+    aHidden: Math.round(100 * hiddenShare(A)), bHidden: Math.round(100 * hiddenShare(B)),
+    lsstMag: lsst?.depth_mag, lsstStart: lsst?.years[0], lsstEnd: lsst?.years[1],
+  }
+  const html = {
+    coverLine: unphotographed === 0
+      ? 'Every stretch of the predicted path has been photographed by at least one survey.'
+      : 'Most of the predicted path has been photographed by at least one survey; <span class="k-muted">a dashed stretch</span> has not.',
+    rubinLine: lsst && lsst.depth_mag >= B.magnitude(rMax)
+      ? `That is fainter than either planet here ever gets, so across the part of the path in its view, <span class="k-lsst">marked on the map</span>, it could catch them.`
+      : `Across the part of the path in its view, <span class="k-lsst">marked on the map</span>, it could catch the planet where it is bright enough.`,
   }
   document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
+  document.querySelectorAll('[data-n-html]').forEach(el => { el.innerHTML = html[el.dataset.nHtml] ?? '—' })
 
   // --- the head: three small drawings from the same data ----------------------------------
   // the predictions as a ring: the share ruled out grey, what is left in the planet's colour, the planet inside
@@ -144,13 +191,58 @@ async function main () {
       <use href="#art-planet-nine" x="32" y="32" width="36" height="36"/></svg>`
   }
   $('#beatSky').insertAdjacentHTML('afterbegin', skyThumb(SURVEYS, SKY, { show: 'deep' }))
-  $('#beatPath').insertAdjacentHTML('afterbegin', skyThumb(SURVEYS, SKY, { show: 'path' }))
+  // the path, its stretches where the best fit is fainter than the searches' limit in ember (the same rule as the beat)
+  $('#beatPath').insertAdjacentHTML('afterbegin', skyThumb(SURVEYS, SKY, { show: 'path', mark: p => A.magnitude(p.r_au) > model.limitV }))
   $('#beatSearch').insertAdjacentHTML('afterbegin', ring(ruled))
 
-  renderSky()
-  scrolly($('#skyStory'), { onStep: (i, step) => { story = step; renderSky() } })
-  // phones get a cropped map with heavier marks; redraw when the screen crosses over
-  window.matchMedia('(max-width: 700px)').addEventListener('change', renderSky)
+  // the story: each card sets the scene; between the first two the sphere unrolls with the scroll
+  // Layout (desktop): the picture is pinned just under the nav at its own height, rather than centred in a
+  // screen-tall box, so it starts right under the heading. Cards are read where the panels' middle is: the first card
+  // is set level with the panels (its step keeps room below it, so the second card arrives only after some scrolling),
+  // and the line that switches steps runs through the panels' middle. Phones keep the framework's own layout (the
+  // picture across the top, cards read low on the screen). Re-measured whenever the picture or the first card resizes.
+  const story = $('#skyStory'), graphic = story.querySelector('.scrolly-graphic')
+  const stepEls = [...story.querySelectorAll('.step')], firstCard = stepEls[0].querySelector('.step-card')
+  const narrowQ = window.matchMedia('(max-width: 900px)')
+  let lineFrac = 0.5
+  function layoutStory () {
+    if (narrowQ.matches) {
+      for (const p of ['--ss-first-pad', '--ss-first-h', '--ss-pin', '--ss-drop']) story.style.removeProperty(p)
+      lineFrac = 0.75
+      return
+    }
+    // Where the picture pins: in the middle of the screen below the nav (never higher than just under it), so the
+    // group sits in the centre of the view rather than in a strip at the top. The gap under the heading is then set so
+    // that, when the heading reaches the top of the screen, the picture is exactly at that place: it neither jumps
+    // when it starts to pin nor leaves the first card behind.
+    const bar = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar-h')) || 72
+    const gh = graphic.offsetHeight
+    const pinTop = Math.round(Math.max(bar + 16, (window.innerHeight + bar - gh) / 2))
+    const drop = parseFloat(story.style.getPropertyValue('--ss-drop')) || 0
+    const head = document.querySelector('#sky .sec-head')
+    const base = story.getBoundingClientRect().top - head.getBoundingClientRect().top - drop
+    story.style.setProperty('--ss-pin', `${pinTop}px`)
+    story.style.setProperty('--ss-drop', `${Math.max(0, Math.round(pinTop - (bar + 12) - base))}px`)
+    const ss = $('#skySearch'), a = ss.querySelector('.ss-a')
+    const mid = ss.offsetTop + a.offsetTop + a.offsetHeight / 2        // the panels' middle, from the picture's top
+    story.style.setProperty('--ss-first-pad', `${Math.max(0, Math.round(mid - firstCard.offsetHeight / 2))}px`)
+    story.style.setProperty('--ss-first-h', `${Math.round(graphic.offsetHeight)}px`)
+    lineFrac = (pinTop + mid) / window.innerHeight
+  }
+  layoutStory()
+  new ResizeObserver(layoutStory).observe(graphic)
+  new ResizeObserver(layoutStory).observe(firstCard)
+  window.addEventListener('resize', layoutStory)
+  narrowQ.addEventListener('change', layoutStory)
+  scrolly(story, { onStep: (i, step) => onSkyStep(step), line: () => lineFrac })
+  // The sphere unrolls as the second card rises toward the line: flat once that card reaches it (the moment its
+  // step switches on), whole while the card is still more than 45% of a screen below it, so it is always whole when
+  // the reader arrives and the first card is the one being read.
+  scrollyProgress(story, () => {
+    if (reduceMotion.matches) return
+    const d = stepEls[1].getBoundingClientRect().top - window.innerHeight * lineFrac
+    sky.morph(1 - Math.max(0, Math.min(1, d / (0.45 * window.innerHeight))))
+  })
 
   // --- the searches so far -----------------------------------------------------------------------
   // One milestone at a time along a line of years (charts/searchsteps.js), each drawn as the ledger draws it.
@@ -161,10 +253,8 @@ async function main () {
   drawSearchSteps($('#searchLedger'), { timeline: FIELD, papers: PAPERS.papers, filter: PICK.searches })
 
   // --- put a planet out there -----------------------------------------------------------------------
-  const model = brightnessModel(PREDICTIONS.physical_properties.brightness_model)
   // Two starting points, both read from the data: the 2021 fit (Figure 8 medians), rounded to the dials'
   // steps, and the 2024 update after the searches, which moved only the distance, stretch and mass.
-  const fit = PREDICTIONS.orbit_predictions.find(p => p.is_default)
   const after = PREDICTIONS.orbit_predictions.find(p => p.ref === 'brown_batygin_2024')
   const PRESETS = {
     fit: {
@@ -242,6 +332,42 @@ async function main () {
     albedo${cite('linder-mordasini-2016', CITE_N['linder-mordasini-2016'])}; the temperature is read from published cooling
     models${cite('linder-mordasini-2016', CITE_N['linder-mordasini-2016'])}.`
   renderBuildControls(); renderBuild()
+
+  // --- version 2, Hide Planet Nine (charts/hideplanet.js), beside the original for comparison ---------------------
+  // Its papers are numbered in the order they appear in that version.
+  const HIDE_N = { 'brown-batygin-2021': 1, 'brown-batygin-2024': 2, 'batygin-brown-2016': 3, 'linder-mordasini-2016': 4 }
+  const hideCite = slug => cite(slug, HIDE_N[slug])
+  const bmSrc = PREDICTIONS.physical_properties.brightness_model
+  const game = drawHideGame($('#hideGame'), {
+    surveys: SURVEYS, track: SKY, model, fit, after,
+    detection: { v94: bmSrc.detection.V_94pct, v50: bmSrc.detection.V_50pct },
+    objects: objs, meanVarpi: stats.meanDeg, cite: (slug) => hideCite(slug),
+  })
+  $('#hideNote').innerHTML = `Brightness is an estimate for a made-up planet: sunlight reflected off it, seen from Earth
+    when it is opposite the Sun, with the formula the search papers use${hideCite('brown-batygin-2021')}; it ignores the
+    planet’s own faint heat. The papers expect the planet still allowed to be about magnitude
+    ${after?.V_mag ?? '—'}${hideCite('brown-batygin-2024')}. Albedo is the share of sunlight a surface reflects: Neptune’s is
+    ${model.albedo}${hideCite('linder-mordasini-2016')}. “Searches find half” is the combined ZTF, DES and Pan-STARRS1
+    search${hideCite('brown-batygin-2024')}. Survey outlines are simplified bands, each the area its survey published, so
+    read a spot’s verdict as a sketch.`
+
+  // the version switch: ?game=1 or ?game=2, else the last one chosen here, else version 1
+  const BUILD_KEY = 'p9-build-version'
+  let stored = null
+  try { stored = localStorage.getItem(BUILD_KEY) } catch {}
+  const fromUrl = new URLSearchParams(location.search).get('game')
+  function showVersion (v) {
+    $('#buildV1').hidden = v !== '1'
+    $('#buildV2').hidden = v !== '2'
+    $('#buildVersion').querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)))
+    if (v === '1') renderBuild(); else game.show()
+  }
+  showVersion(fromUrl === '2' || fromUrl === '1' ? fromUrl : stored === '2' ? '2' : '1')
+  $('#buildVersion').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return
+    showVersion(b.dataset.v)
+    try { localStorage.setItem(BUILD_KEY, b.dataset.v) } catch {}
+  })
 }
 
 main().catch(showLoadError)

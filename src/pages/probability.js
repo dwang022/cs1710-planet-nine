@@ -33,9 +33,9 @@ async function main () {
   }
   const current = s => { const objs = withAlignment(selected(etnos, s)); return { objs, stats: resultant(objs.map(o => o.varpi_deg)) } }
   const sampleFor = step => step === 'catch' ? LOOSE : STRICT
-  const readout = (s, n) => `<b>${n}</b> objects · ${s.quality ? 'seen in more than one season' : 'including those seen once'}`
+  const readout = (s, n) => `<b>${n}</b> objects · ${s.quality ? 'seen in more than one year' : 'including those seen once'}`
 
-  // step 6: one row per distance cut, the objects seen in more than one season against every object
+  // step 6: one row per distance cut, the objects seen in more than one year against every object
   const cutRows = [...new Set(nulls.cuts.map(c => `${c.a_min_au}/${c.q_min_au}`))].map(k => {
     const [a, q] = k.split('/').map(Number)
     const good = cutFor(a, q, true), all = cutFor(a, q, false)
@@ -94,7 +94,7 @@ async function main () {
       ...(d.p ? { oneIn: oneIn(d.p) } : {}),
     })),
     { heading: 'Our test, above' },
-    { label: `${sp.n} objects seen in more than one season`, detail: 'no allowance for where telescopes looked', oneIn: oneIn(sp.p), side: 'ours' },
+    { label: `${sp.n} objects seen in more than one year`, detail: 'no allowance for where telescopes looked', oneIn: oneIn(sp.p), side: 'ours' },
     { label: `All ${lp.n}, adding those seen once`, detail: 'no allowance for where telescopes looked', oneIn: oneIn(lp.p), side: 'ours' },
   ])
 }

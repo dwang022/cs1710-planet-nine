@@ -20,6 +20,15 @@
 // so clicking the middle wins nothing. A round can still be shown through a
 // window of its frame (WINDOW of the width, placed at random with the track
 // inside) for frames centred on their object; at 1 the whole frame shows.
+//
+// Readers found it too hard, so the first GUIDED rounds (the brightest objects in
+// game.json) show the lane the object travels along, two dashed rails either side
+// of its track that never cover it, running past its last stop so the end is not
+// given away; the rest are marked Hard, with no lane. The round buttons are
+// headed "Level", the hard ones set a little apart. When the frames stop, the
+// picture waits for a click without saying so in words: its edge pulses and a
+// tapping pointer takes the place of the time in the bar; once there is a guess,
+// Submit pulses instead.
 
 import { url } from '../data.js'
 
@@ -29,6 +38,12 @@ const WINDOW = 1                      // the window's share of the frame's width
 const EDGE = 0.15                     // the track keeps at least this share of the window from its edges
 const FOUND = 0.035                   // a guess this close (share of the window's width) has found it
 const RING = 0.022                    // the reveal's rings: radius as a share of the window's width
+const GUIDED = 2                      // the first rounds show the object's lane
+const LANE = 0.022                    // the lane's half-width, as a share of the window's width
+
+// A pointer tapping, with ripples at its tip: "click on the picture", without words.
+const TAP = `<svg viewBox="0 0 40 40" aria-hidden="true"><circle class="rip" cx="14" cy="12" r="6"/><circle class="rip r2" cx="14" cy="12" r="6"/>
+  <path class="cur" d="M14,12 L14,32 L18.6,27.6 L22.4,36 L25.6,34.6 L21.8,26.4 L28.2,26.2 Z"/></svg>`
 
 // A window of the frame, the frame's shape, at a random place that keeps the track inside.
 function pickView (r) {
@@ -62,11 +77,11 @@ export function makeSpotGame (root, rounds) {
     <div class="game-stage">
       <div class="game-frames"></div>
       <svg class="game-over" preserveAspectRatio="none" aria-hidden="true">
-        <g class="trace"></g><g class="arrow"><path class="shaft"/><path class="head"/></g><g class="guess"><path/></g>
+        <path class="lane"/><g class="trace"></g><g class="arrow"><path class="shaft"/><path class="head"/></g><g class="guess"><path/></g>
       </svg>
       <span class="game-tag"></span>
       <div class="game-top">
-        <span class="game-levels" role="group" aria-label="Objects"></span>
+        <span class="game-left"><span class="game-levels" role="group" aria-label="Levels"></span><span class="game-mode"></span></span>
         <span class="game-score"></span>
       </div>
       <span class="game-verdict" aria-live="polite"></span>
@@ -74,6 +89,7 @@ export function makeSpotGame (root, rounds) {
       <div class="game-bottom">
         <button type="button" class="game-btn" data-act="replay">↺ Replay</button>
         <span class="game-time"></span>
+        <span class="game-hint" hidden>${TAP}</span>
         <button type="button" class="game-btn primary" data-act="submit" disabled>Submit</button>
         <button type="button" class="game-btn primary" data-act="next">Next ›</button>
       </div>
@@ -83,12 +99,15 @@ export function makeSpotGame (root, rounds) {
   const $ = s => root.querySelector(s)
   const stage = $('.game-stage'), framesEl = $('.game-frames'), over = $('.game-over')
   const tag = $('.game-tag'), levels = $('.game-levels'), scoreEl = $('.game-score'), verdict = $('.game-verdict')
-  const timeEl = $('.game-time'), src = $('.game-src')
+  const timeEl = $('.game-time'), src = $('.game-src'), mode = $('.game-mode'), hint = $('.game-hint'), lane = $('.game-over .lane')
   const btn = act => root.querySelector(`[data-act="${act}"]`)
   // a point in frame pixels → a position on the stage, in percent
   const pct = ([x, y]) => [100 * (x - view[0]) / view[2], 100 * (y - view[1]) / view[3]]
 
-  levels.innerHTML = rounds.map((r, k) => `<button type="button" data-level="${k}" aria-label="Object ${k + 1}">${k + 1}</button>`).join('')
+  // the rounds are levels, and say so: the word on the bar, easy and hard set a little apart
+  // (readers took bare numbers for a count or a page)
+  levels.innerHTML = `<span class="game-levels-k" aria-hidden="true">Level</span>` + rounds.map((r, k) =>
+    `<button type="button" data-level="${k}" class="${k === GUIDED ? 'first-hard' : ''}" aria-label="Level ${k + 1}, ${k < GUIDED ? 'easy' : 'hard'}">${k + 1}</button>`).join('')
 
   function load (k) {
     stop()
@@ -111,6 +130,12 @@ export function makeSpotGame (root, rounds) {
     }).join('')
     over.querySelector('.trace').innerHTML = links +
       pts.map(([x, y], j) => `<circle class="stop${j === pts.length - 1 ? ' end' : ''}" cx="${x}" cy="${y}" r="${R}"/>`).join('')
+    // the easy rounds' lane: two rails either side of the straight line from its first stop to its last,
+    // from a little before the start to well past the end (as far as the picture allows)
+    const guided = i < GUIDED
+    lane.setAttribute('d', guided ? laneOf(pts) : '')
+    mode.textContent = guided ? 'Easy · path shown' : 'Hard · no path shown'
+    mode.dataset.level = guided ? 'easy' : 'hard'
     // the arrow at where it starts, named at its tail (above the tail, or below it when the arrow comes from below)
     const tail = pointAt(pts[0])
     const [tx, ty] = pct(tail)
@@ -133,6 +158,21 @@ export function makeSpotGame (root, rounds) {
       over.querySelectorAll('.trace circle').forEach((c, j) => c.classList.toggle('is-now', j === k))
       pointAt(rounds[i].positions[k], view[2] * (RING + 0.008))
     } else if (lead) pointAt(rounds[i].positions[0])
+  }
+
+  function laneOf (pts) {
+    const [vx, vy, vw, vh] = view
+    const a = pts[0], b = pts[pts.length - 1], len = Math.hypot(b[0] - a[0], b[1] - a[1])
+    const ux = (b[0] - a[0]) / len, uy = (b[1] - a[1]) / len, h = vw * LANE
+    const inside = ([x, y]) => x > vx + vw * 0.03 && x < vx + vw * 0.97 && y > vy + vh * 0.03 && y < vy + vh * 0.97
+    const along = t => [a[0] + ux * len * t, a[1] + uy * len * t]
+    let t1 = 1.45
+    while (t1 > 1.1 && !inside(along(t1))) t1 -= 0.05
+    let t0 = -0.12
+    while (t0 < -0.02 && !inside(along(t0))) t0 += 0.02
+    const [p, q] = [along(t0), along(t1)]
+    const rail = s => `M${(p[0] - uy * h * s).toFixed(1)},${(p[1] + ux * h * s).toFixed(1)} L${(q[0] - uy * h * s).toFixed(1)},${(q[1] + ux * h * s).toFixed(1)}`
+    return rail(1) + rail(-1)
   }
 
   // Play the frames once from the first; `then` runs when the last is up.
@@ -185,6 +225,14 @@ export function makeSpotGame (root, rounds) {
     btn('next').hidden = p !== 'reveal'
     btn('next').textContent = results.every(Boolean) ? 'Play again' : 'Next ›'
     tag.hidden = p !== 'ready'
+    // the picture waits for a click: its edge pulses and the tapping pointer stands in for the time;
+    // with a guess down, Submit pulses
+    const waiting = p === 'guess' && !guess
+    stage.classList.toggle('is-waiting', waiting)
+    hint.hidden = !waiting
+    timeEl.hidden = waiting
+    btn('submit').classList.toggle('is-ready', p === 'guess' && !!guess)
+    lane.style.display = p === 'reveal' ? 'none' : null
     over.querySelector('.trace').style.display = p === 'reveal' ? null : 'none'
     over.querySelector('.arrow').style.display = p === 'ready' || p === 'reveal' ? null : 'none'
     // (show() keeps the arrow and the name up on a play's first frame)

@@ -20,17 +20,14 @@
     <div id="dataHero"></div>
   </header>
 
-  <!-- every observatory on a map; clicking a dot opens its card (charts/scopes.js, observatories.json,
-       public/telescopes/credits.json). The map carries its own key; no caption explains it. -->
+  <!-- every observatory on a map; pointing at a dot opens its card, a click keeps it (charts/scopes.js,
+       observatories.json, public/telescopes/credits.json). The map carries its own key and its own
+       "nearest to you" pin; no caption explains it. -->
   <section class="part wrap flush" id="telescopes">
     <div class="sec-head">
       <h2>Where the observations come from</h2>
     </div>
     <div class="scope-map">
-      <div class="scope-map-bar">
-        <button type="button" class="btn-game primary" id="findMe">Find the telescope nearest you</button>
-        <span class="map-note" id="findNote">Your location stays in your browser.</span>
-      </div>
       <div id="scopeMap"></div>
     </div>
   </section>
@@ -41,7 +38,7 @@
       <h2>From pictures to orbits</h2>
     </div>
     <ol class="definition">
-      <li data-art="find"><div><b>Spot the moving dot</b>Distant stars hold still from night to night. Anything that moves is in our solar system.</div></li>
+      <li data-art="find"><div><b>Spot the moving dot</b>Stars are so far away that they seem to stand still from night to night. A dot that moves is much closer.</div></li>
       <li data-art="follow"><div><b>Follow it</b>Each night it is found again adds a point to its arc.</div></li>
       <li data-art="fit"><div><b>Fit the oval</b>A short arc fits many orbits. Years of points single one out.</div></li>
     </ol>
@@ -88,18 +85,17 @@
   </section>
 
   <!-- how long each was watched, and how well that pins its orbit (charts/arcs.js); the ones seen in one
-       season are grey. The bias argument on the probability page starts here: what makes the cut depends on who kept looking. -->
+       year only are grey, each group named with how long it was watched, and the uncertainty runs dim grey
+       to bright ember as it grows. The page avoids the word "season" (readers did not know it): "seen in
+       more than one year" is the sample rule everywhere. The bias argument on the probability page starts
+       here: what makes the cut depends on who kept looking. -->
   <section class="part wrap" id="arcs">
     <div class="sec-head">
       <h2>What makes an orbit reliable</h2>
-      <p>Like earlier studies<sup class="cite"><a href="/credits.html#cite-brown-batygin-2019">2</a>,<a href="/credits.html#cite-brown-batygin-2021">3</a></sup>, we count only objects seen in more than one season, since each added season makes an orbit less uncertain.</p>
+      <p>Every year an object is seen again, its orbit is known better. Like earlier studies<sup class="cite"><a href="/credits.html#cite-brown-batygin-2019">2</a>,<a href="/credits.html#cite-brown-batygin-2021">3</a></sup>, we count only objects seen in more than one year.</p>
     </div>
-    <!-- the key on one line: a drawn sample row for what a line and a tick are, and no estimate; the two
-         groups are named on the chart in their colours -->
-    <ul class="legend arc-legend">
-      <li class="legend-item"><svg class="arc-sample" viewBox="0 0 64 12" aria-hidden="true"><line x1="1" y1="6" x2="63" y2="6"/><path d="M1,2v8M9,2v8M13,2v8M30,2v8M47,2v8M51,2v8M63,2v8"/></svg>a tick per night it was measured</li>
-      <li class="legend-item"><i class="legend-swatch arc-none"></i>no uncertainty yet</li>
-    </ul>
+    <!-- the chart carries its own key: a sample row over the timeline, the colour bar over the uncertainty,
+         and the objects with no estimate yet marked where they are (charts/arcs.js) -->
     <div id="arcChart"></div>
   </section>
 </main>

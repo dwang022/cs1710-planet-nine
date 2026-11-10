@@ -41,16 +41,9 @@ async function main () {
     all: new Set(obs.observatories.flatMap(r => r.discovered).filter(id => firstSeen.get(id) >= rubin.first_year)).size,
     rubin: rubin.discovered.filter(id => firstSeen.get(id) >= rubin.first_year).length,
   }
-  const map = makeScopeMap($('#scopeMap'), obs, photos?.photos || [], { recent })
-  $('#findMe').addEventListener('click', () => {
-    const note = $('#findNote')
-    if (!navigator.geolocation) { note.textContent = 'This browser cannot share a location.'; return }
-    note.textContent = 'Asking your browser where you are…'
-    navigator.geolocation.getCurrentPosition(p => {
-      map.locate(p.coords.latitude, p.coords.longitude)
-      note.textContent = 'Your location stays in your browser.'
-    }, () => { note.textContent = 'No location shared.' }, { timeout: 15000, maximumAge: 600000 })
-  })
+  // the cards name the objects discovered at each site; the "nearest to you" pin is on the map itself
+  const names = new Map(etnos.map(o => [o.id, o.name || o.provisional_desig || o.id]))
+  makeScopeMap($('#scopeMap'), obs, photos?.photos || [], { recent, names })
 
   // --- from pictures to orbits ---------------------------------------------------------
   document.querySelectorAll('#orbit .definition li[data-art]').forEach(li => {
@@ -84,7 +77,7 @@ async function main () {
   const QUERY = [
     { id: 'all', cond: 'beyond Neptune', n: positions.tnos.n, def: '' },
     { id: 'extreme', cond: 'with extreme orbits', n: count('extreme'), def: `Averaging past ${au(STRICT.aMin)}, never within ${au(STRICT.qMin)}.` },
-    { id: 'measured', cond: 'and reliable orbits', n: count('measured'), def: 'Seen in more than one season.' },
+    { id: 'measured', cond: 'and reliable orbits', n: count('measured'), def: 'Seen in more than one year.' },
     { id: 'six', cond: 'that first pointed to Planet Nine', n: count('six'), def: `The six of the original paper<sup class="cite"><a href="${url('credits.html')}#cite-batygin-brown-2016">1</a></sup>.` },
   ]
   const asOf = new Date(positions.epoch_cal + 'T00:00:00Z').toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' })
@@ -111,6 +104,14 @@ async function main () {
 
   // --- watched longer, known better ---------------------------------------------------
   drawArcs($('#arcChart'), etnos.map(o => ({ ...o, rec: obs.objects[o.id] })).filter(o => o.rec?.nights.length))
+  // the chart, with the section's title and line over it, fits one screen: its cap leaves room for the head
+  const fitArcs = () => {
+    const sec = $('#arcs'), head = sec.querySelector('.sec-head')
+    const room = parseFloat(getComputedStyle(sec).paddingTop) + head.offsetHeight + parseFloat(getComputedStyle(head).marginBottom || 0) + 12
+    $('#arcChart').style.setProperty('--arc-head', `${Math.round(room)}px`)
+  }
+  fitArcs()
+  addEventListener('resize', fitArcs)
 }
 
 main().catch(showLoadError)

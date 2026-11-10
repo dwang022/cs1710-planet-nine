@@ -56,9 +56,12 @@ export function makeLean (root) {
   svg.append('use').attr('href', '#art-sun').style('pointer-events', 'none')
     .attr('x', cx - 13).attr('y', cy - 13).attr('width', 26).attr('height', 26)
 
-  // the card an object opens on click, until its close button or Escape
+  // the card an object opens on pointing (as the data page's map cards: readers did not click); it stays while the
+  // pointer is on the object or the card, and a click keeps it until its close button or Escape
   const card = d3.select(root).append('div').attr('class', 'pick-card').attr('hidden', true).attr('role', 'dialog')
-  let picked = null
+  let picked = null, pinned = false, closing = null
+  card.on('mouseenter', () => clearTimeout(closing))
+    .on('mouseleave', () => { if (!pinned) { clearTimeout(closing); closing = setTimeout(close, 260) } })
 
   let scene = {}
 
@@ -318,14 +321,21 @@ export function makeLean (root) {
       .attr('x', d => d.x).attr('y', d => d.y).attr('opacity', 1)
   }
 
-  // pointing at an object lights up its orbit; clicking opens its card
+  // pointing at an object lights up its orbit and opens its card; clicking keeps the card
   function hover (d) {
     if (scene.only && !scene.only.has(d.id)) return
-    setHover(d.id)
+    clearTimeout(closing)
+    if (picked?.id !== d.id) { pinned = false; show(d) }
   }
-  function unhover () { setHover(picked ? picked.id : null) }
+  function unhover () { if (!pinned) { clearTimeout(closing); closing = setTimeout(close, 260) } }
   function pick (d) {
     if (scene.only && !scene.only.has(d.id)) return
+    clearTimeout(closing)
+    if (picked?.id !== d.id) show(d)
+    pinned = true
+    card.select('.pick-close').node().focus({ preventScroll: true })
+  }
+  function show (d) {
     picked = d
     setHover(d.id)
     card.attr('hidden', null).html(`
@@ -337,9 +347,9 @@ export function makeLean (root) {
         <dt>average distance</dt><dd class="au">${d3.format(',.0f')(d.a_au)} AU</dd>
         <dt>years seen</dt><dd>${d.well_determined ? 'more than one' : 'one, so uncertain'}</dd>
       </dl>`)
-    card.select('.pick-close').on('click', close).node().focus({ preventScroll: true })
+    card.select('.pick-close').on('click', close)
   }
-  function close () { picked = null; card.attr('hidden', true); setHover(null) }
+  function close () { clearTimeout(closing); picked = null; pinned = false; card.attr('hidden', true); setHover(null) }
   document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && picked) close() })
 
   return { update, close }

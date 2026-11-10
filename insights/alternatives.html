@@ -7,7 +7,7 @@
 <!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
 <style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>What else could explain it · The search for Planet Nine</title>
-<meta name="description" content="A planet is not the only explanation for the aligned orbits. Eight competing ideas scored against the four things any of them must account for, and the papers that put the case against a planet." />
+<meta name="description" content="A planet is not the only explanation for the aligned orbits. The competing ideas, each weighed against what any explanation has to fit." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="alternatives">
@@ -17,23 +17,34 @@
     <div>
       <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
       <h1>A planet is <em>not the only explanation</em></h1>
-      <p class="lede">The pattern needs explaining whether or not Planet Nine exists. Astronomers have proposed several
-      causes, and each has to account for the same four clues.</p>
+      <p class="lede">A planet is one way to explain the lean. Astronomers have suggested others, and each has to fit
+      more than the lean alone.</p>
     </div>
     <figure class="head-fig" id="altHead"></figure>
   </header>
 
+  <!-- the clues, before the comparison: a drawing and a line each (charts/clueart.js), from the phenomena in
+       alternatives.json. Two of them (the tilted orbits, the empty searches) appear nowhere earlier on the site. -->
+  <section class="part wrap" id="clues">
+    <div class="sec-head">
+      <h2>What any explanation must fit</h2>
+      <p>A good explanation has to account for each of these, not just the lean.</p>
+    </div>
+    <ol class="definition four" id="clueCards"></ol>
+  </section>
+
   <section class="part wrap" id="scorecard">
     <div class="sec-head">
-      <!-- pages/alternatives.js fills the two counts from alternatives.json -->
-      <h2 id="altTitle">Eight explanations, four clues</h2>
-      <p>Each mark says whether an idea explains that clue. Open a row to see how the idea works and where it falls short.</p>
+      <!-- no counts in the title: the number of ideas and clues is our choice, not a fact about the problem -->
+      <h2>Each idea against the clues</h2>
+      <p>Keep only the ideas that explain a clue, or open one to see how it works.</p>
     </div>
-    <!-- charts/matrix.js draws the key and the table; each row opens a panel under itself (charts/altart.js drawings).
+    <!-- charts/matrix.js draws the table, its clue heads the filter, and the key under it; each row opens a panel under
+         itself (charts/altart.js drawings).
          The compact ledger of papers against a planet that used to follow was cut: each open row already says where
          its idea stands, and the timeline holds every paper. -->
-    <div class="legend alt-key" id="altKey"></div>
     <div class="alt-wrap"><table class="alt-table" id="altTable"></table></div>
+    <div class="legend alt-key" id="altKey"></div>
     <p class="caption">Our reading of the published arguments. Every paper is on the <a href="/search/timeline.html">timeline</a>.</p>
   </section>
   <!-- no "So far" box (cut from every page on 2026-11-07, at the user's request): the Continue button leads on to the search -->

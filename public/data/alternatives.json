@@ -476,19 +476,19 @@
    "id": "clustering",
    "label": "Orbits pointing one way",
    "short": "One way",
-   "plain": "Most distant orbits point the same way, as on the clustering page."
+   "plain": "Most distant orbits point the same way, the lean tested so far."
   },
   {
    "id": "detached",
    "label": "Orbits beyond Neptune’s reach",
    "short": "Beyond Neptune",
-   "plain": "Some orbits, like Sedna’s, never come near enough for Neptune to have moved them."
+   "plain": "Some, like Sedna, never come close enough for Neptune to have pulled them out there."
   },
   {
    "id": "inclined",
    "label": "Steeply tilted orbits",
    "short": "Tilted",
-   "plain": "Some distant orbits are tipped far out of the plane of the planets."
+   "plain": "Some are tipped far out of the flat plane the planets share."
   },
   {
    "id": "nondetection",

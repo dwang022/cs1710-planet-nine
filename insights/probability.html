@@ -7,7 +7,7 @@
 <!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
 <style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>Could it just be luck? · The search for Planet Nine</title>
-<meta name="description" content="How likely is it that the distant orbits line up by chance? Build the test from scratch, see how the answer depends on which objects you trust, then see how where telescopes looked can fake the pattern, and what the papers conclude." />
+<meta name="description" content="How likely is it that the distant orbits line up by chance? Build the test from scratch, see how the answer depends on which objects count and where telescopes looked, and what the studies conclude." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="probability">
@@ -33,23 +33,23 @@
       </div>
       <div class="scrolly-steps">
         <div class="step" data-step="one"><div class="step-card">
-          <div class="step-n">1 / 6</div>
-          <h3>What would luck look like?</h3>
+          <div class="step-n">1 / 5</div>
+          <h3>What randomness looks like</h3>
           <ul>
-            <li>Point <span data-n="strictN">—</span> objects, as many as the real ones, in random directions: a fake solar system.</li>
-            <li>Random directions mostly cancel, so their alignment is low and their arrow short.</li>
+            <li>Take <span data-n="strictN">—</span> objects, the same number as the real ones, and point each in a random direction.</li>
+            <li>Random directions mostly cancel out, so the arrow stays short and the alignment low.</li>
           </ul>
         </div></div>
         <div class="step" data-step="many"><div class="step-card">
-          <div class="step-n">2 / 6</div>
+          <div class="step-n">2 / 5</div>
           <h3>Again and again</h3>
           <ul>
-            <li>Every fake solar system has a different alignment, and each one drops onto the pile below at its own.</li>
+            <li>Each simulated solar system has its own alignment and drops onto the pile below at that value.</li>
           </ul>
           <p class="step-key">Luck nearly always gives a low alignment.</p>
         </div></div>
         <div class="step" data-step="all"><div class="step-card">
-          <div class="step-n">3 / 6</div>
+          <div class="step-n">3 / 5</div>
           <h3>Do it <span data-n="trials">—</span> times</h3>
           <ul>
             <li>This pile is <strong>what luck produces</strong> for <span data-n="strictN">—</span> objects.</li>
@@ -57,16 +57,15 @@
           </ul>
         </div></div>
         <div class="step" data-step="real"><div class="step-card">
-          <div class="step-n">4 / 6</div>
+          <div class="step-n">4 / 5</div>
           <h3>The real objects</h3>
           <ul>
             <li>Their alignment lands in the thin tail.</li>
-            <li>Luck does this about 1 in <span data-n="strictOdds">—</span> times.</li>
           </ul>
-          <p class="step-key">Rare enough to take seriously, not rare enough to settle it.</p>
+          <p class="step-key">Luck does this about 1 in <span data-n="strictOdds">—</span> times.</p>
         </div></div>
         <div class="step" data-step="catch"><div class="step-card warn">
-          <div class="step-n">5 / 6</div>
+          <div class="step-n">5 / 5</div>
           <h3>Add the objects seen once</h3>
           <ul>
             <li><span data-n="extraN">—</span> more objects were <a href="/setting/data.html#arcs">seen in one year only</a>, too briefly to pin down.</li>
@@ -74,27 +73,32 @@
           </ul>
           <p class="step-key">Luck does that about 1 in <span data-n="looseOdds">—</span> times.</p>
         </div></div>
-        <div class="step" data-step="cuts"><div class="step-card">
-          <div class="step-n">6 / 6</div>
-          <h3>Other ways to choose</h3>
-          <ul>
-            <li>Studies choose different cut-offs for which objects count (1 AU is the Earth–Sun distance; <span class="pl-name" data-planet="Neptune">Neptune</span> is 30 AU out).</li>
-            <li>Raising the cut-off keeps only the farthest objects, so fewer are left: <span data-n="cutNs">—</span>.</li>
-            <li>Only the broadest cut, everything past <span class="k-au">150 AU</span>, clears the usual bar of 1 in 20, and only when counting objects seen in more than one year.</li>
-          </ul>
-          <p class="step-key">The verdict depends on where you draw the line.</p>
-        </div></div>
       </div>
     </div>
   </section>
 
-  <!-- how the answer moves with which objects count, beside what the published studies found, on one axis.
-       The streetlight exhibit that used to sit between them was cut: where telescopes looked is an explanation on the
-       next page. -->
+  <!-- how the odds move with the distance cut-off (charts/cuts.js), drawn like the odds chart below. It was the
+       scrolly's last step until 2026-11-07; as a chart of its own it reads like the studies' chart. -->
+  <section class="part wrap" id="cuts">
+    <div class="sec-head">
+      <h2>Where you draw the line</h2>
+      <p>Studies count objects past different distances from the Sun (1 AU is the Earth–Sun distance), and the odds change with the cut-off.</p>
+    </div>
+    <ul class="legend odds-key" aria-label="Key">
+      <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="var(--series-1)"/></svg><span>seen in more than one year</span></li>
+      <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="none" stroke="var(--text-secondary)" stroke-width="2"/></svg><span>every object</span></li>
+    </ul>
+    <div class="card"><div id="chartCuts"></div></div>
+  </section>
+
+  <!-- what the published studies found, beside our own test, on one axis, grouped by whether each allows for where
+       telescopes looked. The intro names that bias in one sentence; it is explained in full on the Alternatives page
+       (alternatives.json, observational_bias) and the search page's sky map, so a section of it here (tried on
+       2026-11-07) was cut as a repeat. The streetlight exhibit that used to sit here was cut too. -->
   <section class="part wrap" id="odds">
     <div class="sec-head">
       <h2>What the studies conclude</h2>
-      <p>The answer depends on which objects are counted, and on how a study allows for where telescopes happened to look.</p>
+      <p>Telescopes find distant objects only where and when they look, which can make orbits seem to lean. The studies split over how to allow for that.</p>
     </div>
     <!-- the key: what each colour and shape on the chart means -->
     <ul class="legend odds-key" aria-label="Key">
@@ -105,7 +109,6 @@
     <div class="card"><div id="chartOdds"></div></div>
     <!-- Published odds are read from each paper's abstract (published_odds.json); our rows are the stored
          200,000-trial results in clustering_null.json, with no allowance for where telescopes looked. -->
-    <p class="caption">Odds as each study's abstract gives them · <a href="/credits.html#papers">sources</a></p>
     <!-- no "So far" box (cut from every page on 2026-11-07, at the user's request) -->
   </section>
 </main>

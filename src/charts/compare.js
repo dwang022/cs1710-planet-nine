@@ -9,14 +9,14 @@
 //                  passes it: a flash where they meet, then the object shoots
 //                  off past the edge along a dotted trail (flung out of the
 //                  solar system) and its orbit fades; a count on the bar. The
-//                  ones pointing away are never met up close; they stay, and
+//                  ones pointing the opposite way are never met up close; they stay, and
 //                  settle on the far side.
 //
 // The explanation is not a paragraph under the pictures: short pop-ups appear on
 // them at the moments that matter, and the run pauses on each until Continue.
 //   start   what the lines are; Start
 //   flung   at the first object flung away, once it has gone
-//   stay    halfway, on one orbit that points away yet crosses the planet's
+//   stay    halfway, on one orbit that points the opposite way yet crosses the planet's
 //           path on the picture, drawn bolder in violet: the crossings are ringed and its object is
 //           shown going round in step with the planet (a whole-number rhythm,
 //           as a resonance keeps it), so it is always elsewhere when the planet
@@ -65,10 +65,10 @@ const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1])
 const exitFrom = ([x, y]) => { const r = Math.hypot(x - c, y - c) || 1; const f = (c * 1.45) / r; return [c + (x - c) * f, c + (y - c) * f] }
 
 const POPS = {
-  start: { text: 'Each line is the orbit of a distant object, like Sedna. Watch what the planet does.', btn: '▶ Start' },
-  flung: { text: 'Too close! The planet flings this one out of the solar system.', btn: 'Continue' },
-  stay: { text: 'The highlighted orbit crosses the planet’s path (circled), but the two go round in step, so the object (dot) is never there when the planet is.', btn: 'Continue', side: true },
-  end: { text: 'What’s left all points away from the planet.' },
+  start: { text: 'Each line is the orbit of a distant object, like Sedna, pointing every which way. Watch what the planet does.', btn: '▶ Start' },
+  flung: { text: 'This orbit points the same way as the planet’s, so it runs alongside the planet’s path until a close pass flings it out.', btn: 'Continue' },
+  stay: { text: 'This orbit points the opposite way. It crosses the planet’s path only where circled, and its object (dot) keeps in step, never there when the planet is.', btn: 'Continue', side: true },
+  end: { text: 'The orbits left point opposite to the planet’s. Crossing its path is fine; meeting the planet is not.' },
   none: { text: 'No planet: still every which way.' },
 }
 
@@ -151,7 +151,7 @@ export function makeCompare ({ root, bar, stage, planets, jd }) {
     <figure class="cmp-panel" data-p="none"><figcaption>No planet</figcaption>${frame(made, false)}</figure>
     <figure class="cmp-panel" data-p="p9"><figcaption>With a planet</figcaption>${frame(made, true)}</figure>`
   root.setAttribute('role', 'img')
-  root.setAttribute('aria-label', 'Two pictures. With no planet, the orbits stay pointing every which way. With a planet going round its orbit, each orbit lined up with it is caught when the planet passes it, and the object is flung out of the solar system; the ones pointing away stay, so the survivors all stretch the opposite way from it.')
+  root.setAttribute('aria-label', 'Two pictures. With no planet, the orbits stay pointing every which way. With a planet going round its orbit, each orbit lined up with it is caught when the planet passes it, and the object is flung out of the solar system; the ones pointing the opposite way cross its path without meeting it and stay.')
 
   const svgOf = p => root.querySelector(`.cmp-panel[data-p="${p}"] svg`)
   const sel = p => d3.select(root).selectAll(`.cmp-panel[data-p="${p}"] .cmp-orbit`).data(orbits)

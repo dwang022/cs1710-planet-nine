@@ -6,7 +6,7 @@
 // drawing's units follow the panel's shape, so it fills the panel and its text
 // stays readable instead of being letterboxed and shrunk.
 //
-// The story starts with a single fake solar system, drops fake ones into the
+// The story starts with a single simulated solar system, drops more into the
 // pile one block at a time, then fills in the whole pile at once, and only then
 // brings in the real objects. The reader sees the null distribution being made
 // before being asked to compare anything against it.
@@ -17,6 +17,8 @@ import { resultant } from '../stats.js'
 const RAD = Math.PI / 180
 const T = 650
 const BIN = 0.025
+const FAST = 150    // ms: a simulated solar system redrawn while the pile fills
+const EVERY = 200   // ms between simulated solar systems dropping onto the pile
 
 /** Where everything sits in a panel w × h pixels wide. */
 function layoutFor (w, h) {
@@ -91,9 +93,6 @@ export function makeLuck (root) {
     .attr('font-weight', 600).attr('fill', 'var(--text-secondary)').attr('text-anchor', 'middle')
     .attr('opacity', 0)
 
-  // --- the published ways of choosing the objects ---------------------------
-  const gCuts = svg.append('g').attr('opacity', 0).style('pointer-events', 'none')
-
   let blocks = []
   let blockId = 0
   let timer = null
@@ -136,13 +135,13 @@ export function makeLuck (root) {
       .attr('r', L.dotR)
       .attr('fill', real ? 'var(--series-1)' : 'var(--text-secondary)')
       .attr('opacity', d => d.faint ? 0.4 : 1)
-      .transition().duration(real ? T : 300)
+      .transition().duration(real ? T : FAST)
       .attr('cx', d => R.cx + d.rr * Math.cos(d.deg * RAD))
       .attr('cy', d => R.cy - d.rr * Math.sin(d.deg * RAD))
-    ringArrow.transition().duration(real ? T : 300)
+    ringArrow.transition().duration(real ? T : FAST)
       .attr('x2', R.cx + R.r * st.R * Math.cos(st.meanDeg * RAD))
       .attr('y2', R.cy - R.r * st.R * Math.sin(st.meanDeg * RAD))
-    ringTitle.text(real ? 'The real objects' : 'A fake solar system')
+    ringTitle.text(real ? 'The real objects' : 'A simulated solar system')
       .attr('fill', real ? 'var(--series-1-ink)' : 'var(--text-primary)')
     ringKey.transition().duration(T).attr('opacity', real && !quality ? 1 : 0)
     ringFoot.text(`${Math.round(st.R * 100)}% aligned`)
@@ -173,7 +172,7 @@ export function makeLuck (root) {
       .attr('width', Math.max(2, bw - 2)).attr('height', 9)
       .attr('opacity', 0)
       .merge(sel)
-      .transition().duration(animateLast ? 450 : T).ease(d3.easeCubicOut)
+      .transition().duration(animateLast ? 280 : T).ease(d3.easeCubicOut)
       .attr('x', d => d.bx).attr('y', d => d.by)
       .attr('width', Math.max(2, bw - 2))
       .attr('opacity', 1)
@@ -185,7 +184,7 @@ export function makeLuck (root) {
     arrange()
     const { ring: R, hist: Hs } = L
     const nd = s.nullDist
-    // The axis reaches the last fake solar system with any count: a small
+    // The axis reaches the last simulated solar system with any count: a small
     // sample spreads them far past 0.5, and a bar beyond the axis would be
     // drawn outside the chart. Bins are BIN wide, so this stays on a bin edge.
     const reach = nd ? d3.max(nd.counts, (c, i) => c ? (i + 1) * BIN : 0) : 0
@@ -200,7 +199,6 @@ export function makeLuck (root) {
     histSub.text(s.histSub || '')
 
     // --- the compass --------------------------------------------------------
-    gRing.transition().duration(T).attr('opacity', s.cuts ? 0 : 1)
     if (s.ring === 'real') {
       drawRing(s.real.map(o => ({ key: o.id, deg: o.varpi_deg, faint: !o.well_determined })), { real: true, quality: s.quality })
     } else if (s.ring === 'random' && !s.animate) {
@@ -265,10 +263,7 @@ export function makeLuck (root) {
     }
     gObs.transition().duration(T).attr('opacity', s.observed != null ? 1 : 0)
 
-    gHist.transition().duration(T).attr('opacity', s.cuts ? 0 : 1)
-    drawCuts(s.cuts)
-
-    // --- many fake solar systems, one at a time --------------------------
+    // --- many simulated solar systems, one at a time ----------------------
     if (s.blocks === 'animate') {
       if (!blocks.length || blocks.length >= 60) blocks = blocks.slice(0, 1)
       timer = d3.interval(() => {
@@ -276,68 +271,8 @@ export function makeLuck (root) {
         const st = drawRing(randomAngles(s.n), { real: false })
         blocks.push({ id: 'b' + (++blockId), R: st.R })
         drawBlocks(true)
-      }, 420)
+      }, EVERY)
     }
-  }
-
-  /**
-   * One row per distance cut, each with two marks on one odds axis: the
-   * objects seen in more than one year (a violet dot) and every object (a
-   * grey ring). Their odds sit above and below the line so they never collide.
-   * rows: [{ title, good: { oneIn }, all: { oneIn } }]
-   */
-  function drawCuts (rows) {
-    gCuts.transition().duration(T).attr('opacity', rows ? 1 : 0)
-    if (!rows) return
-    gCuts.selectAll('*').remove()
-    const tall = L.tall
-    const left = tall ? 34 : 40
-    const x0 = tall ? 40 : 440, x1 = tall ? L.W - 52 : 930
-    const top = tall ? 128 : 150, rowH = tall ? Math.min(190, (L.H - top - 110) / rows.length) : 92
-    const trackDy = tall ? 52 : 0
-    const xl = d3.scaleLog().domain([1, 1000]).range([x0, x1]).clamp(true)
-    const bottom = top + (rows.length - 1) * rowH + trackDy + 58
-
-    // the key: the two marks
-    const key = gCuts.append('g').attr('class', 'luck-key').attr('transform', `translate(${left},${tall ? 40 : 70})`)
-    key.append('circle').attr('cx', 6).attr('r', 6).attr('fill', 'var(--series-1)')
-    key.append('text').attr('x', 18).attr('y', 4).text('seen in more than one year')
-    key.append('circle').attr('cx', 236).attr('r', 5.5).attr('fill', 'none').attr('stroke', 'var(--text-secondary)').attr('stroke-width', 2)
-    key.append('text').attr('x', 248).attr('y', 4).text('every object')
-
-    // the usual bar: 1 in 20
-    const bandTop = top + trackDy - 34
-    gCuts.append('rect').attr('x', xl(20)).attr('y', bandTop).attr('width', xl(1000) - xl(20))
-      .attr('height', bottom - bandTop - 18).attr('fill', 'var(--for)').attr('opacity', 0.08)
-    gCuts.append('line').attr('x1', xl(20)).attr('x2', xl(20)).attr('y1', bandTop).attr('y2', bottom - 18)
-      .attr('stroke', 'var(--for)').attr('stroke-width', 1.5)
-    gCuts.append('text').attr('x', xl(20) + 8).attr('y', bandTop - 8).attr('font-size', 13)
-      .attr('fill', 'var(--for-ink)').attr('font-weight', 600).text('past the usual bar, 1 in 20')
-    const axis = gCuts.append('g').attr('transform', `translate(0,${bottom - 14})`)
-      .call(d3.axisBottom(xl).tickValues([1, 2, 5, 20, 100, 1000]).tickFormat(d => `1 in ${d3.format(',')(d)}`))
-    axis.selectAll('text').attr('class', 'axis-label').attr('font-size', 12)
-    axis.selectAll('line, path').attr('stroke', 'var(--rule)')
-
-    rows.forEach((c, i) => {
-      const yy = top + i * rowH, ty = yy + trackDy
-      gCuts.append('text').attr('x', left).attr('y', yy + (tall ? 0 : 5)).attr('font-size', 14.5).attr('font-weight', 600)
-        .attr('fill', 'var(--text-primary)')
-        // distances in AU in their lime
-        .selectAll('tspan').data(c.title.split(/(\d[\d,]* AU)/).filter(Boolean)).join('tspan')
-        .attr('class', d => (/ AU$/.test(d) ? 'au' : null)).text(d => d)
-      gCuts.append('line').attr('x1', xl(1)).attr('x2', xl(1000)).attr('y1', ty).attr('y2', ty)
-        .attr('stroke', 'var(--rule)').attr('stroke-width', 1)
-      const g = xl(Math.max(1, c.good.oneIn)), a = xl(Math.max(1, c.all.oneIn))
-      gCuts.append('line').attr('x1', Math.min(g, a)).attr('x2', Math.max(g, a)).attr('y1', ty).attr('y2', ty)
-        .attr('stroke', 'var(--text-muted)').attr('stroke-width', 2)
-      gCuts.append('circle').attr('cx', a).attr('cy', ty).attr('r', 9).attr('fill', 'var(--surface-1)')
-        .attr('stroke', 'var(--text-secondary)').attr('stroke-width', 2.2)
-      gCuts.append('circle').attr('cx', g).attr('cy', ty).attr('r', 6.5).attr('fill', 'var(--series-1)')
-      gCuts.append('text').attr('x', g).attr('y', ty - 15).attr('text-anchor', 'middle').attr('font-size', 13.5)
-        .attr('font-weight', 600).attr('fill', 'var(--series-1-ink)').text(`1 in ${c.good.oneIn.toLocaleString()}`)
-      gCuts.append('text').attr('x', a).attr('y', ty + 26).attr('text-anchor', 'middle').attr('font-size', 13)
-        .attr('fill', 'var(--text-secondary)').text(`1 in ${c.all.oneIn.toLocaleString()}`)
-    })
   }
 
   // redraw when the panel changes shape (a phone turning, a window resized)

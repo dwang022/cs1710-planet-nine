@@ -1,7 +1,9 @@
 // Part 2, page 2: could the lean be luck? A walkthrough (charts/luck.js) that
-// builds the luck test in front of the reader, fake solar systems flying onto
-// the pile, then one chart of what the published studies conclude beside our
-// own counts (charts/odds.js).
+// builds the luck test in front of the reader, simulated solar systems flying
+// onto the pile; how the odds move with the distance cut-off (charts/cuts.js);
+// then one chart of what the
+// published studies conclude beside our own counts (charts/odds.js), grouped by
+// whether each allows for where telescopes looked.
 //
 // One number per claim: the steps quote the 200,000-trial simulations in
 // clustering_null.json and draw their piles from the same file, so the pile,
@@ -13,6 +15,7 @@ import { loadData, showLoadError } from '../data.js'
 import { makeLuck } from '../charts/luck.js'
 import { luckHead } from '../charts/luckhead.js'
 import { drawOdds } from '../charts/odds.js'
+import { drawCuts } from '../charts/cuts.js'
 import { scrolly } from '../scrolly.js'
 import { resultant, oneIn } from '../stats.js'
 import { selected, withAlignment, STRICT, LOOSE } from '../sample.js'
@@ -35,21 +38,21 @@ async function main () {
   const sampleFor = step => step === 'catch' ? LOOSE : STRICT
   const readout = (s, n) => `<b>${n}</b> objects · ${s.quality ? 'seen in more than one year' : 'including those seen once'}`
 
-  // step 6: one row per distance cut, the objects seen in more than one year against every object
+  // the cut-off chart: one row per distance cut, the objects seen in more than one year against every object
   const cutRows = [...new Set(nulls.cuts.map(c => `${c.a_min_au}/${c.q_min_au}`))].map(k => {
     const [a, q] = k.split('/').map(Number)
     const good = cutFor(a, q, true), all = cutFor(a, q, false)
-    return good && all && { a, title: `Out past ${a} AU, never closer than ${q} AU`, good: { oneIn: oneIn(good.p_value) }, all: { oneIn: oneIn(all.p_value) } }
+    return good && all && { a, q, good: { n: good.n_objects, oneIn: oneIn(good.p_value) }, all: { n: all.n_objects, oneIn: oneIn(all.p_value) } }
   }).filter(Boolean).sort((x, y) => x.a - y.a)
 
   const luck = makeLuck($('#chartLuck'))
   function renderLuck () {
     const sample = sampleFor(story)
     const { objs, stats } = current(sample)
-    $('#luckReadout').innerHTML = story === 'cuts' ? '' : readout(sample, stats.n)
+    $('#luckReadout').innerHTML = readout(sample, stats.n)
     const pile = pileFor(sample)
-    const got = `${pile.beat.toLocaleString()} of ${pile.trials.toLocaleString()} fakes were as aligned`
-    const blocksText = { histTitle: 'Where each fake solar system lands', histSub: '' }
+    const got = `${pile.beat.toLocaleString()} of ${pile.trials.toLocaleString()} simulations were as aligned`
+    const blocksText = { histTitle: 'Where each simulated solar system lands', histSub: '' }
     const real = {
       ring: 'real', blocks: 'none', bars: true, observed: stats.R, obsText: got,
       histTitle: 'The real objects, against luck', histSub: 'violet: as lined up as the real ones',
@@ -58,10 +61,9 @@ async function main () {
     const scenes = {
       one: { ring: 'random', blocks: 'one', ...blocksText },
       many: { ring: 'random', blocks: 'animate', animate: true, ...blocksText },
-      all: { ring: 'random', blocks: 'none', bars: true, pileText: 'what luck produces', histTitle: `${pile.trials.toLocaleString()} fake solar systems`, histSub: '' },
+      all: { ring: 'random', blocks: 'none', bars: true, pileText: 'what luck produces', histTitle: `${pile.trials.toLocaleString()} simulated solar systems`, histSub: '' },
       real,
       catch: { ...real, pileText: null },
-      cuts: { ...real, cuts: cutRows },
     }
     luck.update({ n: stats.n, real: objs, quality: sample.quality, nullDist: pile, ...scenes[story] })
   }
@@ -73,9 +75,6 @@ async function main () {
     strictN: s.stats.n, strictOdds: oneIn(sp.p).toLocaleString(), trials: TRIALS.toLocaleString(),
     looseN: l.stats.n, looseOdds: oneIn(lp.p).toLocaleString(), extraN: l.stats.n - s.stats.n,
     realPct: `${Math.round(s.stats.R * 100)}%`,
-    // how many trusted objects each cut keeps, nearest first
-    cutNs: nulls.cuts.filter(c => c.well_determined_only).sort((a, b) => a.a_min_au - b.a_min_au)
-      .map(c => `${c.n_objects} past <span class="k-au">${c.a_min_au} AU</span>`).join(', '),
   }
   document.querySelectorAll('[data-n]').forEach(el => { el.innerHTML = nums[el.dataset.n] ?? '—' })
 
@@ -85,17 +84,23 @@ async function main () {
   renderLuck()
   scrolly($('#luckStory'), { onStep: (i, step) => { story = step; renderLuck() } })
 
-  // --- what the studies conclude, by author, and our own test, on one axis ------------------
+  // --- how the odds move with the distance cut-off -------------------------------------
+  drawCuts($('#chartCuts'), cutRows)
+
+  // --- what the studies conclude, by author, and our own test, on one axis, grouped by ------
+  // --- whether each allows for where telescopes looked ---------------------------------------
+  const study = d => ({
+    label: d.label, detail: d.count, side: d.side,
+    // a study that finds chance is shown as that, in words, whether its abstract gives a range or no number
+    ...(d.p ? { oneIn: oneIn(d.p) } : {}),
+  })
   drawOdds($('#chartOdds'), [
-    { heading: 'Published studies' },
-    ...published.studies.map(d => ({
-      label: d.label, detail: d.plain_detail, side: d.side,
-      // a study that finds chance is shown as that, in words, whether its abstract gives a range or no number
-      ...(d.p ? { oneIn: oneIn(d.p) } : {}),
-    })),
-    { heading: 'Our test, above' },
-    { label: `${sp.n} objects seen in more than one year`, detail: 'no allowance for where telescopes looked', oneIn: oneIn(sp.p), side: 'ours' },
-    { label: `All ${lp.n}, adding those seen once`, detail: 'no allowance for where telescopes looked', oneIn: oneIn(lp.p), side: 'ours' },
+    { heading: 'Not allowing for where telescopes looked' },
+    ...published.studies.filter(d => !d.allows_for_looking).map(study),
+    { label: `Our test`, detail: `${sp.n} seen in more than one year`, oneIn: oneIn(sp.p), side: 'ours' },
+    { label: `Our test`, detail: `all ${lp.n}, with those seen once`, oneIn: oneIn(lp.p), side: 'ours' },
+    { heading: 'Allowing for where telescopes looked' },
+    ...published.studies.filter(d => d.allows_for_looking).map(study),
   ])
 }
 

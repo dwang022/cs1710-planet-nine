@@ -29,16 +29,16 @@
     </figure>
   </header>
 
-  <!-- before the pattern, what an orbit is: three drawings of Sedna's real orbit (charts/orbitintro.js),
+  <!-- before the pattern, what an orbit is: a planet's near-circle, then Sedna's real orbit (charts/orbitintro.js),
        laid out like the planet definition and the data page's "from pictures to orbits" -->
   <section class="part wrap" id="orbits">
     <div class="sec-head">
       <h2>An orbit points somewhere</h2>
     </div>
     <ol class="definition">
-      <li data-art="oval"><div><b>An oval</b>The Sun sits off-centre, so every orbit has a near end and a far end.</div></li>
-      <li data-art="time"><div><b>Slow at the far end</b>Each dot is the same stretch of time. Most of an orbit is spent far out, too faint to see.</div></li>
-      <li data-art="point"><div><b>A direction</b>A line from the Sun through the near end says which way the orbit points.</div></li>
+      <li data-art="circle"><div><b>A circle</b>The planets' orbits are nearly circles, with the Sun in the middle.</div></li>
+      <li data-art="oval"><div><b>Pulled long</b>A push (arrow) sends an object swinging far out on the other side, stretching its circle into an oval.</div></li>
+      <li data-art="point"><div><b>A direction</b>An oval has a near end; a circle doesn't. The line from the Sun to the near end is the way the orbit points.</div></li>
     </ol>
   </section>
 
@@ -55,7 +55,7 @@
           <div class="step-n">1 / 7</div>
           <h3>Start with Sedna</h3>
           <ul>
-            <li>Found in 2003, it never comes closer to the Sun than <span class="k-au" data-n="sednaQ">—</span>,
+            <li>A likely dwarf planet found in 2003, it never comes closer to the Sun than <span class="k-au" data-n="sednaQ">—</span>,
             <span data-n="sednaX">—</span> times as far out as Neptune.</li>
             <li>Neptune's pull is too weak out there to have put it on that orbit, so something else did<sup class="cite"><a href="/credits.html#cite-morbidelli-levison-2004">1</a></sup>.</li>
           </ul>
@@ -99,13 +99,12 @@
           <div class="step-n">6 / 7</div>
           <h3>Boil it down to one arrow</h3>
           <ul>
-            <li>Let every dot pull the arrow toward itself, all equally hard.</li>
-            <li>Pulls from all round cancel and the arrow stays short. If every dot sat on one side, it would reach the circle.</li>
-            <li>How far it reaches is the <b>alignment</b>: 0% for directions every which way, 100% for all the same way.</li>
+            <li>Every dot pulls the arrow toward itself, all equally hard. Pulls from all round cancel; pulls from one side add up.</li>
+            <li>How far the arrow reaches is the <b>alignment</b>: 0% for every which way, 100% for all one way.</li>
           </ul>
           <p class="step-key">These orbits are <span data-n="strictPct">—</span> aligned. What could line them up?</p>
         </div></div>
-        <!-- the bridge to "What a planet would do": where the planet is proposed to be, then the question that section answers -->
+        <!-- the bridge to "How a planet would line them up": where the planet is proposed to be -->
         <div class="step" data-step="p9"><div class="step-card">
           <div class="step-n">7 / 7</div>
           <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> The proposed explanation</h3>
@@ -114,7 +113,6 @@
             now estimated at about <strong><span data-n="p9Mass">—</span> times Earth's mass</strong><sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">2</a></sup>.</li>
             <li>Its predicted orbit, <span class="k-p9">this line</span>, points the opposite way from the bunch.</li>
           </ul>
-          <p class="step-key">How would one planet line the orbits up? The next pictures show it.</p>
         </div></div>
       </div>
     </div>
@@ -141,8 +139,8 @@
        of a reader to learn anything from. -->
   <section class="part wrap" id="compare">
     <div class="sec-head">
-      <h2>What a planet would do</h2>
-      <p>Start sixteen orbits pointing every which way and let four billion years pass, once without a planet and once with one.</p>
+      <h2>How a planet would line them up</h2>
+      <p>A planet would clear out orbits pointing the same way as its own and leave those pointing the opposite way.</p>
     </div>
     <div class="pic cmp-pic">
       <div class="cmp-grid" id="compareView"></div>
@@ -153,17 +151,17 @@
       <li class="legend-item"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--p9)" stroke-width="2.4" stroke-dasharray="2 5" stroke-linecap="round"/></svg><span><span class="p9-name" data-no-tint>Planet Nine</span>’s predicted orbit</span></li>
       <li class="legend-item"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--text-primary)" stroke-width="2.2"/><circle cx="12" cy="6" r="4.5" fill="none" stroke="var(--text-primary)" stroke-width="1.6"/></svg><span>flung away by a close pass</span></li>
     </ul>
-    <p class="cmp-lesson">The real orbits lean like the second picture. Whether a planet, luck or something else made them is what the next pages weigh.</p>
-    <p class="caption">A cartoon of the mechanism<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>,
-    not a simulation of gravity.</p>
+    <p class="cmp-lesson">The real orbits look like the second picture, though a planet may not be the only way to get there.</p>
+    <p class="caption">Simplified, not a simulation<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>.</p>
     <details class="more hunt-more">
       <summary>How the cartoon works</summary>
       <ul>
-        <li>The orbits start in random directions. With the planet, those within <span data-n="lineUp">—</span>° of its
-        direction are flung when it passes; the rest swing to the far side.</li>
+        <li>The orbits start pointing every which way. With the planet, those within <span data-n="lineUp">—</span>° of
+        its orbit's direction are flung when it passes; the rest settle opposite it.</li>
+        <li>A planet only clears out what it meets, not every orbit that crosses its path. An orbit pointing the same way
+        runs alongside the planet's, so the two meet sooner or later. One pointing the opposite way crosses it at just two
+        points, and the planet's pull keeps the object in a rhythm that never brings it there when the planet is.</li>
         <li>A flung object is thrown out of the solar system or in among the giant planets.</li>
-        <li>A lined-up orbit runs alongside the planet's, so no timing keeps them apart. One pointing away only touches the
-        planet's path at two crossings, which a steady rhythm avoids, and the planet's pull keeps it in that rhythm.</li>
         <li>Left out: real orbits are tilted, so crossings on this flat picture often miss in space (for every orbit, flung or
         not); they take hundreds of millions of years to settle; and they depend on the planet's mass and orbit.</li>
       </ul>

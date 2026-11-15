@@ -36,7 +36,7 @@ export function altHead (root, { six, alternatives }) {
     ${alternatives.map((a, i) => {
       // round the picture from the top, clockwise
       const t = (-90 + i * 360 / n) * Math.PI / 180
-      return `<div class="ah-suspect" style="left:${(50 + 44 * Math.cos(t)).toFixed(1)}%;top:${(50 + 44 * Math.sin(t)).toFixed(1)}%;animation-delay:${600 + i * 350}ms">
+      return `<div class="ah-suspect" style="left:${(50 + 44 * Math.cos(t)).toFixed(1)}%;top:${(50 + 44 * Math.sin(t)).toFixed(1)}%;animation-delay:${150 + i * 120}ms">
         <span class="alt-ic-box">${ROW_ART[a.id]?.() || ''}</span><span class="ah-name">${a.short}</span></div>`
     }).join('')}
   </div>`

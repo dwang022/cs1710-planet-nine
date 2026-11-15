@@ -56,12 +56,24 @@ const qmark = ({ fill = '#e6f4ef', stroke = '#1b3a32', x = 50, y = 67, size = 48
 
 // --- Planet Nine -----------------------------------------------------------
 
-/** The planet in a skin (skins.js); the question mark is the constant. */
-export function planetNineBody (id, { halo: ring = false, skin = DEFAULT_SKIN } = {}) {
+/** A smile where the question mark would be, in the question mark's colours: two eyes and a curve, edged like its
+    letters (the vote's Yes on the future page). */
+const smile = ({ fill = '#e6f4ef', stroke = '#1b3a32', x = 50, y = 67, size = 48 } = {}) => {
+  const k = size / 48, cx = x, cy = y - 17 * k, n = v => +v.toFixed(2)
+  const mouth = `M${n(cx - 15 * k)},${n(cy + 3 * k)} Q${n(cx)},${n(cy + 21 * k)} ${n(cx + 15 * k)},${n(cy + 3 * k)}`
+  const eye = dx => `<ellipse cx="${n(cx + dx * k)}" cy="${n(cy - 7 * k)}" rx="${n(4.2 * k)}" ry="${n(5.6 * k)}" fill="${fill}" stroke="${stroke}" stroke-width="2.5" paint-order="stroke"/>`
+  return `<g class="p9-smile">${eye(-9)}${eye(9)}
+    <path d="${mouth}" fill="none" stroke="${stroke}" stroke-width="${n(9.5 * k)}" stroke-linecap="round"/>
+    <path d="${mouth}" fill="none" stroke="${fill}" stroke-width="${n(5 * k)}" stroke-linecap="round"/></g>`
+}
+
+/** The planet in a skin (skins.js); the question mark is the constant, left off only where a picture draws on the
+    planet's face (the timeline's debate, whose papers sit inside it: question: false). */
+export function planetNineBody (id, { halo: ring = false, skin = DEFAULT_SKIN, question = true } = {}) {
   const s = skinFor(skin)
   return `<g clip-path="url(#${id}-c)">${s.paint(id)}</g>
   ${outline(s.outline)}
-  ${qmark(s.q)}
+  ${question ? qmark(s.q) : ''}
   ${ring ? halo(true) : ''}`
 }
 
@@ -231,6 +243,41 @@ export const ART = {
     </g>${outline('#5aa3ad')}
     <ellipse cx="50" cy="50" rx="6" ry="47" fill="none" stroke="#d9f1f4" stroke-width="2.5" opacity="0.55" transform="rotate(12 50 50)"/>`,
   },
+  // --- two made-up planets for the Future page's vote (version 2): "No" and "Maybe", in the bodies' style, kept
+  // apart from Planet Nine at a glance (no question mark, colours no skin uses) ---
+  // the vote's Yes (future page, version 2): the reader's Planet Nine, its question mark swapped for a smile in the
+  // same two colours at the same spot, so every skin keeps its look
+  'planet-yes': {
+    label: 'Planet Nine smiling, for the answer Yes',
+    defs: id => clip(id),
+    body: (id, o = {}) => planetNineBody(id, { ...o, halo: false, question: false }) + smile(skinFor(o.skin || DEFAULT_SKIN).q),
+  },
+  'planet-no': {
+    label: 'A planet for the answer No: a cracked ember-red world',
+    defs: id => clip(id),
+    body: id => `<g clip-path="url(#${id}-c)">
+      ${disc('#d4552c')}
+      <path d="M18,40 C30,32 44,36 52,30 C60,24 72,28 84,22 L90,34 C76,40 66,36 56,44 C46,52 32,46 20,54 Z" fill="#b8401d" opacity="0.9"/>
+      <path d="M24,68 C36,62 48,70 62,64 C70,60 78,64 86,60 L84,74 C72,78 60,74 48,80 C38,84 28,80 22,78 Z" fill="#b8401d" opacity="0.75"/>
+      <circle cx="36" cy="58" r="5" fill="#a3361a"/><circle cx="63" cy="46" r="3.5" fill="#a3361a"/><circle cx="54" cy="72" r="2.8" fill="#a3361a"/>
+      <path d="M40,24 L46,32 L43,40 M66,52 L72,58" fill="none" stroke="#8c2c13" stroke-width="2" stroke-linecap="round"/>
+      ${shade(0.3)}
+    </g>${outline('#7d2611')}`,
+  },
+  'planet-maybe': {
+    label: 'A planet for the answer Maybe: a misty blue-violet world',
+    defs: id => clip(id),
+    body: id => `<g clip-path="url(#${id}-c)">
+      ${disc('#4a4db5')}
+      ${band(24, 9, '#6b5fd2', 0.75)}
+      ${band(50, 6, '#3a3c96', 0.8)}
+      ${band(66, 8, '#7d6fe0', 0.5)}
+      <ellipse cx="40" cy="40" rx="22" ry="9" fill="#ffffff" opacity="0.13"/>
+      <ellipse cx="60" cy="62" rx="18" ry="6" fill="#ffffff" opacity="0.09"/>
+      <path d="M30,56 C36,50 46,52 46,58 C46,63 38,64 37,59" fill="none" stroke="#c9c2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+      ${shade(0.32)}
+    </g>${outline('#2b2d7a')}`,
+  },
   neptune: {
     label: 'Neptune',
     defs: id => clip(id),
@@ -353,8 +400,9 @@ const box = name => ART[name].box || [100, 100]
  *   halo   add the thin ring round a real body (Planet Nine's is built in)
  *   color  what currentColor resolves to (the lockup's wordmark, the mono mark)
  *   skin   which Planet Nine skin to draw (skins.js)
+ *   question  false leaves Planet Nine's question mark off (default: drawn)
  */
-export function svgMarkup (name, { size = 64, bg = 'none', halo: ring = false, color, skin = DEFAULT_SKIN } = {}) {
+export function svgMarkup (name, { size = 64, bg = 'none', halo: ring = false, color, skin = DEFAULT_SKIN, question } = {}) {
   const a = ART[name]
   if (!a) throw new Error(`unknown art: ${name}`)
   const [bw, bh] = box(name)
@@ -363,7 +411,7 @@ export function svgMarkup (name, { size = 64, bg = 'none', halo: ring = false, c
   const tile = bg === 'none' ? ''
     : `<rect width="${bw}" height="${bh}" rx="${Math.min(bw, bh) * 0.16}" fill="${bg === 'light' ? '#f4f2ec' : '#0f0f11'}"/>`
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${bw} ${bh}" width="${size}" height="${Math.round(size * bh / bw)}" role="img" aria-label="${a.label}" style="color:${fg}">` +
-    `${tile}<defs>${a.defs?.(id) ?? ''}</defs>${a.body(id, { skin })}${ring && bw === 100 ? halo(false) : ''}</svg>`
+    `${tile}<defs>${a.defs?.(id) ?? ''}</defs>${a.body(id, { skin, question })}${ring && bw === 100 ? halo(false) : ''}</svg>`
 }
 
 /** One <symbol> per body, for a sprite. */

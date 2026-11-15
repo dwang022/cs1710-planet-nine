@@ -6,7 +6,7 @@ import './scrolly.css'
 // Each section supplies its own onStep, which redraws the pinned graphic for
 // that step, so scrolling back up replays the story in reverse for free.
 
-export function scrolly (root, { onStep }) {
+export function scrolly (root, { onStep, line }) {
   const steps = [...root.querySelectorAll('.step')]
   let active = -1
 
@@ -19,14 +19,22 @@ export function scrolly (root, { onStep }) {
 
   // A zero-height band across the viewport: whichever card is crossing it is
   // the one being read. On phones the graphic takes the top of the screen and
-  // the cards are read below it, so the band sits lower.
-  const at = window.matchMedia('(max-width: 900px)').matches ? 75 : 50
-  const io = new IntersectionObserver(entries => {
-    for (const e of entries) {
-      if (e.isIntersecting) activate(steps.indexOf(e.target))
-    }
-  }, { rootMargin: `-${at}% 0px -${100 - at}% 0px`, threshold: 0 })
-  steps.forEach(s => io.observe(s))
+  // the cards are read below it, so the band sits lower. A section whose graphic is not centred on the screen
+  // passes `line`, a function giving the band's height as a fraction of the screen; it is read again on resize.
+  let io = null
+  function observe () {
+    io?.disconnect()
+    const at = line ? Math.round(Math.max(0.05, Math.min(0.95, line())) * 1000) / 10
+      : window.matchMedia('(max-width: 900px)').matches ? 75 : 50
+    io = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        if (e.isIntersecting) activate(steps.indexOf(e.target))
+      }
+    }, { rootMargin: `-${at}% 0px -${100 - at}% 0px`, threshold: 0 })
+    steps.forEach(s => io.observe(s))
+  }
+  observe()
+  if (line) window.addEventListener('resize', observe)
 
   // Clicking a dimmed card jumps to it, so nobody has to hunt for the trigger.
   steps.forEach(s => s.addEventListener('click', e => {

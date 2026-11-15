@@ -168,6 +168,13 @@ reading (supports / against / alternative / neutral), not a label the authors
 chose. Current split: 10 supports, 8 against, 6 alternative, 8 neutral — a
 property of the sample we picked, not a measurement of community opinion.
 
+**`debate.json`** — the timeline page's debate picture (`src/charts/debate.js`): one dot per
+paper in `papers.json` from 2014 to 2026, its side from `stance` (supports → for; against
+and alternative → against; neutral papers are not drawn but stay in `papers.json`). Holds our
+one-line headline per year and the "why it matters" line for papers `field_timeline.json`
+does not retell (the rest come from its titles), each a retelling of the abstract-checked
+summary. Tagged `ours`.
+
 **`field_timeline.json`** — the rows of the ledger on the part 3 pages (the search,
 alternatives, timeline and future pages each show a subset): which of the
 papers we judged major, which lane each goes in (`lane`: for / against / data /

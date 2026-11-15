@@ -1235,34 +1235,129 @@ sup.cite a:hover { text-decoration: underline; }
 .depth-ramp { width: 110px; height: 11px; border-radius: 3px; border: 1px solid var(--rule); flex: none; }
 /* a line swatch, for keys of orbits and paths */
 .legend-line { width: 18px; height: 3px; border-radius: 2px; flex: none; }
-/* the sky map's click card (charts/skymap.js) sits on the map, like the clustering page's */
-#chartSky { position: relative; }
 /* the photographed sky (#sky): a narrower card column, the map drawn at its own shape (no letterbox) and centred
    in the pinned column, the key above it and the survey chips under it each keeping their room on every step,
    so the map never jumps as the cards change it. The chart is clipped to its panel. */
-#skyStory { grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 36px; }
+/* the story spans the page's own margins (not the 1480px cap of other wide stories), so on a wide screen the panels
+   take the room the heading does; the card is a little wider for its text */
+#skyStory { grid-template-columns: minmax(290px, 340px) minmax(0, 1fr); gap: 28px; }
+#skyStory.wrap.wide { max-width: var(--maxw); }
 #skyStory .step { min-height: 74vh; }
 #skyStory .step:first-child { min-height: 56vh; }
 #skyStory .scrolly-graphic { justify-content: center; gap: 12px; }
+/* desktop: the picture is pinned just under the nav at its own height (not centred in a screen-tall box, which left a
+   wide gap under the heading), the steps start at the top of the story, and the first card sits level with the
+   panels, its step keeping room below it so the scroll distance to the second card is unchanged in feel. The
+   measured values (--ss-first-pad, --ss-first-h) and the line that switches steps come from pages/search.js. */
+@media (min-width: 901px) {
+  #sky .sec-head { margin-bottom: 16px; }
+  /* --ss-pin centres the pinned picture in the screen below the nav; --ss-drop is the gap under the heading that
+     puts the picture there when the heading reaches the top (both from pages/search.js) */
+  #skyStory { margin-top: var(--ss-drop, 0px); }
+  #skyStory .scrolly-steps { padding-top: 0; }
+  #skyStory .scrolly-graphic { height: auto; justify-content: flex-start; top: var(--ss-pin, calc(var(--bar-h) + 16px)); }
+  #skyStory .step:first-child { min-height: calc(var(--ss-first-h, 56vh) + 30vh); align-items: flex-start;
+    padding-top: var(--ss-first-pad, 0px); }
+}
+/* phones: the picture runs across the top as before; the first card starts right under it, not in the middle of a
+   tall first step, so it is on screen when the reader arrives */
+@media (max-width: 900px) {
+  #skyStory .scrolly-steps { padding-top: 12px; }
+  #skyStory .step:first-child { align-items: flex-start; }
+}
 #skyStory .viz-head { min-height: 3.6rem; align-items: flex-end; }
 #skyStory .viz-head .legend { gap: 8px 20px; align-content: flex-end; }
 #skyStory .legend-item { font-size: .9rem; }
 #skyStory .legend-swatch { width: 12px; height: 12px; }
 #skyStory .legend-item.is-new { animation: sky-key-in .5s var(--reveal-ease) both; }
 @keyframes sky-key-in { from { opacity: 0; transform: translateY(4px); } }
-#skyStory .viz { flex: none; padding: 10px; }
-#chartSky svg { height: auto; max-height: calc(100vh - var(--bar-h) - 204px); overflow: hidden; }
-#chartSky text.axis-label { font-size: 13px; fill: var(--text-secondary); }
-#chartSky text.ralt { font-size: 12.5px; fill: var(--text-muted); }
-#chartSky text.decl { font-size: 12px; }
-#chartSky text.buriedlabel { font-size: 14px; }
+/* the photographed sky's picture (charts/skysearch.js). Two cells side by side: in the first stage the observatory
+   on Earth on the left and the sky on the right; from the second the sky slides into the left cell, becoming "How
+   faint might Planet Nine be?", the Earth fades out and "How deeply have we searched?" fades into the right cell.
+   Every panel keeps its size and place in the grid, only transform and opacity move, so nothing reflows while the
+   reader scrolls. On a phone the cells stack and the slide runs upward. The maps' marks are styled here; their
+   opacities are eased by D3, per step. */
+/* the two 3:2 panels side by side are never taller than the screen leaves room for (the key above, the readout and
+   the survey buttons below): their width is capped by the screen's height, and the pair is centred in its column */
+.ss { --ss-gap: 14px; position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px var(--ss-gap);
+  align-items: start; width: 100%; max-width: calc(3 * (100vh - var(--bar-h) - 236px) + var(--ss-gap)); align-self: center; }
+.ss-panel { grid-row: 1; position: relative; min-width: 0; background: var(--surface-1); border: 1px solid var(--rule);
+  border-radius: var(--radius); padding: 4px;
+  transition: transform .8s var(--reveal-ease), opacity .6s ease, visibility 0s linear 0s; }
+.ss-panel svg { display: block; width: 100%; height: auto; overflow: visible; }
+.ss-earth { grid-column: 1; }
+.ss-a, .ss-b { grid-column: 2; }
+.ss-b { opacity: 0; visibility: hidden; transition: transform .8s var(--reveal-ease), opacity .5s ease, visibility 0s linear .5s; }
+.ss.is-solo .ss-a { transform: translateX(calc(-50% - var(--ss-gap) / 2)); }
+.ss.is-pair .ss-a { transform: translateX(calc(-100% - var(--ss-gap))); }
+.ss:is(.is-solo, .is-pair) .ss-earth { opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility 0s linear .45s; }
+.ss.is-pair .ss-b { opacity: 1; visibility: visible; transition: opacity .6s ease .3s, visibility 0s linear 0s; }
+/* a map's title sits in the room above its oval, inside the panel */
+.ss-title { position: absolute; top: 10px; left: 14px; right: 14px; z-index: 1; margin: 0; font-size: .92rem; font-weight: 600;
+  color: var(--text-primary); line-height: 1.3; opacity: 0; transition: opacity .5s ease; pointer-events: none; }
+.ss.is-pair .ss-title { opacity: 1; transition-delay: .35s; }
+/* the planet being tested: a switch on the left-hand map, from the step that introduces it */
+.ss-bar { left: auto; right: 10px; bottom: 10px; padding: 5px 8px; gap: 8px; opacity: 0; visibility: hidden;
+  transition: opacity .4s ease, visibility 0s linear .4s; }
+.ss.is-pair .ss-bar { opacity: 1; visibility: visible; transition: opacity .4s ease .4s, visibility 0s linear 0s; }
+.ss-bar .seg { border-color: #ffffff30; }
+.ss-bar .seg button { min-height: 28px; padding: 3px 10px; font-size: .8rem; }
+.ss-bar .seg button[aria-pressed="true"] { background: var(--ui); color: var(--surface-0); font-weight: 600; }
+/* what is under the pointer on the path, on both maps at once */
+.ss-read { grid-column: 1 / -1; grid-row: 2; margin: 0; min-height: 1.5em; display: flex; flex-wrap: wrap; gap: 4px 18px;
+  font-size: .9rem; color: var(--text-secondary); }
+.ss-read b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.ss-read .is-deep { color: var(--text-primary); font-weight: 700; }
+.ss-read .is-shallow { color: var(--series-2-ink); font-weight: 700; }
+.ss-read .is-none { color: var(--text-muted); font-weight: 700; }
+.ss .pick-card { z-index: 3; }
+
+/* the observatory on Earth */
+.ss-sky-above { fill: #ffffff07; }
+.ss-sky-circle { fill: none; stroke: #ffffff38; stroke-width: 1.5; stroke-dasharray: 4 8; }
+.ss-beam { fill: #ffffff1c; }
+.ss-patch-arc { fill: none; stroke: #ffffff; stroke-width: 7; stroke-linecap: round; }
+.ss-horizon { stroke: var(--text-muted); stroke-width: 1.5; stroke-dasharray: 6 6; }
+.ss-note { font-size: 30px; fill: var(--text-secondary); }
+.ss-note.is-strong { fill: var(--text-primary); font-weight: 600; }
+
+/* the two maps */
+.ss-outline { fill: #0c0c0e; stroke: var(--text-muted); stroke-width: 1.5; stroke-opacity: .6; }
+.ss-grat path, .ss-grat .near, .ss-grat .far { fill: none; stroke: var(--rule); stroke-width: 1.3; }
+.ss-grat .far { stroke-dasharray: 3 5; }
+.ss-eq { fill: none; stroke: #ffffffb0; stroke-width: 2; opacity: 0; }
+.ss-ecl { fill: none; stroke: #8c8b83; stroke-width: 2.2; opacity: 0; }
+.ss-cap path { fill: #ffffff33; stroke: #ffffffc0; stroke-width: 2; }
+.ss-var { fill: none; stroke: var(--p9); stroke-width: 1.4; stroke-opacity: .5; }
+.ss-core { fill: none; stroke: var(--p9); stroke-width: 2.8; transition: stroke-width .5s ease; }
+.ss.is-mag .ss-core { stroke-width: 1.2; }
+.ss-mag path { fill: none; stroke-width: 22; stroke-linecap: round; }
+.ss-fpath { fill-opacity: .85; stroke: none; cursor: pointer; }
+.ss-fpath.is-active { stroke: var(--ui); stroke-width: 3; }
+.ss-fpath:focus-visible { outline: none; stroke: var(--ui); stroke-width: 3; }
+.ss-rubinpath { fill: var(--series-4); fill-opacity: .1; stroke: var(--series-4); stroke-width: 2.5; stroke-dasharray: 8 6; pointer-events: none; }
+.ss-under { fill: none; stroke: #0c0c0e; stroke-width: 17; stroke-linecap: round; }
+.ss-vsegs path { fill: none; stroke-width: 9; stroke-linecap: round; }
+.ss-rsegs path { fill: none; stroke: var(--series-4); stroke-width: 3; }
+.ss-galband { fill: #dcc48a; fill-opacity: .13; }
+.ss-galplane { fill: none; stroke: #dcc48a; stroke-opacity: .4; stroke-width: 1.4; }
+.ss-buried { fill: none; stroke: #dcc48a; stroke-opacity: .35; stroke-width: 26; stroke-linecap: round; }
+.ss-track, .ss-mag, .ss-fp, .ss-verdict, .ss-gal, .ss-rubin, .ss-cap, .ss-rsegs { opacity: 0; }
+.ss-label { font-size: 24px; font-weight: 600; fill: var(--text-secondary); text-anchor: middle; opacity: 0; pointer-events: none;
+  paint-order: stroke; stroke: #0c0c0e; stroke-width: 5px; stroke-linejoin: round; }
+.ss-label.is-dim { fill: var(--text-muted); font-weight: 500; }
+.ss-label.is-milky { fill: #dcc48a; }
+.ss-label.is-rubin { fill: var(--series-4-ink); }
+.ss-mark { fill: none; stroke: var(--ui); stroke-width: 3.5; pointer-events: none; }
+.ss.can-hover .ss-a svg, .ss.can-hover .ss-b svg { cursor: crosshair; }
+/* the key's magnitude ramp, drawn with the maps' own scale */
+.mag-key { flex: none; overflow: visible; }
+.mag-key text { font-size: 10px; fill: var(--text-secondary); text-anchor: middle; font-variant-numeric: tabular-nums; }
+.mag-ends { color: var(--text-muted); font-size: .82rem; }
+.k-deep { color: var(--text-primary); }
+.k-milky { color: #e6d3a1; }
 /* the marks the reader can click: an outline on hover (footprints only on the explore step, where the card says
    they can be clicked) and on keyboard focus */
-#chartSky svg.is-explore path.fp:not(.is-future):hover,
-#chartSky path.fp:not(.is-future):focus-visible { stroke-opacity: .85; }
-#chartSky path.fp:focus-visible, #chartSky circle.ph:focus-visible { outline: none; }
-#chartSky path.fp.is-future:focus-visible { stroke-width: 4px; }
-#chartSky circle.ph:hover, #chartSky circle.ph:focus-visible { stroke: var(--ui); stroke-width: 2.5px; }
 /* survey chips: compact, a clear hover, a pressed state that reads at a glance, a focus ring */
 #surveyChips { min-height: 72px; align-content: flex-start; margin: 0;
   opacity: 0; visibility: hidden; transition: opacity .4s ease, visibility 0s linear .4s; }
@@ -1276,7 +1371,6 @@ sup.cite a:hover { text-decoration: underline; }
 @media (max-width: 900px) {
   #skyStory .scrolly-graphic { height: auto; justify-content: flex-start; }
   #skyStory .viz-head { min-height: 0; }
-  #chartSky svg { max-height: calc(56vh - 110px); }
   /* on a phone the chips keep to one line that scrolls sideways, like the key, and take no room until needed */
   #surveyChips { min-height: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; padding-bottom: 2px; }
   #surveyChips:not(.is-shown) { display: none; }
@@ -1327,92 +1421,176 @@ sup.cite a:hover { text-decoration: underline; }
 .verdict-card li:last-child { margin-bottom: 0; }
 .verdict-card .verdict-key { margin: 14px 0 0; color: var(--text-primary); font-weight: 600; }
 /* ledger rows slide in from the side; off screen, that offset must not widen the page on a phone */
-body[data-page="search"] #searches, body[data-page="timeline"] #ledger, body[data-page="future"] #next { overflow-x: clip; }
+body[data-page="search"] #searches, body[data-page="future"] #next { overflow-x: clip; }
 
-/* ten years of argument (search/timeline.html, pages/timeline.js): the key over the ledger, then the ledger told as a
-   story down a line of years. The line runs down the year gutter and fills to where the reader is; each year has a
-   marker on it (passed years filled, the year being read lit) and its label stays in view while its rows scroll by.
-   The rows keep the ledger's design and entrance (field.css); here they slide in sideways, a beat apart in a year. */
-.tl-key { list-style: none; margin: 0 auto 22px; padding: 0; max-width: 1180px;
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px 28px; }
-.tl-key li { display: flex; align-items: flex-start; gap: 12px; }
-.tl-key .fr-icon { width: 36px; height: 36px; flex: none; }
-.tl-key .fr-icon .fi { width: 64%; height: 64%; }
-.tl-key .is-for { --lane: var(--fl-for); --ink: var(--fl-for-ink); }
-.tl-key .is-against { --lane: var(--fl-against); --ink: var(--fl-against-ink); }
-.tl-key .is-data { --lane: var(--fl-data); --ink: var(--fl-data-ink); }
-.tl-key b { display: block; color: var(--ink); font-size: .95rem; margin: 1px 0 2px; }
-.tl-key b + span { display: block; font-size: .84rem; line-height: 1.45; color: var(--text-secondary); }
+/* the Planet Nine debate (search/timeline.html, charts/debate.js): the year, its headline and the two counts over the
+   picture; the circle with the papers for inside and against outside, a panel beside it (under it on a phone) with the
+   paper being read or the year's new papers; the year strip under both. Motion on the dots is D3's; here only the text
+   that changes with the year, the panel's swap and the strip's fill, all opacity and transform. */
+#debate { --db-for: var(--for); --db-for-ink: var(--for-ink); --db-against: var(--series-2); --db-against-ink: var(--series-2-ink);
+  --db-ease: cubic-bezier(.2, .7, .2, 1); }
+.db-tools { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+.db-version button { font-size: .8rem; }
+.db-top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px 28px; margin-bottom: 18px; }
+.db-year, .db-headline { display: grid; margin: 0; }
+.db-year > .db-w, .db-headline > .db-w { grid-area: 1 / 1; }
+.db-year { font-size: clamp(2.6rem, 6vw, 4rem); font-weight: 700; line-height: 1; color: var(--text-primary);
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em; min-width: 3.1ch; }
+.db-headline { font-size: clamp(1rem, 1.6vw, 1.22rem); line-height: 1.4; color: var(--text-secondary); max-width: 62ch; min-height: 2.8em; align-items: center; }
+.db-w { opacity: 0; transform: translate3d(0, 10px, 0); transition: opacity .45s var(--db-ease), transform .5s var(--db-ease); }
+.db-w.is-in { opacity: 1; transform: none; }
+.db-w.is-out { opacity: 0; transform: translate3d(0, -10px, 0); transition-duration: .3s; }
+.db-counts { display: flex; gap: 22px; margin: 0; }
+.db-counts > div { display: grid; justify-items: center; gap: 2px; }
+.db-counts dt { font: 700 .72rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.db-counts dd { margin: 0; font-size: 2rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.db-counts .is-for dt, .db-counts .is-for dd { color: var(--db-for-ink); }
+.db-counts .is-against dt, .db-counts .is-against dd { color: var(--db-against-ink); }
 
-/* the ledger's easing lives in scrolly.css; given here too, so the rows never depend on another module having loaded
-   it (without it every transition naming it is dropped and the rows pop in) */
-#fieldTimeline { --reveal-ease: cubic-bezier(.2, .7, .2, 1); }
-#ledger .fl-sides, #fieldTimeline .fy { grid-template-columns: 96px minmax(0, 1fr); }
-#fieldTimeline .fy { padding: 14px 0 18px; }
-/* the line, and its fill (scaled in JS, so moving it costs no layout); 3px in from the edge, where the ledger clips,
-   so the lit marker's enlargement is not cut */
-#fieldTimeline .tl-line { position: absolute; left: 9px; top: 14px; bottom: 0; width: 2px; border-radius: 1px; background: var(--rule); pointer-events: none; }
-#fieldTimeline .tl-line i { display: block; height: 100%; border-radius: 1px; background: var(--text-muted); transform-origin: top; transform: scaleY(0);
-  transition: transform .25s ease-out; }   /* set every frame while scrolling; the transition glides over a fast flick */
-/* a year's label stays in view below the nav and the pinned lane names, its marker riding the line with it */
-#fieldTimeline .fy-year { position: sticky; top: calc(var(--bar-h, 56px) + 58px); z-index: 1; }
-#fieldTimeline .fy-year span {
-  padding: 6px 0 8px 27px; font-size: 1rem; color: var(--text-muted);
-  transition: color .4s ease, font-size .4s ease;
-}
-#fieldTimeline .fy-year::before {
-  content: ""; position: absolute; left: 3px; top: 7px; width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%;
-  background: var(--surface-0); border: 2px solid var(--text-muted);
-  transition: background-color .4s ease, border-color .4s ease, transform .4s var(--reveal-ease);
-}
-#fieldTimeline .fy.is-past .fy-year::before { background: var(--text-muted); }
-#fieldTimeline .fy.is-past .fy-year span { color: var(--text-secondary); }
-#fieldTimeline .fy.is-current .fy-year::before { background: var(--ui); border-color: var(--ui); transform: scale(1.3); }
-#fieldTimeline .fy.is-current .fy-year span { color: var(--text-primary); font-size: 1.12rem; }
-/* the entrance (charts/field.js sets is-in; pages/timeline.js sets is-dim and data-from): a row fades in and rises
-   18px into place, a beat apart within a year; scrolling back up, a row that left by the top comes back down from
-   there. Above the reading area a row dims to stay rereadable, and brightens again as it comes back into it. Leaving
-   happens out of view, so it is quick and has no stagger. Opacity and transform only. */
-html.has-reveal #fieldTimeline .fr { transition: opacity .3s ease, transform .3s ease; }
-html.has-reveal #fieldTimeline .fr:not(.is-in) { transform: translate3d(0, 18px, 0); }
-html.has-reveal #fieldTimeline .fr[data-from="above"]:not(.is-in) { transform: translate3d(0, -18px, 0); }
-html.has-reveal #fieldTimeline .fr.is-in {
-  transition: opacity .5s var(--reveal-ease) calc(var(--i, 0) * 90ms), transform .55s var(--reveal-ease) calc(var(--i, 0) * 90ms);
-}
-html.has-reveal #fieldTimeline .fr.is-in.is-dim:not(:focus-within) { opacity: .45; transition: opacity .6s ease-out; }
-/* a year's label and marker come and go with their year, the same way */
-html.has-reveal #fieldTimeline .fy-year { transition: opacity .5s var(--reveal-ease), transform .55s var(--reveal-ease); }
-html.has-reveal #fieldTimeline .fy:not(.is-seen) .fy-year { opacity: 0; transform: translate3d(0, 18px, 0); }
-html.has-reveal #fieldTimeline .fy[data-from="above"]:not(.is-seen) .fy-year { transform: translate3d(0, -18px, 0); }
+.db-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .9fr); gap: 24px; align-items: start; }
+/* the stage is a patch of deep space: navy at the middle falling to black, the stars (charts/debate.js) behind the
+   picture on their own layer that takes no pointer and no focus */
+.db-stage { position: relative; isolation: isolate; overflow: hidden; border: 1px solid #ffffff14; border-radius: 14px; padding: 8px;
+  background: radial-gradient(ellipse 75% 70% at 50% 46%, #0d1832 0%, #081024 45%, #04070f 100%); }
+.db-stars { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+.db-stars .tw { animation: db-twinkle var(--d, 4s) ease-in-out var(--dl, 0s) infinite alternate; }
+@keyframes db-twinkle { to { opacity: .08; } }
+.db-svg { position: relative; display: block; width: 100%; height: auto; max-height: min(78vh, 680px); margin: 0 auto; overflow: visible; }
+.db-planet, .db-orbit { pointer-events: none; }
+.db-rim { fill: none; stroke: var(--p9); stroke-opacity: .5; stroke-width: 1.5; }
+.db-label { font: 700 12px var(--font-mono); letter-spacing: .14em; text-anchor: middle; dominant-baseline: middle; }
+.db-label.is-for { fill: var(--db-for-ink); paint-order: stroke; stroke: #05070d; stroke-width: 5px; stroke-linejoin: round; }   /* edged, so it reads on any skin's drawing */
+.db-label.is-against { fill: var(--db-against-ink); }
+/* version 2: each label in its dots' own colour, edged so it reads on the planet's glow and on the stars; the papers
+   against held in a faint dashed region, a grouping rather than a second body */
+.db-svg.is-split .db-label.is-for { fill: var(--db-for); }
+.db-svg.is-split .db-label.is-against { fill: var(--db-against); paint-order: stroke; stroke: #05070d; stroke-width: 5px; stroke-linejoin: round; }
+.db-encl { fill: var(--db-against); fill-opacity: .045; stroke: var(--db-against); stroke-opacity: .32; stroke-width: 1.5;
+  stroke-dasharray: 5 7; pointer-events: none; opacity: 0; }
+.db-dot { cursor: pointer; outline: none; }
+.db-dot.is-leaving { pointer-events: none; }
+.db-hit { fill: transparent; }
+.db-mark { stroke-width: 2; transform-box: fill-box; transform-origin: center;
+  transition: transform .25s var(--db-ease), opacity .25s ease, stroke .2s ease; }
+.db-dot.is-for .db-mark { fill: var(--db-for); stroke: #f5f7fa; stroke-width: 2.5; }
+.db-dot .db-ring-out { fill: none; stroke: #05070d; stroke-width: 3; stroke-opacity: .85; pointer-events: none; transition: opacity .25s ease; }
+.db-dot.is-against .db-mark { fill: var(--db-against); stroke: var(--surface-1); }
+.db-halo { pointer-events: none; transition: opacity .25s ease; }
+.db-svg.has-on .db-dot:not(.is-on) .db-mark { opacity: .32; }
+.db-svg.has-on .db-dot:not(.is-on) .db-halo { opacity: .25; }
+.db-dot:hover .db-mark, .db-dot.is-on .db-mark { transform: scale(1.35); stroke: var(--ui); opacity: 1; }
+.db-dot:focus-visible .db-mark { transform: scale(1.35); stroke: var(--ui); stroke-width: 3; opacity: 1; }
+/* version 2: each paper a thumb, up for and down against, in its side's colour with a dark edge so it reads on any
+   skin; the same element as the dot, on the same invisible hit circle, so the two marks crossfade (and grow or shrink a
+   little) when the version changes, and hover, selection and focus behave alike */
+.db-tmark { opacity: 0; pointer-events: none; transform-box: fill-box; transform-origin: center; transform: scale(.6);
+  transition: opacity .3s ease, transform .35s var(--db-ease); }
+.db-tmark path { paint-order: stroke; stroke: #05070d; stroke-width: 2.6px; stroke-linejoin: round; transition: stroke .2s ease, opacity .25s ease; }
+.db-dot.is-for .db-tmark path { fill: var(--db-for); }
+.db-dot.is-against .db-tmark path { fill: var(--db-against); }
+.db-svg.is-thumbs .db-tmark { opacity: 1; transform: scale(1); }
+.db-svg.is-thumbs .db-dot .db-mark, .db-svg.is-thumbs .db-dot .db-ring-out { opacity: 0 !important; transform: scale(.6); }
+.db-svg.is-thumbs .db-dot:hover .db-tmark, .db-svg.is-thumbs .db-dot.is-on .db-tmark,
+.db-svg.is-thumbs .db-dot:focus-visible .db-tmark { transform: scale(1.25); }
+.db-dot:hover .db-tmark path, .db-dot.is-on .db-tmark path { stroke: var(--ui); }
+.db-dot:focus-visible .db-tmark path { stroke: var(--ui); stroke-width: 3.4px; }
+.db-svg.has-on .db-dot:not(.is-on) .db-tmark path { opacity: .32; }
 
+.db-panel { position: sticky; top: calc(var(--bar-h, 56px) + 16px); min-height: 420px; padding: 20px 22px; border-radius: 14px;
+  background: linear-gradient(180deg, #111a33d9, #0a1022e6); border: 1px solid #ffffff1c; box-shadow: 0 10px 40px #00000066;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  font-size: .92rem; line-height: 1.5; color: var(--text-secondary); }
+.db-panel.is-pinned { border-color: #ffffff45; }
+.db-panel.is-swap > * { animation: db-swap .32s var(--db-ease) both; }
+@keyframes db-swap { from { opacity: 0; transform: translate3d(0, 6px, 0); } }
+.db-p-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 32px; margin-bottom: 10px; }
+.db-side { display: inline-flex; align-items: center; gap: 8px; font: 700 .74rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+.db-side i { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
+.db-side.is-for { color: var(--db-for-ink); }
+.db-side.is-against { color: var(--db-against-ink); }
+.db-close { width: 32px; height: 32px; border-radius: 8px; border: 1px solid #ffffff38; background: transparent; color: var(--ui);
+  font-size: 1.2rem; line-height: 1; cursor: pointer; }
+.db-close:hover { border-color: #ffffff80; }
+.db-title { font-size: 1.08rem; line-height: 1.35; color: var(--text-primary); margin: 0 0 6px; }
+.db-by { font-size: .84rem; color: var(--text-muted); margin: 0 0 4px; }
+.db-panel h4 { font: 700 .7rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin: 14px 0 4px; }
+.db-panel p { margin: 0; }
+.db-panel a { color: var(--ui); }
+.db-panel .db-p-eyebrow { font: 700 .72rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+.db-new { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.db-new button { display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px;
+  background: transparent; border: 1px solid var(--rule); color: inherit; font: inherit; cursor: pointer; transition: border-color .2s ease, background .2s ease; }
+.db-new button:hover, .db-new button:focus-visible { border-color: #ffffff60; background: #ffffff08; }
+.db-new i { flex: none; width: 10px; height: 10px; margin-top: 6px; border-radius: 50%; }
+.db-new .is-for i { background: var(--db-for); }
+.db-new .is-against i { background: var(--db-against); }
+.db-new b { display: block; color: var(--text-primary); font-size: .9rem; }
+.db-new b + span { display: block; font-size: .85rem; }
+.db-panel .db-p-none { color: var(--text-muted); }
+.db-panel .db-p-hint { margin-top: 16px; font-size: .84rem; color: var(--text-muted); }
+
+/* the year strip: the line fills (scaled, so it costs no layout) to the year shown */
+.db-time { display: flex; align-items: center; gap: 10px; margin-top: 20px; }
+.db-time .pic-btn { flex: none; height: 38px; }
+.db-time .pic-btn:disabled { opacity: .35; cursor: default; }
+.db-play { min-width: 74px; }
+.db-years { position: relative; flex: 1; display: grid; grid-template-columns: repeat(13, minmax(0, 1fr)); list-style: none; margin: 0; padding: 0; }
+.db-track { position: absolute; left: calc(100% / 26); right: calc(100% / 26); top: 50%; height: 2px; margin-top: -1px; background: var(--rule); pointer-events: none; }
+.db-track i { display: block; height: 100%; background: var(--text-secondary); transform-origin: left; transform: scaleX(0);
+  transition: transform .7s var(--db-ease); }
+.db-years button { position: relative; width: 100%; display: grid; grid-template-rows: 14px auto 14px; justify-items: center; align-items: center; gap: 3px;
+  padding: 4px 0; background: none; border: 0; color: var(--text-muted); font: inherit; cursor: pointer; }
+.db-years b { font-size: .86rem; font-weight: 600; padding: 3px 6px; border-radius: 6px; background: var(--surface-0); font-variant-numeric: tabular-nums;
+  transition: color .3s ease, background-color .3s ease; }
+.db-years .db-short { display: none; }
+.db-years button.is-past b { color: var(--text-secondary); }
+.db-years button:hover b { color: var(--text-primary); }
+.db-years button[aria-current] b { background: var(--ui); color: var(--surface-0); }
+.db-years button:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; border-radius: 6px; }
+.db-m { display: flex; gap: 2px; align-self: end; }
+.db-m.is-against { align-self: start; }
+.db-m i { width: 5px; height: 5px; border-radius: 50%; }
+.db-m.is-for i { background: var(--db-for); }
+.db-m.is-against i { background: var(--db-against); }
+
+@media (max-width: 980px) {
+  .db-grid { grid-template-columns: minmax(0, 1fr); }
+  .db-panel { position: static; min-height: 0; }
+}
+@media (max-width: 720px) {
+  .db-top { grid-template-columns: auto minmax(0, 1fr); }
+  .db-headline { grid-column: 1 / -1; grid-row: 2; }
+  .db-counts { justify-self: end; }
+  .db-time { flex-wrap: wrap; justify-content: center; }
+  .db-years { order: -1; flex-basis: 100%; }
+  .db-years .db-long { display: none; }
+  .db-years .db-short { display: block; padding: 3px 3px; font-size: .8rem; }
+  .db-m i { width: 4px; height: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .db-w, .db-track i, .db-mark, .db-halo, .db-tmark, .db-tmark path, .db-dot .db-ring-out { transition: none; }
+  .db-stars .tw { animation: none; }
+  .db-panel.is-swap > * { animation: none; }
+}
+
+/* phones: the two cells stack, and the sky slides up from the lower cell into the upper one; the maps are drawn at
+   about 0.4 scale, so their words are set larger; a survey's card opens under the maps */
 @media (max-width: 900px) {
-  .tl-key { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  /* the year sits over its rows, which keep clear of the line; its label stays at the top while they scroll under it */
-  #fieldTimeline .fy { grid-template-columns: minmax(0, 1fr); }
-  #fieldTimeline .fy-rows { padding-left: 27px; }
-  /* the pinned year is a full-width strip, so cards pass cleanly under it rather than under a tab over their corner */
-  #fieldTimeline .fy-year { position: sticky; top: var(--bar-h, 56px); z-index: 2; padding-top: 6px; background: var(--surface-0); }
-  #fieldTimeline .fy-year::before { top: 13px; }
-  /* every row with its icon beside its title, the drawing and the paper under them: data rows put a lone icon on a
-     line of its own, and an against row with no drawing laid its icon over its title */
-  #fieldTimeline .fr.is-data, #fieldTimeline .fr.no-art.is-for, #fieldTimeline .fr.no-art.is-against {
-    display: grid; grid-template-columns: var(--fl-icon) minmax(0, 1fr); grid-template-areas: "icon body" "art art" "meta meta";
-    align-items: center; gap: 8px 14px;
-  }
-  #fieldTimeline .fr.is-data .fr-art { width: min(100%, 220px); }
-}
-
-/* phones: the sky map is cropped to the band around the path and drawn at about 0.4 scale, so its labels
-   are set larger, the right-ascension axis (which no card refers to) is left off, the pinned panel shrinks
-   to the map, and a click card opens under the map instead of over it */
-@media (max-width: 700px) {
-  #chartSky text.note { font-size: 30px; }
-  #chartSky text.buriedlabel { font-size: 24px; }
-  #chartSky text.ral, #chartSky text.ralt, #chartSky text.decl { display: none; }
-  #chartSky circle.ph:hover, #chartSky circle.ph:focus-visible { stroke-width: 4.5px; }
   #skyStory .scrolly-graphic { height: auto; top: var(--bar-h, 0px); }
-  #skyStory .viz { flex: none; }
-  #chartSky .pick-card { top: calc(100% + 6px); left: 0; right: 0; }
+  /* stacked, two 3:2 panels are kept to the pinned area's height, so the cards keep their room below */
+  .ss { grid-template-columns: minmax(0, 1fr); gap: 6px; --ss-gap: 6px; max-width: calc((56vh - 80px) * .75); margin-inline: auto; }
+  .ss-earth, .ss-a, .ss-b { grid-column: 1; }
+  .ss-earth { grid-row: 1; }
+  .ss-a, .ss-b { grid-row: 2; }
+  .ss-read { grid-row: 3; font-size: .8rem; gap: 2px 12px; }
+  .ss-panel { padding: 4px; }
+  .ss.is-solo .ss-a { transform: translateY(calc(-50% - var(--ss-gap) / 2)); }
+  .ss.is-pair .ss-a { transform: translateY(calc(-100% - var(--ss-gap))); }
+  .ss-title { font-size: .74rem; top: 5px; left: 8px; }
+  .ss-bar { bottom: 6px; right: 6px; padding: 3px 5px; }
+  .ss-bar .seg button { min-height: 24px; padding: 2px 7px; font-size: .72rem; }
+  .ss-label, .ss-note { font-size: 34px; }
+  .ss .pick-card { position: static; margin-top: 6px; }
 }
 /* phones: the brightness ruler stands up and is drawn at its own width, so no height cap */
 @media (max-width: 640px) { #chartDepth svg { max-height: none; } }
@@ -1672,4 +1850,788 @@ html.has-reveal #next .nx-grid .fr.is-next {
   }
   #next .nx-grid .fr.is-next .fr-art { height: 150px; }
   #next .nx-grid .fr.is-next .fr-art .fd { max-height: 150px; }
+}
+
+/* the activity's two versions (search/how.html, #build): the switch above the heading */
+.build-tools { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+.build-tools .seg button { font-size: .8rem; }
+
+/* Hide Planet Nine (charts/hideplanet.js): the reader's planet and its dials on the left; on the right the sky map,
+   the magnitude ruler, the three results, the two buttons and the verdict. Only opacity and transform animate. */
+.hp { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.hp-left { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px 20px; }
+.hp-k { font: 700 .72rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
+.hp-planet { display: grid; place-items: center; margin: -8px auto 4px; max-width: 250px; }
+.hp-planet svg { width: 100%; height: auto; overflow: visible; }
+.hp-scale { transform-box: view-box; transition: transform .45s var(--reveal-ease, ease); }
+.hp-veil { fill: #05070d; transition: opacity .45s ease; }
+.hp-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 0 0 14px; }
+.hp-facts dt { font: 700 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.hp-facts dd { margin: 2px 0 0; font-size: .95rem; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.hp-facts .is-mag dd b { font-size: 1.25rem; }
+.hp-mag-word { color: var(--text-secondary); font-size: .85rem; }
+.hp-dials { display: grid; gap: 12px; }
+.hp-dial { display: grid; gap: 4px; font-size: .86rem; color: var(--text-secondary); }
+.hp-dial-k { display: flex; justify-content: space-between; gap: 10px; }
+.hp-dial b { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+.hp-dial input { width: 100%; }
+.hp-note { margin: 14px 0 0; font-size: .8rem; line-height: 1.5; color: var(--text-muted); }
+
+.hp-right { display: grid; gap: 12px; min-width: 0; }
+.hp-key { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin: 0; font-size: .84rem; }
+.hp-key .legend-item { display: inline-flex; align-items: center; gap: 8px; }
+.hp-map { position: relative; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 8px; }
+.hp-map > svg { display: block; width: 100%; height: auto; cursor: crosshair; touch-action: none; }
+.hp-map > svg:focus { outline: none; }
+.hp-map > svg.is-kb:focus { outline: 2px solid var(--ui); outline-offset: 2px; border-radius: 6px; }
+.hp-map-note { position: absolute; left: 14px; bottom: 10px; margin: 0; font-size: .78rem; color: var(--text-muted);
+  transition: opacity .4s ease; pointer-events: none; }
+.hp-map-note.is-gone { opacity: 0; }
+.hp-oval { fill: #0c0c0e; }
+.hp-oval-edge { fill: none; stroke: var(--text-muted); stroke-opacity: .6; stroke-width: 1.5; }
+.hp-fp path { fill-opacity: .6; }
+.hp-gal { fill: #dcc48a; fill-opacity: .13; }
+.hp-grat path { fill: none; stroke: #ffffff12; stroke-width: 1.2; }
+.hp-rubin { fill: none; stroke: var(--series-4); stroke-width: 1.8; stroke-opacity: .85; stroke-dasharray: 8 6; }
+.hp-var { fill: none; stroke: var(--p9); stroke-width: 1.2; stroke-opacity: .4; }
+.hp-path { fill: none; stroke: var(--p9); stroke-width: 2.6; }
+.hp-you { pointer-events: none; }
+.hp-you-glow { fill: var(--p9); fill-opacity: .25; }
+.hp-you-dot { fill: var(--p9); stroke: #05070d; stroke-width: 3; transition: fill .3s ease; }
+.hp-you.is-seen .hp-you-dot { fill: var(--series-2); }
+.hp-you.is-seen .hp-you-glow { fill: var(--series-2); }
+.hp-you.is-none .hp-you-dot { fill: var(--text-muted); }
+
+.hp-ruler svg { display: block; width: 100%; height: auto; overflow: visible; }
+.hp-r-axis { stroke: var(--rule); stroke-width: 2; }
+.hp-r-tick { stroke: var(--text-muted); stroke-width: 1; }
+.hp-r-n { font-size: 11px; fill: var(--text-muted); text-anchor: middle; font-variant-numeric: tabular-nums; }
+.hp-r-end { font-size: 11px; fill: var(--text-muted); }
+.hp-r-search, .hp-r-photo, .hp-r-rubin, .hp-r-you { transition: transform .45s var(--reveal-ease, ease), opacity .3s ease; }
+.hp-r-search line { stroke: #ffffff; stroke-dasharray: 3 3; stroke-width: 1.5; }
+.hp-r-search text, .hp-r-photo text { font-size: 11px; fill: var(--text-secondary); }
+.hp-r-photo line { stroke: #ffffff; stroke-width: 2.5; }
+.hp-r-rubin line { stroke: var(--series-4); stroke-width: 2.5; }
+.hp-r-rubin text { font-size: 11px; fill: var(--series-4-ink); }
+.hp-r-you circle { fill: var(--p9); stroke: #05070d; stroke-width: 2.5; transition: fill .3s ease; }
+.hp-r-you.is-seen circle { fill: var(--series-2); }
+
+.hp-results { display: grid; gap: 0; border-top: 1px solid var(--rule); }
+.hp-row { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--rule);
+  font-size: .9rem; color: var(--text-secondary); }
+.hp-row-k { font: 700 .7rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); padding-top: 3px; }
+.hp-row b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.hp-status { font-weight: 700; }
+.hp-status.is-seen { color: var(--series-2-ink); }
+.hp-status.is-hidden { color: var(--p9-ink); }
+.hp-status.is-none { color: var(--text-secondary); }
+.k-ok { color: var(--text-primary); font-weight: 600; }
+.hp-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.hp-actions .pic-btn { height: 38px; padding: 0 16px; }
+.hp-verdict { border: 1px solid var(--rule); border-left: 4px solid var(--text-muted); border-radius: 10px; padding: 14px 16px;
+  background: var(--surface-2); font-size: .92rem; line-height: 1.5; color: var(--text-secondary); transition: opacity .3s ease; }
+.hp-verdict p { margin: 0 0 6px; }
+.hp-verdict p:last-child { margin-bottom: 0; }
+.hp-verdict.is-seen { border-left-color: var(--series-2); }
+.hp-verdict.is-hidden { border-left-color: var(--p9); }
+.hp-verdict.is-stale { opacity: .45; }
+.hp-verdict.is-in { animation: hp-in .4s var(--reveal-ease, ease) both; }
+@keyframes hp-in { from { opacity: 0; transform: translate3d(0, 6px, 0); } }
+.hp-v-head { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+.hp-verdict.is-seen .hp-v-head { color: var(--series-2-ink); }
+.hp-verdict.is-hidden .hp-v-head { color: var(--p9-ink); }
+.hp-v-next { color: var(--text-muted); font-size: .86rem; }
+
+.hp-orbit { margin-top: 20px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-1); }
+.hp-orbit summary { cursor: pointer; padding: 14px 18px; font-weight: 600; color: var(--text-primary); }
+.hp-orbit-in { display: grid; grid-template-columns: minmax(200px, 280px) minmax(0, 1fr); gap: 24px; padding: 4px 18px 18px; align-items: start; }
+.hp-dir { width: 100%; height: auto; }
+.hp-d-ring { fill: none; stroke: var(--rule); stroke-width: 1.5; }
+.hp-d-fit { fill: var(--p9); fill-opacity: .14; }
+.hp-d-obj { fill: var(--series-1); stroke: #05070d; stroke-width: 1.5; }
+.hp-d-mean { stroke: var(--series-1); stroke-width: 3; }
+.hp-d-opp { stroke: var(--text-muted); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.hp-d-sun { fill: var(--sun); }
+.hp-d-you line { stroke: var(--p9); stroke-width: 3; }
+.hp-d-you circle { fill: var(--p9); stroke: #05070d; stroke-width: 2; }
+.hp-d-t { font-size: 11px; fill: var(--series-1-ink); text-anchor: middle; }
+.hp-checks { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; font-size: .86rem; color: var(--text-secondary); }
+.hp-checks li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; }
+.hp-checks li.is-in b { color: var(--text-primary); }
+.hp-checks li.is-out b { color: var(--series-2-ink); }
+.hp-checks .hp-checks-src { display: block; color: var(--text-muted); font-size: .8rem; margin-top: 4px; }
+
+@media (max-width: 900px) {
+  .hp, .hp-orbit-in { grid-template-columns: minmax(0, 1fr); }
+  .hp-planet { max-width: 170px; }
+  .hp-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  /* the ruler is drawn at about half size on a phone, so its words are set larger; the map's hint sits under it */
+  .hp-r-n, .hp-r-end, .hp-r-search text, .hp-r-photo text, .hp-r-rubin text { font-size: 19px; }
+  .hp-ruler svg { overflow: visible; margin-top: 14px; }
+  .hp-map-note { position: static; margin: 4px 2px 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hp-scale, .hp-veil, .hp-r-search, .hp-r-photo, .hp-r-rubin, .hp-r-you, .hp-map-note { transition: none; }
+  .hp-verdict.is-in { animation: none; }
+}
+
+/* Hide Planet Nine as one screen (2026-11-09). The map's height follows the screen's (clamped), the right column is
+   exactly as wide as that 2:1 map, and the pair of columns is centred, so the planet and its dials, the map, the ruler,
+   the three results and the buttons all fit in a laptop's view once the heading is at the top. A screen too short
+   for that scrolls as usual; nothing is hidden. The verdict opens as a card on the map. */
+#buildV2 { --hp-map-h: clamp(220px, calc(100vh - var(--bar-h) - 400px), 380px); }
+#buildV2 .sec-head { margin-bottom: 14px; }
+#buildV2 .sec-head h2 { margin-bottom: 4px; }
+#buildV2 .sec-head .sec-q { margin-bottom: 4px; }
+#buildV2 .sec-head p { margin-top: 0; margin-bottom: 0; }
+#build .build-tools { margin-bottom: 0; }
+#buildV2 .hp { grid-template-columns: minmax(250px, 320px) minmax(0, calc(var(--hp-map-h) * 1.957 + 18px));
+  justify-content: center; gap: 22px; }
+#buildV2 .hp-left { padding: 12px 16px; }
+#buildV2 .hp-k { margin-bottom: 0; }
+#buildV2 .hp-planet { max-width: 150px; margin: -4px auto 0; }
+#buildV2 .hp-facts { gap: 6px 14px; margin-bottom: 10px; }
+#buildV2 .hp-facts dd { font-size: .9rem; }
+#buildV2 .hp-facts .is-mag dd b { font-size: 1.15rem; }
+#buildV2 .hp-dials { gap: 8px; }
+#buildV2 .hp-dial { gap: 2px; font-size: .82rem; }
+#buildV2 .hp-note { margin-top: 10px; font-size: .76rem; line-height: 1.45; }
+#buildV2 .hp-right { gap: 8px; }
+#buildV2 .hp-key { gap: 4px 14px; font-size: .8rem; }
+#buildV2 .hp-map { padding: 4px; }
+#buildV2 .hp-map > svg { height: var(--hp-map-h); width: 100%; }
+/* the ruler right under the map, its words set for its smaller size */
+#buildV2 .hp-ruler { margin-top: -2px; }
+#buildV2 .hp-ruler svg { max-height: 66px; }
+#buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 13px; }
+#buildV2 .hp-results { font-size: .86rem; }
+#buildV2 .hp-row { grid-template-columns: 150px minmax(0, 1fr); gap: 10px; padding: 5px 0; font-size: .86rem; }
+#buildV2 .hp-row-k { font-size: .64rem; padding-top: 2px; }
+#buildV2 .hp-status { font-size: .95rem; }
+#buildV2 .hp-actions .pic-btn { height: 34px; }
+/* the verdict on the map: a card in its top corner, closed with its button or Escape */
+#buildV2 .hp-verdict { position: absolute; top: 10px; right: 10px; z-index: 2; width: min(340px, calc(100% - 20px));
+  padding: 12px 34px 12px 14px; font-size: .84rem; box-shadow: 0 10px 30px #00000080; background: #15151aee; }
+#buildV2 .hp-verdict .pick-close { position: absolute; top: 6px; right: 6px; }
+#buildV2 .hp-v-head { font-size: .96rem; }
+/* the notes, folded under the game */
+.hp-notes { margin-top: 12px; }
+.hp-notes summary { cursor: pointer; font-size: .86rem; color: var(--text-secondary); }
+.hp-notes .caption { margin-top: 8px; }
+#buildV2 .hp-orbit { margin-top: 12px; }
+#buildV2 .hp-orbit summary { padding: 10px 16px; }
+@media (max-width: 900px) {
+  #buildV2 .hp { grid-template-columns: minmax(0, 1fr); }
+  #buildV2 .hp-map > svg { height: auto; }
+  #buildV2 .hp-planet { max-width: 130px; }
+  #buildV2 .hp-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  #buildV2 .hp-verdict { position: static; width: auto; margin-top: 6px; }
+  #buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 19px; }
+  #buildV2 .hp-ruler svg { max-height: none; }
+}
+/* the version switch on the heading's line (top right) rather than a row of its own, for both versions; a phone keeps
+   it on its own row. Version 2's left column a little more compact, so it ends with the right one. */
+@media (min-width: 901px) {
+  #build { position: relative; }
+  #build > .build-tools { position: absolute; top: 48px; right: var(--gutter); z-index: 1; }
+  #build .sec-head h2 { padding-right: 260px; }
+  #buildV2 { --hp-map-h: clamp(220px, calc(100vh - var(--bar-h) - 390px), 380px); }
+  #buildV2 .hp-planet { max-width: 128px; margin-top: -8px; margin-bottom: -4px; }
+  #buildV2 .hp-row { padding: 3px 0; }
+}
+/* version 2, tightened further: the key on one line, the two buttons beside the three results */
+@media (min-width: 901px) {
+  #buildV2 { --hp-map-h: clamp(220px, calc(100vh - var(--bar-h) - 420px), 380px); }
+  #buildV2 .hp-key { flex-wrap: nowrap; gap: 4px 12px; font-size: .76rem; white-space: nowrap; overflow: hidden; }
+  #buildV2 .hp-key .legend-item { gap: 6px; }
+  #buildV2 .hp-key .mag-key { width: 110px !important; height: 22px !important; }
+  #buildV2 .hp-right { grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; }
+  #buildV2 .hp-key, #buildV2 .hp-map, #buildV2 .hp-ruler { grid-column: 1 / -1; }
+  #buildV2 .hp-results { grid-column: 1; }
+  #buildV2 .hp-actions { grid-column: 2; flex-direction: column; justify-content: center; gap: 8px; }
+  #buildV2 .hp-actions .pic-btn { width: 100%; }
+  #buildV2 .hp-ruler svg { max-height: 58px; }
+}
+@media (min-width: 901px) {
+  /* the right column takes the free width (the map's oval keeps its 2:1 shape, centred in its panel), so the results
+     stay one line each */
+  #buildV2 .hp { grid-template-columns: minmax(250px, 320px) minmax(0, 860px); }
+}
+@media (min-width: 901px) { #buildV2 .hp-row { grid-template-columns: 172px minmax(0, 1fr); } }
+@media (min-width: 901px) { #buildV2 .hp-row { grid-template-columns: 200px minmax(0, 1fr); } }
+
+/* Hide Planet Nine across the content width (2026-11-09): the dashboard spans the page's margins like its heading,
+   about a quarter for the planet and its dials and the rest for the sky; the key sits in the map panel's top-left
+   corner beside the oval, so its row's height goes to the map, which grows taller and so wider (still 2:1, scaled
+   uniformly, centred in its panel); the cap is raised so a large screen's map fills its column. The ruler runs the
+   column's width. A phone keeps the stacked layout, the key above the map. */
+@media (min-width: 901px) {
+  #buildV2 { --hp-map-h: clamp(240px, calc(100vh - var(--bar-h) - 380px), 560px); }
+  #buildV2 .hp { grid-template-columns: minmax(280px, min(25%, 380px)) minmax(0, 1fr); justify-content: stretch; gap: 24px; }
+  #buildV2 .hp-right { grid-template-columns: minmax(0, 1fr) auto; }
+  #buildV2 .hp-map { padding: 6px; }
+  #buildV2 .hp-key { position: absolute; top: 10px; left: 12px; z-index: 1; display: grid; gap: 4px; padding: 6px 8px;
+    border-radius: 8px; background: #0f0f11cc; white-space: nowrap; overflow: visible; font-size: .74rem; }
+  #buildV2 .hp-map > svg { height: var(--hp-map-h); }
+  #buildV2 .hp-ruler svg { max-height: none; width: 100%; height: auto; }
+  #buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 14px; }
+  #buildV2 .hp-planet { max-width: 140px; }
+}
+@media (min-width: 901px) {
+  /* the ruler runs the column but no wider than a comfortable line, its words a steady size */
+  #buildV2 .hp-ruler { max-width: 1100px; width: 100%; justify-self: center; }
+  #buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 15px; }
+}
+@media (min-width: 901px) {
+  /* the key as one thin line along the map panel's foot, over the oval's southernmost tip, where nothing is drawn; the
+     hint in the empty top-left corner */
+  #buildV2 .hp-key { top: auto; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; flex-wrap: nowrap;
+    align-items: center; gap: 4px 14px; padding: 3px 10px; }
+  #buildV2 .hp-key .mag-key { margin-top: 6px; }
+  #buildV2 .hp-map-note { top: 10px; bottom: auto; left: 14px; }
+}
+/* the key is only a legend: clicks pass through it to the map, so the oval's southern tip under it can still be chosen */
+#buildV2 .hp-key { pointer-events: none; }
+
+/* ---- the Future page, version 2 (search/future.html #futureV2, pages/future.js) ---- */
+/* the version switch in the head's top-right corner, as on the timeline and the search page */
+.fv-head { position: relative; }
+.fv-tools { position: absolute; top: 0; right: var(--gutter); z-index: 1; }
+.fv-tools .seg button { font-size: .8rem; }
+@media (max-width: 900px) { .fv-tools { position: static; display: flex; justify-content: flex-end; margin-bottom: 10px; } }
+/* a shorter ending: tighter sections */
+.fv-part { padding-block: 32px; }
+.fv-part .sec-head { margin-bottom: 18px; }
+/* what happens next: three milestones on a line, each with its drawing, its year, whether it is under way, planned or
+   our estimate, a title and one line */
+.fv-time { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; position: relative; }
+.fv-time::before { content: ""; position: absolute; left: 8%; right: 8%; top: 46px; height: 2px; background: var(--rule); }
+.fv-m { position: relative; display: grid; justify-items: center; text-align: center; gap: 6px; }
+.fv-art { display: grid; place-items: center; width: 92px; height: 92px; border-radius: 50%; background: var(--surface-0); }
+.fv-art .art { width: 78px; height: auto; }
+.fv-y { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; margin-top: 4px; }
+.fv-tag { font: 700 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted);
+  border: 1px dashed var(--rule); border-radius: 999px; padding: 3px 9px; }
+.fv-tag.is-fact, .fv-tag.is-plan { border-style: solid; color: var(--text-secondary); }
+.fv-m h3 { margin: 6px 0 0; font-size: 1.08rem; }
+.fv-m p { margin: 0; max-width: 34ch; color: var(--text-secondary); font-size: .95rem; line-height: 1.5; }
+/* what would settle it: two balanced cards in the debate's colours */
+.fv-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.fv-card { background: var(--surface-1); border: 1px solid var(--rule); border-top: 4px solid var(--rule); border-radius: var(--radius); padding: 18px 22px; }
+.fv-card.is-for { border-top-color: var(--for); }
+.fv-card.is-against { border-top-color: var(--series-2); }
+.fv-card h3 { margin: 10px 0 10px; font-size: 1.15rem; }
+.fv-card.is-for h3 { color: var(--for-ink); }
+.fv-card.is-against h3 { color: var(--series-2-ink); }
+.fv-card ul { margin: 0; padding-left: 20px; color: var(--text-secondary); line-height: 1.5; }
+.fv-card li { margin-bottom: 6px; }
+.fv-key { margin: 10px 0 0; font-weight: 600; color: var(--text-primary); }
+.fv-pic { display: block; width: 100%; max-width: 220px; height: auto; }
+.fv-frame { fill: #ffffff08; stroke: var(--rule); stroke-width: 1.5; }
+.fv-frame.is-empty { stroke-dasharray: 4 4; }
+.fv-track { fill: none; stroke: var(--for); stroke-width: 1.5; stroke-dasharray: 3 4; opacity: .7; }
+.is-for .fv-dot { fill: var(--for); stroke: #05070d; stroke-width: 1.5; }
+.is-against .fv-dot { fill: var(--series-2); stroke: #05070d; stroke-width: 1.5; }
+.fv-arrows { fill: none; stroke: var(--series-2); stroke-width: 1.8; stroke-linecap: round; opacity: .75; }
+/* the vote: three planets, the reader's own Planet Nine first */
+.fv-vote .fv-title { font-size: clamp(1.6rem, 3.4vw, 2.3rem); margin-bottom: 22px; }
+.fv-choices { display: flex; justify-content: center; gap: clamp(18px, 5vw, 64px); flex-wrap: wrap; }
+.fv-pl { display: grid; justify-items: center; gap: 10px; padding: 8px; border: 0; background: none; color: var(--text-secondary);
+  font: inherit; cursor: pointer; border-radius: 16px; }
+.fv-disc { display: block; width: clamp(104px, 13vw, 156px); aspect-ratio: 1; border-radius: 50%; position: relative;
+  transition: transform .25s var(--reveal-ease, ease), filter .25s ease, box-shadow .25s ease; }
+.fv-disc svg { display: block; width: 100%; height: 100%; }
+.fv-lbl { font-size: 1.1rem; font-weight: 600; letter-spacing: .02em; transition: color .2s ease; }
+.fv-pl:hover .fv-disc, .fv-pl:focus-visible .fv-disc { transform: scale(1.06); filter: drop-shadow(0 0 14px #ffffff2e); }
+.fv-pl:hover .fv-lbl { color: var(--text-primary); }
+.fv-pl:focus-visible { outline: 2px solid var(--ui); outline-offset: 4px; }
+/* the chosen planet: a ring round it, its label lit; the others step back a little */
+.fv-pl[aria-pressed="true"] .fv-disc { box-shadow: 0 0 0 4px var(--surface-0), 0 0 0 7px var(--ui); }
+.fv-pl[aria-pressed="true"] .fv-lbl { color: var(--text-primary); }
+.fv-choices:has([aria-pressed="true"]) .fv-pl[aria-pressed="false"] .fv-disc { opacity: .6; }
+.fv-vote .cq-submit { margin-top: 22px; }
+@media (max-width: 760px) {
+  .fv-time, .fv-cards { grid-template-columns: minmax(0, 1fr); }
+  .fv-time::before { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fv-disc, .fv-lbl { transition: none; }
+  .fv-pl:hover .fv-disc, .fv-pl:focus-visible .fv-disc { transform: none; }
+}
+/* phones: the three planets stay on one row */
+@media (max-width: 760px) {
+  .fv-choices { flex-wrap: nowrap; gap: 10px; }
+  .fv-pl { padding: 4px; }
+  .fv-disc { width: clamp(80px, 26vw, 104px); }
+}
+
+/* the Future page, version 2: the telescope chart, as wide as the page, with its key and the takeaway under it; its
+   surveys come in as version 1's do */
+.fv-depth { padding: 18px 22px 14px; }
+.fv-depth h3 { margin-bottom: 4px; }
+#chartDepth2 svg { display: block; width: 100%; height: auto; max-height: 52vh; }
+.fv-depth-key { margin: 6px 0 0; font-size: .84rem; color: var(--text-muted); max-width: 110ch; }
+.fv-takeaway { margin: 14px 0 0; font-size: 1rem; font-weight: 600; color: var(--text-primary); max-width: 110ch; }
+html.has-reveal #chartDepth2 g.s { transition: opacity .5s var(--reveal-ease) calc(var(--i, 0) * 70ms), translate .5s var(--reveal-ease) calc(var(--i, 0) * 70ms); }
+html.has-reveal #chartDepth2:not(.is-in) g.s { opacity: 0; translate: 0 10px; }
+@media (max-width: 640px) { #chartDepth2 svg { max-height: none; } }
+
+/* the settle-it cards: title, then drawing, then explanation, the same spacing in both */
+.fv-cards { align-items: stretch; }
+.fv-card { display: flex; flex-direction: column; padding: 20px 24px 22px; border-top-width: 3px; }
+.fv-card h3 { order: 0; margin: 0 0 14px; font-size: 1.45rem; font-weight: 700; line-height: 1.25; }
+.fv-card .fv-pic { margin: 0 0 16px; }
+
+/* the sky maps' empty sky (2026-11-10): one dark navy for the oval wherever no visible-light survey in our data
+   reached, on the photographed sky, the game and the page head's small ovals; the depth itself is skyMagColour
+   (charts/skymap.js). Survey regions are painted solid, deepest on top, so overlaps read as the deepest photo there
+   rather than as stacked greys. The planet's path keeps a thin dark edge so it stays the clearest line on the blue. */
+:root { --sky-empty: #080e1c; }
+.ss-outline { fill: var(--sky-empty); }
+.ss-grat path, .ss-grat .near, .ss-grat .far { stroke: #ffffff17; }
+.ss-fpath { fill-opacity: 1; }
+.ss-core-edge { fill: none; stroke: #05070d; stroke-width: 5.5; stroke-opacity: .7; }
+.ss.is-mag .ss-core-edge { stroke-width: 3; }
+.hp-oval { fill: var(--sky-empty); }
+.hp-fp path { fill-opacity: 1; }
+.hp-grat path { stroke: #ffffff17; }
+.hp-path-edge { fill: none; stroke: #05070d; stroke-width: 6; stroke-opacity: .7; }
+.hp-path { stroke-width: 3; }
+
+/* the game's planet (2026-11-10): the same drawing in the reader's skin, a little brighter and crisper here than
+   elsewhere, so its surface, its craters and its shading all read against the dark panel; only this panel */
+#buildV2 .hp-planet svg { filter: brightness(1.18) contrast(1.12) saturate(1.12); }
+
+/* Hide Planet Nine's result (2026-11-10): read as a conclusion and the two measurements behind it, not a table. The
+   verdict is the largest thing under the map, in its status colour (ember: it would have been seen; the planet's
+   colour: not ruled out; grey: no data), with one muted sentence; under it the two numbers, each with a small capital
+   label and a muted line; the primary button beside. Grouping by space, not by rules or boxes. */
+#buildV2 .hp-out { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-areas: "main main act" "m m act"; gap: 10px 28px; align-items: start; margin-top: 4px; }
+.hp-out-main { grid-area: main; }
+.hp-out-metrics { grid-area: m; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 28px; }
+#buildV2 .hp-out .hp-actions { grid-area: act; display: flex; flex-direction: column; gap: 8px; align-self: center; }
+.hp-out p { margin: 0; }
+.hp-res-k { font: 700 .66rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px !important; }
+.hp-res-verdict { font-size: clamp(1.35rem, 2.1vw, 1.7rem); font-weight: 700; line-height: 1.15; letter-spacing: -.01em; color: var(--text-primary);
+  transition: color .3s ease; }
+.hp-out[data-key="seen"] .hp-res-verdict { color: var(--series-2-ink); }
+.hp-out[data-key="hidden"] .hp-res-verdict { color: var(--p9-ink); }
+.hp-out[data-key="none"] .hp-res-verdict { color: var(--text-secondary); }
+.hp-res-why { margin-top: 4px !important; font-size: .86rem; line-height: 1.45; color: var(--text-muted); max-width: 90ch; }
+.hp-metric-v { font-size: 1.45rem; font-weight: 700; line-height: 1.1; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.hp-metric-u { margin-left: 4px; font-size: .78rem; font-weight: 600; color: var(--text-muted); }
+.hp-metric-d { margin-top: 2px !important; font-size: .8rem; line-height: 1.4; color: var(--text-muted); }
+#buildV2 .hp-out .hp-actions .pic-btn { height: 38px; padding: 0 18px; width: 100%; }
+#buildV2 .hp-out .hp-secondary { background: transparent; border-color: #ffffff30; color: var(--text-secondary); }
+#buildV2 .hp-out .hp-secondary:hover { border-color: #ffffff70; color: var(--text-primary); }
+@media (max-width: 900px) {
+  #buildV2 .hp-out { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "m" "act"; }
+  .hp-out-metrics { gap: 8px 16px; }
+  #buildV2 .hp-out .hp-actions { flex-direction: row; }
+  #buildV2 .hp-out .hp-actions .pic-btn { flex: 1 1 0; }
+  .hp-metric-v { font-size: 1.25rem; }
+}
+@media (min-width: 901px) {
+  /* the result's two rows take a little more room than the old table, so the map gives a little back */
+  #buildV2 { --hp-map-h: clamp(240px, calc(100vh - var(--bar-h) - 420px), 560px); }
+  #buildV2 .hp-out { gap: 6px 28px; margin-top: 0; }
+  .hp-res-verdict { font-size: clamp(1.3rem, 1.75vw, 1.6rem); }
+}
+@media (min-width: 901px) {
+  #buildV2 { --hp-map-h: clamp(240px, calc(100vh - var(--bar-h) - 432px), 560px); }
+  /* the key never runs past its panel: it wraps to a second line, centred, if the panel is too narrow */
+  #buildV2 .hp-key { flex-wrap: wrap; justify-content: center; max-width: calc(100% - 24px); white-space: normal; }
+}
+@media (min-width: 901px) { #buildV2 .hp-key { width: max-content; } }
+@media (min-width: 901px) {
+  /* the key on one line at a laptop's width too, so it covers no more of the map's southern edge than one line */
+  #buildV2 .hp-key { font-size: .68rem; gap: 4px 10px; }
+}
+@media (max-width: 900px) {
+  /* the ruler's box is 1000 wide, drawn at about a third of that on a phone: its words set to read at about 12px */
+  #buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 30px; }
+  #buildV2 .hp-ruler { margin-top: 18px; }
+}
+/* the ruler's two ends in words under it, on a phone only (in the drawing they would sit on the end numbers) */
+.hp-ruler-ends { display: none; }
+@media (min-width: 901px) {
+  /* one line of key at a laptop's width: the ramp's numbers already say which way is deeper */
+  #buildV2 .hp-key .mag-ends { display: none; }
+}
+@media (max-width: 900px) {
+  #buildV2 .hp-r-end { display: none; }
+  #buildV2 .hp-ruler-ends { display: flex; justify-content: space-between; margin: 2px 0 0; font-size: .74rem; color: var(--text-muted); }
+  /* "photos here" on a row of its own above the others, clear of "searches find half" and Rubin */
+  #buildV2 .hp-r-photo text { transform: translateY(-32px); }
+  #buildV2 .hp-ruler { margin-top: 40px; }
+}
+
+/* Hide Planet Nine: one quiet button, Reset planet, beside the result (no test, no popup: the verdict is live) */
+@media (min-width: 901px) { #buildV2 .hp-out .hp-actions { align-self: start; margin-top: 18px; } }
+
+/* Hide Planet Nine's "Move Me Around!" (2026-11-10): small bold words just above the planet's marker, pulsing gently
+   between 0.45 and 1 over a 2.8s cycle, a soft glow in the planet's colour behind a white line with a dark edge;
+   gone, with a fade, once the planet is first moved. Readers who ask for less motion get it steady. */
+.hp-hint { pointer-events: none; transition: opacity .6s ease; }
+.hp-hint.is-gone { opacity: 0; }
+.hp-hint text { text-anchor: middle; font-size: 22px; font-weight: 700; letter-spacing: .01em; }
+.hp-hint-glow { fill: none; stroke: var(--p9); stroke-width: 9px; stroke-opacity: .28; stroke-linejoin: round; }
+.hp-hint-t { fill: #ffffff; stroke: #05070d; stroke-width: 4px; paint-order: stroke; stroke-linejoin: round; }
+.hp-hint:not(.is-gone) text { animation: hp-hint-pulse 1.4s ease-in-out infinite alternate; }
+@keyframes hp-hint-pulse { from { opacity: 1; } to { opacity: .45; } }
+@media (max-width: 900px) { .hp-hint text { font-size: 34px; } }
+@media (prefers-reduced-motion: reduce) { .hp-hint:not(.is-gone) text { animation: none; } .hp-hint { transition: none; } }
+
+/* Hide Planet Nine's map labels (2026-11-10), in the photographed sky's colours: the Milky Way in its sand, Rubin in its
+   pink, the predicted path in the planet's colour with a short leader, and "Your Planet Nine" small and grey under the
+   marker. All with a dark edge for the sky behind, none taking the pointer; their size is set in pixels by the game. */
+.hp-labels, .hp-lbl { pointer-events: none; }
+.hp-lbl { text-anchor: middle; font-weight: 600; paint-order: stroke; stroke: #05070d; stroke-linejoin: round; }
+.hp-lbl.is-milky { fill: #dcc48a; }
+.hp-lbl.is-rubin { fill: var(--series-4-ink); }
+.hp-lbl.is-path { fill: var(--p9-ink); }
+.hp-lbl-lead { stroke: var(--p9); stroke-opacity: .7; }
+.hp-lbl-you { fill: var(--text-secondary); font-weight: 600; }
+/* a map label the marker has come over steps back until the marker moves on */
+.hp-labels .hp-lbl { transition: opacity .3s ease; }
+.hp-labels .hp-lbl.is-near { opacity: .12; }
+/* the Timeline debate's playback controls (2026-11-10): three buttons of one height and one radius, centred on the year
+   strip; the arrows dark with a thin border and a larger, brighter glyph, Play/Pause the primary action in white */
+#debate .db-time .pic-btn { height: 38px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center;
+  line-height: 1; padding: 0 12px; }
+#debate .db-step { min-width: 46px; background: #000000b0; border: 1px solid #ffffff38; color: #ffffff; font-size: 18px; font-weight: 600; }
+#debate .db-step:hover:not(:disabled) { background: #000000e0; border-color: #ffffff80; }
+#debate .db-step:disabled { opacity: .4; }
+#debate .db-play { min-width: 92px; padding: 0 22px; background: var(--ui); border: 1px solid var(--ui); color: var(--surface-0);
+  font-size: .88rem; font-weight: 700; }
+#debate .db-play:hover { filter: brightness(.92); }
+#debate .db-time .pic-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+
+/* the game's map marker is the reader's own Planet Nine (2026-11-10): its drawing over a soft glow whose colour still
+   says the outcome, a thin dark ring so it stands off the blue; sizes set in pixels by the game */
+.hp-you-edge { fill: none; stroke: #05070d; stroke-opacity: .85; }
+.hp-you-glow { fill-opacity: .3; }
+.hp-you-art { pointer-events: none; }
+
+/* Hide Planet Nine: "How is brightness calculated?" folded under the dials (2026-11-10). The panel's own greys and
+   rounded rule; the distance letter in the AU gold, as every distance on the site; the live comparison white. */
+.hp-calc { margin-top: 12px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-0); }
+.hp-calc summary { cursor: pointer; padding: 8px 12px; font-size: .84rem; font-weight: 600; color: var(--text-secondary); border-radius: var(--radius); }
+.hp-calc summary:hover, .hp-calc[open] summary { color: var(--text-primary); }
+.hp-calc summary:focus-visible { outline: 2px solid var(--ui, #fff); outline-offset: 2px; }
+.hp-calc-in { padding: 2px 12px 12px; display: grid; gap: 10px; }
+.hp-calc-f { margin: 0; text-align: center; font-size: 1.15rem; color: var(--text-primary); letter-spacing: .02em; }
+.hp-calc-f sup { font-size: .62em; }
+.hp-calc i { font-style: italic; font-family: Georgia, 'Times New Roman', serif; }
+.hp-calc i.is-d { color: var(--au); }
+.hp-calc-terms { margin: 0; display: grid; gap: 2px; font-size: .78rem; color: var(--text-secondary); }
+.hp-calc-terms div { display: grid; grid-template-columns: 1.4em minmax(0, 1fr); gap: 6px; }
+.hp-calc-terms dt { color: var(--text-primary); text-align: center; }
+.hp-calc-terms dd { margin: 0; }
+.hp-calc-live { border-top: 1px solid var(--rule); padding-top: 10px; }
+.hp-calc-x { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 6px; font-size: .8rem; color: var(--text-secondary); }
+.hp-calc-x > b { font-size: 1.2rem; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.hp-calc-mag { margin-left: auto; white-space: nowrap; }
+.hp-calc-mag b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.hp-calc-why { margin: 6px 0 0; font-size: .8rem; line-height: 1.45; color: var(--text-primary); }
+.hp-calc-note { margin: 0; font-size: .74rem; line-height: 1.45; color: var(--text-muted); }
+.hp-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { .hp-calc summary { transition: none; } }
+.hp-calc-x { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; }
+.hp-calc-x > span:first-of-type { line-height: 1.25; }
+.hp-calc-mag { grid-column: 1 / -1; margin: 2px 0 0; }
+/* the brightness section, shortened (2026-11-10): formula, one line of terms, the live numbers on one row, one rule */
+.hp-calc-in { gap: 6px; padding: 0 12px 10px; }
+.hp-calc-f { font-size: 1.05rem; }
+.hp-calc-terms { margin: 0; text-align: center; font-size: .76rem; color: var(--text-secondary); }
+.hp-calc-terms i { color: var(--text-primary); }
+.hp-calc-terms i.is-d { color: var(--au); }
+.hp-calc-live { padding-top: 6px; }
+.hp-calc-x { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; }
+.hp-calc-x > b { font-size: 1.05rem; }
+.hp-calc-mag { margin: 0 0 0 auto; }
+.hp-calc-note { color: var(--text-secondary); }
+.hp-calc-terms { display: block; }
+.hp-calc-x { flex-wrap: nowrap; white-space: nowrap; }
+.hp-calc-x { flex-wrap: wrap; font-size: .76rem; }
+.hp-calc-x > span { white-space: nowrap; }
+
+/* Hide Planet Nine, the result as one quiet panel (2026-11-10): the verdict and its sentence, a thin rule, then the
+   two numbers in two aligned columns. Reset moved to the planet card's top-right corner, beside its heading. */
+#buildV2 .hp-out { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "m"; gap: 0;
+  margin-top: 6px; padding: 12px 16px; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); }
+#buildV2 .hp-out-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 24px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--rule); }
+#buildV2 .hp-res-why { color: var(--text-secondary); }
+.hp-left-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.hp-left-head .hp-k { margin: 0; }
+.hp-reset { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px 0 7px; font: 600 .76rem var(--font-sans);
+  color: var(--text-secondary); background: transparent; border: 1px solid #ffffff30; border-radius: 999px; cursor: pointer; }
+.hp-reset:hover { color: var(--text-primary); border-color: #ffffff70; }
+.hp-reset:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+.hp-reset svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.hp-reset:active svg { transform: rotate(-60deg); transition: transform .2s; }
+@media (prefers-reduced-motion: reduce) { .hp-reset:active svg { transform: none; transition: none; } }
+@media (max-width: 520px) { #buildV2 .hp-out-metrics { gap: 6px 14px; } }
+/* the panel's padding and the reset's row cost about 30px; the map gives them back so the game still fits one screen */
+@media (min-width: 901px) { #buildV2 { --hp-map-h: clamp(240px, calc(100vh - var(--bar-h) - 452px), 560px); } }
+
+/* the searches so far opens the search page (2026-11-10, moved before the photographed sky): a little less air
+   round the timeline, so it leads into the sky's story without a gap */
+body[data-page="search"] #searches { padding-block: 36px 32px; }
+body[data-page="search"] #searches .sec-head { margin-bottom: 12px; }
+body[data-page="search"] #searches .fl-legend { margin-bottom: 14px; }
+body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
+
+/* the debate's finale (2026-11-10): the range's last year closes on the totals in the middle of the stage, a face over
+   each number, one line under them. The numbers arrive by flying from the counts above (charts/debate.js, .db-fly);
+   the faces and words fade in behind them, the papers fade out. Centred on the stage, never the window. */
+#debate { position: relative; }
+.db-final { position: absolute; inset: 0; z-index: 1; display: grid; align-content: center; justify-items: center; gap: 14px;
+  padding: 24px 16px; text-align: center; pointer-events: none; visibility: hidden; transition: visibility 0s .4s; }
+.db-stage.is-final .db-final { visibility: visible; transition: none; }
+.db-final-sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(28px, 9vw, 120px); }
+.db-final-side { display: grid; justify-items: center; gap: 10px; }
+.db-face { width: clamp(78px, 11vw, 120px); height: auto; opacity: 0; transform: translateY(8px) scale(.85);
+  transition: opacity .3s ease, transform .3s ease; }
+.db-face > circle:first-child { stroke-width: 3; }
+.is-for .db-face > circle:first-child { fill: var(--db-for); stroke: var(--db-for-ink); }
+.is-against .db-face > circle:first-child { fill: var(--db-against); stroke: var(--db-against-ink); }
+.db-face .db-eye { fill: #05070d; }
+.db-face .db-mouth { fill: none; stroke: #05070d; stroke-width: 6; stroke-linecap: round; }
+.db-fn, .db-fly { font-size: clamp(3.4rem, 8vw, 5.6rem); font-weight: 700; line-height: 1; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.db-fn { display: block; }
+.db-fl { font: 700 .76rem var(--font-mono); letter-spacing: .14em; }
+.is-for > .db-fn, .is-for > .db-fl, .db-fly.is-for { color: var(--db-for-ink); }
+.is-against > .db-fn, .is-against > .db-fl, .db-fly.is-against { color: var(--db-against-ink); }
+.db-fl, .db-final-words, .db-final-note { opacity: 0; transition: opacity .25s ease; }
+.db-final-words { margin: 12px 0 0; font-size: clamp(1rem, 1.7vw, 1.25rem); font-weight: 600; color: var(--text-primary); }
+.db-final-note { margin: 0; font-size: .78rem; color: var(--text-muted); }
+.db-stage.is-final .db-face { opacity: 1; transform: none; transition: opacity .45s ease .32s, transform .55s cubic-bezier(.3,1.4,.5,1) .32s; }
+.db-stage.is-final .db-fl { opacity: 1; transition: opacity .4s ease .45s; }
+.db-stage.is-final .db-final-words { opacity: 1; transition: opacity .45s ease .55s; }
+.db-stage.is-final .db-final-note { opacity: 1; transition: opacity .45s ease .65s; }
+.db-svg { transition: opacity .45s ease, visibility 0s; }
+.db-stage.is-final .db-svg { opacity: 0; visibility: hidden; transition: opacity .45s ease, visibility 0s .45s; }
+.db-fly { position: absolute; display: none; margin: 0; transform-origin: 0 0; pointer-events: none; z-index: 5; white-space: nowrap; }
+.db-counts dt { transition: opacity .3s ease; }
+.db-counts.is-away dt { opacity: 0; }
+@media (max-width: 640px) {
+  .db-final { gap: 10px; }
+  .db-fl { font-size: .66rem; letter-spacing: .1em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .db-face, .db-fl, .db-final-words, .db-final-note, .db-svg, .db-counts dt, .db-final,
+  .db-stage.is-final .db-face, .db-stage.is-final .db-fl, .db-stage.is-final .db-final-words,
+  .db-stage.is-final .db-final-note, .db-stage.is-final .db-svg { transition: none; }
+}
+
+/* Future, version 2 (2026-11-10): the milestones follow the page title with no heading of their own, so they sit
+   close under it, without the section rule */
+#futureV2 > #fvNext { padding-top: 4px; border-top: 0; }
+
+/* How the proposal changed, version 2 (2026-11-10, charts/proposals2.js): the picture and the paper row on the left,
+   the estimate card and a small overview on the right. Planet Nine's colour for a model, ember for the candidate,
+   distances in gold; the switch as the debate's. */
+.pv-tools { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+.pv-tools .seg button { font-size: .8rem; }
+.pv { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr); gap: 20px; align-items: start; --pv: var(--p9); --pv-ink: var(--p9-ink); }
+.pv.is-cand { --pv: var(--series-2); --pv-ink: var(--series-2-ink); }
+.pv-left, .pv-right { display: grid; gap: 12px; min-width: 0; }
+.pv-pic { padding: 14px 16px 10px; }
+.pv-svg { display: block; width: 100%; height: auto; overflow: visible; }
+.pv-pic-note { margin: 2px 0 0; font-size: .74rem; color: var(--text-muted); }
+.pv-axis-t { font: 700 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; fill: var(--text-muted); }
+.pv-axis { stroke: var(--text-muted); stroke-width: 1.5; }
+.pv-tick { stroke: var(--text-muted); }
+.pv-tl { font-size: 12px; fill: var(--text-muted); text-anchor: middle; font-variant-numeric: tabular-nums; }
+.pv-tl.au { fill: var(--au); }
+.pv-band { fill: var(--pv); fill-opacity: .32; transition: fill .4s; }
+.pv-one { stroke: var(--c-earth); stroke-width: 2; }
+.pv-earth { font-size: 11.5px; fill: var(--text-secondary); text-anchor: middle; }
+.pv-mdot { fill: var(--pv); stroke: var(--surface-1); stroke-width: 2; transition: fill .4s; }
+.pv-open { fill: var(--pv); transition: fill .4s; }
+.pv-mlabel, .pv-plabel { font-size: 12px; font-weight: 600; fill: var(--pv-ink); text-anchor: middle; paint-order: stroke; stroke: var(--surface-1); stroke-width: 4px; stroke-linejoin: round; }
+.pv-cand circle:first-child { fill: var(--series-2); fill-opacity: .18; stroke: var(--series-2); stroke-width: 3; stroke-dasharray: 6 5; }
+.pv-cand circle:last-child { fill: var(--series-2-ink); }
+.pv-art, .pv-cand { transition: none; }
+.pv-pick { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: thin; padding: 2px 2px 6px; }
+.pv-btn { flex: 1 0 auto; display: grid; justify-items: start; gap: 1px; padding: 7px 11px; min-width: 96px; text-align: left; cursor: pointer;
+  background: transparent; border: 1px solid var(--rule); border-radius: 9px; color: var(--text-secondary); font: inherit; }
+.pv-btn:hover { border-color: #ffffff50; color: var(--text-primary); }
+.pv-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+.pv-btn[aria-pressed="true"] { background: #ffffff14; border-color: #ffffffa0; color: var(--text-primary); }
+.pv-btn-y { font: 700 .7rem var(--font-mono); letter-spacing: .08em; color: var(--text-muted); }
+.pv-btn[aria-pressed="true"] .pv-btn-y { color: var(--text-primary); }
+.pv-btn-n { font-size: .82rem; font-weight: 600; white-space: nowrap; }
+.pv-btn.is-cand .pv-btn-n { color: var(--series-2-ink); }
+.pv-card { padding: 16px 18px; }
+.pv-meta { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; }
+.pv-year { font-size: 1.5rem; font-weight: 700; line-height: 1; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.pv-tag { font: 700 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--pv-ink); border: 1px solid var(--pv); border-radius: 999px; padding: 3px 8px; }
+.pv-title { margin: 6px 0 10px; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+.pv-vals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; margin: 0 0 10px; padding: 10px 0; border-block: 1px solid var(--rule); }
+.pv-vals dt { font: 700 .64rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.pv-vals dd { margin: 3px 0 0; }
+.pv-big { font-size: 1.55rem; font-weight: 700; line-height: 1.1; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.pv-big.k-au { color: var(--au); }
+.pv-big.is-floor::before { content: '≥ '; color: var(--text-secondary); }
+.pv-unit { font-size: .8rem; color: var(--text-secondary); }
+.pv-sub { display: block; margin-top: 3px; font-size: .76rem; line-height: 1.35; color: var(--text-muted); }
+.pv-text p { margin: 0 0 6px; font-size: .86rem; line-height: 1.45; }
+.pv-desc { color: var(--text-primary); }
+.pv-cmp { color: var(--text-secondary); }
+.pv-src { font-size: .78rem !important; }
+.pv-src a { color: var(--text-secondary); }
+.pv-text.is-swap { animation: pv-swap .45s ease both; }
+@keyframes pv-swap { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.pv-over { padding: 10px 12px 6px; }
+.pv-osvg { display: block; width: 100%; height: auto; }
+.pv-ot { font: 700 9.5px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; fill: var(--text-muted); }
+.pv-og { stroke: var(--rule); }
+.pv-oy { font-size: 9.5px; fill: var(--text-muted); text-anchor: end; }
+.pv-oy.au { fill: var(--au); }
+.pv-ox { font-size: 10px; fill: var(--text-muted); text-anchor: middle; }
+.pv-oc { cursor: pointer; }
+.pv-ohit { fill: transparent; }
+.pv-or { stroke: var(--text-muted); stroke-opacity: .45; stroke-width: 6; stroke-linecap: round; transition: stroke .3s, stroke-opacity .3s; }
+.pv-od { fill: var(--text-muted); fill-opacity: .7; transition: fill .3s; }
+.pv-oc.is-cand .pv-or { stroke: var(--series-2); }
+.pv-oc.is-cand .pv-od { fill: var(--series-2); }
+.pv-oc.is-on .pv-or { stroke: var(--p9); stroke-opacity: .75; }
+.pv-oc.is-on .pv-od { fill: var(--p9); fill-opacity: 1; }
+.pv-oc.is-on.is-cand .pv-or, .pv-oc.is-on.is-cand .pv-od { stroke: var(--series-2); fill: var(--series-2); stroke-opacity: .85; }
+.pv-oc.is-on .pv-ox { fill: var(--text-primary); font-weight: 700; }
+.pv-oc:hover .pv-or { stroke-opacity: .7; }
+@media (max-width: 900px) {
+  .pv { grid-template-columns: minmax(0, 1fr); }
+  .pv-btn { min-width: 0; }
+}
+@media (max-width: 520px) {
+  .pv-vals { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 12px; }
+  .pv-big { font-size: 1.3rem; }
+  .pv-tools { justify-content: stretch; }
+  .pv-tools .seg { width: 100%; }
+  .pv-tools .seg button { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-text.is-swap { animation: none; }
+  .pv-band, .pv-mdot, .pv-open, .pv-or, .pv-od { transition: none; }
+}
+@media (min-width: 901px) { .pv-pick { flex-wrap: wrap; overflow: visible; } .pv-btn { flex: 1 1 22%; min-width: 0; } }
+/* phones: the picture is drawn at about half size, so its words are set about twice as large in its own units */
+@media (max-width: 640px) {
+  .pv-pic { padding: 10px 10px 8px; }
+  .pv-axis-t { font-size: 19px; }
+  .pv-tl { font-size: 21px; }
+  .pv-earth { font-size: 18px; }
+  .pv-mlabel, .pv-plabel { font-size: 21px; stroke-width: 6px; }
+}
+@media (max-width: 640px) { .pv-ot { font-size: 10.5px; } .pv-oy, .pv-ox { font-size: 11px; } }
+
+/* How the proposal changed, version 2: the paper buttons made plainly clickable (2026-11-10). A grid under the
+   picture (four by two on a wide screen, two or three across below), the year large and white over the paper's name,
+   brighter borders, a lift on hover, a clear focus ring; the chosen one in the planet's colour (ember for the
+   candidate), as the picture marks it. */
+.pv-pick, .pv-pick:is(*) { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; overflow: visible; padding: 2px 0 0; justify-self: stretch; }
+.pv-btn, .pv-btn:is(*) { display: grid; place-items: center; align-content: center; gap: 3px; min-width: 0; min-height: 66px; padding: 11px 10px;
+  text-align: center; background: #ffffff0a; border: 1px solid #ffffff42; border-radius: 10px; color: var(--text-secondary);
+  transition: transform .18s ease, border-color .18s ease, background-color .18s ease, box-shadow .18s ease; }
+.pv-btn .pv-btn-y { font: 700 1.05rem var(--font-sans); letter-spacing: 0; color: #ffffff; font-variant-numeric: tabular-nums; }
+.pv-btn .pv-btn-n { font-size: .8rem; font-weight: 500; color: #c9ccd4; white-space: normal; line-height: 1.25; }
+.pv-btn.is-cand .pv-btn-n { color: var(--series-2-ink); }
+.pv-btn:hover { transform: translateY(-2px); border-color: #ffffff8c; background: #ffffff14; color: var(--text-primary); }
+.pv-btn:focus-visible { outline: 2px solid #ffffff; outline-offset: 3px; border-color: #ffffff; }
+.pv-btn[aria-pressed="true"] { --sel: var(--p9); --sel-ink: var(--p9-ink);
+  background: color-mix(in srgb, var(--sel) 16%, transparent); border: 1.5px solid var(--sel); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--sel) 35%, transparent); }
+.pv-btn.is-cand[aria-pressed="true"] { --sel: var(--series-2); --sel-ink: var(--series-2-ink); }
+.pv-btn[aria-pressed="true"] .pv-btn-y { color: var(--sel-ink); }
+.pv-btn[aria-pressed="true"] .pv-btn-n { color: var(--text-primary); }
+.pv-btn[aria-pressed="true"]:hover { border-color: var(--sel); background: color-mix(in srgb, var(--sel) 22%, transparent); }
+@media (max-width: 900px) { .pv-pick, .pv-pick:is(*) { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
+@media (max-width: 420px) { .pv-pick, .pv-pick:is(*) { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pv-btn, .pv-btn:is(*) { min-height: 60px; padding: 9px 8px; } }
+@media (prefers-reduced-motion: reduce) { .pv-btn, .pv-btn:is(*) { transition: none; } .pv-btn:hover { transform: none; } }
+/* the mass scale's marker is Planet Nine itself (2026-11-10): the same drawing as the distance ruler's, small, centred
+   on its value; it takes no stroke or fill from the old dot's rule. On a phone the picture is drawn at about half size,
+   so the planet is drawn half again as large and its number lifted clear of it. */
+.pv-mdot { fill: unset; stroke: unset; stroke-width: unset; }
+@media (max-width: 640px) {
+  .pv-mdot-s { transform: scale(1.5); }
+  .pv-mlabel { transform: translateY(-7px); }
+}
+@media (max-width: 640px) { .pv-axis-m { transform: translateY(-14px); } }
+
+/* How the proposal changed, version 2: the estimate card made compact (2026-11-10). Even 14/16px padding, tighter
+   gaps; the paper and the comparison side by side under small labels on a card wide enough, stacked below that; the
+   source on its own line at the foot. The card is as tall as its content. */
+.pv-right { align-content: start; }
+.pv-card { padding: 14px 16px 12px; container-type: inline-size; }
+.pv-meta { margin: 0 0 2px; flex-wrap: wrap; row-gap: 6px; }
+.pv-title { margin: 4px 0 8px; line-height: 1.3; }
+.pv-vals { margin: 0 0 10px; padding: 8px 0; gap: 8px 16px; }
+.pv-vals dt { line-height: 1.35; }
+.pv-sub { margin-top: 2px; }
+.pv-text { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px 18px; }
+.pv-text p { margin: 0; overflow-wrap: anywhere; }
+.pv-text .pv-k { margin-bottom: 3px; font: 700 .62rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.pv-desc p:not(.pv-k) { color: var(--text-primary); }
+.pv-cmp p:not(.pv-k) { color: var(--text-secondary); }
+.pv-src { padding-top: 8px; border-top: 1px solid var(--rule); }
+@container (min-width: 420px) {
+  .pv-text { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .pv-src { grid-column: 1 / -1; }
+}
+
+/* The searches so far, enlarged (2026-11-10): the timeline, the card and the buttons share one wider column (up to
+   1300px, centred, so on most screens it runs gutter to gutter like the sections round it); the card roomier, its
+   words a step larger, its drawing larger, every card at least one height so the six steps match; the buttons on the
+   card's edges with the count centred between them. Scoped to this section: field.css's rows also serve other pages. */
+#searches .fl.st { max-width: 1300px; margin-inline: auto; }
+#searches .st-rail-wrap { padding-inline: 0; }
+#searches .st-year { font-size: 1.05rem; }
+#searches .st-kind { font-size: .7rem; }
+#searches .st-mark { gap: 6px; }
+#searches .st .fr.is-data {
+  --fl-icon: 72px;
+  grid-template-columns: var(--fl-icon) minmax(0, 1fr) minmax(0, 470px);
+  gap: 8px 36px; padding: 32px 40px; min-height: 290px;
+}
+#searches .st .fr.is-data .fr-body { max-width: 64ch; }
+#searches .st .fr-title { font-size: 1.32rem; margin-bottom: 8px; }
+#searches .st .fr.is-key .fr-title { font-size: 1.7rem; }
+#searches .st .fr-line { font-size: 1.04rem; line-height: 1.55; }
+#searches .st .fr.is-key .fr-line { font-size: 1.1rem; }
+#searches .st .fr-foot { margin-top: 12px; font-size: .86rem; color: var(--text-secondary); }
+#searches .st .fr-foot a { color: var(--text-secondary); }
+#searches .st .fr.is-data .fr-art, #searches .st .fr.is-key.is-data .fr-art { width: 100%; max-width: 470px; justify-self: center; }
+#searches .st-nav { display: grid; grid-template-columns: 1fr auto 1fr; margin-top: 14px; }
+#searches .st-prev { justify-self: start; }
+#searches .st-next { justify-self: end; }
+#searches .st-btn { min-height: 44px; padding: 0 20px; font-size: .95rem; }
+#searches .st-prev { background: #ffffff0d; border-color: #ffffff4d; }
+#searches .st-prev:hover { background: #ffffff1a; border-color: #ffffff8c; }
+#searches .st-prev[aria-disabled="true"]:hover { background: #ffffff0d; border-color: #ffffff4d; }
+#searches .st-count { font-size: .8rem; color: var(--text-secondary); }
+@media (max-width: 1199px) {
+  #searches .st .fr.is-data { grid-template-columns: var(--fl-icon) minmax(0, 1fr) minmax(0, 380px); gap: 8px 28px; padding: 28px 30px; min-height: 260px; }
+}
+@media (max-width: 900px) {
+  #searches .st .fr.is-data {
+    --fl-icon: 52px; grid-template-columns: var(--fl-icon) minmax(0, 1fr); grid-template-areas: "icon body" "art art" "meta meta";
+    gap: 14px 16px; padding: 22px 20px; min-height: 0;
+  }
+  #searches .st .fr.is-data .fr-art { max-width: 460px; }
+  #searches .st .fr-title { font-size: 1.18rem; }
+  #searches .st .fr.is-key .fr-title { font-size: 1.36rem; }
+  #searches .st .fr-line, #searches .st .fr.is-key .fr-line { font-size: .98rem; }
+}
+@media (max-width: 560px) {
+  #searches .st .fr.is-data { padding: 18px 16px; }
+  #searches .st-year { font-size: .9rem; }
+  #searches .st-kind { font-size: .58rem; }
+  #searches .st-btn { padding: 0 14px; font-size: .9rem; }
+}
+@media (min-width: 1200px) {
+  #searches .st .fr.is-data { grid-template-columns: var(--fl-icon) minmax(0, 1fr) minmax(0, 540px); padding: 28px 36px; }
+  #searches .st .fr.is-data .fr-art, #searches .st .fr.is-key.is-data .fr-art { max-width: 540px; }
 }

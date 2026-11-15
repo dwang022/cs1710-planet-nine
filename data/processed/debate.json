@@ -1,0 +1,38 @@
+{
+ "_what": "The Planet Nine debate (search/timeline.html, charts/debate.js): one dot per paper in papers.json from 2014 on, for a planet inside the circle, against outside, revealed year by year.",
+ "_caution": [
+  "Which side a paper is on comes from 'stance' in papers.json, our editorial reading of its abstract: supports -> for; against and alternative -> against; neutral (data, models, predictions that take no side) is left out of the picture but stays in papers.json and on the credits page.",
+  "A paper's year is its year in field_timeline.json when the ledger has it, otherwise its year in papers.json.",
+  "'why' is the one line that says what a paper does to the argument. For papers in field_timeline.json it is that file's line (the branch's title when the finders drew a conclusion, else the entry's title); the lines below are for the rest, each a retelling of the abstract-checked 'summary' in papers.json. Tagged ours.",
+  "'headlines' are ours: one line per year, naming only papers in the picture that year (and Rubin's start in 2026, from field_timeline.json). They are a reading, not a finding.",
+  "The sample is chosen, not a census; counting its dots does not measure opinion."
+ ],
+ "src": "ours",
+ "range": [2014, 2026],
+ "headlines": {
+  "2014": "A second remote orbit hints at a hidden planet, while an infrared survey finds no large one nearby",
+  "2015": "No paper in this sample. The two remote orbits remain the main clue",
+  "2016": "Batygin and Brown propose Planet Nine, and others find routes to the same planet",
+  "2017": "First doubts: the alignment may come from where telescopes happened to look",
+  "2018": "A steeply tilted orbit fits the planet, and a first explanation without one appears",
+  "2019": "Brown and Batygin put the odds of chance at 1 in 500; a disk of small bodies is offered instead",
+  "2020": "More alternatives: bodies that line themselves up, or a black hole in the planet's place",
+  "2021": "A refined orbit for the planet, and three surveys that see no significant clustering",
+  "2022": "The first direct search rules out half of the predicted planets",
+  "2023": "Modified gravity is offered as another way to line up the orbits",
+  "2024": "Three-quarters of the predicted planets are ruled out, and a passing star is offered instead",
+  "2025": "A possible infrared sighting, and two remote objects whose orbits do not fit the pattern",
+  "2026": "No paper in this sample yet. The Rubin survey, the likeliest to settle the question, begins"
+ },
+ "why": {
+  "10.3847/2041-8205/824/2/L23": "Shows where surveys have already looked along the predicted orbit, and where the planet could still be.",
+  "10.3847/1538-3881/153/3/91": "Fits an orbit for the planet by asking it to share simple rhythms with the known extreme objects.",
+  "10.1016/j.physrep.2019.01.009": "Gathers the evidence and revises the planet to 5 to 10 Earth masses, 400 to 800 AU out.",
+  "10.3847/1538-3881/aaf0fc": "A massive disk of small bodies could line the orbits up with no planet.",
+  "10.3847/2041-8213/ab91a0": "The distant bodies' own pull can produce the same alignment, mimicking the planet's signal.",
+  "10.1103/PhysRevLett.125.051103": "Keeps the mass and the orbit, but puts a grapefruit-sized black hole where the planet would be.",
+  "10.3847/1538-4365/ac3914": "A survey that tracks its own blind spots finds its extreme objects spread evenly, not lined up.",
+  "10.3847/1538-3881/acef1e": "Modified gravity could line up the orbits with no ninth planet.",
+  "10.1038/s41550-024-02349-x": "A star passing close to the young Sun could have shaped the distant orbits instead."
+ }
+}

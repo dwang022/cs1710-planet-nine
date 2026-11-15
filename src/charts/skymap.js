@@ -37,6 +37,23 @@ const DEPTH_RANGE = [20.0, 26.0]
 // The depth a photo must reach to catch a faint Planet Nine (predicted at magnitude 21 to 25). Ours, not a
 // published number: a survey bottoming out at 22 could only have caught the very brightest end of the range.
 export const DEEP_MAG = 23.5
+// the tilt of Earth's axis to its orbit, in degrees (IAU 2006), the angle between the ecliptic and the celestial equator
+export const OBLIQUITY_DEG = 23.439291
+// The site's one scale for magnitude on a sky map (2026-11-10): survey depth on the photographed sky's right-hand map,
+// the planet's magnitude along its path on the left, the game's map and the page head's small oval. Dark space-blue
+// for bright magnitudes (shallow photos), through a muted blue and a blue-teal, to a soft light teal at the faint end
+// (the deepest photos): no white and no flat grey, so a deep survey's strip reads as deeper, not as a hole in the
+// map. Sky with no visible-light survey in our data is the map's own dark navy (--sky-empty in style.css), never a
+// made-up depth.
+export const SKY_MAG_DOMAIN = [19, 26]
+// How strongly the survey regions are laid over the dark sky: the whole layer at once (not region by region, so an
+// overlap never stacks brighter), the navy showing through. The photographed sky's maps use it once the path is drawn
+// over them, and the game always.
+export const SKY_COVER_OPACITY = 0.45
+export const skyMagColour = d3.scaleLinear()
+  .domain([19, 21.5, 23.5, 26]).clamp(true)
+  .range(['#1e3256', '#2f5a8c', '#3b8aa6', '#8ccfc9'])
+  .interpolate(d3.interpolateLab)
 // Sky surveyed only in the infrared: a dark neutral, below the shallowest optical shade.
 const INFRARED_FILL = '#1c1c21'
 export const depthColour = d3.scaleLinear()
@@ -86,7 +103,7 @@ function galacticToEquatorial (lDeg, bDeg) {
 }
 
 /** Equatorial [RA, Dec] in degrees -> galactic latitude b in degrees. */
-function galacticLatitude (raDeg, decDeg) {
+export function galacticLatitude (raDeg, decDeg) {
   const ra = raDeg * D, dec = decDeg * D
   const sinB = Math.sin(NGP_DEC) * Math.sin(dec) +
     Math.cos(NGP_DEC) * Math.cos(dec) * Math.cos(ra - NGP_RA)
@@ -525,8 +542,9 @@ export function drawSkyMap (root, { surveys, track, perihelia, activeSurvey, vis
     .text(d => d === 0 ? '0°' : `${Math.abs(d)}°${d > 0 ? 'N' : 'S'}`)
 }
 
-/** The same equal-area projection, fitted to a box: for the small drawings in a page head. */
-function mollweideIn (left, top, iw, ih) {
+/** The same equal-area projection, fitted to a box: for the small drawings in a page head and the sky story
+    (charts/skysearch.js). */
+export function mollweideIn (left, top, iw, ih) {
   return (raDeg, decDeg) => {
     const lam = (180 - raDeg) * Math.PI / 180
     const phi = Math.max(-89.99, Math.min(89.99, decDeg)) * Math.PI / 180
@@ -547,9 +565,10 @@ function mollweideIn (left, top, iw, ih) {
 /**
  * A small whole-sky oval (an SVG string, 100 × 100 box) for a page head, drawn from the same data as the map:
  *   show 'deep'  every footprint dim, the ones at least DEEP_MAG deep lit
- *   show 'path'  Planet Nine's predicted path, its shallowly photographed stretches in ember
+ *   show 'path'  Planet Nine's predicted path, the stretches `mark` picks in ember (by default those photographed
+ *                only shallower than DEEP_MAG)
  */
-export function skyThumb (surveys, track, { show = 'deep' } = {}) {
+export function skyThumb (surveys, track, { show = 'deep', mark = null } = {}) {
   const P = mollweideIn(2, 26, 96, 48)
   const clamp = ra => Math.min(359.99, Math.max(0.01, ra))
   const line = pts => d3.line()(pts.map(([ra, dec]) => P(clamp(ra), dec)))
@@ -564,7 +583,7 @@ export function skyThumb (surveys, track, { show = 'deep' } = {}) {
       for (const [r0, r1] of s.ra_ranges) {
         const ring = [...d3.range(r0, r1 + 0.1, 3).map(ra => [ra, d0]), ...d3.range(d0, d1 + 0.1, 3).map(d => [r1, d]),
           ...d3.range(r1, r0 - 0.1, -3).map(ra => [ra, d1]), ...d3.range(d1, d0 - 0.1, -3).map(d => [r0, d])]
-        body.push(`<path d="${line(ring)}Z" fill="${(s.depth_mag ?? 0) >= DEEP_MAG ? '#ece6d8' : '#4a4852'}" opacity=".9"/>`)
+        body.push(`<path d="${line(ring)}Z" fill="${skyMagColour(s.depth_mag ?? SKY_MAG_DOMAIN[0])}" opacity="${(s.depth_mag ?? 0) >= DEEP_MAG ? 1 : 0.55}"/>`)
       }
     }
   } else {
@@ -581,13 +600,13 @@ export function skyThumb (surveys, track, { show = 'deep' } = {}) {
       return out.filter(r => r.length > 1)
     }
     for (const r of runs(() => true)) body.push(`<path d="${line(r)}" fill="none" stroke="var(--p9)" stroke-width="2"/>`)
-    for (const r of runs(p => { const d = deepestAt(surveys, p.ra_deg, p.dec_deg); return d === null || d < DEEP_MAG })) {
+    for (const r of runs(mark || (p => { const d = deepestAt(surveys, p.ra_deg, p.dec_deg); return d === null || d < DEEP_MAG }))) {
       body.push(`<path d="${line(r)}" fill="none" stroke="var(--series-2)" stroke-width="5" stroke-opacity=".6" stroke-linecap="round"/>`)
     }
   }
   return `<svg class="art sky-thumb" viewBox="0 0 100 100" aria-hidden="true">
     <defs><clipPath id="${id}"><path d="${line(outline)}Z"/></clipPath></defs>
-    <path d="${line(outline)}Z" fill="#0c0c0e"/>
+    <path d="${line(outline)}Z" fill="var(--sky-empty)"/>
     <g clip-path="url(#${id})">${body.join('')}</g>
     <path d="${line(outline)}Z" fill="none" stroke="var(--text-muted)" stroke-width="1"/></svg>`
 }

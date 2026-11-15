@@ -1,108 +1,129 @@
-// Part 3, page 2: the compact ledger, told as a story down a line of years, and how the proposed planet changed.
+// Part 3, page 2: the debate, a paper at a time from 2014 to 2026 (charts/debate.js), and how the proposed planet
+// changed. (The ledger this page used to hold, charts/field.js, still serves the search and future pages.)
 
 import '../site.js'
-import { loadData, showLoadError } from '../data.js'
-import { drawField, PICK } from '../charts/field.js'
-import { icon } from '../charts/fieldart.js'
+import { loadData, showLoadError, url } from '../data.js'
+import { drawDebate, debatePapers } from '../charts/debate.js'
 import { drawProposals } from '../charts/proposals.js'
+import { drawProposalsV2 } from '../charts/proposals2.js'
 
 const $ = s => document.querySelector(s)
-
-// The key above the ledger: each lane's icon in its badge (colour and shape together), its name in its colour and
-// what it holds. The names are the ledger's own lanes; the colours are field.css's.
-const KEY = [
-  ['is-for', 'planet', 'For Planet Nine', 'Research supporting the Planet Nine hypothesis.'],
-  ['is-against', 'noplanet', 'Against Planet Nine', 'Research challenging the hypothesis or offering competing explanations.'],
-  ['is-data', 'object', 'Data and searches', 'Observations, discoveries and telescope searches that inform the debate.'],
-]
+const span = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
 
 /**
- * The ledger as a story: a line down the year gutter that fills as the reader moves down it, a marker per year
- * (passed years filled, the year being read lit and its label brighter), and each year's rows coming in one after
- * another. The rows' entrance itself is the ledger's (charts/field.js: is-in on entering, off once out of view);
- * this orders it within a year, dims a row once it has passed above the reading area (rather than letting it
- * vanish), notes which side a row left by so it comes back from that side, and fades each year's label the same way.
- * Everything that follows the scroll shares one rAF-throttled listener.
+ * The year strip under the picture: a button per year with a small mark per paper that year (for above the year,
+ * against below it), a line behind them that fills to the year shown, previous and next either side, and a play
+ * button that steps on a year at a time. Any other control stops the play.
  */
-function storyLine (root) {
-  root.classList.add('is-story')
-  root.insertAdjacentHTML('afterbegin', '<div class="tl-line" aria-hidden="true"><i></i></div>')
-  const fill = root.querySelector('.tl-line i')
-  const years = [...root.querySelectorAll('.fy')]
-  // within a year, rows come in in their order, a beat apart (capped, so a long year never waits)
-  for (const y of years) y.querySelectorAll('.fr').forEach((r, i) => r.style.setProperty('--i', Math.min(i, 4)))
+function debate ({ items, debate: D, papers }) {
+  const [y0, y1] = D.range
+  const strip = $('#dbYears')
+  const marks = (y, s) => '<i></i>'.repeat(items.filter(d => d.year === y && d.side === s).length)
+  strip.innerHTML = '<li class="db-track" aria-hidden="true"><i></i></li>' + span(y0, y1).map(y => `<li>
+    <button type="button" data-year="${y}" aria-label="${y}">
+      <span class="db-m is-for" aria-hidden="true">${marks(y, 'for')}</span>
+      <b class="db-long">${y}</b><b class="db-short" aria-hidden="true">’${String(y).slice(2)}</b>
+      <span class="db-m is-against" aria-hidden="true">${marks(y, 'against')}</span>
+    </button></li>`).join('')
+  const fill = strip.querySelector('.db-track i')
+  const buttons = [...strip.querySelectorAll('button')]
+  const prev = $('#dbPrev'), next = $('#dbNext'), play = $('#dbPlay')
 
-  const reveal = document.documentElement.classList.contains('has-reveal')
-  const rows = [...root.querySelectorAll('.fr')]
-  // Each row's place on the page, from layout (offsetTop ignores the entrance's transform, which a bounding box
-  // would include, so a row still settling is judged where it will end, not where it is mid-slide). Re-measured
-  // whenever the ledger changes size: fonts, images, a narrower screen.
-  let place = []
-  const docTop = el => { let t = 0; for (; el; el = el.offsetParent) t += el.offsetTop; return t }
-  const measure = () => { place = rows.map(r => { const t = docTop(r); return [t, t + r.offsetHeight] }) }
-  measure()
-  let raf = 0
-  function update () {
-    raf = 0
-    const H = window.innerHeight
-    // the reading line: a little above the middle of the screen, where the eye is while scrolling
-    const line = H * 0.42
-    const box = fill.parentElement.getBoundingClientRect()
-    fill.style.transform = `scaleY(${Math.max(0, Math.min(1, (line - box.top) / box.height))})`
-    let current = -1
-    years.forEach((y, i) => { if (y.getBoundingClientRect().top <= line) current = i })
-    years.forEach((y, i) => {
-      y.classList.toggle('is-past', i < current)
-      y.classList.toggle('is-current', i === current)
+  // which mark: ?v=1 or ?v=2 in the address, else the last one chosen here, else version 1 (dots). A new key, so a
+  // choice stored when the versions were layouts does not carry over.
+  const KEY = 'p9-debate-marker'
+  const fromUrl = { 1: 'dots', 2: 'thumbs' }[new URLSearchParams(location.search).get('v')]
+  let stored = null
+  try { stored = localStorage.getItem(KEY) } catch {}
+  const marker = fromUrl || (stored === 'thumbs' ? 'thumbs' : 'dots')
+
+  let year = y0, timer = 0
+  const chart = drawDebate($('#dbStage'), {
+    year: $('#dbYear'), headline: $('#dbHeadline'), countFor: $('#dbFor'), countAgainst: $('#dbAgainst'), panel: $('#dbPanel'),
+  }, {
+    items,
+    debate: D,
+    marker,
+    onYear: y => {
+      for (const b of buttons) {
+        const by = +b.dataset.year
+        b.classList.toggle('is-past', by < y)
+        if (by === y) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current')
+      }
+      fill.style.transform = `scaleX(${(y - y0) / (y1 - y0)})`
+      prev.disabled = y <= y0
+      next.disabled = y >= y1
+    },
+  })
+  const go = y => { year = Math.max(y0, Math.min(y1, y)); chart.show(year) }
+  const stop = () => { clearInterval(timer); timer = 0; play.textContent = year >= y1 ? 'Replay' : 'Play' }
+
+  strip.addEventListener('click', e => { const b = e.target.closest('button'); if (b) { stop(); go(+b.dataset.year) } })
+  prev.addEventListener('click', () => { stop(); go(year - 1) })
+  next.addEventListener('click', () => { stop(); go(year + 1) })
+  // left and right step through the years from anywhere on the strip
+  $('.db-time').addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+    e.preventDefault(); stop(); go(year + (e.key === 'ArrowRight' ? 1 : -1))
+    if (e.target.closest('.db-years')) buttons[year - y0].focus()
+  })
+  play.addEventListener('click', () => {
+    if (timer) { stop(); return }
+    if (year >= y1) go(y0)
+    play.textContent = 'Pause'
+    timer = setInterval(() => { go(year + 1); if (year >= y1) stop() }, 1700)
+  })
+  go(y0)
+
+  // the version toggle: the same year, the same places and the same paper, the marks crossfading
+  const seg = [...document.querySelectorAll('.db-version button')]
+  const mark = m => seg.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.marker === m)))
+  mark(marker)
+  for (const b of seg) {
+    b.addEventListener('click', () => {
+      mark(b.dataset.marker)
+      chart.marker(b.dataset.marker)
+      try { localStorage.setItem(KEY, b.dataset.marker) } catch {}
     })
-    if (!reveal) return
-    // Above the reading area (the screen below the nav and the pinned lane names) a row dims rather than vanishing.
-    // Which side a row or a year last left by decides which way it comes back. Measured here, on the frame, not by an
-    // observer: a fast scroll can carry a row from below the screen to above it without ever crossing a boundary.
-    const y0 = window.scrollY
-    rows.forEach((r, i) => {
-      const top = place[i][0] - y0, bottom = place[i][1] - y0
-      r.classList.toggle('is-dim', bottom <= H * 0.2)
-      if (bottom <= H * 0.2) r.dataset.from = 'above'
-      else if (top >= H) r.dataset.from = 'below'
-    })
-    for (const y of years) {
-      const b = y.getBoundingClientRect()
-      if (b.bottom <= 0) y.dataset.from = 'above'
-      else if (b.top >= H) y.dataset.from = 'below'
-    }
   }
-  // only when the ledger animates its rows (not for readers who ask for less motion)
-  if (reveal) {
-    // a year's label comes in with its year and goes once the year is out of view: the ledger's two margins, so a
-    // year sitting on the edge cannot flicker between the two
-    const seen = new IntersectionObserver(es => {
-      for (const e of es) if (e.isIntersecting) e.target.classList.add('is-seen')
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0 })
-    const gone = new IntersectionObserver(es => {
-      for (const e of es) if (!e.isIntersecting) e.target.classList.remove('is-seen')
-    }, { rootMargin: '10% 0px 10% 0px', threshold: 0 })
-    years.forEach(y => { seen.observe(y); gone.observe(y) })
-  }
-  const request = () => { if (!raf) raf = requestAnimationFrame(update) }
-  window.addEventListener('scroll', request, { passive: true })
-  window.addEventListener('resize', request)
-  new ResizeObserver(() => { measure(); request() }).observe(root)
-  update()
+
+  const left = papers.filter(p => p.stance === 'neutral' || p.year < y0).length
+  $('#dbCaption').innerHTML = `Which side a paper is on is <strong>our</strong> reading of its abstract. The ${left} papers
+    in our sample that report data or predictions without taking a side, or came before ${y0}, are left out of the picture.
+    The sample is chosen, not every paper written, so the counts describe it, not opinion ·
+    <a href="${url('credits.html')}#papers">every paper</a>`
 }
 
 async function main () {
-  const { field_timeline: FIELD, papers: PAPERS, planet_nine_predictions: PRED } = await loadData('field_timeline', 'papers', 'planet_nine_predictions')
-  $('#ledgerKey').innerHTML = KEY.map(([cls, ic, name, text]) => `<li class="${cls}">
-    <span class="fr-icon" aria-hidden="true">${icon(ic)}</span>
-    <span><b>${name}</b><span>${text}</span></span></li>`).join('')
-  drawField($('#fieldTimeline'), { timeline: FIELD, papers: PAPERS.papers, filter: PICK.all, compact: true, future: false, lanes: ['for', 'against', 'data'] })
-  storyLine($('#fieldTimeline'))
+  const { field_timeline: FIELD, papers: PAPERS, planet_nine_predictions: PRED, debate: DEBATE } =
+    await loadData('field_timeline', 'papers', 'planet_nine_predictions', 'debate')
+  const items = debatePapers({ papers: PAPERS.papers, timeline: FIELD, debate: DEBATE })
+  debate({ items, debate: DEBATE, papers: PAPERS.papers })
+
   // phones get their own layout of the chart (time running down); redraw when the screen crosses over
   const chart = $('#chartProposals')
-  const draw = () => drawProposals(chart, PRED.orbit_predictions)
-  draw()
+  const draw = () => { if (!$('#proposalsV1').hidden) drawProposals(chart, PRED.orbit_predictions) }
   window.matchMedia('(max-width: 640px)').addEventListener('change', draw)
+  // two versions of how the proposal changed (2026-11-10): 1 the original charts, unchanged; 2 one paper at a time
+  // (charts/proposals2.js). ?pv=1 or ?pv=2 in the address, else the last one chosen here, else version 2.
+  const PV_KEY = 'p9-proposals-version'
+  let pvStored = null
+  try { pvStored = localStorage.getItem(PV_KEY) } catch {}
+  const pvUrl = new URLSearchParams(location.search).get('pv')
+  let v2 = null
+  const showPv = v => {
+    $('#proposalsV1').hidden = v !== '1'
+    $('#proposalsV2').hidden = v !== '2'
+    document.querySelectorAll('.pv-version button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)))
+    if (v === '1') draw()
+    else if (!v2) v2 = drawProposalsV2($('#chartProposals2'), PRED.orbit_predictions)
+  }
+  showPv(pvUrl === '1' || pvUrl === '2' ? pvUrl : pvStored === '1' ? '1' : '2')
+  document.querySelector('.pv-version').addEventListener('click', e => {
+    const b = e.target.closest('button[data-v]'); if (!b) return
+    showPv(b.dataset.v)
+    try { localStorage.setItem(PV_KEY, b.dataset.v) } catch {}
+  })
   // How the proposal changed comes in once, the first time about a third of it is on screen: the papers' marks in a wave
   // from 2016 on (style.css). Its frame (titles, axes, labels) is there from the start. Readers who ask for less motion
   // get it all at once.

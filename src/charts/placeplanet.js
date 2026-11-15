@@ -34,10 +34,12 @@ export function brightnessModel (bm) {
     const t = (x - lm[k]) / (lm[k + 1] - lm[k])
     return grid.T_eff_K[k] + t * (grid.T_eff_K[k + 1] - grid.T_eff_K[k])
   }
-  const magnitude = (m, r, p = bm.albedo.value) =>
-    5 * Math.log10(1329 / (2 * radius(m) * EARTH_KM * Math.sqrt(p))) + 5 * Math.log10(r * (r - 1))
+  // the same formula from a width in Earth radii directly (the Hide Planet Nine game sets the width, not the mass)
+  const magnitudeR = (radiusEarths, r, p = bm.albedo.value) =>
+    5 * Math.log10(1329 / (2 * radiusEarths * EARTH_KM * Math.sqrt(p))) + 5 * Math.log10(r * (r - 1))
+  const magnitude = (m, r, p = bm.albedo.value) => magnitudeR(radius(m), r, p)
   return {
-    radius, teff, magnitude,
+    radius, teff, magnitude, magnitudeR,
     albedo: bm.albedo.value,
     limitV: bm.detection.V_50pct,
     tempRange: [grid.mass_earths[0], grid.mass_earths[grid.mass_earths.length - 1]],

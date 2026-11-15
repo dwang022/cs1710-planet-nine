@@ -21,7 +21,7 @@ export const PAGES = [
   { id: 'probability', path: 'insights/probability.html', group: 'Evidence', title: 'Could it just be luck?', short: 'Probability' },
   { id: 'alternatives', path: 'insights/alternatives.html', group: 'Evidence', title: 'What else could explain it', short: 'Alternatives' },
   { id: 'search', path: 'search/how.html', group: 'The search', title: 'Why nobody has found it', short: 'The search' },
-  { id: 'timeline', path: 'search/timeline.html', group: 'The search', title: 'Ten years of argument', short: 'Timeline' },
+  { id: 'timeline', path: 'search/timeline.html', group: 'The search', title: 'The Planet Nine debate', short: 'Timeline' },
   { id: 'future', path: 'search/future.html', group: 'The search', title: 'What comes next', short: 'Future' },
   // Outside the walkthrough: no group, no Continue leads to it, the nav sets it apart.
   { id: 'credits', path: 'credits.html', title: 'Credits', short: 'Credits', aside: true },
@@ -49,6 +49,8 @@ export function applySkin (id) {
   holder.innerHTML = sprite(NAMES, { skin: id })
   document.documentElement.dataset.skin = id
   publishColour(skinFor(id))
+  // for drawings that paint Planet Nine themselves rather than through the sprite (the timeline's debate)
+  document.dispatchEvent(new CustomEvent('p9:skin', { detail: id }))
 }
 
 /** Planet Nine's colour everywhere on the page is the chosen skin's: the flat colour for thin strokes,
@@ -268,6 +270,8 @@ export const skinInfo = () => ({ id: currentSkin(), ...skinFor(currentSkin()) })
 
 stars()
 injectSprite()
+// a skin chosen in another tab follows the reader into this one
+window.addEventListener('storage', e => { if (e.key === SKIN_KEY) applySkin(currentSkin()) })
 nav()
 footer()
 watchName()

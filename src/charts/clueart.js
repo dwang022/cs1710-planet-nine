@@ -1,5 +1,5 @@
 // The four clues on the alternatives page, one small drawing each, in the
-// manner of orbitintro.js (300 × 170 boxes, laid out by the .definition list),
+// manner of orbitart.js (300 × 170 boxes, laid out by the .definition list),
 // keyed by the phenomenon ids in alternatives.json. Distances are square-rooted,
 // as in the page's head, so the far orbits and Neptune fit one box.
 //

@@ -4,8 +4,7 @@ import * as d3 from 'd3'
 import '../site.js'
 import { loadData, showLoadError } from '../data.js'
 import { makeLean } from '../charts/lean.js'
-import { makeCompare, COMPARE } from '../charts/compare.js'
-import { orbitIntro } from '../charts/orbitintro.js'
+import { makeCompare } from '../charts/compare.js'
 import { leanHead } from '../charts/leanhead.js'
 import { scrolly } from '../scrolly.js'
 import { resultant } from '../stats.js'
@@ -18,7 +17,7 @@ const SEDNA = '90377'
 const NEPTUNE_AU = 30.07   // Neptune's average distance, as in charts/lean.js
 
 async function main () {
-  const { etnos, planets } = await loadData('etnos', 'planets')
+  const { etnos } = await loadData('etnos')
   let story = 'one'
 
   // every step describes the fixed trusted sample, so its quoted numbers never move
@@ -75,18 +74,11 @@ async function main () {
     strictN: s.stats.n, strictHalf: half, strictHalfExpect: Math.round(s.stats.n / 2), strictPct: `${Math.round(s.stats.R * 100)}%`,
     looseExtra: current(LOOSE).stats.n - s.stats.n,
     p9Mass: Math.round(PLANET_NINE.mass_earths),
-    lineUp: COMPARE.linedUp,
   }
   document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
 
-  // --- the head: the planets (on the catalogue's date), the six orbits that started it, then Planet Nine ---
-  leanHead($('#leanHead'), { six: etnos.filter(isOriginalSix), planets: planets.planets, jd: etnos[0].epoch_jd })
-
-  // --- what an orbit is, before the pattern: Sedna's orbit, drawn to scale -----------------
-  const intro = orbitIntro(etnos.find(o => o.id === SEDNA))
-  document.querySelectorAll('#orbits .definition li[data-art]').forEach(li => {
-    li.insertAdjacentHTML('afterbegin', `<figure class="rule-fig" aria-hidden="true">${intro[li.dataset.art]()}</figure>`)
-  })
+  // --- the head: the six orbits that started it, then Planet Nine, to scale ---
+  leanHead($('#leanHead'), { six: etnos.filter(isOriginalSix) })
 
   function renderTable (objs) {
     const rows = objs.slice().sort((a, b) => b.a_au - a.a_au).map(o => `
@@ -102,7 +94,7 @@ async function main () {
   scrolly($('#leanStory'), { onStep: (i, step) => { story = step; lean.close(); renderLean() } })
 
   // --- what a planet would do: no planet beside a planet ---------------------------------
-  makeCompare({ root: $('#compareView'), bar: $('#compareBar'), stage: $('#compareView').parentElement, planets: planets.planets, jd: etnos[0].epoch_jd })
+  makeCompare({ root: $('#compareView') })
 }
 
 main().catch(showLoadError)

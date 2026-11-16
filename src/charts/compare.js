@@ -1,238 +1,219 @@
-// Part 2, page 1: "what a planet would do", two pictures side by side that close
-// the clustering page. Each is drawn like the page's head (leanhead.js), so the
-// reader already knows how to read it:
+// Part 2, page 1: "what a planet would do", which closes the clustering page. One
+// picture, With a planet, drawn like the page's head (leanhead.js: seen from above,
+// to scale) so the reader already knows how to read it, and beside it a small No
+// planet picture with the notes under it (2026-11-16: the two had been side by
+// side, and notes floating on the picture covered what they described).
 //
-//   No planet      sixteen distant orbits pointing every which way; four
-//                  billion years pass and they stay scattered
+//   No planet      sixteen distant orbits pointing every which way; they stay scattered
 //   With a planet  the same orbits, with Planet Nine going round its predicted
-//                  orbit. An orbit lined up with it is caught when the planet
-//                  passes it: a flash where they meet, then the object shoots
-//                  off past the edge along a dotted trail (flung out of the
-//                  solar system) and its orbit fades; a count on the bar. The
-//                  ones pointing the opposite way are never met up close; they stay, and
-//                  settle on the far side.
+//                  orbit, in two acts, so its two effects are seen apart (in
+//                  reality they happen together):
+//     1 Flung out    the orbits pointing its way are met one at a time: a flash
+//                    where the planet passes, then the object shoots off along a
+//                    dotted trail that ends inside the picture, and its orbit fades;
+//                    the rest hold still
+//     2 Turned round the orbits it never meets close in on the far side together,
+//                    each one straight towards it (none crosses another, so the
+//                    picture reads as a pull, not a jiggle), leaving a faint copy
+//                    where it started, a curved arrow at its far end saying which
+//                    way it turns
 //
-// The explanation is not a paragraph under the pictures: short pop-ups appear on
-// them at the moments that matter, and the run pauses on each until Continue.
-//   start   what the lines are; Start
-//   flung   at the first object flung away, once it has gone
-//   stay    halfway, on one orbit that points the opposite way yet crosses the planet's
-//           path on the picture, drawn bolder in violet: the crossings are ringed and its object is
-//           shown going round in step with the planet (a whole-number rhythm,
-//           as a resonance keeps it), so it is always elsewhere when the planet
-//           reaches a crossing
-//   end     over what is left, and over the picture with no planet
-// Play again runs it once more without stopping. It shows what the proposal
-// predicts and takes no side on whether it is right; the line under the key
-// hands that to the next pages.
+// Planet Nine's orbit is drawn more stretched than predicted (e = P9_E, against
+// about 0.3; 2026-11-16): nearly round, every orbit seemed to cross it alike, and
+// readers could not see why only some were flung. As an oval, the orbits that point
+// its way visibly run along its path, the others only cut across it.
 //
-// Both are a cartoon of the mechanism in Batygin & Brown (2016), not gravity.
-// The planet makes LAPS laps (Kepler's speed along the way: slow at the far
-// end), starting and ending at its far end, where the head draws it. An orbit
-// pointing within LINED_UP degrees of it becomes catchable at its own moment and
-// is thrown out the next time the planet passes within REACH pixels of it; every
-// other eases from its random start to the side opposite the planet, give or
-// take its own small offset. Without the planet, each drifts a little and stays.
+// The explanation is a short note beside the picture at the moments that matter,
+// the run pausing on each until Continue, on every run, Play again's too:
+//   start   what to watch; Start
+//   flung   at the first object flung away, its trail still on the picture: these run alongside its path, so are likely to be flung
+//   spared  once the last is gone: the rest rarely cross its path, so are much less likely to be
+//   turn    as the turning begins (no orbit picked out: a bold one read as special)
+//   end     what is left, and that with no planet they would point every way; Play again
+// No clock and no counts: it is a cartoon, so its years and tallies meant nothing.
+// It shows what the proposal predicts and takes no side on whether it is right.
+//
+// A cartoon of the mechanism in Batygin & Brown (2016), not gravity. The planet
+// makes LAPS laps (Kepler's speed along the way: slow at the far end), starting
+// at its far end, where the head draws it. Each orbit pointing within LINED_UP
+// degrees of it is flung at a moment when the planet really passes within REACH
+// pixels of it, worked out before the run, one at a time.
 
 import * as d3 from 'd3'
-import { flatOrbit, flatPoint, planetAt, trueAnomaly, PLANET_NINE } from '../orbits.js'
+import { flatOrbit, flatPoint, trueAnomaly, PLANET_NINE as REAL_P9 } from '../orbits.js'
 import { seededRandom } from '../stats.js'
 
 const S = 360
 const c = S / 2
-const R = 158                     // pixels for EDGE_AU
-const EDGE_AU = 1100
-const k = R / Math.sqrt(EDGE_AU)
+const R = 164                     // pixels from the Sun to the farthest any of the orbits reaches
+let k = 1                         // pixels per AU, to scale as the head; set from the orbits in makeCompare
 const N = 16
 const LINED_UP = 80               // degrees from the planet's direction: these pass close and are thrown out
-const LAPS = 3
-const REACH = 14                  // pixels: this close to the planet counts as a close pass
-const PLAY_MS = 10000
-const FLY = 0.05                  // share of the run an object takes to leave the picture
-const GIANTS = ['Jupiter', 'Saturn', 'Uranus', 'Neptune']
+const SQUEEZE = 0.5               // how much of its angle from the far side an orbit keeps once it has turned:
+                                  // half, so they lean that way without bunching up (a quarter looked too drastic)
+const LAPS = 5                    // the planet's laps over the whole run
+const REACH = 12                  // pixels: this close to the planet counts as a close pass
+const PLAY_MS = 14000
+const FLY = 0.04                  // share of the run an object takes to leave
+const P9_E = 0.65                 // Planet Nine's orbit, stretched for the cartoon (see above)
+const PLANET_NINE = { a_au: REAL_P9.a_au, e: P9_E, varpi_deg: REAL_P9.varpi_deg }
+const FLING_BY = 0.3               // every object pointing the planet's way is flung by now
+const SPARED_AT = 0.42             // the last one's trail has faded: the note on the ones spared
+const T1 = 0.45                   // act 1 (flung out) ends and act 2 (turned round) begins
+const TURN = 0.4                  // how long the orbits take to turn
+const GAP = 0.025                 // the least time between one object being flung and the next
+const RAD = Math.PI / 180
 
 const wrap180 = d => ((d + 540) % 360) - 180
-function warp ([x, y]) {
-  const r = Math.hypot(x, y)
-  if (!r) return [c, c]
-  const s = k * Math.sqrt(r) / r
-  return [c + x * s, c - y * s]
-}
+const clamp01 = v => Math.max(0, Math.min(1, v))
+const warp = ([x, y]) => [c + x * k, c - y * k]
 const path = pts => d3.line()(pts.map(warp))
 const turn = deg => `rotate(${(-deg).toFixed(2)} ${c} ${c})`
 const dist = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1])
-// from a point, straight away from the Sun to just past the picture's edge
-const exitFrom = ([x, y]) => { const r = Math.hypot(x - c, y - c) || 1; const f = (c * 1.45) / r; return [c + (x - c) * f, c + (y - c) * f] }
+// from a point, straight away from the Sun, to just inside the picture's edge
+const exitFrom = ([x, y]) => { const r = Math.hypot(x - c, y - c) || 1; const f = (c * 0.94) / r; return [c + (x - c) * f, c + (y - c) * f] }
 
+// One plain sentence each (2026-11-16).
 const POPS = {
-  start: { text: 'Each line is the orbit of a distant object, like Sedna, pointing every which way. Watch what the planet does.', btn: '▶ Start' },
-  flung: { text: 'This orbit points the same way as the planet’s, so it runs alongside the planet’s path until a close pass flings it out.', btn: 'Continue' },
-  stay: { text: 'This orbit points the opposite way. It crosses the planet’s path only where circled, and its object (dot) keeps in step, never there when the planet is.', btn: 'Continue', side: true },
-  end: { text: 'The orbits left point opposite to the planet’s. Crossing its path is fine; meeting the planet is not.' },
-  none: { text: 'No planet: still every which way.' },
+  start: { text: 'Watch how Planet Nine changes the orbits of these objects.', btn: '▶ Start' },
+  flung: { k: 'Flung out', text: 'Orbits pointing the same way as Planet Nine’s run alongside its path, so they are likely to be flung out.', btn: 'Continue' },
+  spared: { k: 'Spared', text: 'Orbits pointing other ways rarely cross Planet Nine’s path, so they are much less likely to be flung out.', btn: 'Continue' },
+  turn: { k: 'Turned round', text: 'Planet Nine’s gravity slowly turns the remaining orbits towards the opposite way.', btn: 'Continue' },
+  end: { text: 'The orbits that remain lean opposite to Planet Nine’s. With no planet, they would still point in every direction.', btn: '↺ Play again' },
 }
 
-/** For the page's note on how the cartoon works. */
-export const COMPARE = { linedUp: LINED_UP }
-
-/** planets: planets.json rows; jd: their date; root: where the two panels go; bar: the play bar; stage: holds the pop-ups. */
-export function makeCompare ({ root, bar, stage, planets, jd }) {
-  const giants = planets.filter(p => GIANTS.includes(p.name)).map(p => planetAt(p, jd))
+/** root: where the pictures and the notes go. */
+export function makeCompare ({ root }) {
   // the make-believe orbits: shapes like the real ones, random starting directions, the same in both pictures
+  // (the draws are in the order they always were, so the orbits are the ones readers have seen)
   const rnd = seededRandom(1710)
   const anti = PLANET_NINE.varpi_deg + 180
   const orbits = d3.range(N).map(() => {
     const a = 260 + rnd() * 320, e = 0.72 + rnd() * 0.2, from = rnd() * 360
     const lined = Math.abs(wrap180(from - PLANET_NINE.varpi_deg)) < LINED_UP
-    return {
-      a, e, from, drift: (rnd() - 0.5) * 24, lined,
-      ready: null,                                // from when the planet can catch it: staggered below
-      to: lined ? from + (rnd() - 0.5) * 20 : from + wrap180(anti + (rnd() - 0.5) * 70 - from),
-    }
+    const drift = (rnd() - 0.5) * 24
+    rnd()                                                        // a draw the old version used
+    // the rest close in on the far side, the short way round: each keeps a quarter of its angle from it, so none
+    // overtakes another and none turns more than 50 degrees
+    return { a, e, from, drift, lined, to: lined ? from : from - wrap180(from - anti) * (1 - SQUEEZE) }
   })
+  k = R / d3.max(orbits, o => o.a * (1 + o.e))
   const lined = orbits.filter(o => o.lined), kept = orbits.filter(o => !o.lined)
-  const p9Pts = flatOrbit(PLANET_NINE.a_au, PLANET_NINE.e, PLANET_NINE.varpi_deg, 360).map(warp)
-  // one at a time: the first can be caught early and alone, the rest follow at intervals
-  lined.forEach((o, i) => { o.ready = 0.06 + i * (0.6 / lined.length) })
-  // the planet along its orbit at time t (0..1), starting and ending at its far end
+  // the planet along its orbit at time t (0..1), starting at its far end
   const planetAtT = t => warp(flatPoint(PLANET_NINE.a_au, PLANET_NINE.e, PLANET_NINE.varpi_deg, trueAnomaly(180 + 360 * LAPS * t, PLANET_NINE.e)))
-  const angle = (o, t, e) => o.from + (o.to - o.from) * (o.lined ? Math.min(1, t / (o.out ?? 1)) : e)
   const farEnd = (o, deg) => warp(flatPoint(o.a, o.e, deg, 180))
 
-  // --- the one survivor that shows why: its path crosses the planet's, yet it is never met ---
-  // where a path, at its final direction, crosses the planet's on the picture
-  const crossings = o => {
-    const out = []
-    for (const q of flatOrbit(o.a, o.e, o.to, 360).map(warp)) {
-      if (p9Pts.some(r => dist(q, r) < 2.2) && out.every(c => dist(c, q) > 20)) out.push(q)
-    }
-    return out
-  }
-  // the survivor that crosses and turns least on the way, so it is easy to follow
-  const demo = kept.map(o => ({ o, x: crossings(o) })).filter(d => d.x.length)
-    .sort((a, b) => Math.abs(a.o.to - a.o.from) - Math.abs(b.o.to - b.o.from))[0]
-  const DEMO_FROM = 0.5
-  if (demo) {
-    const o = demo.o, true_ = (PLANET_NINE.a_au / o.a) ** 1.5
-    // going round in step: the simplest whole-number rhythm near its true period against the planet's
-    const ratio = [1, 1.5, 2, 2.5, 3].reduce((b, r) => Math.abs(r - true_) < Math.abs(b - true_) ? r : b)
-    const at = (t, phase) => warp(flatPoint(o.a, o.e, angle(o, t, d3.easeCubicInOut(t)), trueAnomaly(phase + 360 * LAPS * ratio * t, o.e)))
-    // the starting point that keeps it farthest from the planet for the rest of the run
-    let best = 0, bestGap = -1
-    for (let ph = 0; ph < 360; ph += 4) {
-      let gap = Infinity
-      for (let i = 0; i <= 200; i++) { const t = DEMO_FROM + (1 - DEMO_FROM) * i / 200; gap = Math.min(gap, dist(at(t, ph), planetAtT(t))) }
-      if (gap > bestGap) { bestGap = gap; best = ph }
-    }
-    demo.pos = t => at(t, best)
-    // pause when the planet sits on a crossing and the object is farthest from it
-    let pick = null
-    for (let i = 0; i <= 400; i++) {
-      const t = DEMO_FROM + 0.04 + 0.4 * i / 400, pl = planetAtT(t)
-      if (!demo.x.some(c => dist(c, pl) < 9)) continue
-      const gap = dist(demo.pos(t), pl)
-      if (!pick || gap > pick.gap) pick = { t, gap }
-    }
-    demo.pauseAt = pick ? pick.t : DEMO_FROM + 0.04
-  }
+  // --- act 2: every orbit it never meets turns at once, from where it started towards the far side ---
+  const turnU = t => clamp01((t - T1) / TURN)
+  const angle = (o, t) => o.lined ? o.from : o.from + (o.to - o.from) * d3.easeCubicInOut(turnU(t))
 
+  // --- act 1: when each orbit pointing the planet's way is flung. One at a time, each at a moment the planet
+  // really passes it, the first alone so its note speaks of one object; all gone before act 2 ---
+  const tl = d3.range(0.03, FLING_BY, 0.001)
+  const planetTl = tl.map(planetAtT)
+  for (const o of lined) {
+    const pts = flatOrbit(o.a, o.e, o.from, 200).map(warp)
+    o.gap = planetTl.map(p => d3.min(pts, q => dist(q, p)))
+  }
+  {
+    const left = new Set(lined)
+    let next = 0.03
+    while (left.size) {
+      let best = null
+      for (const o of left) {
+        let i0 = tl.findIndex(t => t >= next)
+        if (i0 < 0) i0 = tl.length - 1
+        let i = o.gap.findIndex((g, j) => j >= i0 && g < REACH)
+        if (i < 0) i = i0 + d3.minIndex(o.gap.slice(i0))           // no close pass left: its closest
+        if (!best || tl[i] < best.t) best = { o, t: tl[i] }
+      }
+      const o = best.o
+      o.out = best.t; o.at = planetAtT(o.out); o.exit = exitFrom(o.at)
+      next = o.out + (left.size === lined.length ? 2.4 : 1) * GAP
+      left.delete(o)
+    }
+  }
+  const first = lined.reduce((b, o) => !b || o.out < b.out ? o : b, null)
+
+  // a curved arrow just outside an orbit's far end, the way it is turning
+  function arrowD (o, t) {
+    const ang = angle(o, t), sgn = Math.sign(o.to - o.from)
+    const r = dist(farEnd(o, ang), [c, c]) + 9
+    const pts = d3.range(7).map(i => { const p = (ang + 180 + sgn * i * 3) * RAD; return [c + r * Math.cos(p), c - r * Math.sin(p)] })
+    const [pb, pe] = pts.slice(-2), L = dist(pe, pb) || 1, ux = (pe[0] - pb[0]) / L, uy = (pe[1] - pb[1]) / L
+    const head = s => [pe[0] - 7 * (ux * Math.cos(s) - uy * Math.sin(s)), pe[1] - 7 * (uy * Math.cos(s) + ux * Math.sin(s))]
+    const f = p => p.map(v => v.toFixed(1)).join(',')
+    return `M${pts.map(f).join('L')}M${f(head(0.55))}L${f(pe)}L${f(head(-0.55))}`
+  }
+  const arrowOp = (o, t) => { const u = turnU(t); return Math.abs(o.to - o.from) < 12 || u <= 0 ? 0 : u < 0.85 ? 1 : (1 - u) / 0.15 }
+  // the copy of an orbit where it started: in as the turning begins, out once it is done
+  const ghostOp = t => { const u = turnU(t); return u <= 0 ? 0 : u < 1 ? Math.min(1, u / 0.05) : Math.max(0, 1 - (t - T1 - TURN) / 0.05) }
+
+  const orbitD = o => path(flatOrbit(o.a, o.e, 0, 200))
   const frame = (inner, p9) => `<svg viewBox="0 0 ${S} ${S}" aria-hidden="true">
-    ${giants.map(p => `<path class="lh-ring" d="${path(flatOrbit(p.a, p.e, p.varpi, 120))}"/>`).join('')}
+    ${p9 ? `<g class="cmp-ghosts">${kept.map(o => `<path class="cmp-ghost" d="${orbitD(o)}" transform="${turn(o.from)}" opacity="0"/>`).join('')}</g>` : ''}
     ${inner}
     ${p9 ? `<path class="lh-p9" d="${path(flatOrbit(PLANET_NINE.a_au, PLANET_NINE.e, PLANET_NINE.varpi_deg, 240))}"/>
+      <g class="cmp-arrows">${kept.map(() => '<path class="cmp-arrow" opacity="0"/>').join('')}</g>
       <g class="cmp-flung">${lined.map(() => '<g opacity="0"><line/><circle class="flash" r="0"/><circle class="obj" r="4"/></g>').join('')}</g>
-      <g class="cmp-demo" opacity="0">${demo ? demo.x.map(([x, y]) => `<circle class="cross" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="9"/>`).join('') : ''}<circle class="obj" r="4.5"/></g>
-      <use class="cmp-planet" href="#art-planet-nine" width="30" height="30"/>` : ''}
+      <use class="cmp-planet" href="#art-planet-nine" width="26" height="26"/>` : ''}
     <use href="#art-sun" x="${c - 7}" y="${c - 7}" width="14" height="14"/>
   </svg>`
-  const made = orbits.map(o => `<path class="cmp-orbit" d="${path(flatOrbit(o.a, o.e, 0, 200))}" transform="${turn(o.from)}"/>`).join('')
+  const made = orbits.map(o => `<path class="cmp-orbit" d="${orbitD(o)}" transform="${turn(o.from)}"/>`).join('')
 
+  // the picture with a planet; beside it the small one without, and under that the notes, so no note covers a drawing
   root.innerHTML = `
-    <figure class="cmp-panel" data-p="none"><figcaption>No planet</figcaption>${frame(made, false)}</figure>
-    <figure class="cmp-panel" data-p="p9"><figcaption>With a planet</figcaption>${frame(made, true)}</figure>`
-  root.setAttribute('role', 'img')
-  root.setAttribute('aria-label', 'Two pictures. With no planet, the orbits stay pointing every which way. With a planet going round its orbit, each orbit lined up with it is caught when the planet passes it, and the object is flung out of the solar system; the ones pointing the opposite way cross its path without meeting it and stay.')
+    <figure class="cmp-panel" data-p="p9" role="img" aria-label="With a planet going round its orbit, first each orbit lined up with it is met by the planet and its object flung out of the solar system; then the orbits it never meets slowly turn to point the opposite way, and stay."><figcaption>With a planet</figcaption>${frame(made, true)}</figure>
+    <div class="cmp-side">
+      <figure class="cmp-panel" data-p="none" role="img" aria-label="With no planet, the orbits stay pointing every which way."><figcaption>No planet</figcaption>${frame(made, false)}</figure>
+      <div class="cmp-notes" aria-live="polite"></div>
+    </div>`
+  const notes = root.querySelector('.cmp-notes')
 
-  const svgOf = p => root.querySelector(`.cmp-panel[data-p="${p}"] svg`)
   const sel = p => d3.select(root).selectAll(`.cmp-panel[data-p="${p}"] .cmp-orbit`).data(orbits)
   const none = sel('none'), withP9 = sel('p9')
+  const ghosts = d3.select(root).selectAll('.cmp-ghost').data(kept)
+  const arrows = d3.select(root).selectAll('.cmp-arrow').data(kept)
   const flung = d3.select(root).selectAll('.cmp-flung > g').data(lined)
   const planet = d3.select(root).select('.cmp-planet')
-  const demoG = d3.select(root).select('.cmp-demo')
-  const clock = bar.querySelector('.pic-time'), btn = bar.querySelector('button'), count = bar.querySelector('.cmp-count')
 
-  // --- the pop-ups: a bubble on a picture, pointing at a spot in it ------------------
-  function pop (key, panel, at, { onBtn } = {}) {
-    const p = POPS[key], svg = svgOf(panel), r = svg.getBoundingClientRect(), s = stage.getBoundingClientRect()
-    const x = r.left - s.left + at[0] * r.width / S, y = r.top - s.top + at[1] * r.height / S
+  // --- the notes: one at a time, beside the picture (never over it); the picture shows what each is about,
+  // the objects in question flashing as they are flung, the turning ones leaving copies and arrows ---
+  function pop (key, { onBtn } = {}) {
+    const p = POPS[key]
     const el = document.createElement('div')
     el.className = 'cmp-pop'
-    el.setAttribute('role', 'status')
-    el.innerHTML = `<p>${p.text}</p>${p.btn ? `<button type="button" class="pic-btn primary">${p.btn}</button>` : ''}`
-    stage.appendChild(el)
-    const w = el.offsetWidth, h = el.offsetHeight
-    if (p.side && x - w - 20 > 0) {
-      // beside the spot, to its left, so the picture round it stays clear
-      el.style.left = `${x - w - 18}px`
-      el.style.top = `${Math.max(6, Math.min(s.height - h - 6, y - h / 2))}px`
-      el.dataset.side = 'left'
-      el.style.setProperty('--tail', `${Math.max(14, Math.min(h - 14, y - parseFloat(el.style.top)))}px`)
-    } else {
-      // above the spot if there is room, else below; kept inside the stage
-      const below = y - h - 16 < 0
-      el.style.left = `${Math.max(6, Math.min(s.width - w - 6, x - w / 2))}px`
-      el.style.top = `${below ? y + 16 : y - h - 16}px`
-      el.dataset.side = below ? 'below' : 'above'
-      el.style.setProperty('--tail', `${Math.max(14, Math.min(w - 14, x - parseFloat(el.style.left)))}px`)
-    }
+    el.innerHTML = `${p.k ? `<b class="cmp-pop-k">${p.k}</b>` : ''}<p>${p.text}</p>${p.btn ? `<button type="button" class="pic-btn primary">${p.btn}</button>` : ''}`
+    notes.replaceChildren(el)
     el.querySelector('button')?.addEventListener('click', () => { clearPops(); onBtn?.() })
     el.querySelector('button')?.focus({ preventScroll: true })
   }
-  const clearPops = () => stage.querySelectorAll('.cmp-pop').forEach(el => el.remove())
+  const clearPops = () => notes.replaceChildren()
 
   // --- the run: forward frame by frame, pausing at the moments that matter ----------
-  let t = 0, base = 0, timer = null, guided = true, seen = new Set()
-  function reset () { for (const o of lined) { o.out = null; o.at = null; o.exit = null } t = 0; seen = new Set() }
-  function catches (pos) {
-    // on a guided run the first one is caught alone, so its pop-up speaks of one object
-    const holding = guided && !seen.has('flung') && lined.some(o => o.out != null)
-    for (const o of lined) {
-      if (holding || o.out != null || t < o.ready) continue
-      const near = flatOrbit(o.a, o.e, angle(o, t, 0), 160).map(warp).reduce((b, q) => dist(q, pos) < dist(b, pos) ? q : b)
-      // caught when the planet passes close; never left to the end of the run
-      if (dist(near, pos) < REACH || t > Math.min(0.94, o.ready + 0.45)) {
-        o.out = t; o.at = dist(near, pos) < REACH ? pos : near; o.exit = exitFrom(o.at)
-      }
-    }
-  }
+  let t = 0, base = 0, timer = null, seen = new Set()
   function show () {
-    const e = d3.easeCubicInOut(t)
     const pos = planetAtT(t)
-    planet.attr('x', pos[0] - 15).attr('y', pos[1] - 15)
-    catches(pos)
-    none.attr('transform', o => turn(o.from + o.drift * e))
-    const gone = o => o.out == null ? 0 : Math.max(0, Math.min(1, (t - o.out) / FLY))
-    withP9.attr('transform', o => turn(angle(o, t, e))).attr('opacity', o => 1 - gone(o)).classed('is-out', o => o.out != null)
-      .classed('is-demo', o => demo && o === demo.o && t >= DEMO_FROM)
-    // the survivor going round in step, its crossings ringed
-    if (demo) {
-      const on = t >= DEMO_FROM
-      demoG.attr('opacity', on ? 1 : 0)
-      if (on) { const [x, y] = demo.pos(t); demoG.select('.obj').attr('cx', x).attr('cy', y) }
-    }
-    // a flung object: a flash where it met the planet, then off past the edge along a dotted trail
+    planet.attr('x', pos[0] - 13).attr('y', pos[1] - 13)
+    none.attr('transform', o => turn(o.from + o.drift * d3.easeCubicInOut(t)))
+    const gone = o => !o.lined || t < o.out ? 0 : Math.min(1, (t - o.out) / FLY)
+    withP9.attr('transform', o => turn(angle(o, t))).attr('opacity', o => 1 - gone(o))
+      .classed('is-out', o => o.lined && t >= o.out)
+    ghosts.attr('opacity', ghostOp(t))
+    arrows.each(function (o) {
+      const op = arrowOp(o, t)
+      d3.select(this).attr('opacity', op).attr('d', op > 0 ? arrowD(o, t) : null)
+    })
+    // a flung object: a flash where it met the planet, then off along a dotted trail that fades inside the picture
     flung.each(function (o) {
       const g = d3.select(this), f = gone(o)
-      if (o.out == null) { g.attr('opacity', 0); return }
+      if (t < o.out) { g.attr('opacity', 0); return }
       const [x, y] = [o.at[0] + (o.exit[0] - o.at[0]) * f, o.at[1] + (o.exit[1] - o.at[1]) * f]
-      g.attr('opacity', t - o.out < FLY * 3 ? 1 : Math.max(0, 1 - (t - o.out - FLY * 3) / FLY))
+      g.attr('opacity', t - o.out < FLY * 2 ? 1 : Math.max(0, 1 - (t - o.out - FLY * 2) / FLY))
       g.select('line').attr('x1', o.at[0]).attr('y1', o.at[1]).attr('x2', x).attr('y2', y)
       g.select('.flash').attr('cx', o.at[0]).attr('cy', o.at[1]).attr('r', f < 1 ? 5 + 14 * f : 0).attr('opacity', 1 - f)
       g.select('.obj').attr('cx', x).attr('cy', y)
     })
-    const n = lined.filter(o => o.out != null).length
-    count.textContent = n ? `${n} flung away` : ''
-    clock.textContent = t === 0 ? 'now' : `${(t * 4).toFixed(1)} billion years later`
   }
   function stop () { timer?.stop(); timer = null; base = t }
   function go () {
@@ -240,50 +221,30 @@ export function makeCompare ({ root, bar, stage, planets, jd }) {
     timer = d3.timer(ms => {
       t = Math.min(1, base + ms / PLAY_MS)
       show()
-      if (guided) {
-        // paused with the object two-thirds of the way out, still in the picture, the bubble pointing at it
-        const first = lined.find(o => o.out != null && t >= o.out + FLY * 0.66)
-        if (first && !seen.has('flung')) {
-          seen.add('flung'); stop()
-          const f = Math.min(1, (t - first.out) / FLY)
-          pop('flung', 'p9', [0, 1].map(i => Math.max(18, Math.min(S - 18, first.at[i] + (first.exit[i] - first.at[i]) * f))), { onBtn: go }); return
-        }
-        if (t >= (demo?.pauseAt ?? 0.55) && !seen.has('stay')) {
-          seen.add('stay'); stop(); show()
-          // the bubble sits off the picture's left edge, level with the object, so the highlighted orbit stays in view
-          const o = demo?.o ?? kept[0]
-          pop('stay', 'p9', demo ? [0, demo.pos(t)[1]] : farEnd(o, angle(o, t, d3.easeCubicInOut(t))), { onBtn: go }); return
-        }
+      // paused with the first object two-thirds of the way out, its trail still in the picture
+      if (first && !seen.has('flung') && t >= first.out + FLY * 0.66) {
+        seen.add('flung'); stop(); pop('flung', { onBtn: go }); return
       }
-      if (t >= 1) { stop(); ending() }
+      // paused once every object pointing the planet's way has gone, before the rest begin to turn
+      if (!seen.has('spared') && t >= SPARED_AT) {
+        seen.add('spared'); stop(); show(); pop('spared', { onBtn: go }); return
+      }
+      // paused once the orbits are a quarter of the way round
+      if (kept.length && !seen.has('turn') && turnU(t) >= 0.25) {
+        seen.add('turn'); stop(); show(); pop('turn', { onBtn: go }); return
+      }
+      if (t >= 1) { stop(); pop('end', { onBtn: play }) }
     })
   }
-  function ending () {
-    const ends = kept.map(o => farEnd(o, o.to))
-    pop('end', 'p9', [d3.mean(ends, p => p[0]), d3.mean(ends, p => p[1])])
-    pop('none', 'none', [c, c * 0.35])
-  }
+  // Start, and Play again from the last note: the same run each time, the notes and their pauses too
   function play () {
-    reset(); show(); clearPops()
-    btn.textContent = '↺ Play again'
+    t = 0; seen = new Set(); show(); clearPops()
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       for (let i = 0; i <= 400; i++) { t = i / 400; show() }
-      ending(); btn.textContent = '↺ Play again'; return
+      pop('end', { onBtn: play }); return
     }
     base = 0; go()
   }
-  btn.addEventListener('click', () => {
-    // the bar's button: Start the first time, Play again (without stopping) after that
-    if (btn.textContent.includes('again')) guided = false
-    play()
-  })
-  reset(); show()
-  // the first time the pictures come into view, the opening pop-up waits with its Start button
-  const io = new IntersectionObserver(es => {
-    if (es.some(e => e.isIntersecting)) { io.disconnect(); pop('start', 'p9', [c, c * 0.62], { onBtn: play }) }
-  }, { threshold: 0.4 })
-  io.observe(root)
-  // the bubbles are placed in pixels: on a resize, put the ones showing back where they belong by redrawing nothing,
-  // only hiding them until the reader moves on (the run's own pop-ups come back at their moments)
-  new ResizeObserver(() => { if (!timer) stage.querySelectorAll('.cmp-pop:not(:has(button))').forEach(el => el.remove()) }).observe(stage)
+  show()
+  pop('start', { onBtn: play })
 }

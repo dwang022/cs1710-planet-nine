@@ -46,8 +46,7 @@ const YEARS = {
 // A small seeded generator so the Kuiper belt speckle is the same on every visit.
 function lcg (seed) { let s = seed >>> 0; return () => { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296 } }
 
-export function makeLineup (root, { planets }) {
-  const au = new Map(planets.map(p => [p.name, p.a]))
+export function makeLineup (root) {
   const svg = d3.select(root).append('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
     .attr('aria-label', 'A chart of the planets in a row from the Sun, with Pluto at the end, each numbered. As the story advances, Pluto is reclassified and loses its number, leaving eight, and a ninth planet appears with a question mark.')
 
@@ -136,10 +135,11 @@ export function makeLineup (root, { planets }) {
   if (tw > 0) CO2.w = Math.round(tw + 28)
   box2.attr('d', bubble(CO2.w, CO2.h, CO2.w - 40, 6))
 
+  // A fact or two about each body; no distances (2026-11-16): the distance page is where they are told.
   function hover (ev, d) {
     showTip(ev, d.p9
-      ? `<b>Planet Nine (predicted)</b><div>Proposed in 2016 by Konstantin Batygin and Mike Brown. Five to ten times Earth's mass, hundreds of AU out. Never observed.</div>`
-      : `<b>${d.name}</b><div>${FACTS[d.name]}</div><div class="note">average distance from the Sun: ${au.get(d.name) < 10 ? au.get(d.name).toFixed(1) : Math.round(au.get(d.name))} AU</div>`)
+      ? `<b>Planet Nine (predicted)</b><div>Proposed in 2016 by Konstantin Batygin and Mike Brown. Five to ten times Earth's mass, far beyond Neptune. Never observed.</div>`
+      : `<b>${d.name}</b><div>${FACTS[d.name]}</div>`)
   }
 
   // --- the story -----------------------------------------------------------------

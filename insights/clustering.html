@@ -29,18 +29,8 @@
     </figure>
   </header>
 
-  <!-- before the pattern, what an orbit is: a planet's near-circle, then Sedna's real orbit (charts/orbitintro.js),
-       laid out like the planet definition and the data page's "from pictures to orbits" -->
-  <section class="part wrap" id="orbits">
-    <div class="sec-head">
-      <h2>An orbit points somewhere</h2>
-    </div>
-    <ol class="definition">
-      <li data-art="circle"><div><b>A circle</b>The planets' orbits are nearly circles, with the Sun in the middle.</div></li>
-      <li data-art="oval"><div><b>Pulled long</b>A push (arrow) sends an object swinging far out on the other side, stretching its circle into an oval.</div></li>
-      <li data-art="point"><div><b>A direction</b>An oval has a near end; a circle doesn't. The line from the Sun to the near end is the way the orbit points.</div></li>
-    </ol>
-  </section>
+  <!-- "An orbit points somewhere" (three drawings of what an orbit is, charts/orbitintro.js) was cut on 2026-11-16 at the
+       user's request: the scrolly's second step says the same. -->
 
   <!-- the pattern, built up; pointing at an object lights it up, clicking opens its card. What might steer
        it is left to the game below, so the reader works out where the planet sits before being told. -->
@@ -133,39 +123,21 @@
     </div>
   </section>
 
-  <!-- what a planet would do (charts/compare.js): the same make-believe orbits run four billion years with no planet and
-       with one, drawn like the head. It shows the proposal's prediction without taking a side; the next pages weigh it.
+  <!-- what a planet would do (charts/compare.js): the same make-believe orbits run four billion years with a planet, in a
+       large picture drawn like the head, and without one, in a small inset in its corner. It shows the proposal's prediction
+       without taking a side; the next pages weigh it. Nothing under the picture (2026-11-16): the key, the caption, the
+       closing line and "How the cartoon works" were cut as saying what the picture and its pop-ups already say; the start
+       pop-up calls the orbits made-up, and the cartoon's paper is cited on the intro line.
        It replaced the herding exhibit, the scrolly's filters and a find-the-planet game, all of which asked too much
        of a reader to learn anything from. -->
   <section class="part wrap" id="compare">
     <div class="sec-head">
       <h2>How a planet would line them up</h2>
-      <p>A planet would clear out orbits pointing the same way as its own and leave those pointing the opposite way.</p>
+      <p>A planet would throw out the orbits that point its way and turn the rest to point the opposite way<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>.</p>
     </div>
     <div class="pic cmp-pic">
       <div class="cmp-grid" id="compareView"></div>
-      <div class="pic-bar cmp-bar" id="compareBar"><button type="button" class="pic-btn primary">▶ Start</button><span class="pic-time">now</span><span class="cmp-count" aria-live="polite"></span></div>
     </div>
-    <ul class="legend lean-key cmp-key" aria-label="Key">
-      <li class="legend-item"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--series-1)" stroke-width="2"/></svg><span>a distant object’s orbit</span></li>
-      <li class="legend-item"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--p9)" stroke-width="2.4" stroke-dasharray="2 5" stroke-linecap="round"/></svg><span><span class="p9-name" data-no-tint>Planet Nine</span>’s predicted orbit</span></li>
-      <li class="legend-item"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--text-primary)" stroke-width="2.2"/><circle cx="12" cy="6" r="4.5" fill="none" stroke="var(--text-primary)" stroke-width="1.6"/></svg><span>flung away by a close pass</span></li>
-    </ul>
-    <p class="cmp-lesson">The real orbits look like the second picture, though a planet may not be the only way to get there.</p>
-    <p class="caption">Simplified, not a simulation<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>.</p>
-    <details class="more hunt-more">
-      <summary>How the cartoon works</summary>
-      <ul>
-        <li>The orbits start pointing every which way. With the planet, those within <span data-n="lineUp">—</span>° of
-        its orbit's direction are flung when it passes; the rest settle opposite it.</li>
-        <li>A planet only clears out what it meets, not every orbit that crosses its path. An orbit pointing the same way
-        runs alongside the planet's, so the two meet sooner or later. One pointing the opposite way crosses it at just two
-        points, and the planet's pull keeps the object in a rhythm that never brings it there when the planet is.</li>
-        <li>A flung object is thrown out of the solar system or in among the giant planets.</li>
-        <li>Left out: real orbits are tilted, so crossings on this flat picture often miss in space (for every orbit, flung or
-        not); they take hundreds of millions of years to settle; and they depend on the planet's mass and orbit.</li>
-      </ul>
-    </details>
   </section>
 </main>
 <script type="module" src="/src/pages/clustering.js"></script>

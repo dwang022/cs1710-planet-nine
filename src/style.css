@@ -28,7 +28,7 @@
 
   --text-primary:   #ffffff;
   --text-secondary: #c7c5bc;
-  --text-muted:     #8c8b83;
+  --text-muted:     #a3a29a;     /* the quiet line under a name or a cell; lifted from #8c8b83 on 2026-11-16, which read too dim */
 
   --rule: #2f2f36;
   --grid: #26262300;
@@ -63,8 +63,10 @@
   /* the planets page's counts: nine in Pluto's colour (Pluto made it nine), eight plain */
   --c-nine: var(--c-pluto);
   --c-eight: var(--text-primary);
-  /* the three parts' own hues: their names in the top bar and the intro's part links (a teammate's choice, 2026-11-02) */
-  --part-background: #93c5fd; --part-evidence: #c4b5fd; --part-search: #5eead4;
+  /* the three parts' own hues: their names in the top bar, the intro's part links and the Continue button.
+     Sky blue, rose and lime (2026-11-16): three hue families, so no part is mistaken for another; the
+     earlier light blue, lavender and teal all read as blue, and the lavender was the objects' violet. */
+  --part-background: #7cc4fa; --part-evidence: #ff8fab; --part-search: #9ad14e;
   --neptune: #8d93a8;
 
   /* bundled in fonts.js; the system fonts after them only fill in a missing glyph */
@@ -438,21 +440,24 @@ text[data-planet="Pluto"][data-planet] { fill: var(--c-pluto); } text[data-plane
 .lu-num.p9 text { fill: url(#g-p9); }
 .lu-num.p9 circle { stroke-dasharray: 3 3; }   /* predicted, like its dashed arc */
 
-/* the three-test table */
+/* the three-test table. Larger since 2026-11-16: each object drawn big beside its name and note, larger words
+   and marks, every cell centred in its row, and the whole table still one screen tall (about 640px at 1360 wide) */
 .sub-title { margin: 30px 0 8px; font-size: 1.3rem; }
 .criteria-wrap { overflow-x: auto; margin-top: 16px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-1); }
-.criteria { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 760px; }
-.criteria th, .criteria td { padding: 13px 16px; text-align: left; vertical-align: top; border-top: 1px solid var(--rule); }
-.criteria thead th { border-top: 0; border-bottom: 1px solid #4a4a52; font: 600 .76rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-primary); }
-.criteria tbody th { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
-.criteria tbody th .art { width: 2.3em; height: 2.3em; vertical-align: middle; margin-right: 10px; }
-.criteria tbody th small { display: block; font-weight: 400; color: var(--text-muted); font-size: .78rem; white-space: normal; max-width: 22ch; margin-left: calc(2.3em + 10px); line-height: 1.35; }
-.criteria td .mark { font-weight: 700; font-size: 1.1rem; display: inline-block; min-width: 1.3em; line-height: 1.2; }
+.criteria { border-collapse: collapse; width: 100%; font-size: 1rem; min-width: 760px; }
+.criteria th, .criteria td { padding: 11px 18px; text-align: left; vertical-align: middle; border-top: 1px solid var(--rule); }
+.criteria thead th { border-top: 0; border-bottom: 1px solid #4a4a52; padding-block: 14px; font: 600 .8rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-primary); }
+.criteria tbody th { font-weight: 600; color: var(--text-primary); }
+.criteria .obj { display: flex; align-items: center; gap: 14px; }
+.criteria .obj .art { flex: none; width: 60px; height: 60px; }
+.criteria .obj b { display: block; font-size: 1.12rem; white-space: nowrap; }
+.criteria tbody th small { display: block; font-weight: 400; color: var(--text-muted); font-size: .88rem; line-height: 1.35; margin-top: 2px; }
+.criteria td .mark { font-weight: 700; font-size: 1.45rem; display: inline-block; min-width: 1.3em; line-height: 1.15; }
 .criteria td.ok .mark, .criteria td.maybe .mark { color: var(--text-primary); }
 .criteria td.no .mark { color: var(--series-2); }
 .criteria td.na .mark { color: var(--text-muted); }
-.criteria td small { display: block; color: var(--text-muted); font-size: .8rem; line-height: 1.4; max-width: 26ch; margin-top: 2px; }
-.criteria td.verdict { font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.criteria td small { display: block; color: var(--text-muted); font-size: .88rem; line-height: 1.4; max-width: 30ch; margin-top: 2px; }
+.criteria td.verdict { font-weight: 600; font-size: 1.08rem; color: var(--text-primary); white-space: nowrap; }
 .criteria td.verdict small { white-space: normal; font-weight: 400; }
 .criteria tr.p9 th, .criteria tr.p9 td { background: color-mix(in srgb, var(--p9) 6%, transparent); }
 /* the section head with the Union's mark at the right, inside the head's own height */
@@ -627,14 +632,15 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--text-primary); text-decoration: underline; cursor: pointer; }
 
 /* the clustering page's head: the solar system from above, the distant orbits drawing in, then Planet Nine */
-.lean-head { max-height: 62vh; margin-inline: auto; }
-.lean-head .lh-ring { fill: none; stroke: var(--text-muted); stroke-opacity: .55; stroke-width: 1; }
+.lean-head { max-height: 62vh; margin-inline: auto; overflow: visible; }   /* Planet Nine's name may ride just past the edge */
 .lean-head .lh-orbit {
   fill: none; stroke: var(--series-1); stroke-width: 2; stroke-opacity: .9;
-  stroke-dasharray: 1; stroke-dashoffset: 1; animation: lh-draw 1.4s ease-out forwards;
+  stroke-dasharray: 1; stroke-dashoffset: 1; animation: lh-draw .9s ease-out forwards;
 }
-.lean-head .lh-p9 { fill: none; stroke: var(--p9); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; opacity: 0; animation: lh-in 1s ease 3.8s forwards; }
-.lean-head .lh-p9-mark { opacity: 0; animation: lh-in 1s ease 4.2s forwards; }
+/* about twice as quick as at first (2026-11-16): the six orbits are in by ~1.9s, Planet Nine by ~2.7s, then it
+   goes round its orbit for as long as the head is in view (leanhead.js) */
+.lean-head .lh-p9 { fill: none; stroke: var(--p9); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; opacity: 0; animation: lh-in .7s ease 1.8s forwards; }
+.lean-head .lh-p9-mark { opacity: 0; animation: lh-in .6s ease 2.1s forwards; }
 .head-fig .lean-key { justify-content: center; margin-top: 4px; }
 .head-fig .lean-key svg { display: inline; width: 20px; height: 12px; }
 .lean-head .lh-lbl { font-size: 14px; font-weight: 600; }
@@ -686,51 +692,45 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .pick-card dd.au { color: var(--au); font-variant-numeric: tabular-nums; }
 .pick-close { position: absolute; top: 6px; right: 8px; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--rule); background: var(--surface-3); color: var(--text-primary); cursor: pointer; }
 
-/* what a planet would do (charts/compare.js): two pictures side by side, drawn like the head, the play bar along their foot */
-.cmp-pic { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px 18px 70px; }
-.cmp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; max-width: 900px; margin-inline: auto; }
+/* what a planet would do (charts/compare.js), compact (2026-11-16): the picture with a planet, drawn like the head and
+   no taller than the screen allows; beside it a column with the small picture with no planet and, under it, the notes,
+   so nothing covers the drawing; Play again in the last note. On a phone the column goes under the picture. */
+.cmp-pic { max-width: 840px; margin-inline: auto; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 16px 20px; }
+.cmp-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 270px); gap: 28px; align-items: start; }
 .cmp-panel { margin: 0; }
-.cmp-panel figcaption { text-align: center; font-size: 1.15rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
-.cmp-panel + .cmp-panel { border-left: 1px solid var(--rule); padding-left: 20px; }
+.cmp-panel figcaption { text-align: center; font-size: 1.05rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.cmp-panel[data-p="p9"] figcaption { margin-bottom: 12px; }
+.cmp-panel[data-p="p9"] { position: relative; justify-self: center; width: min(100%, 480px, calc(100vh - 270px)); min-width: min(100%, 300px); }
+.cmp-side { display: flex; flex-direction: column; align-items: stretch; gap: 16px; padding-top: 4px; }
+.cmp-panel[data-p="none"] { width: min(100%, 180px); align-self: center; }
+.cmp-panel[data-p="none"] figcaption { font-size: .85rem; color: var(--text-secondary); }
+.cmp-panel[data-p="none"] svg { border: 1px solid var(--rule); border-radius: 10px; }
 .cmp-panel svg { display: block; width: 100%; height: auto; overflow: hidden; }
-.cmp-panel .lh-ring { fill: none; stroke: var(--text-muted); stroke-opacity: .55; stroke-width: 1; }
 .cmp-panel .lh-p9 { fill: none; stroke: var(--p9); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; }
 .cmp-orbit { fill: none; stroke: var(--series-1); stroke-width: 1.6; stroke-opacity: .8; }
-.cmp-key { justify-content: center; margin: 14px 0 0; }
 .cmp-orbit.is-out { stroke: var(--text-primary); stroke-width: 2.2; }
-.cmp-orbit.is-demo { stroke: var(--series-1-ink); stroke-width: 4; stroke-opacity: 1; }   /* violet like every object, only bolder: white means flung */
-.cmp-demo .cross { fill: none; stroke: var(--text-primary); stroke-width: 2; stroke-dasharray: 3 3; }
-.cmp-demo .obj { fill: var(--series-1); stroke: #fff; stroke-width: 1.4; }
+/* act 2: where each orbit started, while it turns, and which way it turns */
+.cmp-ghost { fill: none; stroke: var(--series-1); stroke-width: 1.2; stroke-opacity: .4; stroke-dasharray: 3 4; }
+.cmp-arrow { fill: none; stroke: var(--series-1-ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .cmp-flung line { stroke: var(--text-primary); stroke-width: 1.6; stroke-dasharray: 2 4; stroke-linecap: round; }
 .cmp-flung .flash { fill: none; stroke: var(--text-primary); stroke-width: 2.5; }
 .cmp-flung .obj { fill: var(--series-1); stroke: #fff; stroke-width: 1.2; }
-.cmp-count { font-size: .84rem; font-weight: 600; color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.cmp-lesson { margin: 14px auto 0; max-width: 80ch; text-align: center; color: var(--text-secondary); }
-/* the pop-ups on the pictures: a few words and, when the run waits, its button */
-.cmp-pop {
-  position: absolute; z-index: 4; width: max-content; max-width: min(280px, 80%); padding: 10px 14px 12px;
-  background: var(--surface-2); border: 1px solid var(--text-muted); border-radius: 10px; box-shadow: 0 10px 30px #000a;
-  animation: cmp-pop-in .25s ease;
-}
-.cmp-pop p { margin: 0; font-size: 1rem; line-height: 1.4; color: var(--text-primary); font-weight: 600; }
-.cmp-pop .pic-btn { margin-top: 10px; }
-.cmp-pop::after {
-  content: ""; position: absolute; left: var(--tail); width: 12px; height: 12px; margin-left: -6px; transform: rotate(45deg);
-  background: var(--surface-2); border: 1px solid var(--text-muted);
-}
-.cmp-pop[data-side="above"]::after { bottom: -7px; border-top: 0; border-left: 0; }
-.cmp-pop[data-side="below"]::after { top: -7px; border-bottom: 0; border-right: 0; }
-.cmp-pop[data-side="left"]::after { left: auto; right: -7px; top: var(--tail); margin: -6px 0 0; border-left: 0; border-bottom: 0; }
+/* the notes beside the picture: a small label for which effect, one plain sentence, and Continue when the run waits */
+.cmp-pop { padding: 12px 14px 14px; background: var(--surface-2); border: 1px solid var(--rule); border-radius: 10px; animation: cmp-pop-in .25s ease; }
+.cmp-pop p { margin: 0; font-size: 1rem; line-height: 1.45; color: var(--text-primary); font-weight: 500; max-width: none; }
+.cmp-pop .pic-btn { margin-top: 12px; }
+/* which of the planet's two effects a note is about */
+.cmp-pop-k { display: block; margin-bottom: 6px; font: 700 .72rem/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
 @keyframes cmp-pop-in { from { opacity: 0; transform: translateY(4px); } }
-@media (max-width: 760px) { .cmp-pop { max-width: 70%; padding: 8px 10px 10px; } .cmp-pop p { font-size: .85rem; } }
-/* on a phone the two stay side by side, smaller: the comparison is the point */
+/* on a phone the picture takes the width; under it, the small picture beside the note */
 @media (max-width: 760px) {
-  .cmp-pic { padding: 12px 8px; }
-  .cmp-grid { gap: 6px; }
-  .cmp-panel + .cmp-panel { padding-left: 6px; }
-  .cmp-panel figcaption { font-size: .8rem; line-height: 1.2; min-height: 2.4em; }
-  .cmp-pic .pic-bar { position: static; margin-top: 10px; }
+  .cmp-pic { padding: 12px; }
+  .cmp-grid { grid-template-columns: 1fr; gap: 12px; }
+  .cmp-side { display: grid; grid-template-columns: 100px minmax(0, 1fr); align-items: start; gap: 12px; padding-top: 0; }
+  .cmp-panel[data-p="none"] { width: 100%; }
+  .cmp-pop p { font-size: .92rem; }
 }
+
 
 /* the herd: the picture full width, its controls along the foot of the panel */
 /* On a phone the 760-unit lean chart is drawn at about half size: its words are set larger so they stay readable. */
@@ -1181,7 +1181,7 @@ sup.cite a:hover { text-decoration: underline; }
 .arc-row.used .nights, .arc-key .nights { stroke: var(--series-1-ink); }
 .arc-key .pointer { fill: none; stroke: #8c8b83; stroke-width: 1; }
 .axis-label.strong { fill: var(--text-primary); font-weight: 600; }
-.arc-group { font-size: 11px; font-weight: 600; letter-spacing: .04em; fill: #8c8b83; }
+.arc-group { font-size: 11px; font-weight: 600; letter-spacing: .04em; fill: var(--text-muted); }
 .arc-group.used { fill: var(--series-1-ink); }
 .arc-row .hit { fill: transparent; pointer-events: all; }
 .arc-row.hot .span, .arc-row.hot .nights { stroke: #ffffff; stroke-opacity: 1; }

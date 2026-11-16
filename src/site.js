@@ -136,26 +136,30 @@ function nav () {
 /** Below the content: one Continue button, and a small link to the credits. */
 function footer () {
   const cur = here()
-  if (cur.id === 'intro') return
-  // The walkthrough reads in order; the nav is there for jumping about. Pages
-  // outside it (the credits) and the last page send the reader back to the start.
+  // The intro has Start; pages outside the walkthrough (the credits) end with no button (2026-11-16).
+  if (cur.id === 'intro' || cur.aside) return
+  // The walkthrough reads in order; the nav is there for jumping about. The last page
+  // sends the reader back to the start.
   // Readers did not take the old quiet bar for a button: it now names the next page,
   // with its part in the part's hue when the next page opens a new part, and ends in a
   // round white arrow.
   const main = PAGES.filter(p => !p.aside)
-  const next = cur.aside ? null : main[main.indexOf(cur) + 1]
+  const next = main[main.indexOf(cur) + 1]
+  // Every page in the walkthrough ends in the same button, the last one too (2026-11-16): it can be clicked,
+  // or filled by scrolling on (pullOn below).
   const arrow = '<span class="cont-arrow" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12h13M13 6l6 6-6 6"/></svg></span>'
+  const fill = '<span class="cont-fill" aria-hidden="true"></span>'
   const go = next
     ? `<a class="btn-continue" href="${url(next.path)}">
         <span class="cont-k">Next${next.group !== cur.group ? ` <span class="cont-part" data-group="${next.group}">${next.group}</span>` : ''}</span>
-        <span class="cont-t">${next.title}</span>${arrow}<span class="cont-fill" aria-hidden="true"></span></a>`
-    : `<a class="btn-continue" href="${url('index.html')}"><span class="cont-k">The end</span><span class="cont-t">Back to the start</span>${arrow}</a>`
-  const credits = cur.aside ? '' : `<a class="foot-credits" href="${url('credits.html')}">Credits and sources</a>`
+        <span class="cont-t">${next.title}</span>${arrow}${fill}</a>`
+    : `<a class="btn-continue" href="${url('index.html')}"><span class="cont-k">The end</span><span class="cont-t">Back to the start</span>${arrow}${fill}</a>`
+  const credits = `<a class="foot-credits" href="${url('credits.html')}">Credits and sources</a>`
   const el = document.createElement('footer')
   el.className = 'site-foot wrap'
   el.innerHTML = `<nav class="continue" aria-label="Continue">${go}</nav>${credits}`
   document.body.append(el)
-  if (next) pullOn(el.querySelector('.btn-continue'))
+  pullOn(el.querySelector('.btn-continue'))
 }
 
 // Keep scrolling at the end of a page to open the next one. Changing page on plain

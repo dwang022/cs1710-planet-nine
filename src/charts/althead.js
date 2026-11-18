@@ -1,8 +1,9 @@
-// The alternatives page's head: the six orbits that first pointed to Planet
+// The alternatives page's head: the six orbits that first suggested Planet
 // Nine, bunched one way, drawn like the clustering page's head (real orbits
 // laid flat, distances square-rooted, directions exact), and round them the
 // suspects appearing one by one: each explanation's own mark (altart.js) with
-// its short name. Eight ideas, one pattern; the table below weighs them.
+// its short name, the planet at the top. Eight ideas, one pattern; the
+// figure below weighs them (charts/weigh.js).
 
 import * as d3 from 'd3'
 import { flatOrbit } from '../orbits.js'
@@ -20,7 +21,7 @@ function warp ([x, y]) {
 
 /** six: the six objects; alternatives: alternatives.json rows (id, short). */
 export function altHead (root, { six, alternatives }) {
-  const n = alternatives.length
+  const n = alternatives.length, top = Math.max(0, alternatives.findIndex(a => a.id === 'planet_nine'))
   // the orbits all stretch one way from the Sun: fit and centre them by their own extent, not by the Sun
   const paths = six.map(o => flatOrbit(o.a_au, o.e, o.varpi_deg, 200).map(warp))
   const all = paths.flat()
@@ -34,10 +35,10 @@ export function altHead (root, { six, alternatives }) {
       <use href="#art-sun" x="${(sun[0] - 7).toFixed(1)}" y="${(sun[1] - 7).toFixed(1)}" width="14" height="14"/>
     </svg>
     ${alternatives.map((a, i) => {
-      // round the picture from the top, clockwise
-      const t = (-90 + i * 360 / n) * Math.PI / 180
+      // round the picture from the top, clockwise, the planet at the top
+      const t = (-90 + (i - top) * 360 / n) * Math.PI / 180
       return `<div class="ah-suspect" style="left:${(50 + 44 * Math.cos(t)).toFixed(1)}%;top:${(50 + 44 * Math.sin(t)).toFixed(1)}%;animation-delay:${150 + i * 120}ms">
-        <span class="alt-ic-box">${ROW_ART[a.id]?.() || ''}</span><span class="ah-name">${a.short}</span></div>`
+        <span class="alt-ic-box">${ROW_ART[a.id]?.() || ''}</span><span class="ah-name" data-no-tint>${a.short}</span></div>`
     }).join('')}
   </div>`
 }

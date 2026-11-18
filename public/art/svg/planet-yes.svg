@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Planet Nine smiling, for the answer Yes" style="color:#ffffff"><defs><clipPath id="ak-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#ak-c)"><circle cx="50" cy="50" r="40" fill="#2aa092"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="Planet Nine, happy, for the answer Yes" style="color:#ffffff"><defs><clipPath id="ak-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#ak-c)"><circle cx="50" cy="50" r="40" fill="#2aa092"/>
       <path d="M0,29 C25,26.8 40,31.2 60,29 S90,26.8 100,30.1 L100,39.2 C80,34.8 60,39.2 40,37 S15,34.8 0,38.1 Z" fill="#50c8b0" opacity="1"/>
       <path d="M0,46 C25,43.8 40,48.2 60,46 S90,43.8 100,47.1 L100,59.2 C80,54.8 60,59.2 40,57 S15,54.8 0,58.1 Z" fill="#1c786b" opacity="1"/>
       <path d="M0,66 C25,63.8 40,68.2 60,66 S90,63.8 100,67.1 L100,74.2 C80,69.8 60,74.2 40,72 S15,69.8 0,73.1 Z" fill="#50c8b0" opacity="0.9"/>
@@ -6,6 +6,6 @@
       <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.32"/></g>
   <circle cx="50" cy="50" r="40" fill="none" stroke="#123f36" stroke-width="2.5"/>
   
-  <g class="p9-smile"><ellipse cx="41" cy="43" rx="4.2" ry="5.6" fill="#e6f4ef" stroke="#1b3a32" stroke-width="2.5" paint-order="stroke"/><ellipse cx="59" cy="43" rx="4.2" ry="5.6" fill="#e6f4ef" stroke="#1b3a32" stroke-width="2.5" paint-order="stroke"/>
-    <path d="M35,53 Q50,71 65,53" fill="none" stroke="#1b3a32" stroke-width="9.5" stroke-linecap="round"/>
-    <path d="M35,53 Q50,71 65,53" fill="none" stroke="#e6f4ef" stroke-width="5" stroke-linecap="round"/></g></svg>
+  <g class="face"><circle cx="41" cy="45" r="4.7" fill="#f4f2ec"/><circle cx="59" cy="45" r="4.7" fill="#f4f2ec"/>
+    <path d="M41,57 Q50,64.5 59,57" fill="none" stroke="#f4f2ec" stroke-width="5.4" stroke-linecap="round"/><circle cx="41" cy="45" r="3.4" fill="#121216"/><circle cx="59" cy="45" r="3.4" fill="#121216"/>
+    <path d="M41,57 Q50,64.5 59,57" fill="none" stroke="#121216" stroke-width="2.8" stroke-linecap="round"/></g></svg>

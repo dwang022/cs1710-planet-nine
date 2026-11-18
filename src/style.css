@@ -605,6 +605,8 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .verdict.against b { color: var(--series-2-ink); }
 /* the case against, in text (ember) */
 .k-against { color: var(--series-2-ink); font-weight: 600; }
+/* Rubin's name in its hot pink, as its drawings and labels are (the future page; asked for 2026-11-18) */
+.k-rubin { color: var(--series-4-ink); }
 
 /* controls on a picture (the streetlight, the herd, the orbit views): one dark bar along an edge,
    in the style of the data page's game */
@@ -1338,15 +1340,6 @@ sup.cite a:hover { text-decoration: underline; }
 .step-card .filter .filter-name { justify-content: flex-start; gap: 8px; }
 .step-card .filter .filter-name b { margin-left: auto; }
 
-/* --- the future page's schedule ------------------------------------------ */
-.when { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 0; }
-.when li { display: grid; grid-template-columns: 150px 1fr; gap: 18px; padding: 16px 0; border-top: 1px solid var(--rule); font-size: .98rem; line-height: 1.55; color: var(--text-secondary); }
-.when li:last-child { border-bottom: 1px solid var(--rule); }
-.when li b { color: var(--text-primary); }
-.when-y { font: 700 .82rem/1.5 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--series-4-ink); }
-@media (max-width: 700px) { .when li { grid-template-columns: 1fr; gap: 6px; } }
-#chartDepth svg { max-height: 40vh; }
-
 /* ---- search pages ---- */
 /* search/how.html, search/timeline.html and search/future.html (pages/search.js, timeline.js, future.js). */
 /* the sky map's depth key: the two ends named either side of the ramp */
@@ -1526,20 +1519,8 @@ sup.cite a:hover { text-decoration: underline; }
 }
 @media (max-width: 480px) { .place-bar { grid-template-columns: minmax(0, 1fr); } }
 
-/* the future page's two verdicts: aurora for what would confirm it, ember for what would end it */
-.verdict-card {
-  background: var(--surface-1); border: 1px solid var(--rule); border-left: 3px solid var(--rule);
-  border-radius: 0 var(--radius) var(--radius) 0; padding: 20px 22px;
-}
-.verdict-card.is-for { border-left-color: var(--p9); }
-.verdict-card.is-against { border-left-color: var(--series-2); }
-.verdict-card h3 { font-size: 1.2rem; margin-bottom: 12px; }
-.verdict-card ul { margin: 0; padding-left: 20px; color: var(--text-secondary); line-height: 1.5; }
-.verdict-card li { margin-bottom: 8px; }
-.verdict-card li:last-child { margin-bottom: 0; }
-.verdict-card .verdict-key { margin: 14px 0 0; color: var(--text-primary); font-weight: 600; }
 /* ledger rows slide in from the side; off screen, that offset must not widen the page on a phone */
-body[data-page="search"] #searches, body[data-page="future"] #next { overflow-x: clip; }
+body[data-page="search"] #searches { overflow-x: clip; }
 
 /* the Planet Nine debate (search/timeline.html, charts/debate.js): the year, its headline and the two counts over the
    picture; the circle with the papers for inside and against outside, a panel beside it (under it on a phone) with the
@@ -1710,147 +1691,13 @@ body[data-page="search"] #searches, body[data-page="future"] #next { overflow-x:
   .ss-label, .ss-note { font-size: 34px; }
   .ss .pick-card { position: static; margin-top: 6px; }
 }
-/* phones: the brightness ruler stands up and is drawn at its own width, so no height cap */
-@media (max-width: 640px) { #chartDepth svg { max-height: none; } }
 
 /* ---- alternatives page ---- */
-/* insights/alternatives.html: the key and the scorecard (charts/matrix.js), the panel that opens under a row and its
-   drawings (charts/altart.js). The table follows the planets page's .criteria; the marks say each verdict by shape
-   and by colour: a white disc (accounts for it), a white half disc (partly), an ember ring (does not). */
-.alt-key { gap: 8px 28px; margin: 14px 0 0; }
-.alt-key .legend-item { font-size: .88rem; gap: 9px; }
-.mk { display: inline-block; width: 22px; height: 22px; flex: none; overflow: visible; vertical-align: middle; }
-.mk circle, .mk path { fill: var(--text-primary); stroke: none; }
-.mk .ring { fill: none; stroke: var(--text-primary); stroke-width: 2; }
-.mk-no .ring { stroke: var(--series-2); stroke-width: 2.4; }
-.alt-key .mk { width: 18px; height: 18px; }
-
-.alt-wrap { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-1); overflow: hidden; }
-.alt-table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: .95rem; }
-.alt-table th, .alt-table td { padding: 0; border: 0; background: none; color: inherit; font-weight: inherit; }
-.alt-table .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.alt-table thead th {
-  position: static; padding: 14px 10px 12px; border-bottom: 1px solid #4a4a52; background: none; vertical-align: bottom;
-  font: 600 .72rem/1.4 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-primary);
-  white-space: normal; text-align: center;
-}
-.alt-table thead .alt-h-name { width: 34%; padding-left: 16px; text-align: left; }
-.alt-table thead .alt-h-more { width: 112px; }
-.alt-h-test .short { display: none; }
-
-/* the clue filter: each clue head is a toggle (a tick box above its name); a required clue is bright and underlined */
-.alt-h-btn { all: unset; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 7px; width: 100%;
-  cursor: pointer; color: var(--text-secondary); font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: center; }
-.alt-h-btn:hover { color: var(--text-primary); }
-.alt-h-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 4px; border-radius: 4px; }
-.alt-h-btn .tick { width: 14px; height: 14px; border: 1.5px solid var(--text-muted); border-radius: 4px; display: grid; place-items: center; flex: none; }
-.alt-h-btn:hover .tick { border-color: var(--text-primary); }
-.alt-h-btn[aria-pressed="true"] { color: var(--text-primary); }
-.alt-h-btn[aria-pressed="true"] .tick { background: #fff; border-color: #fff; }
-.alt-h-btn[aria-pressed="true"] .tick::after { content: ""; width: 7px; height: 4px; border: solid #0f0f11; border-width: 0 0 2px 2px; transform: translateY(-1px) rotate(-45deg); }
-.alt-table thead th.alt-h-test { vertical-align: top; }
-.alt-table thead th.is-req { box-shadow: inset 0 -2px 0 var(--text-primary); }
-.alt-hint { display: block; margin-top: 6px; font: 400 .8rem/1.2 var(--font-sans); letter-spacing: 0; text-transform: none; color: var(--text-muted); transition: opacity .3s; }
-.alt-hint::after { content: " →"; }
-.alt-table.was-filtered .alt-hint { opacity: 0; }
-.alt-f-count { font: 600 .9rem/1 var(--font-sans); letter-spacing: 0; text-transform: none; color: var(--text-primary); white-space: nowrap; }
-.alt-table .alt-row { transition: opacity .3s ease; }
-.alt-table .alt-row.is-out { opacity: .28; }
-.alt-table .alt-row.is-out:hover { opacity: .6; }
-
-/* the easter egg: a reader who chose the black-hole skin opens the black hole's row, and the rest falls in */
-.alt-table .is-sucked { transition: transform .75s cubic-bezier(.55, 0, .9, .45), opacity .75s ease-in; }
-.alt-table .is-spat { transition: transform .6s cubic-bezier(.2, 1.4, .4, 1), opacity .4s ease-out; }
-.alt-egg { display: block; font-size: .78rem; font-weight: 600; color: var(--text-primary); opacity: 0; transition: opacity .3s; }
-.alt-egg.show { opacity: 1; }
-
-/* a row: the whole of it opens its panel; the pill at the end says so */
-.alt-table .alt-row { cursor: pointer; }
-.alt-table .alt-row > * { padding: 12px 10px; border-top: 1px solid var(--rule); vertical-align: middle; transition: background-color .15s ease; }
-.alt-table tbody tr:first-child > * { border-top: 0; }
-.alt-table .alt-row > th { padding-left: 16px; text-align: left; }
-.alt-table .alt-m { text-align: center; }
-.alt-table .alt-row.p9 > * { background: color-mix(in srgb, var(--p9) 6%, transparent); }
-.alt-table .alt-row:hover > *, .alt-table .alt-row:has(.alt-btn:focus-visible) > * { background: #ffffff0a; }
-.alt-table .alt-row.is-open > * { background: var(--surface-2); }
-.alt-table .alt-row.is-open > th { box-shadow: inset 3px 0 0 var(--ui); }
-.alt-btn {
-  display: flex; align-items: center; gap: 14px; width: 100%; margin: 0; padding: 0; border: 0; border-radius: 8px;
-  background: none; color: inherit; font: inherit; text-align: left; cursor: pointer;
-}
-.alt-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 4px; }
+/* insights/alternatives.html (rebuilt 2026-11-18): the figure and its cards are styled in
+   charts/weigh.css; the scorecard (charts/matrix.js) and the clue cards (charts/clueart.js) were removed. The head's
+   suspects keep their drawings' box here. */
 .alt-ic-box { flex: none; width: 46px; height: 46px; display: grid; place-items: center; }
 .alt-ic-box svg.alt-ic { width: 100%; height: 100%; display: block; }
-.alt-name { display: grid; gap: 1px; min-width: 0; }
-.alt-name b { font-weight: 600; font-size: 1.02rem; line-height: 1.3; color: var(--text-primary); }
-.alt-name b.k-p9 { color: var(--p9-ink); }
-.alt-name small { font-size: .82rem; line-height: 1.35; color: var(--text-muted); }
-.alt-table .alt-more-cue { padding-right: 16px; text-align: right; }
-.alt-pill {
-  display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px 5px 13px; border: 1px solid #3c3c44; border-radius: 999px;
-  color: var(--text-secondary); font-size: .8rem; font-weight: 600; white-space: nowrap;
-  transition: border-color .15s ease, color .15s ease, background-color .15s ease;
-}
-.alt-pill svg { width: 14px; height: 14px; flex: none; transition: transform .25s ease; }
-.alt-pill .w2 { display: none; }
-.alt-row:hover .alt-pill, .alt-row:has(.alt-btn:focus-visible) .alt-pill { border-color: var(--text-muted); color: var(--text-primary); background: #ffffff0d; }
-.alt-row.is-open .alt-pill { border-color: var(--ui); color: var(--text-primary); background: none; }
-.alt-row.is-open .alt-pill svg { transform: rotate(180deg); }
-.alt-row.is-open .alt-pill .w { display: none; }
-.alt-row.is-open .alt-pill .w2 { display: inline; }
-
-/* the panel: grows out of its row (the height animates from 0), in the open row's colour */
-.alt-table .alt-more > td { padding: 0; border: 0; background: var(--surface-2); box-shadow: inset 3px 0 0 var(--ui); }
-.alt-more-in { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .3s ease; }
-.alt-more.is-open .alt-more-in { grid-template-rows: 1fr; }
-.alt-clip { min-height: 0; overflow: hidden; }
-.alt-panel {
-  position: relative; display: grid; grid-template-columns: minmax(220px, 340px) minmax(0, 64ch); gap: 18px 36px;
-  align-items: center; padding: 6px 64px 26px 22px; opacity: 0; transition: opacity .2s ease;
-}
-.alt-more.is-open .alt-panel { opacity: 1; transition: opacity .3s ease .08s; }
-.alt-fig { margin: 0; background: var(--surface-1); border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; }
-.alt-fig svg { display: block; width: 100%; height: auto; }
-.alt-text p { max-width: 64ch; }
-.alt-explain { margin: 0 0 14px; font-size: 1.02rem; line-height: 1.6; color: var(--text-secondary); }
-.alt-short { margin: 0; padding-left: 12px; border-left: 3px solid var(--series-2); font-size: 1.02rem; line-height: 1.55; font-weight: 600; color: var(--text-primary); }
-.alt-short sup.cite { font-weight: 400; }
-.alt-close {
-  position: absolute; top: 4px; right: 16px; width: 32px; height: 32px; border-radius: 50%; border: 1px solid #3c3c44;
-  background: transparent; color: var(--text-secondary); font: inherit; font-size: 1.15rem; line-height: 1; cursor: pointer;
-}
-.alt-close:hover { border-color: var(--text-muted); color: var(--text-primary); }
-.alt-close:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
-
-@media (max-width: 900px) {
-  .alt-table thead .alt-h-name { width: 40%; }
-  .alt-table thead .alt-h-more { width: 52px; }
-  .alt-pill { padding: 6px; }
-  .alt-pill .w, .alt-row.is-open .alt-pill .w2 { display: none; }
-  .alt-panel { grid-template-columns: minmax(0, 1fr); padding: 6px 18px 22px; gap: 16px; }
-  .alt-fig { max-width: 380px; }
-  .alt-close { top: 12px; right: 12px; background: #000000a0; border-color: #ffffff40; color: #fff; }
-}
-/* phones: short column heads, the marks in narrow columns, the name without its tag */
-@media (max-width: 760px) {
-  .alt-h-test .long { display: none; }
-  .alt-h-test .short { display: inline; }
-  .alt-f-count { font-size: .72rem; }
-  .alt-table thead th { padding: 10px 2px; font-size: .62rem; letter-spacing: .05em; }
-  .alt-table thead .alt-h-name { width: auto; padding-left: 10px; }
-  .alt-table thead .alt-h-test { width: 12%; }
-  .alt-table thead .alt-h-more { width: 32px; }
-  .alt-table .alt-row > * { padding: 10px 2px; }
-  .alt-table .alt-row > th { padding-left: 10px; }
-  .alt-table .alt-more-cue { padding-right: 8px; }
-  .alt-btn { gap: 7px; }
-  .alt-ic-box { width: 26px; height: 26px; }
-  .alt-name b { font-size: .9rem; line-height: 1.25; }
-  .alt-name small { display: none; }
-  .mk { width: 20px; height: 20px; }
-  .alt-panel { padding: 4px 12px 18px; }
-  .alt-explain, .alt-short { font-size: .95rem; }
-}
 
 /* how the proposal changed (search/timeline.html #proposals, charts/proposals.js, pages/timeline.js): the papers' marks
    come in once as a wave from 2016 on, each paper's distance and mass together, fading in and sliding 12px from the
@@ -1861,20 +1708,9 @@ body[data-page="search"] #searches, body[data-page="future"] #next { overflow-x:
 }
 #chartProposals.is-waiting .pg { opacity: 0; translate: -12px 0; }
 
-/* what comes next (search/future.html, pages/future.js): the scroll entrances. The beats, the schedule's rows and the
-   verdicts use scrolly.css's .reveal; here, the ruler's surveys come in from brightest to faintest (left to right, or
-   top to bottom on a phone), 120ms apart, once it is on screen, and each "what to watch" card's drawing comes in just
-   after its card (the card's own entrance is the ledger's). All of it plays again on coming back, from either side. */
-html.has-reveal #chartDepth g.s {
-  transition: opacity .6s ease-out calc(var(--i, 0) * 120ms), translate .6s var(--reveal-ease) calc(var(--i, 0) * 120ms);
-}
-html.has-reveal #chartDepth:not(.is-in) g.s { opacity: 0; translate: 0 10px; }
-html.has-reveal #nextLedger .fr .fr-art { transition: opacity .6s ease-out .3s, transform .65s var(--reveal-ease) .3s; }
-html.has-reveal #nextLedger .fr:not(.is-in) .fr-art { opacity: 0; transform: translate3d(0, 10px, 0) scale(.97); }
-
 /* the final question (search/future.html #yours, pages/future.js): one centred panel. The panel comes in with
-   scrolly.css's .reveal and its parts follow, a beat apart. The question and the thank-you share one grid cell, so
-   submitting swaps them in place and the card keeps its size. The chosen button takes the planet's colour, as YOU does. */
+   scrolly.css's .reveal and its parts follow, a beat apart. The question and the results share one grid cell, so
+   submitting swaps them in place. */
 .cq {
   display: grid; max-width: 820px; margin: 0 auto; padding: 48px 40px 40px; text-align: center;
   background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius);
@@ -1914,60 +1750,6 @@ html.has-reveal .cq:not(.is-in) .cq-ask > :is(.cq-eyebrow, .cq-title, .cq-choice
 @media (max-width: 560px) {
   .cq { padding: 34px 18px 28px; }
   .cq-choices .cq-btn { min-width: 0; flex: 1 1 0; padding: 0 10px; }
-}
-
-/* what to watch (search/future.html #next): the ledger's four "next" cards as numbered windows, two by two (one column
-   below 1000px). Inside, a compact grid instead of the ledger's centred stack: the number and a small lane badge, then
-   the title and line on the left, the drawing on the right scaled into a fixed box (never cropped or stretched), and
-   the sources along the foot. Cards in a row share its height. The ledger's year gutter ("Next") is left out. */
-#next .nx-grid { max-width: 1180px; }
-#next .nx-grid .fy { display: block; padding: 0; border: 0; }
-#next .nx-grid .fy-year { display: none; }
-#next .nx-grid .fy-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 1fr; gap: 18px; counter-reset: nx; }
-#next .nx-grid .fr.is-next {
-  counter-increment: nx; display: grid; align-items: start; text-align: left;
-  grid-template-columns: auto minmax(0, 1fr) minmax(150px, 38%);
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas: "num icon art" "body body art" "meta meta meta";
-  gap: 8px 22px; padding: 16px 22px 12px; border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--series-4) 32%, transparent);
-  transition: border-color .25s ease, translate .25s ease;
-}
-html.has-reveal #next .nx-grid .fr.is-next {
-  transition: opacity .55s var(--reveal-ease), transform .65s var(--reveal-ease), border-color .25s ease, translate .25s ease;
-}
-#next .nx-grid .fr.is-next::before {
-  content: counter(nx, decimal-leading-zero); grid-area: num; align-self: center;
-  font: 700 .72rem/1 var(--font-mono); letter-spacing: .1em; color: var(--text-muted); font-variant-numeric: tabular-nums;
-}
-#next .nx-grid .fr.is-next .fr-icon { grid-area: icon; justify-self: start; width: 30px; height: 30px; margin: 0; }
-#next .nx-grid .fr.is-next .fr-body { grid-area: body; max-width: none; }
-#next .nx-grid .fr.is-next .fr-art {
-  grid-area: art; align-self: center; justify-self: stretch; display: flex; align-items: center; justify-content: center;
-  width: auto; max-width: none; height: 170px; margin: 0;
-}
-#next .nx-grid .fr.is-next .fr-art .fd { width: 100%; height: 100%; max-height: 170px; }
-#next .nx-grid .fr.is-next .fr-meta {
-  grid-area: meta; align-items: flex-start; padding-top: 8px;
-  border-top: 1px solid color-mix(in srgb, var(--series-4) 16%, transparent);
-}
-#next .nx-grid .fr.is-next .fr-foot { margin-top: 0; justify-content: flex-start; }
-#next .nx-grid .fr.is-next:is(:hover, :focus-within) { border-color: color-mix(in srgb, var(--series-4) 60%, transparent); }
-@media (prefers-reduced-motion: no-preference) {
-  #next .nx-grid .fr.is-next:hover { translate: 0 -3px; }
-}
-@media (max-width: 1000px) {
-  #next .nx-grid .fy-rows { grid-template-columns: minmax(0, 1fr); gap: 16px; }
-}
-/* phones: the drawing moves under the words */
-@media (max-width: 560px) {
-  #next .nx-grid .fy-rows { grid-auto-rows: auto; }
-  #next .nx-grid .fr.is-next {
-    grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto;
-    grid-template-areas: "num icon" "body body" "art art" "meta meta"; padding: 14px 16px 12px;
-  }
-  #next .nx-grid .fr.is-next .fr-art { height: 150px; }
-  #next .nx-grid .fr.is-next .fr-art .fd { max-height: 150px; }
 }
 
 /* the activity's two versions (search/how.html, #build): the switch above the heading */
@@ -2211,46 +1993,12 @@ html.has-reveal #next .nx-grid .fr.is-next {
 /* the key is only a legend: clicks pass through it to the map, so the oval's southern tip under it can still be chosen */
 #buildV2 .hp-key { pointer-events: none; }
 
-/* ---- the Future page, version 2 (search/future.html #futureV2, pages/future.js) ---- */
-/* the version switch in the head's top-right corner, as on the timeline and the search page */
-.fv-head { position: relative; }
-.fv-tools { position: absolute; top: 0; right: var(--gutter); z-index: 1; }
-.fv-tools .seg button { font-size: .8rem; }
-@media (max-width: 900px) { .fv-tools { position: static; display: flex; justify-content: flex-end; margin-bottom: 10px; } }
-/* a shorter ending: tighter sections */
-.fv-part { padding-block: 32px; }
-.fv-part .sec-head { margin-bottom: 18px; }
-/* what happens next: three milestones on a line, each with its drawing, its year, whether it is under way, planned or
-   our estimate, a title and one line */
-.fv-time { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; position: relative; }
-.fv-time::before { content: ""; position: absolute; left: 8%; right: 8%; top: 46px; height: 2px; background: var(--rule); }
-.fv-m { position: relative; display: grid; justify-items: center; text-align: center; gap: 6px; }
-.fv-art { display: grid; place-items: center; width: 92px; height: 92px; border-radius: 50%; background: var(--surface-0); }
-.fv-art .art { width: 78px; height: auto; }
-.fv-y { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; margin-top: 4px; }
+/* ---- the future page (search/future.html, pages/future.js; rebuilt 2026-11-18): the question; the rest is in
+   charts/future.css ---- */
+/* a milestone's tag: under way, our estimate or the survey's planned end (the future page's year control) */
 .fv-tag { font: 700 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted);
-  border: 1px dashed var(--rule); border-radius: 999px; padding: 3px 9px; }
+  border: 1px dashed var(--rule); border-radius: 999px; padding: 3px 9px; white-space: nowrap; }
 .fv-tag.is-fact, .fv-tag.is-plan { border-style: solid; color: var(--text-secondary); }
-.fv-m h3 { margin: 6px 0 0; font-size: 1.08rem; }
-.fv-m p { margin: 0; max-width: 34ch; color: var(--text-secondary); font-size: .95rem; line-height: 1.5; }
-/* what would settle it: two balanced cards in the debate's colours */
-.fv-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.fv-card { background: var(--surface-1); border: 1px solid var(--rule); border-top: 4px solid var(--rule); border-radius: var(--radius); padding: 18px 22px; }
-.fv-card.is-for { border-top-color: var(--for); }
-.fv-card.is-against { border-top-color: var(--series-2); }
-.fv-card h3 { margin: 10px 0 10px; font-size: 1.15rem; }
-.fv-card.is-for h3 { color: var(--for-ink); }
-.fv-card.is-against h3 { color: var(--series-2-ink); }
-.fv-card ul { margin: 0; padding-left: 20px; color: var(--text-secondary); line-height: 1.5; }
-.fv-card li { margin-bottom: 6px; }
-.fv-key { margin: 10px 0 0; font-weight: 600; color: var(--text-primary); }
-.fv-pic { display: block; width: 100%; max-width: 220px; height: auto; }
-.fv-frame { fill: #ffffff08; stroke: var(--rule); stroke-width: 1.5; }
-.fv-frame.is-empty { stroke-dasharray: 4 4; }
-.fv-track { fill: none; stroke: var(--for); stroke-width: 1.5; stroke-dasharray: 3 4; opacity: .7; }
-.is-for .fv-dot { fill: var(--for); stroke: #05070d; stroke-width: 1.5; }
-.is-against .fv-dot { fill: var(--series-2); stroke: #05070d; stroke-width: 1.5; }
-.fv-arrows { fill: none; stroke: var(--series-2); stroke-width: 1.8; stroke-linecap: round; opacity: .75; }
 /* the vote: three planets, the reader's own Planet Nine first */
 .fv-vote .fv-title { font-size: clamp(1.6rem, 3.4vw, 2.3rem); margin-bottom: 22px; }
 .fv-choices { display: flex; justify-content: center; gap: clamp(18px, 5vw, 64px); flex-wrap: wrap; }
@@ -2268,10 +2016,6 @@ html.has-reveal #next .nx-grid .fr.is-next {
 .fv-pl[aria-pressed="true"] .fv-lbl { color: var(--text-primary); }
 .fv-choices:has([aria-pressed="true"]) .fv-pl[aria-pressed="false"] .fv-disc { opacity: .6; }
 .fv-vote .cq-submit { margin-top: 22px; }
-@media (max-width: 760px) {
-  .fv-time, .fv-cards { grid-template-columns: minmax(0, 1fr); }
-  .fv-time::before { display: none; }
-}
 @media (prefers-reduced-motion: reduce) {
   .fv-disc, .fv-lbl { transition: none; }
   .fv-pl:hover .fv-disc, .fv-pl:focus-visible .fv-disc { transform: none; }
@@ -2282,23 +2026,6 @@ html.has-reveal #next .nx-grid .fr.is-next {
   .fv-pl { padding: 4px; }
   .fv-disc { width: clamp(80px, 26vw, 104px); }
 }
-
-/* the Future page, version 2: the telescope chart, as wide as the page, with its key and the takeaway under it; its
-   surveys come in as version 1's do */
-.fv-depth { padding: 18px 22px 14px; }
-.fv-depth h3 { margin-bottom: 4px; }
-#chartDepth2 svg { display: block; width: 100%; height: auto; max-height: 52vh; }
-.fv-depth-key { margin: 6px 0 0; font-size: .84rem; color: var(--text-muted); max-width: 110ch; }
-.fv-takeaway { margin: 14px 0 0; font-size: 1rem; font-weight: 600; color: var(--text-primary); max-width: 110ch; }
-html.has-reveal #chartDepth2 g.s { transition: opacity .5s var(--reveal-ease) calc(var(--i, 0) * 70ms), translate .5s var(--reveal-ease) calc(var(--i, 0) * 70ms); }
-html.has-reveal #chartDepth2:not(.is-in) g.s { opacity: 0; translate: 0 10px; }
-@media (max-width: 640px) { #chartDepth2 svg { max-height: none; } }
-
-/* the settle-it cards: title, then drawing, then explanation, the same spacing in both */
-.fv-cards { align-items: stretch; }
-.fv-card { display: flex; flex-direction: column; padding: 20px 24px 22px; border-top-width: 3px; }
-.fv-card h3 { order: 0; margin: 0 0 14px; font-size: 1.45rem; font-weight: 700; line-height: 1.25; }
-.fv-card .fv-pic { margin: 0 0 16px; }
 
 /* the sky maps' empty sky (2026-11-10): one dark navy for the oval wherever no visible-light survey in our data
    reached, on the photographed sky, the game and the page head's small ovals; the depth itself is skyMagColour

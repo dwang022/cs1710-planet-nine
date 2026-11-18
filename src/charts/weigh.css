@@ -1,0 +1,72 @@
+/* The alternatives page's figure and its cards (charts/weigh.js, pages/alternatives.js). Colour by meaning: white and
+   grey for the figure, the part's red for luck's odds and the clue words, ember for a verdict that does not fit. */
+
+/* the figure */
+.weigh { margin: 0; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px 22px 8px; }
+svg.wg { display: block; width: 100%; height: auto; overflow: visible; }
+.wg .wg-tier { font-size: 14px; font-weight: 600; fill: var(--text-secondary); }
+.wg .wg-axt { fill: var(--text-muted); }
+.wg .wg-rule { stroke: var(--rule); stroke-width: 1; }
+.wg .wg-axis { stroke: var(--text-muted); stroke-opacity: .6; stroke-width: 1; }
+.wg .wg-tick { font-size: 13.5px; font-weight: 600; fill: var(--text-secondary); }
+.wg .wg-idea { cursor: pointer; outline: none; }
+.wg .wg-hit { fill: transparent; }
+.wg .wg-idea:hover .wg-hit, .wg .wg-idea:focus-visible .wg-hit { fill: #ffffff0c; }
+.wg .wg-idea:focus-visible .wg-hit { stroke: var(--ui); stroke-width: 2; }
+.wg .wg-name { font-size: 12.5px; font-weight: 600; fill: var(--text-primary); }
+.wg .wg-odds { font-size: 13px; font-weight: 700; fill: var(--part); }
+.wg .wg-egg { font-size: 11.5px; font-weight: 700; fill: var(--text-primary); opacity: 0; transition: opacity .3s; }
+.wg .wg-egg.show { opacity: 1; }
+
+/* the idea being read bright, everything else dim, its row's and column's names too */
+.wg .wg-idea, .wg .wg-tier, .wg .wg-tick, .wg .wg-odds { transition: opacity .45s ease; }
+.wg.is-focus .wg-idea:not(.is-on), .wg.is-focus .wg-odds:not(.is-on) { opacity: .16; }
+.wg.is-focus .wg-tier:not(.is-on):not(.wg-axt), .wg.is-focus .wg-tick:not(.is-on) { opacity: .3; }
+.wg.is-focus .wg-tier.is-on, .wg.is-focus .wg-tick.is-on { fill: var(--text-primary); }
+
+/* on pointing: a few words on what the idea is */
+.wg-tip { position: absolute; z-index: 3; max-width: 250px; padding: 8px 11px 9px; background: var(--surface-2);
+  border: 1px solid var(--text-muted); border-radius: 8px; box-shadow: 0 8px 24px #0008; pointer-events: none;
+  font-size: .84rem; line-height: 1.4; color: var(--text-secondary); }
+.wg-tip[hidden] { display: none; }
+.wg-tip b { display: block; margin-bottom: 2px; color: var(--text-primary); font-weight: 700; }
+
+/* the story: the figure pinned on the left from the start, the cards on the right, an introduction card first
+   (2026-11-18, asked for: opening full width and moving left later hid the figure below the fold at first); after the
+   last card the figure fills the width again, everything lit, an idea's click scrolling back to its card (asked for) */
+@media (min-width: 901px) {
+  .scrolly.wg-story { grid-template-columns: minmax(0, 1fr) minmax(320px, 400px); gap: 40px; }
+  .scrolly.wg-story .scrolly-graphic { grid-column: 1 / -1; grid-row: 1; justify-content: center; }
+  .scrolly.wg-story .scrolly-steps { grid-column: 2; grid-row: 1; position: relative; z-index: 1; padding: 26vh 0 0; pointer-events: none; }
+  .scrolly.wg-story .step-card { pointer-events: auto; }
+  .wg-story .weigh { width: calc(100% - 440px); transition: width .7s cubic-bezier(.2, .7, .2, 1); }
+  .wg-story.is-full .weigh { width: 100%; }
+  .wg-story .step.wg-end { min-height: 115vh; }
+}
+@media (min-width: 901px) and (prefers-reduced-motion: reduce) { .wg-story .weigh { transition: none; } }
+.wg-step.is-intro h3 { display: block; }
+
+/* the cards: the idea's mark and name, its picture, then the stretch, the tilt and its main problem */
+.wg-step h3 { display: flex; align-items: center; gap: 10px; }
+.wg-step .step-ic { display: inline-flex; flex: none; align-items: center; }
+.wg-step .step-ic svg { width: 30px; height: 30px; display: block; }
+.wg-step .step-ic.is-two svg + svg { margin-left: -10px; }
+.wg-step .wg-fig { margin: 0 0 14px; display: grid; gap: 6px; }
+.wg-step .wg-fig.is-two { grid-template-columns: 1fr 1fr; }
+.wg-step .wg-fig svg { display: block; width: 100%; height: auto; max-height: 140px; background: var(--surface-1); border: 1px solid var(--rule); border-radius: 8px; }
+/* a card stays within a laptop's screen: the picture no taller than 140px (the drawing keeps its shape, centred) */
+.wg-step .wg-dl { display: grid; grid-template-columns: auto 1fr; gap: 10px 14px; margin: 0; font-size: .98rem; line-height: 1.5; }
+.wg-step .wg-dl dt { color: var(--text-muted); font-weight: 600; }
+.wg-step .wg-dl dd { margin: 0; color: var(--text-secondary); }
+.wg-step .wg-v { color: var(--text-primary); font-weight: 700; }
+.wg-step .wg-v.is-no, .wg-step .wg-v.is-fades { color: var(--series-2-ink); }
+.wg-step .wg-v.is-unshown, .wg-step .wg-v.is-times, .wg-step .wg-v.is-disputed { color: var(--text-secondary); }
+.wg-step .wg-dl dt.is-issue + dd { color: var(--text-primary); }
+
+@media (max-width: 640px) {
+  .weigh { padding: 12px 10px 4px; }
+  .wg .wg-tier { font-size: 11px; }
+  .wg .wg-tick { font-size: 11.5px; }
+  .wg .wg-name { font-size: 10.5px; }
+  .wg-step .wg-dl { font-size: .92rem; }
+}

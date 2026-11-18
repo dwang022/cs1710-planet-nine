@@ -1,8 +1,2 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="A planet for the answer No: a cracked ember-red world" style="color:#ffffff"><defs><clipPath id="al-c"><circle cx="50" cy="50" r="40"/></clipPath></defs><g clip-path="url(#al-c)">
-      <circle cx="50" cy="50" r="40" fill="#d4552c"/>
-      <path d="M18,40 C30,32 44,36 52,30 C60,24 72,28 84,22 L90,34 C76,40 66,36 56,44 C46,52 32,46 20,54 Z" fill="#b8401d" opacity="0.9"/>
-      <path d="M24,68 C36,62 48,70 62,64 C70,60 78,64 86,60 L84,74 C72,78 60,74 48,80 C38,84 28,80 22,78 Z" fill="#b8401d" opacity="0.75"/>
-      <circle cx="36" cy="58" r="5" fill="#a3361a"/><circle cx="63" cy="46" r="3.5" fill="#a3361a"/><circle cx="54" cy="72" r="2.8" fill="#a3361a"/>
-      <path d="M40,24 L46,32 L43,40 M66,52 L72,58" fill="none" stroke="#8c2c13" stroke-width="2" stroke-linecap="round"/>
-      <circle cx="70.8" cy="50" r="40" fill="#06100e" opacity="0.3"/>
-    </g><circle cx="50" cy="50" r="40" fill="none" stroke="#7d2611" stroke-width="2.5"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256" role="img" aria-label="An empty dotted outline where a planet would be, sad, for the answer No" style="color:#ffffff"><defs></defs><circle cx="50" cy="50" r="40" fill="none" stroke="#8c8b83" stroke-width="3" stroke-dasharray="0.1 7.2" stroke-linecap="round"/><g class="face"><circle cx="41" cy="45" r="3.4" fill="#c7c5bc"/><circle cx="59" cy="45" r="3.4" fill="#c7c5bc"/>
+    <path d="M41.5,62 Q50,55.5 58.5,62" fill="none" stroke="#c7c5bc" stroke-width="2.8" stroke-linecap="round"/></g></svg>

@@ -281,6 +281,8 @@
    "band": "r",
    "depth_mag": 24.5,
    "stacked_depth_mag": 27.0,
+   "visits_per_field_10yr": 825,
+   "visits_src": "LSST Science Requirements Document (Ivezic et al., LPM-17): the design specification for the median number of visits to each field over the ten years, all filters together. [general knowledge, not verified against the document]",
    "area_sq_deg": 18000,
    "dec_range": [
     -75,

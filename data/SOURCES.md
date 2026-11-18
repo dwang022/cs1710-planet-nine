@@ -224,10 +224,10 @@ Jakub Scholtz, James Unwin (2020). *What if Planet 9 is a Primordial Black Hole?
 [doi](https://doi.org/10.1103/PhysRevLett.125.051103) · [arXiv:1909.11090](https://arxiv.org/abs/1909.11090) · 83 Crossref citations  
 Same mass, same orbit, but a grapefruit-sized primordial black hole instead of a planet.
 
-**Zderic & Madigan 2020**  
+**Zderic et al. 2020**  
 Alexander Zderic et al. (2020). *Apsidal Clustering following the Inclination Instability*. The Astrophysical Journal Letters  
 [doi](https://doi.org/10.3847/2041-8213/ab91a0) · [arXiv:2004.01198](https://arxiv.org/abs/2004.01198) · 8 Crossref citations  
-Shows the inclination instability also produces apsidal clustering, directly mimicking the Planet Nine signal.
+Shows the inclination instability also produces clustering of the longitude of perihelion, for a while, in idealised simulations; not of the orbital poles.
 
 **Brown & Mathur 2023**  
 Katherine Brown, Harsh Mathur (2023). *Modified Newtonian Dynamics as an Alternative to the Planet Nine Hypothesis*. The Astronomical Journal  

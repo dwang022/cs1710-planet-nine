@@ -1,0 +1,117 @@
+/* The future page (search/future.html, pages/future.js, charts/futureart.js; rebuilt 2026-11-18). Colour by meaning:
+   Rubin, its photos and what its software flags hot pink (what comes next), the infrared candidates ember, the distant
+   objects violet, the rest white and grey; the answers in the timeline debate's colours, and nothing else: yes and the
+   papers for a planet the case for (--for), no and the papers against or for another cause the case against (ember),
+   maybe and the papers that take no side grey. */
+
+/* the head's beats: a little smaller here, and the drawings narrower, so each line takes two or three rows on a laptop
+   (asked for: the middle one ran to four); no word left alone on a line */
+[data-page="future"] .beats p { font-size: clamp(1rem, 1.2vw, 1.08rem); text-wrap: pretty; }
+@media (min-width: 761px) {
+  [data-page="future"] .beats li { grid-template-columns: 72px minmax(0, 1fr); column-gap: 16px; }
+  [data-page="future"] .beats .art { width: 72px; height: 72px; }
+}
+
+/* how Rubin searches: four drawings in a row (two by two on a narrower screen), a numbered line under each */
+.fx-how { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; counter-reset: how; }
+.fx-how li { display: grid; gap: 12px; align-content: start; counter-increment: how; }
+/* each line a sentence of about the same length, its number hanging in the margin so wrapped lines start under the
+   words, the lines balanced (asked for 2026-11-18: the captions wrapped all over the place) */
+.fx-how li p { margin: 0; padding-left: 1.85rem; text-indent: -1.85rem; color: var(--text-secondary); line-height: 1.5; text-wrap: balance; }
+.fx-how li p::before { content: counter(how); display: inline-grid; place-items: center; width: 1.4rem; height: 1.4rem; margin-right: .45rem;
+  text-indent: 0; border: 1.5px solid var(--text-muted); border-radius: 50%; font: 700 .78rem/1 var(--font-sans); color: var(--text-primary); vertical-align: .1em; }
+.fx-pic { margin: 0; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 10px; }
+.fx-art { display: block; width: 100%; height: auto; }
+.fx-key { margin: 20px 0 0; padding-left: 12px; border-left: 3px solid var(--rule); color: var(--text-primary); font-weight: 600; line-height: 1.5; max-width: 110ch; text-wrap: balance; }
+
+/* the drawings' parts */
+.fx-art .fx-frame { fill: #ffffff06; stroke: var(--text-muted); stroke-opacity: .55; stroke-width: 1.2; }
+.fx-art .fx-star { fill: var(--text-primary); opacity: .55; }
+.fx-art .fx-star.is-left { opacity: .9; }
+.fx-art .fx-star.is-faint { opacity: .16; }
+.fx-art .fx-ghost { fill: var(--p9); opacity: .3; }
+.fx-art .fx-track { fill: none; stroke: var(--text-muted); stroke-width: 1.4; stroke-dasharray: 3 5; }
+.fx-art .fx-cap { font: 600 11px var(--font-mono); letter-spacing: .06em; fill: var(--text-muted); }
+.fx-art .fx-ground { stroke: var(--text-muted); stroke-opacity: .5; stroke-width: 1.2; }
+.fx-art .fx-patch { fill: none; stroke: var(--text-muted); stroke-opacity: .35; stroke-width: 1; }
+/* Rubin's own hot pink, at full strength wherever it is drawn (asked for): tonight's patches filled, the one being taken outlined */
+.fx-art .fx-patch.is-done { fill: var(--series-4); stroke: none; }
+.fx-art .fx-patch.is-now { stroke: var(--series-4); stroke-opacity: 1; stroke-width: 1.8; }
+.fx-art .fx-op { font: 500 20px var(--font-sans); fill: var(--text-secondary); }
+.fx-art .fx-flag { fill: none; stroke: var(--series-4); stroke-width: 1.8; }
+.fx-art .fx-dome { fill: none; stroke: var(--text-muted); stroke-opacity: .3; stroke-width: 1; stroke-dasharray: 2 4; }
+.fx-art .fx-ast { fill: var(--text-secondary); }
+.fx-art .fx-far { fill: var(--series-1); }
+.fx-art .fx-path { fill: none; stroke: var(--text-muted); stroke-opacity: .45; stroke-width: 1; }
+.fx-art .fx-path.is-far { stroke: var(--series-1); stroke-opacity: .55; }
+.fx-art .fx-lab { font: 600 10.5px var(--font-sans); fill: var(--text-secondary); }
+.fx-art .fx-lab.is-pluto { fill: var(--c-pluto); }
+.fx-art .fx-lab.p9-svg { fill: url(#g-p9); }
+.fx-art .fx-cand { fill: var(--series-2); }
+.fx-art .fx-wave { fill: none; stroke: var(--text-secondary); stroke-width: 2; stroke-linecap: round; }
+.fx-art .fx-dish { fill: none; stroke: var(--text-secondary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.fx-art .fx-dish circle { fill: var(--text-secondary); stroke: none; }
+.fx-art .fx-orbit { fill: none; stroke: var(--series-1); stroke-width: 1.4; stroke-opacity: .85; }
+.fx-art .fx-sun { fill: var(--sun); }
+.fx-art .fx-div { stroke: var(--rule); stroke-width: 1; }
+
+/* the other searches: three short items in a row, a drawing each */
+.fx-others { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.fx-others li { display: grid; gap: 8px; align-content: start; padding: 16px 18px; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); }
+.fx-others .fv-tag { justify-self: start; }
+.fx-others b { color: var(--text-primary); font-size: 1.04rem; }
+.fx-others p { margin: 0; color: var(--text-secondary); line-height: 1.5; font-size: .96rem; }
+
+/* after answering: for each answer the readers' share, a bar, and under it the papers that give that answer, a square
+   each on the same scale (32 squares fill the width); the reader's own answer marked; Reset in the corner. One grid, so
+   the bars line up across the answers. */
+.fx-results { width: 100%; justify-self: stretch; text-align: left; position: relative; }
+.fx-res-h { margin: 0 0 22px; padding-right: 96px; font-size: 1.3rem; text-align: left; }
+.fx-chart { display: grid; grid-template-columns: max-content max-content minmax(0, 1fr) 3.4em; column-gap: 14px; row-gap: 7px; align-items: center; }
+.fx-sep { grid-column: 1 / -1; height: 12px; }
+.fx-g-yes { --c: var(--for); --c-ink: var(--for-ink); }
+.fx-g-maybe { --c: var(--text-muted); --c-ink: var(--text-secondary); }
+.fx-g-no { --c: var(--series-2); --c-ink: var(--series-2-ink); }
+.fx-ans { grid-row: span 2; min-width: 4.6em; font-weight: 700; font-size: 1.08rem; color: var(--c-ink); display: grid; justify-items: start; gap: 4px; }
+.fx-ans small { font: 700 .6rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-primary);
+  border: 1px solid var(--text-muted); border-radius: 999px; padding: 1px 6px; }
+.fx-who { font: 600 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.fx-bar { height: 12px; }
+.fx-fill { display: block; height: 100%; width: 0; border-radius: 2px; background: var(--c); transition: width .9s cubic-bezier(.2, .7, .2, 1) .25s; }
+.cq.is-drawn .fx-fill { width: var(--w); }
+.fx-units { display: flex; gap: 2px; height: 12px; }
+.fx-unit { flex: 0 0 calc((100% + 2px) / var(--n) - 2px); height: 12px; min-width: 0; min-height: 0; margin: 0; padding: 0; border: 0;
+  border-radius: 2px; background: var(--c); cursor: pointer; opacity: 0; transition: opacity .3s ease calc(.35s + var(--j) * 35ms); }
+.cq.is-drawn .fx-unit { opacity: 1; }
+.fx-unit:hover, .fx-unit.is-on, .fx-unit:focus-visible { outline: 2px solid var(--ui); outline-offset: 1px; }
+.fx-pc { font-weight: 700; color: var(--text-primary); text-align: right; font-variant-numeric: tabular-nums; }
+.fx-pc.is-papers { font-weight: 600; color: var(--text-muted); }
+.fx-res-foot { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 6px 18px; margin-top: 18px; }
+.fx-res-note { margin: 0; text-align: left; color: var(--text-muted); font-size: .86rem; font-weight: 600; }
+.fx-res-key { display: inline-flex; align-items: center; gap: 7px; color: var(--text-muted); font-size: .86rem; font-weight: 600; }
+.fx-res-key i { width: 9px; height: 12px; border-radius: 2px; border: 1.5px solid var(--text-muted); }
+.fx-tip { position: absolute; z-index: 3; width: max-content; max-width: min(320px, 100%); padding: 10px 12px; pointer-events: none;
+  background: var(--surface-2); border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 6px 24px #0008;
+  font-size: .84rem; line-height: 1.45; color: var(--text-secondary); text-align: left; }
+.fx-tip b { display: block; color: var(--text-primary); }
+.fx-tip-side { display: block; margin-bottom: 4px; font-weight: 600; color: var(--c-ink); }
+.fx-reset { position: absolute; top: -2px; right: 0; display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px;
+  border-radius: 999px; border: 1px solid var(--rule); background: var(--surface-2); color: var(--text-secondary);
+  font: 600 .82rem var(--font-sans); cursor: pointer; }
+.fx-reset:hover { color: var(--text-primary); border-color: var(--text-muted); }
+.fx-reset:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+.fx-reset svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+/* whichever of the question and the results is hidden takes no room, so the panel fits the one shown */
+.fv-vote:not(.is-submitted) .cq-thanks, .fv-vote.is-submitted .cq-ask { max-height: 0; overflow: hidden; }
+
+@media (max-width: 1100px) { .fx-how { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  .fx-how, .fx-others { grid-template-columns: minmax(0, 1fr); }
+  .fx-reset { top: -36px; }
+  .fx-res-h { padding-right: 0; }
+  .fv-vote.is-submitted { padding-top: 56px; }
+  .fx-chart { column-gap: 10px; }
+  .fx-ans { min-width: 0; }
+  .fx-how .fx-pic, .fx-others .fx-pic { max-width: 420px; }
+}
+@media (prefers-reduced-motion: reduce) { .fx-fill, .fx-unit { transition: none; } }

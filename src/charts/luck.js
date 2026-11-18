@@ -59,7 +59,7 @@ export { spreadOf, skySpread }
 
 /** An orbit's card, as on the clustering page: it opens on pointing and stays while the pointer is on the dot or the
  *  card; a click keeps it until its close button or Escape. */
-function objectCard (root) {
+export function objectCard (root) {
   d3.select(root).style('position', 'relative')
   const card = d3.select(root).append('div').attr('class', 'pick-card').attr('hidden', true).attr('role', 'dialog')
   let picked = null, pinned = false, closing = null
@@ -89,7 +89,7 @@ function objectCard (root) {
 
 /** A clue's number in its ring, then a few words. anchor: 'start' (the ring at 0), 'middle', or 'end' (the words
  *  end at 0). Without a number, the words alone. Returns the width. */
-function cue (g, n, text, { anchor = 'start', cls = 'lk-note', big = false } = {}) {
+export function cue (g, n, text, { anchor = 'start', cls = 'lk-note', big = false } = {}) {
   g.selectAll('*').remove()
   const rr = n ? (big ? 9.5 : 7.5) : 0, gap = n && text ? (big ? 8 : 5) : 0
   const t = g.append('text').attr('class', cls).text(text || '')

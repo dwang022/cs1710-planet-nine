@@ -12,7 +12,7 @@ import { makeSpotGame } from '../charts/spotgame.js'
 import { buildBlinks } from '../charts/tracking.js'
 import { ORBIT_ART } from '../charts/orbitart.js'
 import { makeCatalogue } from '../charts/catalogue.js'
-import { drawArcs } from '../charts/arcs.js'
+import { drawArcs, plotInsets } from '../charts/arcs.js'
 import { STRICT } from '../sample.js'
 import { isOriginalSix } from '../orbits.js'
 
@@ -78,7 +78,7 @@ async function main () {
     { id: 'all', cond: 'beyond Neptune', n: positions.tnos.n, def: '' },
     { id: 'extreme', cond: 'with extreme orbits', n: count('extreme'), def: `Averaging past ${au(STRICT.aMin)}, never within ${au(STRICT.qMin)}.` },
     { id: 'measured', cond: 'and reliable orbits', n: count('measured'), def: 'Seen in more than one year.' },
-    { id: 'six', cond: 'that first pointed to Planet Nine', n: count('six'), def: `The six of the original paper<sup class="cite"><a href="${url('credits.html')}#cite-batygin-brown-2016">1</a></sup>.` },
+    { id: 'six', cond: 'that first suggested Planet Nine', n: count('six'), def: `The six of the original paper<sup class="cite"><a href="${url('credits.html')}#cite-batygin-brown-2016">1</a></sup>.` },
   ]
   const asOf = new Date(positions.epoch_cal + 'T00:00:00Z').toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' })
   const query = $('#catQuery')
@@ -106,9 +106,22 @@ async function main () {
   drawArcs($('#arcChart'), etnos.map(o => ({ ...o, rec: obs.objects[o.id] })).filter(o => o.rec?.nights.length))
   // the chart, with the section's title and line over it, fits one screen: its cap leaves room for the head
   const fitArcs = () => {
-    const sec = $('#arcs'), head = sec.querySelector('.sec-head')
-    const room = parseFloat(getComputedStyle(sec).paddingTop) + head.offsetHeight + parseFloat(getComputedStyle(head).marginBottom || 0) + 12
-    $('#arcChart').style.setProperty('--arc-head', `${Math.round(room)}px`)
+    const sec = $('#arcs'), head = sec.querySelector('.sec-head'), why = sec.querySelector('.arc-why'), chart = $('#arcChart')
+    // Lining the side note up with the plot can wrap it onto another line, which leaves the chart
+    // less room and narrows the plot, so this runs again until the note's height settles.
+    for (let pass = 0; pass < 3; pass++) {
+      const before = why ? why.offsetHeight : 0
+      // the head over the chart and the side note under it
+      const under = why ? why.offsetHeight + parseFloat(getComputedStyle(why).marginTop || 0) : 0
+      const room = parseFloat(getComputedStyle(sec).paddingTop) + head.offsetHeight + parseFloat(getComputedStyle(head).marginBottom || 0) + under + 12
+      chart.style.setProperty('--arc-head', `${Math.round(room)}px`)
+      if (!why) break
+      // from the 1990 line to 100%; on a phone, where the chart scrolls sideways, the column's width
+      const inset = chart.scrollWidth <= chart.clientWidth + 1 ? plotInsets(chart) : null
+      why.style.marginLeft = inset ? `${Math.round(inset.left)}px` : ''
+      why.style.marginRight = inset ? `${Math.round(inset.right)}px` : ''
+      if (why.offsetHeight === before) break
+    }
   }
   fitArcs()
   addEventListener('resize', fitArcs)

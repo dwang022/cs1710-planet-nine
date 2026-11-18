@@ -1,107 +1,106 @@
-// Part 2, page 2: could the lean be luck? A walkthrough (charts/luck.js) that
-// builds the luck test in front of the reader, simulated solar systems flying
-// onto the pile; how the odds move with the distance cut-off (charts/cuts.js);
-// then one chart of what the
-// published studies conclude beside our own counts (charts/odds.js), grouped by
-// whether each allows for where telescopes looked.
+// Part 2: could it just be luck? (Rebuilt 2026-11-17 and 18, round 7.) Two walkthroughs on copies of one picture
+// (charts/luck.js, makeLuck), then two figures of their own:
 //
-// One number per claim: the steps quote the 200,000-trial simulations in
-// clustering_null.json and draw their piles from the same file, so the pile,
-// the count beside the real arrow and the odds in the card all agree; the
-// published odds are each paper's own abstract (published_odds.json).
+//   Testing for “luck”   the six orbits of 2016 on two compasses, their spreads; generating a sample (telescopes did not
+//                        search evenly, so Batygin and Brown drew on the 827 known objects); one random sample; samples
+//                        dropping onto two piles; 100,000 of them, as the paper drew, samples still feeding in; both at
+//                        once, the square of every sample by its two spreads beside the sum; the square's corner
+//                        enlarged twice.
+//   Today’s objects      the same on the 62 reliable orbits: the compasses, samples dropping, the piles, the square and
+//                        its sum (multiplied, as in 2016).
+//   Does it hold up?     are the two unrelated (makeRelated): how often the tilt is as tight among all samples of a
+//                        million and among those whose stretch is.
+//   Where the line is drawn (makeLineTool): today's orbits with a line the reader drags, luck's odds at each distance.
+//
+// One number per claim: every figure comes from bb2016.json (scripts/build_bb2016.py: 100,000 samples as the paper,
+// the same samples on to a million for the count of those tight in both, today's lines at nine distances).
 
 import '../site.js'
 import { loadData, showLoadError } from '../data.js'
-import { makeLuck } from '../charts/luck.js'
+import { makeLuck, makeRelated, makeLineTool } from '../charts/luck.js'
 import { luckHead } from '../charts/luckhead.js'
-import { drawOdds } from '../charts/odds.js'
-import { drawCuts } from '../charts/cuts.js'
 import { scrolly } from '../scrolly.js'
-import { resultant, oneIn } from '../stats.js'
-import { selected, withAlignment, STRICT, LOOSE } from '../sample.js'
+import { oneIn } from '../stats.js'
+import { watchClues } from '../clues.js'
 
 const $ = s => document.querySelector(s)
+const fmt = n => n.toLocaleString('en-US')
+// a share as a percentage to two significant figures: 0.0097 → 0.97%, 0.00007 → 0.007%
+const pct = p => `${+(p * 100).toPrecision(2)}%`
+const deg = d => `${Math.round(d)}°`
+
+// “stretch out” and “tilt” in the part's red wherever the page writes them, as on the clustering page (clues.js)
+watchClues()
+
+/** How many times as many known objects the fullest 10° slice of directions holds as the emptiest, as the compasses stack them. */
+function sliceRatio (degs) {
+  const slices = Array(36).fill(0)
+  for (const d of degs) slices[Math.floor((((d % 360) + 360) % 360) / 10)]++
+  return Math.round(Math.max(...slices) / Math.min(...slices))
+}
+/** “4” or “4 to 5”: the two compasses' ratios, as a range where they differ. */
+const ratioText = (a, b) => a === b ? `${a}` : `${Math.min(a, b)} to ${Math.max(a, b)}`
 
 async function main () {
-  const { etnos, clustering_null: nulls, published_odds: published } = await loadData('etnos', 'clustering_null', 'published_odds')
-  const TRIALS = nulls._n_trials
-  let story = 'one'
+  const { etnos, bb2016: bb } = await loadData('etnos', 'bb2016')
 
-  // the stored pile for a fixed sample
-  const cutFor = (a, q, good) => nulls.cuts.find(c => c.a_min_au === a && c.q_min_au === q && c.well_determined_only === good)
-  function pileFor (s) {
-    const cut = cutFor(s.aMin, s.qMin, !!s.quality)
-    const beat = Math.max(0, Math.round(cut.p_value * (TRIALS + 1) - 1))
-    return { counts: cut.null_histogram.counts, trials: TRIALS, beat, p: cut.p_value, n: cut.n_objects }
+  // --- Testing for “luck”: one change a step ------------------------------------------------
+  const luck = makeLuck($('#chartLuck'), bb, etnos)
+  const luckScenes = {
+    six: { set: 'six', label: 'The six orbits of 2016 on two compasses, which way each stretches out and which way each tilts, each set’s spread a wedge.' },
+    pool: { set: 'six', pool: '2016', label: 'Round both compasses, each known object as a dot, stacked by its direction.' },
+    draws: { set: 'draws', pool: '2016', label: 'Six known objects picked at random, again and again, lit in their stacks round both compasses, with both spreads.' },
+    drop: { set: 'draws', pool: '2016', pile: 'drop', label: 'Samples dropping onto two piles, one for each spread, quicker and quicker.' },
+    repro: { set: 'draws', pool: '2016', pile: 'repro', fill: true, feed: true, label: 'Histograms of the spreads of 100,000 samples, the six orbits of 2016 marked far out in each tight tail, samples still feeding in.' },
+    multiply: { square: 'sum', pile: 'repro', label: 'Every sample placed by its two spreads, tightest at the corner, beside the two shares multiplied.' },
+    zoom: { square: 'zoom', pile: 'repro', label: 'The corner of the square enlarged twice, to one dot per sample: about 9 of 100,000 as tight in both.' },
   }
-  const current = s => { const objs = withAlignment(selected(etnos, s)); return { objs, stats: resultant(objs.map(o => o.varpi_deg)) } }
-  const sampleFor = step => step === 'catch' ? LOOSE : STRICT
-  const readout = (s, n) => `<b>${n}</b> objects · ${s.quality ? 'seen in more than one year' : 'including those seen once'}`
+  luck.update(luckScenes.six)
+  scrolly($('#luckStory'), { onStep: (i, step) => luck.update(luckScenes[step]) })
 
-  // the cut-off chart: one row per distance cut, the objects seen in more than one year against every object
-  const cutRows = [...new Set(nulls.cuts.map(c => `${c.a_min_au}/${c.q_min_au}`))].map(k => {
-    const [a, q] = k.split('/').map(Number)
-    const good = cutFor(a, q, true), all = cutFor(a, q, false)
-    return good && all && { a, q, good: { n: good.n_objects, oneIn: oneIn(good.p_value) }, all: { n: all.n_objects, oneIn: oneIn(all.p_value) } }
-  }).filter(Boolean).sort((x, y) => x.a - y.a)
-
-  const luck = makeLuck($('#chartLuck'))
-  function renderLuck () {
-    const sample = sampleFor(story)
-    const { objs, stats } = current(sample)
-    $('#luckReadout').innerHTML = readout(sample, stats.n)
-    const pile = pileFor(sample)
-    const got = `${pile.beat.toLocaleString()} of ${pile.trials.toLocaleString()} simulations were as aligned`
-    const blocksText = { histTitle: 'Where each simulated solar system lands', histSub: '' }
-    const real = {
-      ring: 'real', blocks: 'none', bars: true, observed: stats.R, obsText: got,
-      histTitle: 'The real objects, against luck', histSub: 'violet: as lined up as the real ones',
-      pileText: 'what luck produces',
-    }
-    const scenes = {
-      one: { ring: 'random', blocks: 'one', ...blocksText },
-      many: { ring: 'random', blocks: 'animate', animate: true, ...blocksText },
-      all: { ring: 'random', blocks: 'none', bars: true, pileText: 'what luck produces', histTitle: `${pile.trials.toLocaleString()} simulated solar systems`, histSub: '' },
-      real,
-      catch: { ...real, pileText: null },
-    }
-    luck.update({ n: stats.n, real: objs, quality: sample.quality, nullDist: pile, ...scenes[story] })
+  // --- Today’s objects -------------------------------------------------------------------------
+  const todayChart = makeLuck($('#chartToday'), bb, etnos)
+  const todayScenes = {
+    today: { set: 'today', cut: '150', pool: 'today', label: 'Today’s 62 reliable orbits on the two compasses, much wider wedges than the six’s, with the 1,589 objects known today round them.' },
+    todayDraws: { set: 'todayDraws', cut: '150', pool: 'today', pile: 'drop', label: 'Samples of 62 of today’s known objects dropping onto two piles, quicker and quicker.' },
+    todayPile: { set: 'todayDraws', cut: '150', pool: 'today', pile: 'today', fill: true, feed: true, label: 'Histograms of the spreads of 100,000 samples of today’s objects, samples still feeding in.' },
+    todayBoth: { square: 'todaySum', cut: '150', pile: 'today', label: 'Every sample of today’s objects placed by its two spreads, beside the two shares multiplied: the corner is large enough to see.' },
   }
+  todayChart.update(todayScenes.today)
+  scrolly($('#todayStory'), { onStep: (i, step) => todayChart.update(todayScenes[step]) })
 
-  // --- numbers quoted in the text ---------------------------------------------------
-  const s = current(STRICT), l = current(LOOSE)
-  const sp = pileFor(STRICT), lp = pileFor(LOOSE)
+  // --- Does it hold up?, and where the line is drawn ---------------------------------------------
+  makeRelated($('#chartRelated'), bb)
+  makeLineTool($('#lineView'), bb, etnos)
+
+  // --- numbers quoted in the text -------------------------------------------------------
+  const R = bb.repro, J = bb.joint_check, pub = bb.published
+  const cut = (a, q = 30) => bb.today.find(r => r.a_min_au === a && r.q_min_au === q)
+  const today = cut(150), today250 = cut(250), q42 = bb.today.find(r => r.q_min_au > 30)
+  const cutOdds = bb.today.filter(r => r.q_min_au === 30).map(r => oneIn(r.both.p))
+  const far = p => p[0] + 180, tilt = n => n + 90
   const nums = {
-    strictN: s.stats.n, strictOdds: oneIn(sp.p).toLocaleString(), trials: TRIALS.toLocaleString(),
-    looseN: l.stats.n, looseOdds: oneIn(lp.p).toLocaleString(), extraN: l.stats.n - s.stats.n,
-    realPct: `${Math.round(s.stats.R * 100)}%`,
+    pubBoth: pct(pub.both.p),
+    // the product as a round “less than 1 in …”: 1 in 11,000 reads as less than 1 in 10,000
+    lessThan: fmt(10 ** Math.floor(Math.log10(1 / R.product))), productN: fmt(Math.round(R.product * R.draws)), pubBothOdds: fmt(oneIn(pub.both.p)), pubPeri: pct(pub.closest.p), pubTilt: pct(pub.tilt.p),
+    pubDraws: fmt(pub.draws.n),
+    sixSpread: deg(R.closest.spread_deg), sixTiltSpread: deg(R.tilt.spread_deg),
+    poolN: fmt(bb.pool_2016.n), draws: fmt(R.draws),
+    poolRatio: ratioText(sliceRatio(bb.pool_2016.points.map(far)), sliceRatio(bb.pool_2016.node_deg.map(tilt))),
+    periP: pct(R.closest.p), tiltP: pct(R.tilt.p),
+    productOdds: fmt(oneIn(R.product)),
+    jointN: fmt(J.both_n), jointPred: fmt(Math.round(J.product_expects_n)), jointOdds: fmt(oneIn(J.both_n / J.draws)),
+    jointDraws: fmt(J.draws), jointA: fmt(J.closest_n), jointProductOdds: fmt(oneIn(J.product_expects_n / J.draws)),
+    todayN: today.n, todaySpread: deg(today.closest.spread_deg), todayTiltSpread: deg(today.tilt.spread_deg),
+    poolTodayN: fmt(bb.pool_today.n),
+    todayP: pct(today.closest.p), todayTiltP: pct(today.tilt.p), todayOdds: fmt(oneIn(today.product)), today250N: today250.n,
+    cutMin: fmt(Math.min(...cutOdds)), cutMax: fmt(Math.max(...cutOdds)), q42Odds: fmt(oneIn(q42.both.p)),
   }
-  document.querySelectorAll('[data-n]').forEach(el => { el.innerHTML = nums[el.dataset.n] ?? '—' })
+  document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
 
-  // --- the head: a few random skies, then the real one ---------------------------------
-  luckHead($('#luckHead'), { real: s.objs })
-
-  renderLuck()
-  scrolly($('#luckStory'), { onStep: (i, step) => { story = step; renderLuck() } })
-
-  // --- how the odds move with the distance cut-off -------------------------------------
-  drawCuts($('#chartCuts'), cutRows)
-
-  // --- what the studies conclude, by author, and our own test, on one axis, grouped by ------
-  // --- whether each allows for where telescopes looked ---------------------------------------
-  const study = d => ({
-    label: d.label, detail: d.count, side: d.side,
-    // a study that finds chance is shown as that, in words, whether its abstract gives a range or no number
-    ...(d.p ? { oneIn: oneIn(d.p) } : {}),
-  })
-  drawOdds($('#chartOdds'), [
-    { heading: 'Not allowing for where telescopes looked' },
-    ...published.studies.filter(d => !d.allows_for_looking).map(study),
-    { label: `Our test`, detail: `${sp.n} seen in more than one year`, oneIn: oneIn(sp.p), side: 'ours' },
-    { label: `Our test`, detail: `all ${lp.n}, with those seen once`, oneIn: oneIn(lp.p), side: 'ours' },
-    { heading: 'Allowing for where telescopes looked' },
-    ...published.studies.filter(d => d.allows_for_looking).map(study),
-  ])
+  // --- the head: a few pretend skies drawn from the known objects, then the six of 2016, each with its spread ---------
+  const draws = R.examples.slice(0, 3).map(e => ({ dirs: e.idx.map(j => (bb.pool_2016.points[j][0] + 180) % 360), spread: e.spread }))
+  luckHead($('#luckHead'), { six: bb.six, spread: R.closest.spread_deg, draws })
 }
 
 main().catch(showLoadError)

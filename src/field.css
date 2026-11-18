@@ -8,8 +8,8 @@
 
 :root {
   --fl-for: var(--for);  --fl-for-ink: var(--for-ink); /* the case for a planet: Planet Nine's colour */
-  --fl-against: #ff6a3d; --fl-against-ink: #ffa07a;
-  --fl-data: #a78bfa;    --fl-data-ink: #c4b5fd;     /* the colour of the objects elsewhere on the page */
+  --fl-against: #ff6a3d; --fl-against-ink: #ff8f63;
+  --fl-data: #a78bfa;    --fl-data-ink: #b9a4ff;     /* the colour of the objects elsewhere on the page */
   --fl-next: var(--series-4); --fl-next-ink: var(--series-4-ink); /* Rubin's colour, as everywhere */
   --fl-art: 236px;                                   /* the drawing's width in a side row */
   --fl-icon: 64px;

@@ -96,7 +96,7 @@ function steered (who) {
 /**
  * Where telescopes looked: orbits in every direction (dashed), but an object is
  * seen only near its closest point to the Sun, and only inside the patch of sky
- * searched (the wedge). The few found (violet) all lean the same way.
+ * searched (the wedge). The few found (violet) all point the same way.
  */
 function looked () {
   const [fx, fy] = [150, 85]

@@ -1,0 +1,155 @@
+/* The probability page's one picture (charts/luck.js). Colour by meaning: violet the objects (the six, today's
+   objects, the samples as tight as them), grey every object known (the allowance for where telescopes looked), white a
+   set of known objects picked at random and the middle of a set, red the clues' numbers and the spreads (the part's
+   colour, as on the clustering page), ember the samples counted beyond what multiplying predicts (Does it hold up?). */
+svg.lk { width: 100%; height: 100%; }
+.lk text { font-size: 14px; }
+.lk .lk-title { font-size: 16px; font-weight: 600; fill: var(--text-primary); }
+.lk .axis-label { font-size: 12.5px; }
+.lk .lk-note { font-size: 13px; fill: var(--text-secondary); }
+.lk.is-small .lk-title { font-size: 14px; }
+
+/* the compass */
+.lk .lk-ring { fill: none; stroke: var(--text-muted); stroke-opacity: .5; stroke-width: 1.2; }
+.lk .lk-sun { fill: var(--sun); }
+.lk .lk-spoke { stroke: var(--text-secondary); stroke-width: 1.2; stroke-dasharray: 3 4; }
+.lk .lk-dot { stroke: var(--surface-1); stroke-width: 1.2; }
+.lk .lk-dot.is-six, .lk .lk-dot.is-today { fill: var(--series-1); }
+.lk .lk-dot.is-draw { fill: var(--text-primary); }
+.lk .lk-wedge { stroke-width: 1.4; stroke-dasharray: 4 4; }
+.lk .lk-wedge.is-six, .lk .lk-wedge.is-today { fill: var(--series-1); fill-opacity: .16; stroke: var(--series-1-ink); stroke-opacity: .6; }
+.lk .lk-wedge.is-draw { fill: var(--text-primary); fill-opacity: .07; stroke: var(--text-secondary); stroke-opacity: .55; }
+/* the set's middle, a solid arrow; on the first step named, and each orbit's angle from it a faint arc */
+.lk .lk-mid { stroke: var(--text-primary); stroke-width: 2.2; }
+.lk .lk-midlbl { font-size: 13px; font-weight: 600; fill: var(--text-primary); }
+.lk .lk-xarc { fill: none; stroke: var(--text-primary); stroke-width: 1.6; stroke-opacity: .55; }
+.lk .lk-sq-tex { pointer-events: none; }
+/* the spread, in the part's red (2026-11-17, asked for) */
+.lk .lk-wlbl { font-size: 12.5px; font-weight: 700; fill: var(--part); }
+.lk.is-small .lk-wlbl { font-size: 11px; }
+.lk .lk-foot { font-size: 15px; font-weight: 600; fill: var(--text-primary); }
+.lk .lk-foot.is-six, .lk .lk-foot.is-today { fill: var(--series-1-ink); }
+
+/* the pile */
+.lk .lk-bar { fill: var(--surface-3); }
+.lk .lk-bar.is-tight { fill: var(--series-1); fill-opacity: .85; }
+.lk .lk-block { fill: var(--text-secondary); }
+/* the six's (or today's) spread over the bars, thin, so the histogram reads round it (2026-11-18, asked for) */
+.lk .lk-obs { stroke: var(--series-1-ink); stroke-width: 1.5; }
+.lk .lk-obs-dot { fill: var(--series-1-ink); stroke: var(--surface-1); stroke-width: 1.5; }
+.lk .lk-obs-lbl { font-size: 14.5px; font-weight: 600; fill: var(--series-1-ink); }
+.lk .lk-pilelbl { font-size: 14px; font-weight: 600; fill: var(--text-secondary); }
+
+/* the known objects, one dot each, in their stacks; a sample's objects lit */
+.lk .lk-pdot { fill: var(--text-muted); fill-opacity: .8; }
+.lk .lk-pdot.is-picked { fill: var(--text-primary); fill-opacity: 1; }
+.lk .lk-pool-key circle { fill: var(--text-muted); }
+.lk .lk-pnote { font-size: 13px; font-weight: 600; fill: var(--text-secondary); }
+
+/* the clues' numbers, in red rings as on the clustering page; the compasses' titles carry them */
+.lk .lk-cn { fill: none; stroke: var(--part); stroke-width: 1.5; }
+.lk .lk-cn-n { font-weight: 700; fill: var(--part); }
+
+/* the sum beside the whole square, compact: the two shares, multiplied, each named under it */
+.lk .lk-eq-num { font-size: 26px; font-weight: 700; fill: var(--series-1-ink); }
+.lk .lk-eq-op { font-size: 24px; font-weight: 600; fill: var(--text-secondary); }
+.lk .lk-eq-res { font-size: 28px; font-weight: 700; fill: var(--part); }
+.lk .lk-eq-sub { font-size: 12.5px; }
+.lk.is-small .lk-eq-num { font-size: 17px; }
+.lk.is-small .lk-eq-op { font-size: 16px; }
+.lk.is-small .lk-eq-res { font-size: 18px; }
+.lk.is-small .lk-eq-sub { font-size: 11px; }
+
+/* the squares: every sample placed by its two spreads, each clue's share a strip, the corner where they cross; the
+   corner enlarged, one dot per sample */
+.lk .lk-sq-bg { fill: var(--surface-2); stroke: var(--rule); stroke-width: 1; }
+.lk .lk-cell { fill: var(--text-muted); fill-opacity: .5; }
+.lk.is-small .lk-cell { fill-opacity: .3; }
+.lk .lk-sq-a, .lk .lk-sq-b { fill: var(--series-1); fill-opacity: .42; }
+.lk .lk-sq-both { fill: var(--series-1-ink); }
+/* in the last enlargement, one dot per sample, the dots carry it: the strips behind them faint */
+.lk .s2 .lk-sq-a, .lk .s2 .lk-sq-b { fill-opacity: .1; }
+.lk .s2 .lk-sq-both { fill-opacity: .22; }
+.lk .lk-sq-dot { fill: var(--text-muted); fill-opacity: .3; }
+.lk .lk-sq-dot.is-a, .lk .lk-sq-dot.is-b { fill: var(--series-1); fill-opacity: .5; }
+.lk .lk-sq-dot.is-both { fill: var(--series-1-ink); fill-opacity: 1; }
+.lk .lk-sq-axis .tick.is-edge text { fill: var(--series-1-ink); font-weight: 700; }
+.lk .lk-sq-box { fill: none; stroke: var(--text-primary); stroke-width: 1.4; }
+.lk .lk-sq-links line { stroke: var(--text-muted); stroke-opacity: .6; stroke-dasharray: 3 3; }
+.lk .lk-sq-title { font-size: 14px; font-weight: 600; fill: var(--text-primary); }
+.lk .lk-sq-count { font-size: 14.5px; font-weight: 700; fill: var(--series-1-ink); }
+.lk.is-small .lk-sq-title, .lk.is-small .lk-sq-count { font-size: 12px; }
+
+/* are the two unrelated: two bars, the part past what unrelated spreads would give in ember */
+svg.lk-rel { width: 100%; height: auto; display: block; }
+.lk .lk-rel-lbl { font-size: 15px; font-weight: 600; fill: var(--text-primary); }
+.lk .lk-rel-bar { fill: var(--series-1); }
+.lk .lk-rel-more { fill: var(--series-2); }
+.lk .lk-rel-val { font-size: 19px; font-weight: 700; fill: var(--text-primary); }
+.lk .lk-rel-guide { stroke: var(--text-primary); stroke-width: 1.5; stroke-dasharray: 4 4; }
+
+/* where the line is drawn: the line the reader drags, its handle, the odds under it */
+svg.lk-linetool { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.lk .lk-drag { cursor: ew-resize; outline: none; }
+.lk .lk-drag-hit { fill: transparent; }
+.lk .lk-handle rect { fill: var(--surface-2); stroke: var(--text-primary); stroke-width: 1.5; }
+.lk .lk-handle-txt { font-size: 13px; font-weight: 700; fill: var(--au); }
+.lk .lk-drag:focus-visible .lk-handle rect { stroke: var(--ui); stroke-width: 3; }
+.lk .lk-chev { fill: none; stroke: var(--text-primary); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.lk .lk-drag-hint { font-size: 12px; font-weight: 600; fill: var(--text-secondary); transition: opacity .4s; }
+.line-pic.is-touched .lk-drag-hint { opacity: 0; }
+.lk .lk-drag.is-dragging .lk-handle rect { fill: var(--surface-3); }
+/* until the line is first moved, its handle pulses, a hint that it moves (as the search page's planet) */
+.line-pic:not(.is-touched) .lk-handle rect { animation: lk-pulse 1.6s ease-in-out infinite; }
+@keyframes lk-pulse { 50% { stroke-width: 4; stroke: var(--text-primary); } }
+@media (prefers-reduced-motion: reduce) { .line-pic .lk-handle rect { animation: none; } }
+.lk .lk-nep { stroke: var(--neptune); stroke-width: 1.5; stroke-dasharray: 5 4; }
+.lk .lk-nep-lbl { font-size: 12px; font-weight: 600; fill: var(--neptune); }
+.lk .lk-od-mark { font-size: 11.5px; fill: var(--text-muted); }
+.lk-linebar { top: 10px; bottom: auto; left: auto; right: 10px; }
+@media (max-width: 640px) { .lk-linebar { position: static; margin-top: 8px; } }
+
+/* "Does it hold up?" and "Where the line is drawn": a card of words beside the picture, as the data page's features
+   (2026-11-18: no longer scrolly steps), on a phone the card above the picture */
+.hold { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.9fr); gap: clamp(22px, 3.5vw, 52px); align-items: center; margin-top: 18px; }
+.hold .hold-card { opacity: 1; cursor: default; border-color: var(--text-muted); }
+.hold-fig { margin: 0; padding: clamp(12px, 2vw, 22px); border-radius: var(--radius); background: var(--surface-1); border: 1px solid var(--rule); }
+@media (max-width: 900px) { .hold { grid-template-columns: 1fr; } }
+
+/* which orbits count, and the odds with the line at each distance */
+.lk .lk-lshade { fill: var(--series-1); fill-opacity: .07; }
+.lk .lk-lline { stroke: var(--text-muted); stroke-opacity: .5; stroke-width: 1.2; stroke-dasharray: 3 4; }
+.lk .lk-lline.is-on { stroke: var(--text-primary); stroke-opacity: 1; stroke-width: 2; stroke-dasharray: none; }
+.lk .lk-lau { font-size: 13px; font-weight: 600; fill: var(--au); }
+.lk .lk-ldot { fill: var(--text-muted); fill-opacity: .5; stroke: var(--surface-1); stroke-width: 1; }
+.lk .lk-ldot.is-in { fill: var(--series-1); fill-opacity: 1; }
+.lk .lk-lcount { font-size: 13.5px; font-weight: 600; fill: var(--series-1-ink); }
+.lk .lk-od-path { fill: none; stroke: var(--text-muted); stroke-width: 1.2; stroke-dasharray: 3 3; }
+.lk .lk-od-dot { fill: var(--text-secondary); }
+.lk .lk-od-dot.is-on { fill: var(--series-1-ink); }
+.lk .lk-od-dot.is-level { fill: var(--surface-1); stroke: var(--text-secondary); stroke-width: 2; }
+.lk .lk-od-dot.is-level.is-on { stroke: var(--series-1-ink); }
+.lk .lk-od-lbl { font-size: 13px; font-weight: 600; fill: var(--text-secondary); }
+.lk .lk-od-lbl.is-on { font-size: 14.5px; font-weight: 700; fill: var(--series-1-ink); }
+
+/* the head's lede (2026-11-17, asked for): Caltech as its seal letters it, white on its orange, the two names brighter
+   than the text round them. Caltech's wordmark (public/logos/caltech.svg, from Commons) can replace the word once
+   fetched; until then the word is set as a small badge */
+body[data-page="probability"] .lede .caltech { color: #fff; background: #ff6c0c; font-weight: 700; letter-spacing: .01em;
+  padding: .04em .34em .08em; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+body[data-page="probability"] .lede .lede-name { color: #fff; font-weight: 600; }
+
+/* the head's compass (charts/luckhead.js): each sample's spread as a wedge, the six's violet */
+.luck-head .wedge { fill: var(--text-primary); fill-opacity: .07; stroke: var(--text-secondary); stroke-opacity: .55; stroke-width: 1.2; stroke-dasharray: 4 4; }
+.luck-head .wedge.real { fill: var(--series-1); fill-opacity: .2; stroke: var(--series-1-ink); stroke-opacity: .7; }
+
+/* the probability page's head (2026-11-17): the text takes most of the width, so the lede and the question wrap
+   less; the compass keeps a narrow column beside it */
+body[data-page="probability"] .page-head.head-split { grid-template-columns: minmax(0, 1.7fr) minmax(220px, 1fr); }
+body[data-page="probability"] .page-head .lede { max-width: 66ch; text-wrap: pretty; }
+body[data-page="probability"] .page-head .head-q { text-wrap: balance; }
+body[data-page="probability"] .page-head .luck-head { max-height: 38vh; }
+@media (max-width: 860px) { body[data-page="probability"] .page-head.head-split { grid-template-columns: 1fr; } }
+
+/* Caltech's wordmark, once fetched (public/logos/caltech.svg), sits at text height in the lede in place of the word */
+body[data-page="probability"] .lede .caltech-logo { height: .78em; width: auto; vertical-align: -0.04em; }

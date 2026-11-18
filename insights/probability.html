@@ -7,110 +7,231 @@
 <!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
 <style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>Could it just be luck? · The search for Planet Nine</title>
-<meta name="description" content="How likely is it that the distant orbits line up by chance? Build the test from scratch, see how the answer depends on which objects count and where telescopes looked, and what the studies conclude." />
+<meta name="description" content="How likely is it that the distant orbits line up by chance? A test for luck, built up to Batygin and Brown's 2016 calculation done again step by step, the same test on today's objects, and what later studies say about it." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="probability">
 <main>
-  <!-- the head sets the question with one compass (charts/luckhead.js): a few random skies, then the real one -->
+  <!-- Rebuilt on 2026-11-17 at the user's request, in five rounds the same day. Round 5: both clues side by side from
+       the first step, numbered 1 and 2 as on the clustering page (it had measured the stretch for six steps before the
+       tilt); one kind of draw, six of the known objects picked at random, shown before the unevenness it allows for (the
+       random directions it began with were a second, different draw); where the 827 come from and why so many; both
+       clues together as a square of the million skies, each clue's share a strip, multiplying the corner where they
+       cross, then two zooms to one dot per sky (it replaced a funnel over a faint field of every sky). One run of
+       1,000,000 draws throughout (scripts/build_bb2016.py; the paper drew 100,000). Every label names what it counts
+       ("the six orbits of 2016"). Orbits "stretch out" (towards their far end) and "tilt"; never "point", never "bunch". -->
   <header class="page-head wrap head-split">
     <div>
-      <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
+      <!-- No part/page eyebrow here on purpose: the nav says where the reader is. Caltech as its seal letters it, white
+           on its orange, and the two names brighter (asked for, 2026-11-17; charts/luck.css). The wordmark is on Wikimedia Commons (public domain,
+           trademarked); scripts/fetch_logos.py fetches it with `python -P scripts/fetch_logos.py caltech`, after which
+           <img class="caltech-logo" src="/logos/caltech.svg" alt="Caltech"> can replace the word. -->
       <h1>Could it <em>just be luck?</em></h1>
-      <p class="lede">Random directions sometimes line up by chance. The real orbits are
-      <b><span data-n="realPct">—</span> aligned</b>, where 0% is pointing every which way and 100% is all pointing the same way.</p>
-      <p class="head-q">How often would chance alone reach that?</p>
+      <p class="lede">In 2016, <span class="caltech">Caltech</span> astronomers <span class="lede-name">Konstantin Batygin</span>
+      and <span class="lede-name">Mike Brown</span> proposed Planet Nine. They put the chance that luck alone lined up the
+      six most distant orbits then known at
+      <b class="k-ev" data-n="pubBoth">—</b><sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>.</p>
+      <p class="head-q">How did they reach that number, and does it hold up?</p>
     </div>
     <figure class="head-fig" id="luckHead"></figure>
   </header>
 
-  <!-- the test, built in front of the reader -->
+  <!-- 1. Testing for "luck" (charts/luck.js, bb2016.json), round 6 (2026-11-17): the six on two compasses, 1 which way
+       they stretch out and 2 which way they tilt, their middle an arrow and each orbit's angle from it an arc, each
+       spread a wedge with its number in red; why not random directions (telescopes did not search evenly: the known
+       objects round both, their stacks counted), so Batygin and Brown drew from them; one random sample, lit in its
+       stacks, picked where more were found more often, assuming the six were found the way the rest were; samples
+       dropping onto two piles, quicker and quicker; 100,000 of them, as the paper drew; both at once, an arrow up from
+       each pile's tail to its share and their product, assuming the two are unrelated, said what that means; then the
+       square of every sample placed by both spreads, with axes, and its corner enlarged. -->
   <section class="part story" id="luck">
+    <div class="sec-head wrap">
+      <h2>Testing for “luck”</h2>
+    </div>
     <div class="scrolly wrap wide" id="luckStory">
       <div class="scrolly-graphic">
-        <div class="viz-head"><div id="luckReadout"></div></div>
         <div class="viz" id="chartLuck"></div>
       </div>
       <div class="scrolly-steps">
-        <div class="step" data-step="one"><div class="step-card">
-          <div class="step-n">1 / 5</div>
-          <h3>What randomness looks like</h3>
+        <div class="step" data-step="six"><div class="step-card">
+          <div class="step-n">1 / 7</div>
+          <h3>The six orbits of 2016</h3>
           <ul>
-            <li>Take <span data-n="strictN">—</span> objects, the same number as the real ones, and point each in a random direction.</li>
-            <li>Random directions mostly cancel out, so the arrow stays short and the alignment low.</li>
+            <li>Both their stretch and their tilt have a small spread.</li>
+            <li>Batygin and Brown asked how often luck alone would make the spreads that small.</li>
           </ul>
         </div></div>
-        <div class="step" data-step="many"><div class="step-card">
-          <div class="step-n">2 / 5</div>
+        <div class="step" data-step="pool"><div class="step-card">
+          <div class="step-n">2 / 7</div>
+          <h3>Generating a sample</h3>
+          <ul>
+            <li>Telescopes have not searched the sky evenly, so known objects are more common in some directions than others.
+            A fair sample should reflect that.</li>
+            <li>Batygin and Brown drew on the other objects found beyond Neptune (<span class="k-au">&gt;50 AU</span>),
+            <span data-n="poolN">—</span> of them, taking
+            each one’s stretch and tilt<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>.</li>
+            <li>Picked from these, a sample lands more often where telescopes found more, so it carries the same bias.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="draws"><div class="step-card">
+          <div class="step-n">3 / 7</div>
+          <h3>A random sample</h3>
+          <ul>
+            <li>Six of them, picked at random, make one sample, with a spread for its stretch and one for its tilt.</li>
+          </ul>
+          <p class="step-key">This assumes the six were found the way the rest were.</p>
+        </div></div>
+        <div class="step" data-step="drop"><div class="step-card">
+          <div class="step-n">4 / 7</div>
           <h3>Again and again</h3>
           <ul>
-            <li>Each simulated solar system has its own alignment and drops onto the pile below at that value.</li>
-          </ul>
-          <p class="step-key">Luck nearly always gives a low alignment.</p>
-        </div></div>
-        <div class="step" data-step="all"><div class="step-card">
-          <div class="step-n">3 / 5</div>
-          <h3>Do it <span data-n="trials">—</span> times</h3>
-          <ul>
-            <li>This pile is <strong>what luck produces</strong> for <span data-n="strictN">—</span> objects.</li>
-            <li>An alignment far out in its tail is hard to blame on luck.</li>
+            <li>Each sample drops onto two piles, at its two spreads.</li>
           </ul>
         </div></div>
-        <div class="step" data-step="real"><div class="step-card">
-          <div class="step-n">4 / 5</div>
-          <h3>The real objects</h3>
+        <div class="step" data-step="repro"><div class="step-card">
+          <div class="step-n">5 / 7</div>
+          <h3>Do it <span data-n="draws">—</span> times</h3>
           <ul>
-            <li>Their alignment lands in the thin tail.</li>
+            <li><span data-n="periP">—</span> of the samples are as tight as the six orbits of 2016 in their stretch, and
+            <span data-n="tiltP">—</span> in their tilt.</li>
           </ul>
-          <p class="step-key">Luck does this about 1 in <span data-n="strictOdds">—</span> times.</p>
+          <p class="step-key">Batygin and Brown, also drawing <span data-n="pubDraws">—</span>, found <span data-n="pubPeri">—</span> and <span data-n="pubTilt">—</span>.</p>
         </div></div>
-        <div class="step" data-step="catch"><div class="step-card warn">
-          <div class="step-n">5 / 5</div>
-          <h3>Add the objects seen once</h3>
+        <div class="step" data-step="multiply"><div class="step-card">
+          <div class="step-n">6 / 7</div>
+          <h3>Both at once</h3>
           <ul>
-            <li><span data-n="extraN">—</span> more objects were <a href="/setting/data.html#arcs">seen in one year only</a>, too briefly to pin down.</li>
-            <li>Counted anyway, they pull the alignment down into the middle of the pile.</li>
+            <li>Batygin and Brown multiplied the two shares, assuming a sample’s stretch and tilt are unrelated.</li>
+            <li>Unrelated means a sample with a tight stretch is no more likely than any other to have a tight tilt.</li>
           </ul>
-          <p class="step-key">Luck does that about 1 in <span data-n="looseOdds">—</span> times.</p>
+        </div></div>
+        <div class="step" data-step="zoom"><div class="step-card">
+          <div class="step-n">7 / 7</div>
+          <h3>How rare that is</h3>
+          <ul>
+            <li>Of 100,000 samples, about <span data-n="productN">—</span> would be as tight as the six orbits of 2016 in both
+            stretch and tilt.</li>
+          </ul>
+          <p class="step-key">It seems there is less than a 1 in <span data-n="lessThan">—</span> chance of this happening by luck.</p>
         </div></div>
       </div>
     </div>
   </section>
 
-  <!-- how the odds move with the distance cut-off (charts/cuts.js), drawn like the odds chart below. It was the
-       scrolly's last step until 2026-11-07; as a chart of its own it reads like the studies' chart. -->
-  <section class="part wrap" id="cuts">
-    <div class="sec-head">
-      <h2>Where you draw the line</h2>
-      <p>Studies count objects past different distances from the Sun (1 AU is the Earth–Sun distance), and the odds change with the cut-off.</p>
+  <!-- 2. The same test on today's catalogue: the 62 reliable orbits the data and clustering pages use (seen in more
+       than one year, beyond 150 AU, closest point beyond 30 AU), drawn from the 1,589 objects known today; both clues
+       counted together in the same draws, a corner big enough to see without zooming. -->
+  <section class="part story" id="today">
+    <div class="sec-head wrap">
+      <h2>Today’s objects</h2>
     </div>
-    <ul class="legend odds-key" aria-label="Key">
-      <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="var(--series-1)"/></svg><span>seen in more than one year</span></li>
-      <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="none" stroke="var(--text-secondary)" stroke-width="2"/></svg><span>every object</span></li>
-    </ul>
-    <div class="card"><div id="chartCuts"></div></div>
+    <div class="scrolly wrap wide" id="todayStory">
+      <div class="scrolly-graphic">
+        <div class="viz" id="chartToday"></div>
+      </div>
+      <div class="scrolly-steps">
+        <div class="step" data-step="today"><div class="step-card">
+          <div class="step-n">1 / 4</div>
+          <h3>The orbits known today</h3>
+          <ul>
+            <li>Today we have found <span data-n="todayN">—</span> reliable orbits beyond <span class="k-au">150 AU</span>.</li>
+            <li>Each dot round the compasses is one of the <span data-n="poolTodayN">—</span> objects known today averaging over
+            <span class="k-au">50 AU</span> out.</li>
+          </ul>
+          <p class="step-key">Their spreads are <span data-n="todaySpread">—</span> and <span data-n="todayTiltSpread">—</span>, against <span data-n="sixSpread">—</span> and <span data-n="sixTiltSpread">—</span> for the six orbits of 2016.</p>
+        </div></div>
+        <div class="step" data-step="todayDraws"><div class="step-card">
+          <div class="step-n">2 / 4</div>
+          <h3>Drawn the same way</h3>
+          <ul>
+            <li>Each sample is now <span data-n="todayN">—</span> of the <span data-n="poolTodayN">—</span> known objects, picked at random.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="todayPile"><div class="step-card">
+          <div class="step-n">3 / 4</div>
+          <h3>Today’s piles</h3>
+          <ul>
+            <li><span data-n="todayP">—</span> of these samples are as tight as today’s <span data-n="todayN">—</span> orbits in their
+            stretch, and <span data-n="todayTiltP">—</span> in their tilt.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="todayBoth"><div class="step-card">
+          <div class="step-n">4 / 4</div>
+          <h3>Both at once</h3>
+          <ul>
+            <li>Multiplied as Batygin and Brown did, the corner is large enough to see without zooming.</li>
+          </ul>
+          <p class="step-key">About 1 in <span data-n="todayOdds">—</span> samples is as tight as today’s <span data-n="todayN">—</span> orbits in both.</p>
+        </div></div>
+      </div>
+    </div>
   </section>
 
-  <!-- what the published studies found, beside our own test, on one axis, grouped by whether each allows for where
-       telescopes looked. The intro names that bias in one sentence; it is explained in full on the Alternatives page
-       (alternatives.json, observational_bias) and the search page's sky map, so a section of it here (tried on
-       2026-11-07) was cut as a repeat. The streetlight exhibit that used to sit here was cut too. -->
-  <section class="part wrap" id="odds">
+  <!-- 3. Does it hold up? (round 7, 2026-11-18, asked for: the block of 9,727 dots confused readers.) Ways of showing
+       whether the two are related were weighed: the block of the 9,727 samples tight in the stretch with the tight in
+       both lit (too much picture for one comparison), the square of every sample by both spreads (a picture of an
+       assumption), a scatter of the two spreads (their overall correlation is about zero; the relation is in the tight
+       tail only), and two bars, how often the tilt is as tight among all samples and among those whose stretch is (the
+       definition of "unrelated" drawn: if unrelated, the bars match). The bars were chosen.
+       Earlier rounds: two questions, each explained before it is tested (round 6, 2026-11-17, asked for: the
+       relation between the two was named only after the page had multiplied, and the lines moved over a busy picture).
+       Are the two unrelated: the 9,727 samples (of a million, enough to count the rare ones) as tight as the six on 1,
+       one dot each, a row of them lit, the 90 unrelated spreads would give, then the 126 counted. Where the line is
+       drawn: which orbits count, today's 62 by how far out they are and their closest point, the line at 250 AU; then
+       under it, on the same distances, the odds with the line at each, the line in use lit in turn. "Where each survey
+       looked" was cut (the allowance is explained in the first section) and "Modelling each survey" archived in a
+       comment in search/timeline.html; the side-by-side version (?hold=row) was dropped, steps having been chosen.
+       Neutral: each card says what the data or the paper says. -->
+  <section class="part wrap" id="doubts">
     <div class="sec-head">
-      <h2>What the studies conclude</h2>
-      <p>Telescopes find distant objects only where and when they look, which can make orbits seem to lean. The studies split over how to allow for that.</p>
+      <h2>Does it hold up?</h2>
     </div>
-    <!-- the key: what each colour and shape on the chart means -->
-    <ul class="legend odds-key" aria-label="Key">
-      <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--for)"/></svg><span>finds the lean unlikely to be chance</span></li>
-      <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--series-2)"/></svg><span>finds it consistent with chance</span></li>
-      <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--series-1)"/></svg><span>our test, above</span></li>
-    </ul>
-    <div class="card"><div id="chartOdds"></div></div>
-    <!-- Published odds are read from each paper's abstract (published_odds.json); our rows are the stored
-         200,000-trial results in clustering_null.json, with no allowance for where telescopes looked. -->
-    <!-- no "So far" box (cut from every page on 2026-11-07, at the user's request) -->
+    <div class="hold">
+      <div class="step-card warn hold-card">
+        <h3>Are the two unrelated?</h3>
+        <ul>
+          <li>If they were, a sample with a tight stretch would be no more likely than any other to have a tight tilt.</li>
+          <li>But among a million samples, those with a tight stretch more often have a tight tilt too, so the two are
+          related.</li>
+        </ul>
+        <p class="step-key">Counting the samples tight in both gives about 1 in <span data-n="jointOdds">—</span>, not the 1 in
+        <span data-n="jointProductOdds">—</span> that multiplying gives.</p>
+      </div>
+      <figure class="hold-fig" id="chartRelated"></figure>
+    </div>
   </section>
+
+  <!-- 4. Where the line is drawn, its own figure (charts/luck.js, makeLineTool; 2026-11-18, asked for: as scrolly steps it
+       changed too much at once). Today's 62 reliable orbits by how far out each is and its closest point; a line the
+       reader drags, snapping to the distances the build script tested (150 to 400 AU), the orbits beyond it violet;
+       under it, on the same distances, luck's odds with the line at each (multiplied, as in 2016), the one in use lit;
+       a switch for only the orbits clear of Neptune. Ideas weighed: buttons per distance (a choice, not a feel for how
+       the odds jump), a slider under the chart (a control away from what it moves), the line itself dragged (chosen:
+       the control is on the picture it changes, and the odds under it show every distance at once, so a reader who
+       never drags still sees the point). -->
+  <section class="part wrap" id="line">
+    <div class="sec-head">
+      <h2>Where the line is drawn</h2>
+    </div>
+    <div class="hold">
+      <div class="step-card warn hold-card">
+        <ul>
+          <li>Only orbits that average beyond a chosen distance count. Batygin and Brown drew the line at
+          <span class="k-au">250 AU</span>; later studies draw it at
+          <span class="k-au">150 AU</span><sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">1</a>,<a href="/credits.html#cite-bernardinelli-et-al-2022">2</a></sup>.</li>
+          <li>Brown and Batygin now count only orbits that stay clear of
+          Neptune<sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">1</a></sup>.</li>
+        </ul>
+        <p class="step-key">A line chosen after the clustering was noticed can make luck look rarer than it is.</p>
+      </div>
+      <figure class="hold-fig pic line-pic" id="lineView"></figure>
+    </div>
+  </section>
+
+  <!-- "Where you draw the line" (charts/cuts.js) and "What the studies conclude" (charts/odds.js) were cut from this page
+       on 2026-11-17 at the user's request, and archived as a possible addition to the timeline page: the section markup and
+       the code that drew them are in a comment in search/timeline.html. -->
+  <!-- no "So far" box (cut from every page on 2026-11-07, at the user's request) -->
 </main>
 <script type="module" src="/src/pages/probability.js"></script>
 </body>

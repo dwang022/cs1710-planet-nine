@@ -19,7 +19,10 @@
 //     2 Turned round the planet speeds up (time passing) and every time it sweeps past on the near side
 //                    of its orbit it nudges the remaining orbits: each brightens, shows a curved
 //                    arrow at its far end and turns a notch towards stretching out the opposite way as the
-//                    planet passes nearest it, so the turning follows the planet across the picture; resting
+//                    planet passes nearest it, so the turning follows the planet across the picture (each on its
+//                    own, a little apart from the next, 2026-11-18, asked for: orbits the planet reached together
+//                    turned together, in two groups, one from each side, like two wings); each turns towards the
+//                    side opposite the planet, from whichever side it is on; resting
 //                    while it is far out (the first nudge slow, the later ones quick); the notches add up, like pushes on a swing (the picture Batygin and Brown
 //                    gave Caltech), and leave each orbit clear of the planet's path, leaving a faint copy
 //                    where it started
@@ -30,18 +33,19 @@
 //                    along the line where Planet Nine's orbit crosses the plane, so its orbit is a straight
 //                    line tipped out of it.
 //
-//     4 Like 2016   the camera tips back up and Planet Nine's orbit eases back to its predicted shape, so the run
-//                    ends on the page head's picture, the six named in a small key. Objects are flung until six are
+//     4 Like 2016   the camera tips back up, so the run ends on the page head's picture, the six named in a
+//                    small key. Objects are flung until six are
 //                    left, and those six are the six orbits of 2016, each started where the nudges carry it to its
 //                    own place, worked backwards (2026-11-18, asked for: to show a cluster ending up as was seen)
 //
 // The orbits are drawn in 3-D (each has a tilt and the line it tilts about) and projected; from above,
 // the tilts only squash them a little.
 //
-// Planet Nine's orbit is drawn more stretched than predicted (e = P9_E, against about 0.3; 2026-11-16):
-// nearly round, every orbit seemed to cross it alike, and readers could not see why only some were flung.
-// As an oval, the orbits that stretch out its way visibly run along its path, the others only cut across
-// it. Its tilt and the line it tilts about are the predicted ones.
+// Planet Nine's orbit is the predicted one throughout, Brown & Batygin 2021's best fit (orbits.js), as the page's
+// head draws it (2026-11-18, asked for: the run should look like the head). From 2026-11-16 it had been stretched to
+// e = 0.65 against the predicted 0.30, so the orbits stretching out its way visibly ran along its path, and eased
+// back only at the end; Play again then started from the predicted shape while the planet went round the stretched
+// one.
 //
 // The explanation is a short note beside the picture at the moments that matter, the run pausing on each
 // until Continue, on every run, Play again's too:
@@ -86,8 +90,8 @@ const REACH = 12                  // pixels: this close to the planet counts as 
 const PLAY_MS = 14000             // one unit of time
 const PRE = 0.035                 // how long before a close pass the object lights up and the pull shows
 const FLY = 0.045                 // share of the run an object takes to leave
-const P9_E = 0.65                 // Planet Nine's orbit, stretched for the cartoon (see above)
-const P9 = { a: REAL_P9.a_au, e: P9_E, varpi: REAL_P9.varpi_deg, node: REAL_P9.node_deg, i: REAL_P9.i_deg }
+// Planet Nine's predicted orbit, as the head draws it (see above)
+const P9 = { a: REAL_P9.a_au, e: REAL_P9.e, varpi: REAL_P9.varpi_deg, node: REAL_P9.node_deg, i: REAL_P9.i_deg }
 const FLING_BY = 0.43             // every object to be flung is gone by now (its trail faded before SPARED_AT)
 const SPARED_AT = 0.47            // the last one's trail has faded (it lasts 3 × FLY): the note on the ones spared
 const T1 = 0.5                    // act 1 (flung out) ends and act 2 (turned round) begins
@@ -95,6 +99,8 @@ const TURN = 0.3                  // how long act 2 lasts: the camera tips as so
 const NUDGE_FROM = 0.14           // a nudge turns (or tips) the orbits from this many laps before the planet's closest
 const NUDGE_TO = 0.2              // point to the Sun to this many after: only while it is on the near side of its
                                   // orbit, the orbits resting while it is far out (2026-11-17)
+const NOTCH_TURN = 0.16           // act 2: each orbit's notch is shorter, and orbits the planet reaches together are set
+const TURN_GAP = 0.13             // at least this far apart, so they turn one at a time as it reaches each (2026-11-18)
 const NOTCH = 0.3                 // share of a nudge over which one orbit turns its notch, centred on the moment the
                                   // planet passes nearest it, so the turning follows the planet along its path
                                   // (2026-11-17, asked for: a ring spreading from it did not show what did the nudging)
@@ -128,11 +134,14 @@ function camera (t) {
   const s = ease(clamp01((t - SWING_AT) / TIP)) * (1 - ease(clamp01((t - BACK_AT) / BACK)))
   return { s, up: (90 - 90 * s) * RAD, turn: (90 - P9.node) * s * RAD, zoom: 1 + (SIDE_ZOOM - 1) * s }
 }
+// a camera may also carry `lay`: the picture scaled about the Sun by sc and moved by dx, dy (the end's two views)
+const NOLAY = { sc: 1, dx: 0, dy: 0 }
 const project = ([x, y, z], cam) => {
   const x1 = x * Math.cos(cam.turn) - y * Math.sin(cam.turn)
   const y1 = x * Math.sin(cam.turn) + y * Math.cos(cam.turn)
   const Y = y1 * Math.sin(cam.up) + z * Math.cos(cam.up)
-  return [c + x1 * k * cam.zoom, c - Y * k * cam.zoom]
+  const L = cam.lay || NOLAY
+  return [c + x1 * k * cam.zoom * L.sc + L.dx, c - Y * k * cam.zoom * L.sc + L.dy]
 }
 // an orbit's shape in 3-D: which way its closest point lies (varpi), the line it tilts about (node) and how steeply (inc)
 const orbitD = (a, e, st, cam) => {
@@ -156,10 +165,12 @@ function passes (t0, t1) {
 // nudge, the planet's passage of the near side of its orbit; `at` is the phase at which the planet passes nearest
 // the orbit, the middle of its notch
 const phase = (t, tk) => (lapsAt(t) - lapsAt(tk) + NUDGE_FROM) / (NUDGE_FROM + NUDGE_TO)
-const notchAt = (t, tk, at) => clamp01((phase(t, tk) - at) / NOTCH + 0.5)
-const notches = (list, t, at = 0.5) => d3.sum(list, tk => d3.easeSinInOut(notchAt(t, tk, at))) / (list.length || 1)
+// `at` may be one phase for every nudge or one per nudge; `w` is the notch's width
+const atOf = (at, i) => Array.isArray(at) ? at[i] : at
+const notchAt = (t, tk, at, w = NOTCH) => clamp01((phase(t, tk) - at) / w + 0.5)
+const notches = (list, t, at = 0.5, w = NOTCH) => d3.sum(list, (tk, i) => d3.easeSinInOut(notchAt(t, tk, atOf(at, i), w))) / (list.length || 1)
 // how hard the planet is tugging an orbit now: 0 outside its notch, 1 in the middle
-const tugOf = (list, t, at) => { for (const tk of list) { const f = notchAt(t, tk, at); if (f > 0 && f < 1) return Math.sin(Math.PI * f) } return 0 }
+const tugOf = (list, t, at, w = NOTCH) => { for (let i = 0; i < list.length; i++) { const f = notchAt(t, list[i], atOf(at, i), w); if (f > 0 && f < 1) return Math.sin(Math.PI * f) } return 0 }
 
 // One or two plain sentences each.
 const POPS = {
@@ -221,11 +232,10 @@ export function makeCompare ({ root, six = [] }) {
   const lined = orbits.filter(o => o.lined), kept = orbits.filter(o => !o.lined)
   const TOP = camera(0)
   const p9St = { varpi: P9.varpi, node: P9.node, inc: P9.i }
-  // the end: how far Planet Nine's orbit has eased from the cartoon's stretched one back to its predicted shape
+  // the end: how far the camera has tipped back up, the key to the six of 2016 fading in with it
   const morphAt = t => ease(clamp01((t - BACK_AT) / BACK))
-  const e9 = t => P9.e + (REAL_P9.e - P9.e) * morphAt(t)
   // the planet along its orbit at time t, starting at its far end
-  const planetAt = (t, cam) => pointAt(P9.a, e9(t), p9St, trueAnomaly(180 + 360 * lapsAt(t), e9(t)), cam)
+  const planetAt = (t, cam) => pointAt(P9.a, P9.e, p9St, trueAnomaly(180 + 360 * lapsAt(t), P9.e), cam)
   // --- acts 2 and 3: a notch at every nudge ---
   // each nudge's turning lies wholly inside its act
   const before = NUDGE_FROM / FAST, after = NUDGE_TO / FAST
@@ -239,26 +249,76 @@ export function makeCompare ({ root, six = [] }) {
   // turn, from the side while they tip. The planet's path is the same every lap, so one pass serves for all.
   {
     const side = camera(TILT_AT), fs = d3.range(0, 1.0001, 0.02), tk = T1 + (Math.ceil(LAPS * T1 - 0.5) + 0.5 - LAPS * T1) / FAST
-    const nearest = (o, st, cam) => {
+    const nearest = (o, st, cam, w = NOTCH) => {
       const pts = d3.range(0, 360, 3).map(nu => pointAt(o.a, o.e, st, nu, cam))
       const f = fs[d3.minIndex(fs, f => { const p = planetAt(tk + (f * (NUDGE_FROM + NUDGE_TO) - NUDGE_FROM) / FAST, cam); return d3.min(pts, q => dist(p, q)) })]
-      return Math.max(NOTCH / 2, Math.min(1 - NOTCH / 2, f))
+      return Math.max(w / 2, Math.min(1 - w / 2, f))
     }
-    kept.forEach(o => {
-      o.atTurn = nearest(o, { varpi: o.from, node: o.node0, inc: o.inc0 }, TOP)
-      o.atTilt = nearest(o, { varpi: o.to, node: o.node0, inc: o.inc0 }, side)
+    kept.forEach(o => { o.atTilt = nearest(o, { varpi: o.to, node: o.node0, inc: o.inc0 }, side) })
+    // The turning, nudge by nudge, one orbit at a time (2026-11-18, asked for), anticlockwise round the Sun with the
+    // planet: each orbit's notch comes as the planet, sweeping by, reaches the direction of its far end (where its
+    // arrow is), from where the orbit is by then; orbits it reaches at nearly the same moment are set a little apart,
+    // in that order. (The moment the planet passed nearest an orbit had put neighbours out of order.)
+    const n = Math.max(1, turnNudges.length), lo = NOTCH_TURN / 2, hi = 1 - NOTCH_TURN / 2
+    const angleOf = ([x, y]) => Math.atan2(c - y, x - c) / RAD
+    const sweep = fs.map(f => angleOf(planetAt(tk + (f * (NUDGE_FROM + NUDGE_TO) - NUDGE_FROM) / FAST, TOP)))
+    const midAngle = sweep[Math.floor(sweep.length / 2)]
+    for (const o of kept) o.atTurn = []
+    turnNudges.forEach((_, j) => {
+      const placed = kept.map(o => {
+        const far = angleOf(pointAt(o.a, o.e, { varpi: o.from + (o.to - o.from) * (j + 0.5) / n, node: o.node0, inc: o.inc0 }, 180, TOP))
+        const f = fs[d3.minIndex(sweep, a => Math.abs(wrap180(a - far)))]
+        return { o, f: Math.max(lo, Math.min(hi, f)), key: wrap180(far - midAngle) }
+      }).sort((p, q) => p.key - q.key)
+      const gap = Math.min(TURN_GAP, (hi - lo) / Math.max(1, placed.length - 1))
+      for (let i = 1; i < placed.length; i++) placed[i].f = Math.max(placed[i].f, placed[i - 1].f + gap)
+      for (let i = placed.length - 1; i >= 0; i--) placed[i].f = Math.max(lo, Math.min(placed[i].f, i === placed.length - 1 ? hi : placed[i + 1].f - gap))
+      for (const p of placed) p.o.atTurn[j] = p.f
     })
   }
   const turnU = t => notches(turnNudges, t)                       // the middle orbit's progress: for the pauses
   const tiltU = t => notches(tiltNudges, t)
-  const angle = (o, t) => o.lined ? o.from : o.from + (o.to - o.from) * notches(turnNudges, t, o.atTurn)
-  const tugAt = (o, t) => o.lined ? 0 : Math.max(tugOf(turnNudges, t, o.atTurn), tugOf(tiltNudges, t, o.atTilt))
+  const angle = (o, t) => o.lined ? o.from : o.from + (o.to - o.from) * notches(turnNudges, t, o.atTurn, NOTCH_TURN)
+  const tugAt = (o, t) => o.lined ? 0 : Math.max(tugOf(turnNudges, t, o.atTurn, NOTCH_TURN), tugOf(tiltNudges, t, o.atTilt))
   const stateAt = (o, t) => {
     const u = o.lined ? 0 : notches(tiltNudges, t, o.atTilt)
     return { varpi: angle(o, t), node: o.node0 + (o.node1 - o.node0) * u, inc: o.inc0 + (o.inc1 - o.inc0) * u }
   }
   // with no planet: a slow drift, nothing more
   const looseAt = (o, t) => { const u = ease(Math.min(1, t)); return { varpi: o.from + o.drift * u, node: o.node0 + o.nodeDrift * u, inc: o.inc0 } }
+
+  // --- the end: the two views side by side, as the page's head shows them (2026-11-18, asked for). As the camera tips
+  // back up, the picture shrinks into the left half, seen from above, and the same six seen from the side fade in on
+  // the right; one scale for both, fitted to the six and Planet Nine's orbit, a tag under each and the key under both ---
+  // each view as wide as its shape needs (the view from the side is wide and flat), a gap between, both on one middle line
+  const MID = c - 20, PAD = 8, SPLIT_GAP = 26
+  const SIDE_CAM = camera(TILT_AT + TIP)                         // looking along the plane, as in act 3
+  const boxOf = cam => {
+    const pts = [[c, c]]
+    for (const o of kept) { const st = stateAt(o, END); for (let nu = 0; nu < 360; nu += 4) pts.push(pointAt(o.a, o.e, st, nu, cam)) }
+    for (let nu = 0; nu < 360; nu += 4) pts.push(pointAt(P9.a, P9.e, p9St, nu, cam))
+    const [x0, x1] = d3.extent(pts, p => p[0]), [y0, y1] = d3.extent(pts, p => p[1])
+    return { w: x1 - x0, h: y1 - y0, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2 }
+  }
+  let lay = null
+  if (six.length) {
+    const top = boxOf(TOP), side = boxOf(SIDE_CAM)
+    const z = Math.min(1, (S - 2 * PAD - SPLIT_GAP) / (top.w + side.w), (S - 130) / top.h, (S - 130) / side.h)
+    const x0 = (S - (top.w + side.w) * z - SPLIT_GAP) / 2
+    const cL = x0 + top.w * z / 2, cR = x0 + top.w * z + SPLIT_GAP + side.w * z / 2
+    const tagY = MID + Math.max(top.h, side.h) * z / 2 + 20
+    lay = {
+      z, cL, cR, tagY,
+      sunL: [cL - (top.cx - c) * z, MID - (top.cy - c) * z],
+      sunR: [cR - (side.cx - c) * z, MID - (side.cy - c) * z],
+      // the plane drawn a little past the view from the side, the key under both tags
+      plane: [cR - side.w * z / 2 - 6, Math.min(S - 4, cR + side.w * z / 2 + 6)],
+      keyY: tagY + 26,
+    }
+  }
+  // the main picture's place at u, from the whole frame (0) to the left half (1)
+  const layAt = u => !lay || u <= 0 ? NOLAY : { sc: 1 + (lay.z - 1) * u, dx: (lay.sunL[0] - c) * u, dy: (lay.sunL[1] - c) * u }
+  const sideLay = lay && { ...SIDE_CAM, lay: { sc: lay.z, dx: lay.sunR[0] - c, dy: lay.sunR[1] - c } }
 
   // --- act 1: when each orbit stretching out the planet's way is flung. One at a time, each at a moment the planet
   // really passes it, seen from above, the first alone so its note speaks of one object; all gone before act 2 ---
@@ -376,7 +436,7 @@ export function makeCompare ({ root, six = [] }) {
     return `M${pts.map(f).join('L')}M${f(head(0.55))}L${f(pe)}L${f(head(-0.55))}`
   }
   // shown while the orbit is being nudged, so the arrows come on one after another along the planet's path
-  const arrowOp = (o, t) => Math.abs(o.to - o.from) < 12 ? 0 : tugOf(turnNudges, t, o.atTurn)
+  const arrowOp = (o, t) => Math.abs(o.to - o.from) < 12 ? 0 : tugOf(turnNudges, t, o.atTurn, NOTCH_TURN)
   // the copy of an orbit where it started: in as the turning (or tipping) begins, out once it is done
   const ghostIn = (u, t, at, len) => u <= 0 ? 0 : u < 1 ? Math.min(1, u / 0.05) : Math.max(0, 1 - (t - at - len) / 0.05)
   const turnGhostOp = t => ghostIn(turnU(t), t, T1, TURN)
@@ -387,6 +447,7 @@ export function makeCompare ({ root, six = [] }) {
       <path d="M0,0 L10,5 L0,10 z" fill="var(--text-primary)"/></marker>
       <marker id="cmp-dir-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="10" markerHeight="10" markerUnits="userSpaceOnUse" orient="auto">
       <path d="M0,0 L10,5 L0,10 z" fill="var(--p9)"/></marker></defs>` : ''}
+    <g class="cmp-main">
     <g class="cmp-plane" opacity="0"><line x1="0" x2="${S}" y1="${c}" y2="${c}"/>${p9 ? `<text class="halo" x="${S - 8}" y="${c - 8}" text-anchor="end">the plane of the planets</text>` : ''}</g>
     ${p9 ? `<g class="cmp-ghosts">${kept.map(() => '<path class="cmp-ghost" opacity="0"/>').join('')}</g>
       <g class="cmp-ghosts-tilt">${kept.map(() => '<path class="cmp-ghost" opacity="0"/>').join('')}</g>` : ''}
@@ -397,40 +458,66 @@ export function makeCompare ({ root, six = [] }) {
       <g class="cmp-arrows">${kept.map(() => '<path class="cmp-arrow" opacity="0"/>').join('')}</g>
       <g class="cmp-flung">${lined.map(() => '<g opacity="0"><line class="pull" marker-end="url(#cmp-pull-head)"/><path class="trail"/><circle class="flash" r="0"/><circle class="obj" r="4.5"/></g>').join('')}</g>
       <use class="cmp-planet" href="#art-planet-nine" width="26" height="26"/>` : ''}
+    <use class="cmp-sun" href="#art-sun" x="${c - 7}" y="${c - 7}" width="14" height="14"/>
+    </g>
+    ${p9 && lay ? `<g class="cmp-split" opacity="0">
+      <line class="cmp-split-plane" x1="${lay.plane[0]}" x2="${lay.plane[1]}" y1="${lay.sunR[1]}" y2="${lay.sunR[1]}"/>
+      <text class="cmp-split-lbl halo" x="${lay.plane[0] + 2}" y="${lay.sunR[1] + 12}">the plane of the planets</text>
+      ${kept.map(() => '<path class="cmp-orbit"/>').join('')}
+      <path class="lh-p9"/>
+      <use class="cmp-planet" href="#art-planet-nine" width="22" height="22"/>
+      <use href="#art-sun" x="${lay.sunR[0] - 6}" y="${lay.sunR[1] - 6}" width="12" height="12"/>
+      <text class="cmp-eye" x="${lay.cL}" y="${lay.tagY}" text-anchor="middle">SEEN FROM ABOVE</text>
+      <text class="cmp-eye" x="${lay.cR}" y="${lay.tagY}" text-anchor="middle">SEEN FROM THE SIDE</text>
+    </g>` : ''}
     ${p9 ? `<g class="cmp-key6" opacity="0"><line x1="10" x2="28" y1="${S - 13}" y2="${S - 13}"/><text x="34" y="${S - 9}">the six orbits of 2016</text></g>` : ''}
-    <use href="#art-sun" x="${c - 7}" y="${c - 7}" width="14" height="14"/>
   </svg>`
 
   // the picture with a planet; beside it the small one without, and under that the notes, so no note covers a drawing
   root.innerHTML = `
-    <figure class="cmp-panel" data-p="p9" role="img" aria-label="With a planet going round its orbit, first each object on an orbit lined up with it is pulled in as the planet passes and flung out of the solar system; then, nudge by nudge each time the planet comes round, the orbits it never meets turn to stretch out the opposite way; then, seen from the side, the same nudges tip them until they tilt the same way as the planet's orbit."><figcaption>With a planet</figcaption>${frame(N, true)}</figure>
+    <figure class="cmp-panel" data-p="p9" role="img" aria-label="With a planet going round its orbit, first each object on an orbit lined up with it is pulled in as the planet passes and flung out of the solar system; then, nudge by nudge each time the planet comes round, the orbits it never meets turn to stretch out the opposite way; then, seen from the side, the same nudges tip them until they tilt the same way as the planet's orbit. At the end the six orbits left are shown seen from above and from the side, side by side."><figcaption>With a planet</figcaption>${frame(N, true)}</figure>
     <div class="cmp-side">
       <figure class="cmp-panel" data-p="none" role="img" aria-label="With no planet, the orbits stay stretching out and tilting every which way."><figcaption>No planet</figcaption>${frame(N, false)}</figure>
       <div class="cmp-notes" aria-live="polite"></div>
     </div>`
   const notes = root.querySelector('.cmp-notes')
 
-  const sel = p => d3.select(root).selectAll(`.cmp-panel[data-p="${p}"] .cmp-orbit`).data(orbits)
+  const sel = p => d3.select(root).selectAll(`.cmp-panel[data-p="${p}"] .cmp-orbits .cmp-orbit`).data(orbits)
   const none = sel('none'), withP9 = sel('p9')
   const ghosts = d3.select(root).selectAll('.cmp-ghosts .cmp-ghost').data(kept)
   const tiltGhosts = d3.select(root).selectAll('.cmp-ghosts-tilt .cmp-ghost').data(kept)
   const arrows = d3.select(root).selectAll('.cmp-arrow').data(kept)
   const flung = d3.select(root).selectAll('.cmp-flung > g').data(lined)
-  const planet = d3.select(root).select('.cmp-planet')
+  const main = d3.select(root).select('.cmp-panel[data-p="p9"] .cmp-main')
+  const planet = main.select('.cmp-planet'), sun = main.select('.cmp-sun')
   const violet = getComputedStyle(root).getPropertyValue('--series-1').trim() || '#a78bfa'
   const lit = d3.interpolateRgb(violet, '#ffffff')
-  const p9Path = d3.select(root).select('.cmp-panel[data-p="p9"] .lh-p9')
-  const planes = d3.select(root).selectAll('.cmp-plane')
+  const p9Path = main.select('.lh-p9')
+  const planes = d3.select(root).selectAll('.cmp-plane'), planeP9 = main.select('.cmp-plane')
   const key6 = d3.select(root).select('.cmp-key6')
+  // the end's view from the side
+  const split = d3.select(root).select('.cmp-split')
+  const splitOrbits = split.selectAll('.cmp-orbit').data(kept)
+  const planet2 = split.select('.cmp-planet')
+  if (lay) split.select('.lh-p9').attr('d', orbitD(P9.a, P9.e, p9St, sideLay))
+  // the key under both views, centred, as the head's is
+  if (lay) {
+    const L = key6.select('text').node().getComputedTextLength(), x0 = c - (24 + L) / 2
+    key6.select('line').attr('x1', x0).attr('x2', x0 + 18).attr('y1', lay.keyY - 4).attr('y2', lay.keyY - 4)
+    key6.select('text').attr('x', x0 + 24).attr('y', lay.keyY)
+  }
   // Planet Nine's own two directions, as the dials draw them (2026-11-17, asked for): from above, an arrow from the Sun
   // towards its orbit's far end, the way it stretches out; from the side, an arrow along the plane towards the side
   // its orbit rises, the way it tilts; each in its act, the one fading as the camera tips and the other coming
   const dirs = d3.select(root).select('.cmp-dirs')
-  // the arrows reach six-tenths of the way to the far end, short of where the planet starts, their words small,
-  // beside the head (2026-11-18, asked for: the planet covered the word)
-  const dirLen = P9.a * (1 + P9.e) * 0.6
-  function drawDirs (cam) {
-    for (const [cls, deg, op] of [['is-s', P9.varpi + 180, 1 - cam.s], ['is-t', P9.node + 90, cam.s]]) {
+  // the arrows reach three-quarters of the way to the far end, short of where the planet starts, their words small,
+  // beside the head (2026-11-18, asked for: the planet covered the word); six-tenths of the stretched orbit's far end
+  // before the orbit took its predicted shape, about the same length, so the words stay clear of the orbits' crowd
+  const dirLen = P9.a * (1 + P9.e) * 0.75
+  // (fade: 1, or less as the end's two views come, which, like the page's head, carry no arrows)
+  function drawDirs (cam, fade = 1) {
+    for (const [cls, deg, op0] of [['is-s', P9.varpi + 180, 1 - cam.s], ['is-t', P9.node + 90, cam.s]]) {
+      const op = op0 * fade
       const end = project([dirLen * Math.cos(deg * RAD), dirLen * Math.sin(deg * RAD), 0], cam)
       const L = dist(end, [c, c]) || 1, ux = (end[0] - c) / L, uy = (end[1] - c) / L
       dirs.select(`line.${cls}`).attr('x1', c + ux * 10).attr('y1', c + uy * 10).attr('x2', end[0]).attr('y2', end[1]).attr('opacity', op)
@@ -452,24 +539,42 @@ export function makeCompare ({ root, six = [] }) {
   const clearPops = () => notes.replaceChildren()
 
   // --- the run: forward frame by frame, pausing at the moments that matter ----------
-  let t = 0, timer = null, seen = new Set(), lastCam = null
+  // splitHold: how far the end's two views are split while Play again closes them (null: as the run's time says)
+  let t = 0, timer = null, seen = new Set(), lastDrawn = null, splitHold = null
   function show () {
-    const cam = camera(t)
-    const moved = !lastCam || lastCam.s !== cam.s
-    lastCam = cam
-    const pos = planetAt(t, cam)
+    const cam = camera(t), u = lay ? splitHold ?? morphAt(t) : 0
+    // the picture with a planet: in the whole frame, or (at the end) shrinking into the left half
+    const camP = { ...cam, lay: layAt(u) }
+    // Planet Nine's orbit keeps one shape, so it is redrawn only when the camera or the picture's place changes
+    const moved = !lastDrawn || lastDrawn.s !== cam.s || lastDrawn.u !== u
+    lastDrawn = { s: cam.s, u }
+    const pos = planetAt(t, camP)
     planet.attr('x', pos[0] - 13).attr('y', pos[1] - 13)
-    if (moved) { p9Path.attr('d', orbitD(P9.a, e9(t), p9St, cam)); drawDirs(cam) }
+    if (moved) {
+      // the arrows and the plane go early as the views split, and the arrows come back late as they close
+      p9Path.attr('d', orbitD(P9.a, P9.e, p9St, camP)); drawDirs(camP, clamp01(1 - 4 * u))
+      sun.attr('x', c + camP.lay.dx - 7).attr('y', c + camP.lay.dy - 7)
+      planeP9.attr('transform', `translate(0,${camP.lay.dy})`)
+    }
     planes.attr('opacity', cam.s)
+    planeP9.attr('opacity', cam.s * clamp01(1 - 2 * u))
     none.attr('d', o => orbitD(o.a, o.e, looseAt(o, t), cam))
     const gone = o => !o.lined || t < o.out ? 0 : Math.min(1, (t - o.out) / FLY)
-    const mEnd = morphAt(t)
     withP9.attr('opacity', o => 1 - gone(o)).classed('is-out', o => o.lined && t >= o.out - PRE)
-      .attr('d', o => gone(o) >= 1 ? null : orbitD(o.a, o.e, stateAt(o, t), cam))
-    key6.attr('opacity', mEnd)
+      .attr('d', o => gone(o) >= 1 ? null : orbitD(o.a, o.e, stateAt(o, t), camP))
+    // the end: the same six and Planet Nine seen from the side, fading in on the right, and the key under both
+    key6.attr('opacity', u)
+    if (lay) {
+      split.attr('opacity', u).style('display', u > 0 ? null : 'none')
+      if (u > 0) {
+        splitOrbits.attr('d', o => orbitD(o.a, o.e, stateAt(o, t), sideLay))
+        const q = planetAt(t, sideLay)
+        planet2.attr('x', q[0] - 11).attr('y', q[1] - 11)
+      }
+    }
     const gOp = turnGhostOp(t), tOp = tiltGhostOp(t)
-    ghosts.attr('opacity', gOp).attr('d', o => gOp > 0 ? orbitD(o.a, o.e, { varpi: o.from, node: o.node0, inc: o.inc0 }, cam) : null)
-    tiltGhosts.attr('opacity', tOp).attr('d', o => tOp > 0 ? orbitD(o.a, o.e, { varpi: o.to, node: o.node0, inc: o.inc0 }, cam) : null)
+    ghosts.attr('opacity', gOp).attr('d', o => gOp > 0 ? orbitD(o.a, o.e, { varpi: o.from, node: o.node0, inc: o.inc0 }, camP) : null)
+    tiltGhosts.attr('opacity', tOp).attr('d', o => tOp > 0 ? orbitD(o.a, o.e, { varpi: o.to, node: o.node0, inc: o.inc0 }, camP) : null)
     arrows.each(function (o) {
       const op = arrowOp(o, t)
       d3.select(this).attr('opacity', op).attr('d', op > 0 ? arrowD(o, t) : null)
@@ -531,12 +636,33 @@ export function makeCompare ({ root, six = [] }) {
   }
   // Start, and Play again from the last note: the same run each time, the notes and their pauses too
   function play () {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // from the end's two views, they close first: the side view goes and the view from above grows back
+    if (!reduced && lay && t > 0 && morphAt(t) > 0) { unsplit(); return }
     t = 0; seen = new Set(); show(); clearPops()
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (reduced) {
       t = END; show()
       pop('end', { onBtn: play }); return
     }
     go()
+  }
+  // Play again from the end (2026-11-18, asked for): the view from the side fades and the view from above grows back
+  // to fill the picture, then the end's orbits give way to the start's, a copy of each picture fading out over the
+  // start's, and the run begins
+  const UNSPLIT_MS = 750, CROSS_MS = 500
+  function unsplit () {
+    stop(); clearPops()
+    const t0 = performance.now()
+    timer = d3.timer(() => {
+      const p = clamp01((performance.now() - t0) / UNSPLIT_MS)
+      splitHold = 1 - ease(p); show()
+      if (p < 1) return
+      stop()
+      const copies = [...root.querySelectorAll('.cmp-main')].map(g => { const cp = g.cloneNode(true); g.after(cp); return cp })
+      splitHold = null; t = 0; seen = new Set(); show()
+      d3.selectAll(copies).transition().duration(CROSS_MS).ease(d3.easeCubicInOut).attr('opacity', 0).remove()
+        .end().catch(() => {}).then(go)
+    })
   }
   show()
   pop('start', { onBtn: play })

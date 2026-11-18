@@ -818,6 +818,10 @@ svg .k-clue { fill: var(--part); }
 /* at the end, the six orbits of 2016 named, as the head's key names them */
 .cmp-key6 line { stroke: var(--series-1); stroke-width: 1.6; }
 .cmp-key6 text { font-size: 10.5px; font-weight: 600; fill: var(--text-secondary); }
+/* the end's two views, as the page's head: the view from the side on the right, its plane named, a tag under each */
+.cmp-split-plane { stroke: var(--text-muted); stroke-opacity: .7; stroke-width: 1.2; }
+.cmp-split-lbl { font-size: 9px; font-weight: 600; fill: var(--text-secondary); }
+.cmp-eye { font: 700 8px var(--font-mono); letter-spacing: .12em; fill: var(--text-muted); }
 .cmp-orbit.is-out { stroke: var(--text-primary); stroke-width: 2.2; }
 /* act 2: where each orbit started, while it turns, and which way it turns */
 .cmp-ghost { fill: none; stroke: var(--series-1); stroke-width: 1.2; stroke-opacity: .4; stroke-dasharray: 3 4; }

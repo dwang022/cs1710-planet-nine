@@ -13,7 +13,7 @@
 //   colour   one flat colour for thin strokes and dots on the near-black page:
 //            the orbit in a chart, the herding planet, the case for a planet.
 //            site.js publishes it as --p9. Each is at least 15 (OKLab ΔE × 100)
-//            from violet, ember and rose, the site's other three meanings.
+//            from violet, ember and red, the site's other three meanings.
 //   text     the CSS background painted through the lettering of every
 //            "Planet Nine" (--p9-text): the one thing on the site that is not
 //            flat, and each skin's own. Gradients, bands and an inline SVG

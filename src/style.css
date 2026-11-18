@@ -26,18 +26,21 @@
   --surface-2: #1e1e22;        /* raised card */
   --surface-3: #2a2a30;        /* control track */
 
-  --text-primary:   #ffffff;
-  --text-secondary: #c7c5bc;
-  --text-muted:     #a3a29a;     /* the quiet line under a name or a cell; lifted from #8c8b83 on 2026-11-16, which read too dim */
+  /* 2026-11-17: the whites stepped down (they had been #ffffff, #c7c5bc, #a3a29a) and the hues stepped up, so
+     plain text no longer outshines the colours that carry meaning. Headings and bold stay the brightest grey;
+     body copy is a quieter grey; the muted line sits between the old #8c8b83, too dim, and #a3a29a. */
+  --text-primary:   #e9e7e1;
+  --text-secondary: #aeaca4;
+  --text-muted:     #94938b;
 
   --rule: #2f2f36;
   --grid: #26262300;
 
   /* Categorical: identity, fixed order, never cycled. The -ink variants are
      the same hues lifted for small text on the dark surfaces. */
-  --series-1: #a78bfa;  --series-1-ink: #c4b5fd;   /* violet: the objects */
-  --series-2: #ff6a3d;  --series-2-ink: #ffa07a;   /* ember: comparison, warning, against */
-  --series-4: #ff3dc8;  --series-4-ink: #ff7ad8;   /* hot pink: what comes next (Rubin); strong enough to stand apart from the greys */
+  --series-1: #a78bfa;  --series-1-ink: #b9a4ff;   /* violet: the objects (ink was #c4b5fd, too near white) */
+  --series-2: #ff6a3d;  --series-2-ink: #ff8f63;   /* ember: comparison, warning, against (ink was #ffa07a) */
+  --series-4: #ff3dc8;  --series-4-ink: #ff6bd6;   /* hot pink: what comes next (Rubin); strong enough to stand apart from the greys */
 
   --series-1-dim: #a78bfa44;
   --series-2-dim: #ff6a3d44;
@@ -64,9 +67,11 @@
   --c-nine: var(--c-pluto);
   --c-eight: var(--text-primary);
   /* the three parts' own hues: their names in the top bar, the intro's part links and the Continue button.
-     Sky blue, rose and lime (2026-11-16): three hue families, so no part is mistaken for another; the
-     earlier light blue, lavender and teal all read as blue, and the lavender was the objects' violet. */
-  --part-background: #7cc4fa; --part-evidence: #ff8fab; --part-search: #9ad14e;
+     Sky blue, red and lime (2026-11-16): three hue families, so no part is mistaken for another; the
+     earlier light blue, lavender and teal all read as blue, and the lavender was the objects' violet.
+     2026-11-18, asked for: Evidence's rose (#ff5e93) read pinkish and weak; its red has the lime's saturation and
+     value (HSV 0.74, 0.87), only the hue apart, a little towards crimson to keep clear of ember. */
+  --part-background: #4fb4ff; --part-evidence: #dd3a45; --part-search: #93dd3a;   /* 2026-11-17: more saturated (were #7cc4fa, #ff8fab, #9ad14e) */
   --neptune: #8d93a8;
 
   /* bundled in fonts.js; the system fonts after them only fill in a missing glyph */
@@ -325,8 +330,8 @@ tbody td { padding: 8px 12px; border-bottom: 1px solid #26262b55; color: var(--t
 tbody tr:hover td { background: #ffffff06; }
 td.num, th.num { text-align: right; }
 .tag { font-size: 0.7rem; padding: 2px 7px; border-radius: 5px; white-space: nowrap; }
-.tag.anti { background: #a78bfa26; color: #c4b5fd; }
-.tag.ali  { background: #ff6a3d26; color: #ffa07a; }
+.tag.anti { background: #a78bfa26; color: var(--series-1-ink); }
+.tag.ali  { background: #ff6a3d26; color: var(--series-2-ink); }
 
 /* --- callouts ------------------------------------------------------------ */
 
@@ -337,7 +342,7 @@ td.num, th.num { text-align: right; }
 .note p { margin: 0; font-size: 0.9rem; }
 .note .note-k {
   font: 600 0.68rem/1 var(--font-mono); letter-spacing: 0.1em;
-  text-transform: uppercase; color: #ffa07a; margin-bottom: 7px;
+  text-transform: uppercase; color: var(--series-2-ink); margin-bottom: 7px;
 }
 
 /* --- responsive ---------------------------------------------------------- */
@@ -589,6 +594,8 @@ section.story { padding-bottom: 24px; }
 .k-au { color: var(--au); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* the case for a planet, in text: Planet Nine's colour */
 .k-for { color: var(--for-ink); font-weight: 600; }
+/* a key word or number of the page's own evidence, in its part's colour (the clustering page's numbers, 2026-11-17) */
+.k-ev { color: var(--part); font-weight: 700; }
 /* a distance inside chart text */
 svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 /* a verdict in an interaction: a word or two and the number */
@@ -619,7 +626,6 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .pic-btn.primary { background: var(--ui); border-color: var(--ui); color: var(--surface-0); }
 .pic-btn.primary:hover { filter: brightness(1.1); }
 
-.luck-key text { font-size: 12.5px; fill: var(--text-secondary); }
 .odds-key { margin: 0 0 14px; gap: 8px 22px; }
 .odds-key .legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; }
 .odds-key svg { width: 20px; height: 12px; flex: none; }
@@ -644,6 +650,68 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .head-fig .lean-key { justify-content: center; margin-top: 4px; }
 .head-fig .lean-key svg { display: inline; width: 20px; height: 12px; }
 .lean-head .lh-lbl { font-size: 14px; font-weight: 600; }
+/* the same six from the side (charts/tilthead.js): the same drawing in, the planets' plane a level line */
+.tilt-head { max-height: 46vh; }
+/* the clustering page's head (2026-11-17): the title, the lede naming the two kinds of clustering and the question
+   across the top, then the six seen from above and from the side in two equal boxes, each drawing centred in its box
+   (the svg fills it and keeps its proportions). Each view is numbered (.clue-n, the number back on the dials and
+   the cartoon) and named in plain words; the paper's term hangs off the words it names, a fun fact (.clu-sci); which
+   way the view looks is a small tag centred under its drawing (.clu-eye; in the box's corner it floated far from the
+   drawings once they were made compact, 2026-11-17). One key under both; on a phone they stack. */
+.clu-head .clu-text { max-width: none; }
+/* the lede runs the width it has, one line on a laptop (it had wrapped at the page head's 70 characters, 2026-11-18) */
+.page-head.clu-head .lede { max-width: none; }
+.clue-n { display: inline-grid; place-items: center; width: 1.45em; height: 1.45em; margin-right: .45em; flex: none;
+  border: 1.5px solid var(--part); border-radius: 50%; color: var(--part); font: 700 .78em/1 var(--font-sans);
+  letter-spacing: 0; vertical-align: .12em; }
+.clu-views { --clu-h: clamp(210px, 35vh, 430px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(32px, 5vw, 80px); margin-top: 20px; }
+.clu-view { display: flex; flex-direction: column; margin: 0; }
+.head-fig.clu-view figcaption { order: -1; margin: 0 0 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.clu-view-k { display: inline-flex; align-items: center; font-size: 1.12rem; font-weight: 600; color: var(--text-primary); line-height: 1.25; }
+/* the paper's term, a fun fact hung off the plain words it names (.clu-term), in italics; three looks tried
+   (data-sci on .clu-views): a leader line down to it, a small bubble popping up under it, or shown on pointing */
+.clu-term { position: relative; text-decoration: underline dotted var(--text-muted); text-underline-offset: 5px; text-decoration-thickness: 1.5px; }
+.clu-sci { position: absolute; left: 50%; top: calc(100% + 15px); transform: translateX(-50%); white-space: nowrap;
+  font-size: .82rem; font-weight: 400; font-style: italic; color: var(--text-muted); line-height: 1.2; pointer-events: none; }
+.clu-sci::before { content: ""; position: absolute; left: 50%; bottom: calc(100% + 2px); width: 1px; height: 9px; background: var(--text-muted); opacity: .7; }
+.clu-sci .k-ev { font-weight: 600; }
+/* the two clues' words, “stretch out” and “tilt”, in the part's colour wherever the page writes them (wrapped by
+   pages/clustering.js; 2026-11-17, asked for); a little heavier in running text, as tspans in the drawings */
+.k-clue { color: var(--part); }
+:is(p, li) .k-clue { font-weight: 600; }
+svg .k-clue { fill: var(--part); }
+.clu-views[data-sci="bubble"] .clu-sci { top: calc(100% + 12px); padding: 4px 10px 5px; border: 1px solid var(--rule); border-radius: 8px;
+  background: var(--surface-2); }
+.clu-views[data-sci="bubble"] .clu-sci::before { left: calc(50% - 5px); bottom: calc(100% - 5px); width: 9px; height: 9px; background: var(--surface-2);
+  border-left: 1px solid var(--rule); border-top: 1px solid var(--rule); transform: rotate(45deg); opacity: 1; }
+.clu-views[data-sci="hover"] .clu-term { cursor: help; }
+.clu-views[data-sci="hover"] .clu-sci { opacity: 0; transition: opacity .25s; }
+.clu-views[data-sci="hover"] .clu-term:hover .clu-sci { opacity: 1; }
+.head-fig.clu-view figcaption { margin-bottom: 50px; }
+/* on this page the head's orbits are there at once, no drawing in (2026-11-17, asked for); Planet Nine still goes
+   round its orbit, which starts as soon as the head is in view */
+.clu-views .lean-head .lh-orbit, .clu-views .lean-head .lh-p9, .clu-views .lean-head .lh-p9-mark { animation: none; opacity: 1; stroke-dashoffset: 0; }
+.clu-views .lean-head .lh-orbit { stroke-dasharray: none; }
+.clu-box { position: relative; height: var(--clu-h); }
+.clu-eye { display: block; margin-top: 12px; text-align: center; font: 700 .62rem/1 var(--font-mono); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--text-muted); opacity: .8; }
+.clu-box > div { height: 100%; }
+.head-fig.clu-view .clu-box > div > svg { width: 100%; height: 100%; max-height: none; }
+/* the side view is wide and flat: held to under twice the box's height, so on a wide screen it does not dwarf the
+   view from above */
+.clu-box #tiltHead { max-width: calc(var(--clu-h) * 1.8); margin-inline: auto; }
+/* the words keep one size on screen in both drawings: --u is each drawing's units per screen pixel, set by
+   pages/clustering.js as they are resized */
+.clu-views svg { --u: 1; }
+.clu-views .lean-head .lh-lbl { font-size: calc(var(--u) * 13.5px); }
+.clu-views .tilt-head .th-plane-lbl { font-size: calc(var(--u) * 12px); }
+.clu-views .lean-key { grid-column: 1 / -1; justify-content: center; margin-top: 10px; }
+@media (max-width: 860px) {
+  .clu-views { grid-template-columns: 1fr; row-gap: 26px; --clu-h: clamp(200px, 38vh, 340px); }
+}
+.tilt-head .th-plane { stroke: var(--text-muted); stroke-opacity: .7; stroke-width: 1.5; }
+.tilt-head .th-plane-lbl { font-size: 13px; font-weight: 600; fill: var(--text-secondary); }
 @keyframes lh-draw { to { stroke-dashoffset: 0; } }
 @keyframes lh-in { to { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
@@ -656,7 +724,6 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .luck-head .ring { fill: none; stroke: var(--text-muted); stroke-opacity: .55; stroke-width: 1.2; }
 .luck-head .dots circle { fill: var(--text-secondary); transition: fill .4s; }
 .luck-head .dots circle.real { fill: var(--series-1); }
-.luck-head .arrow { stroke: var(--text-primary); stroke-width: 4; stroke-linecap: round; }
 .luck-head .name { font-size: 17px; font-weight: 600; fill: var(--text-primary); }
 .luck-head .name.real { fill: var(--series-1-ink); }
 .luck-head .reach { font-size: 14px; fill: var(--text-secondary); }
@@ -675,11 +742,46 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) { .ah-suspect { animation: none; opacity: 1; } }
 @media (max-width: 860px) { .alt-head { width: 78%; } .ah-suspect .alt-ic-box { width: 32px; height: 32px; } .ah-name { font-size: .7rem; } }
 
+/* the clustering page's walkthrough (2026-11-17): two dials side by side (charts/dial.js), each under a small label;
+   the tilt dial opens beside the stretch dial on step 3 (flex-grow eases, so the stretch dial shrinks into place);
+   on steps 9 and 10 the dial that does not change steps back (.is-quiet). Each caption carries its clue's number. The cards' column is a little
+   narrower than other scrollies', so the two dials get the room. The dial's words keep one size on screen: --u is
+   the drawing's units per screen pixel, set by dial.js as the dial is resized. */
+.dial-story { grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: 36px; }
+.dial-pair { flex: 1; min-height: 0; display: flex; gap: 14px; align-items: center; justify-content: center; }
+.dial-panel { flex: 1 1 0; min-width: 0; margin: 0; display: flex; flex-direction: column; transition: flex-grow .7s ease, opacity .45s ease; }
+.dial-panel figcaption { margin: 0 0 10px; font: 600 1.05rem/1.2 var(--font-sans); color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.dial-panel figcaption .clue-n { font-size: .82em; }
+.step-card h3 .clue-n { font-size: .78em; vertical-align: .15em; }
+.dial-panel .viz { position: relative; width: 100%; aspect-ratio: 1; max-height: calc(100vh - var(--bar-h) - 80px); padding: 8px; }
+.dial-pair.is-one .dial-panel[data-kind="tilt"] { flex-grow: 0.0001; opacity: 0; pointer-events: none; }
+.dial-panel.is-quiet { opacity: .4; }
+.dial-panel svg { --u: 1; }
+.dial-panel svg .dial-lbl { font-size: calc(var(--u) * 12.5px); }
+.dial-panel svg .dial-lbl-sm { font-size: calc(var(--u) * 11px); }
+.dial-panel svg .dial-deg { font-size: calc(var(--u) * 10.5px); }
+.dial-panel svg .dial-num { font-size: calc(var(--u) * 17px); font-weight: 700; fill: var(--part); }
+/* the spread's number inside its wedge: the size of the dial's labels, not of the measured angles, so it does not
+   cover the arrows (2026-11-17, asked for) */
+.dial-panel svg .dial-spread { font-weight: 700; fill: var(--part); }
+@media (max-width: 900px) {
+  .dial-story .scrolly-graphic { height: 50vh; }
+  .dial-pair { gap: 8px; }
+  .dial-panel .viz { padding: 2px; max-height: calc(50vh - 40px); }
+  .dial-panel figcaption { font-size: .78rem; margin-bottom: 4px; }
+  /* drawn at a third of their size: the words would not fit at full size, so they are set smaller on screen */
+  .dial-panel svg .dial-lbl { font-size: calc(var(--u) * 7.5px); }
+  .dial-panel svg .dial-lbl-sm { font-size: calc(var(--u) * 6.5px); }
+  .dial-panel svg .dial-num { font-size: calc(var(--u) * 10px); }
+  .dial-panel svg .dial-deg { display: none; }
+}
+
 /* the clustering page: the key above the picture, the click card */
 .lean-key { margin: 0; gap: 6px 16px; }
 .lean-key .legend-item { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; }
 .lean-key svg { width: 20px; height: 12px; flex: none; }
-#chartLean { position: relative; }
+#dialStretch, #dialTilt { position: relative; }
 .pick-card {
   position: absolute; top: 12px; left: 12px; z-index: 3; min-width: 210px; padding: 12px 14px 12px;
   background: var(--surface-2); border: 1px solid var(--text-muted); border-radius: 10px; box-shadow: 0 10px 30px #0008;
@@ -708,11 +810,23 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .cmp-panel svg { display: block; width: 100%; height: auto; overflow: hidden; }
 .cmp-panel .lh-p9 { fill: none; stroke: var(--p9); stroke-width: 2.4; stroke-dasharray: 2 7; stroke-linecap: round; }
 .cmp-orbit { fill: none; stroke: var(--series-1); stroke-width: 1.6; stroke-opacity: .8; }
+/* Planet Nine's two directions in the cartoon: dashed, in its colour; their words in the part's red (clues.js) */
+.cmp-dir { stroke: var(--p9); stroke-width: 2.2; stroke-dasharray: 6 5; stroke-linecap: round; }
+.cmp-dir-lbl { font-size: 10px; font-weight: 600; fill: var(--p9); }
+/* at the end, the six orbits of 2016 named, as the head's key names them */
+.cmp-key6 line { stroke: var(--series-1); stroke-width: 1.6; }
+.cmp-key6 text { font-size: 10.5px; font-weight: 600; fill: var(--text-secondary); }
 .cmp-orbit.is-out { stroke: var(--text-primary); stroke-width: 2.2; }
 /* act 2: where each orbit started, while it turns, and which way it turns */
 .cmp-ghost { fill: none; stroke: var(--series-1); stroke-width: 1.2; stroke-opacity: .4; stroke-dasharray: 3 4; }
 .cmp-arrow { fill: none; stroke: var(--series-1-ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.cmp-flung line { stroke: var(--text-primary); stroke-width: 1.6; stroke-dasharray: 2 4; stroke-linecap: round; }
+/* act 3: the planets' plane, a level line once the camera has tipped down to the side */
+.cmp-plane line { stroke: var(--text-muted); stroke-opacity: .7; stroke-width: 1.2; }
+.cmp-plane text { font-size: 11px; font-weight: 600; fill: var(--text-secondary); }
+/* gravity at work (2026-11-17): a flung object's pull towards the planet, thicker the closer they are, then its way out;
+   and in acts 2 and 3 a ring spreading from the planet at each nudge */
+.cmp-flung .pull { stroke: var(--text-primary); stroke-linecap: round; }
+.cmp-flung .trail { fill: none; stroke: var(--text-primary); stroke-width: 1.6; stroke-dasharray: 2 4; stroke-linecap: round; }
 .cmp-flung .flash { fill: none; stroke: var(--text-primary); stroke-width: 2.5; }
 .cmp-flung .obj { fill: var(--series-1); stroke: #fff; stroke-width: 1.2; }
 /* the notes beside the picture: a small label for which effect, one plain sentence, and Continue when the run waits */
@@ -720,7 +834,8 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .cmp-pop p { margin: 0; font-size: 1rem; line-height: 1.45; color: var(--text-primary); font-weight: 500; max-width: none; }
 .cmp-pop .pic-btn { margin-top: 12px; }
 /* which of the planet's two effects a note is about */
-.cmp-pop-k { display: block; margin-bottom: 6px; font: 700 .72rem/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
+.cmp-pop-k { display: flex; align-items: center; margin-bottom: 6px; font: 700 .72rem/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
+.cmp-pop-k .clue-n { font-size: .95rem; }
 @keyframes cmp-pop-in { from { opacity: 0; transform: translateY(4px); } }
 /* on a phone the picture takes the width; under it, the small picture beside the note */
 @media (max-width: 760px) {
@@ -733,11 +848,6 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 
 
 /* the herd: the picture full width, its controls along the foot of the panel */
-/* On a phone the 760-unit lean chart is drawn at about half size: its words are set larger so they stay readable. */
-@media (max-width: 640px) {
-  #chartLean svg text { font-size: 24px; }
-  #chartLean svg text.axis-label { font-size: 21px; }
-}
 @media (max-width: 900px) {
   .pic-note { top: 8px; left: 8px; }
 }
@@ -1161,6 +1271,10 @@ sup.cite { font-size: .68em; line-height: 0; margin-left: 1px; }
 sup.cite a { color: var(--text-secondary); text-decoration: none; padding: 0 1px; }
 sup.cite a:hover { text-decoration: underline; }
 #arcChart { overflow-x: auto; }
+/* under the chart, a side note: why the rule counts years, not uncertainty */
+/* its side margins line it up with the plot (pages/data.js) */
+.arc-why { margin: 10px 0 0; max-width: none; font-size: .8rem; line-height: 1.45; color: var(--text-muted); text-wrap: pretty; }
+.arc-why strong { color: var(--text-secondary); font-weight: 600; }
 /* with the section's title and line over it (--arc-head, measured in pages/data.js), never taller than the screen */
 #arcChart svg { display: block; width: 100%; min-width: 720px; height: auto; max-height: max(420px, calc(100svh - var(--bar-h, 57px) - var(--arc-head, 190px))); }
 .arc-key-lead { stroke: #8c8b83; stroke-width: 1; }
@@ -1182,6 +1296,10 @@ sup.cite a:hover { text-decoration: underline; }
 .arc-key .pointer { fill: none; stroke: #8c8b83; stroke-width: 1; }
 .axis-label.strong { fill: var(--text-primary); font-weight: 600; }
 .arc-group { font-size: 11px; font-weight: 600; letter-spacing: .04em; fill: var(--text-muted); }
+/* the note in the uncertainty column on why it shows the closest point (charts/arcs.js) */
+.arc-note { font-size: 11px; fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-0); stroke-width: 4px; stroke-linejoin: round; }   /* a halo, so the year lines do not run through it */
+.arc-note .lead { font-weight: 600; fill: var(--text-primary); }
+.arc-note .p9-svg { fill: url(#g-p9); }
 .arc-group.used { fill: var(--series-1-ink); }
 .arc-row .hit { fill: transparent; pointer-events: all; }
 .arc-row.hot .span, .arc-row.hot .nights { stroke: #ffffff; stroke-opacity: 1; }

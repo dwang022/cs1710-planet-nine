@@ -17,7 +17,8 @@ export const PAGES = [
   { id: 'planets', path: 'setting/planets.html', group: 'Background', title: 'Nine, eight, nine?', short: 'Planets' },
   { id: 'distance', path: 'setting/distance.html', group: 'Background', title: 'Far from home', short: 'Distance' },
   { id: 'data', path: 'setting/data.html', group: 'Background', title: 'The data', short: 'Data' },
-  { id: 'clustering', path: 'insights/clustering.html', group: 'Evidence', title: 'The orbits lean the same way', short: 'Clustering' },
+  // both clues on one page (2026-11-17): the orbits "point" the same way and "tilt" the same way; never "lean"
+  { id: 'clustering', path: 'insights/clustering.html', group: 'Evidence', title: 'The orbits line up', short: 'Clustering' },
   { id: 'probability', path: 'insights/probability.html', group: 'Evidence', title: 'Could it just be luck?', short: 'Probability' },
   { id: 'alternatives', path: 'insights/alternatives.html', group: 'Evidence', title: 'What else could explain it', short: 'Alternatives' },
   { id: 'search', path: 'search/how.html', group: 'The search', title: 'Why nobody has found it', short: 'The search' },
@@ -133,7 +134,7 @@ function nav () {
 // reader can work out alone. The part and position live in PAGES for anyone
 // who needs them (the nav, the footer, the intro's three part buttons).
 
-/** Below the content: one Continue button, and a small link to the credits. */
+/** Below the content: one Continue button. */
 function footer () {
   const cur = here()
   // The intro has Start; pages outside the walkthrough (the credits) end with no button (2026-11-16).
@@ -154,10 +155,10 @@ function footer () {
         <span class="cont-k">Next${next.group !== cur.group ? ` <span class="cont-part" data-group="${next.group}">${next.group}</span>` : ''}</span>
         <span class="cont-t">${next.title}</span>${arrow}${fill}</a>`
     : `<a class="btn-continue" href="${url('index.html')}"><span class="cont-k">The end</span><span class="cont-t">Back to the start</span>${arrow}${fill}</a>`
-  const credits = `<a class="foot-credits" href="${url('credits.html')}">Credits and sources</a>`
+  // No credits link here (2026-11-17): the top bar carries one on every page.
   const el = document.createElement('footer')
   el.className = 'site-foot wrap'
-  el.innerHTML = `<nav class="continue" aria-label="Continue">${go}</nav>${credits}`
+  el.innerHTML = `<nav class="continue" aria-label="Continue">${go}</nav>`
   document.body.append(el)
   pullOn(el.querySelector('.btn-continue'))
 }
@@ -276,6 +277,8 @@ stars()
 injectSprite()
 // a skin chosen in another tab follows the reader into this one
 window.addEventListener('storage', e => { if (e.key === SKIN_KEY) applySkin(currentSkin()) })
+// The page's part, on the body, so its title's key words take the part's hue (site.css, .page-head h1 em)
+if (here().group) document.body.dataset.group = here().group
 nav()
 footer()
 watchName()

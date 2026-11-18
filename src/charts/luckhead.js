@@ -1,38 +1,41 @@
-// The probability page's head: one compass that sets up the question. The dots
-// shuffle into a few random skies, each with its low alignment (a short arrow), then
-// settle into the real sky (the trusted sample, violet) with its longer arrow;
-// then it starts again. Could luck have made the real one? The walkthrough
-// below answers it.
+// The probability page's head: one compass that sets up the question. Six dots, as many orbits as Batygin and
+// Brown had in 2016, shuffle into a few pretend skies, each six known objects picked at random as the walkthrough
+// below draws them (2026-11-17: they had been random directions, a second kind of draw the page no longer makes),
+// each with its spread (a wedge round their middle, the measure the walkthrough uses), then settle into the six
+// themselves (violet), with their narrow wedge; then it starts again. Each dot sits where its orbit stretches out
+// (the far end, as on the clustering page). Could luck have made the real one? The walkthroughs below answer it.
 
 import * as d3 from 'd3'
-import { resultant, seededRandom } from '../stats.js'
+import { spreadOf } from './luck.js'
 
 const W = 360, H = 330
 const cx = W / 2, cy = 150, R = 96
 const RAD = Math.PI / 180
-const RANDOM = 3                  // random skies before the real one
 const STEP = 1100, HOLD = 3200    // ms per random sky, and on the real one
-const pct = r => `${Math.round(r * 100)}%`
 
-/** real: the trusted sample's objects. */
-export function luckHead (root, { real }) {
-  const n = real.length
-  const rnd = seededRandom(49)
-  const skies = [...Array.from({ length: RANDOM }, () => real.map(() => rnd() * 360)), real.map(o => o.varpi_deg)]
+/** six: the six of 2016 from bb2016.json (closest: where each comes closest on the sky); spread: theirs, in degrees;
+ *  draws: a few pretend skies, { dirs (where each stretches out), spread }, from the build script's own draws. */
+export function luckHead (root, { six, spread, draws }) {
+  const n = six.length
+  const real = six.map(o => (o.closest[0] + 180) % 360)
+  const skies = [...draws.map(d => d.dirs), real]
 
   root.innerHTML = `<svg class="luck-head" viewBox="0 0 ${W} ${H}" role="img"
-    aria-label="A compass of ${n} directions: a few random skies, each with a low alignment, then the real sky with a higher one.">
-    <defs><marker id="lh2-head" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="13" markerHeight="13" markerUnits="userSpaceOnUse" orient="auto">
-      <path d="M0,0 L10,5 L0,10 z" fill="var(--text-primary)"/></marker></defs>
+    aria-label="A compass of ${n} directions: a few pretend skies of known objects picked at random, each with its spread as a wide wedge, then the six orbits of 2016 with a narrow one.">
+    <path class="wedge"/>
     <circle class="ring" cx="${cx}" cy="${cy}" r="${R}"/>
     <g class="dots"></g>
-    <line class="arrow" x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy}" marker-end="url(#lh2-head)"/>
     <circle cx="${cx}" cy="${cy}" r="3.5" fill="var(--sun)"/>
     <text class="name" x="${cx}" y="${cy + R + 48}" text-anchor="middle"></text>
     <text class="reach" x="${cx}" y="${cy + R + 70}" text-anchor="middle"></text>
   </svg>`
   const svg = d3.select(root).select('svg')
-  const arrow = svg.select('.arrow'), name = svg.select('.name'), reach = svg.select('.reach')
+  const wedge = svg.select('.wedge'), name = svg.select('.name'), reach = svg.select('.reach')
+  const pt = (deg, r) => [cx + r * Math.cos(deg * RAD), cy - r * Math.sin(deg * RAD)]
+  const sector = (mid, s) => {
+    const a = Math.min(179.5, s)
+    return `M${cx},${cy}L` + [...d3.range(mid - a, mid + a, 3), mid + a].map(d => pt(d, R).map(v => v.toFixed(1)).join(',')).join('L') + 'Z'
+  }
 
   // stacked outward where they crowd, as on the clustering page's compass
   const place = degs => {
@@ -40,19 +43,23 @@ export function luckHead (root, { real }) {
     return degs.map(d => {
       const b = Math.floor(d / 8), j = bins.get(b) ?? 0
       bins.set(b, j + 1)
-      const rr = R + 8 + j * 8
-      return [cx + rr * Math.cos(d * RAD), cy - rr * Math.sin(d * RAD)]
+      return pt(d, R + 8 + j * 8)
     })
   }
-  const dots = svg.select('.dots').selectAll('circle').data(d3.range(n)).join('circle').attr('r', 3.6).attr('cx', cx).attr('cy', cy)
+  const dots = svg.select('.dots').selectAll('circle').data(d3.range(n)).join('circle').attr('r', 6).attr('cx', cx).attr('cy', cy)
 
+  let prev = { mid: 0, s: 0 }
   function show (k, ms) {
-    const isReal = k === skies.length - 1, st = resultant(skies[k]), pos = place(skies[k])
+    const isReal = k === skies.length - 1, pos = place(skies[k])
+    const st = spreadOf(skies[k])
+    const s = isReal ? spread : draws[k].spread
     dots.classed('real', isReal).transition().duration(ms).ease(d3.easeCubicOut).attr('cx', (d, i) => pos[i][0]).attr('cy', (d, i) => pos[i][1])
-    arrow.transition().duration(ms).ease(d3.easeCubicOut)
-      .attr('x2', cx + R * st.R * Math.cos(st.meanDeg * RAD)).attr('y2', cy - R * st.R * Math.sin(st.meanDeg * RAD))
-    name.text(isReal ? 'The real sky' : 'A random sky').classed('real', isReal)
-    reach.text(`${pct(st.R)} aligned`)
+    const from = prev, dm = ((st.mid - from.mid + 540) % 360) - 180
+    prev = { mid: st.mid, s }
+    wedge.classed('real', isReal).transition().duration(ms).ease(d3.easeCubicOut)
+      .attrTween('d', () => t => sector(from.mid + dm * t, from.s + (s - from.s) * t))
+    name.text(isReal ? 'The six orbits of 2016' : 'Six orbits picked at random').classed('real', isReal)
+    reach.text(`spread ${Math.round(s)}°`)
   }
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { show(skies.length - 1, 0); return }
   let k = 0

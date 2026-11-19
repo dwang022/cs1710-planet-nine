@@ -1,11 +1,18 @@
 // Part 3, page 2: the debate, a paper at a time from 2014 to 2026 (charts/debate.js), and how the proposed planet
 // changed. (The ledger this page used to hold, charts/field.js, still serves the search and future pages.)
+// How the proposal changed has two versions (2026-11-17): 1 the dashboard alone; 2 the dashboard and, under it,
+// the probability page's two charts, "Where you draw the line" and "What the studies conclude" (charts/cuts.js, charts/odds.js).
 
 import '../site.js'
-import { loadData, showLoadError, url } from '../data.js'
+import { loadData, showLoadError } from '../data.js'
 import { drawDebate, debatePapers } from '../charts/debate.js'
-import { drawProposals } from '../charts/proposals.js'
 import { drawProposalsV2 } from '../charts/proposals2.js'
+import { drawOdds } from '../charts/odds.js'
+import { oddsLink } from '../charts/oddslink.js'
+import { drawConstellation } from '../charts/constellation.js'
+import { drawCuts } from '../charts/cuts.js'
+import { oneIn } from '../stats.js'
+import { STRICT, LOOSE } from '../sample.js'
 
 const $ = s => document.querySelector(s)
 const span = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
@@ -15,7 +22,7 @@ const span = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
  * against below it), a line behind them that fills to the year shown, previous and next either side, and a play
  * button that steps on a year at a time. Any other control stops the play.
  */
-function debate ({ items, debate: D, papers }) {
+function debate ({ items, debate: D }) {
   const [y0, y1] = D.range
   const strip = $('#dbYears')
   const marks = (y, s) => '<i></i>'.repeat(items.filter(d => d.year === y && d.side === s).length)
@@ -29,21 +36,12 @@ function debate ({ items, debate: D, papers }) {
   const buttons = [...strip.querySelectorAll('button')]
   const prev = $('#dbPrev'), next = $('#dbNext'), play = $('#dbPlay')
 
-  // which mark: ?v=1 or ?v=2 in the address, else the last one chosen here, else version 1 (dots). A new key, so a
-  // choice stored when the versions were layouts does not carry over.
-  const KEY = 'p9-debate-marker'
-  const fromUrl = { 1: 'dots', 2: 'thumbs' }[new URLSearchParams(location.search).get('v')]
-  let stored = null
-  try { stored = localStorage.getItem(KEY) } catch {}
-  const marker = fromUrl || (stored === 'thumbs' ? 'thumbs' : 'dots')
-
   let year = y0, timer = 0
   const chart = drawDebate($('#dbStage'), {
     year: $('#dbYear'), headline: $('#dbHeadline'), countFor: $('#dbFor'), countAgainst: $('#dbAgainst'), panel: $('#dbPanel'),
   }, {
     items,
     debate: D,
-    marker,
     onYear: y => {
       for (const b of buttons) {
         const by = +b.dataset.year
@@ -74,68 +72,110 @@ function debate ({ items, debate: D, papers }) {
     timer = setInterval(() => { go(year + 1); if (year >= y1) stop() }, 1700)
   })
   go(y0)
+}
 
-  // the version toggle: the same year, the same places and the same paper, the marks crossfading
-  const seg = [...document.querySelectorAll('.db-version button')]
-  const mark = m => seg.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.marker === m)))
-  mark(marker)
-  for (const b of seg) {
-    b.addEventListener('click', () => {
-      mark(b.dataset.marker)
-      chart.marker(b.dataset.marker)
-      try { localStorage.setItem(KEY, b.dataset.marker) } catch {}
-    })
-  }
+/**
+ * The rows of the probability page's odds chart, built exactly as pages/probability.js builds them (our test is the
+ * stored 200,000-trial result for the fixed STRICT and LOOSE samples in clustering_null.json; each study is its abstract
+ * in published_odds.json). Version 2 draws them with drawOdds as they are; version 3 with the Evidence Constellation
+ * (charts/constellation.js), whose cards also read each study's plain_detail and quote. drawOdds ignores those, and doi.
+ */
+function oddsRows ({ published, nulls }) {
+  const cutFor = (a, q, good) => nulls.cuts.find(c => c.a_min_au === a && c.q_min_au === q && c.well_determined_only === good)
+  const sp = cutFor(STRICT.aMin, STRICT.qMin, !!STRICT.quality), lp = cutFor(LOOSE.aMin, LOOSE.qMin, !!LOOSE.quality)
+  const study = d => ({
+    label: d.label, detail: d.count, side: d.side, doi: d.doi, plain: d.plain_detail, quote: d.quote,
+    ...(d.p ? { oneIn: oneIn(d.p) } : {}),
+  })
+  return [
+    { heading: 'Not allowing for where telescopes looked' },
+    ...published.studies.filter(d => !d.allows_for_looking).map(study),
+    { label: `Our test`, detail: `${sp.n_objects} seen in more than one year`, oneIn: oneIn(sp.p_value), side: 'ours' },
+    { label: `Our test`, detail: `all ${lp.n_objects}, with those seen once`, oneIn: oneIn(lp.p_value), side: 'ours' },
+    { heading: 'Allowing for where telescopes looked' },
+    ...published.studies.filter(d => d.allows_for_looking).map(study),
+  ]
+}
 
-  const left = papers.filter(p => p.stance === 'neutral' || p.year < y0).length
-  $('#dbCaption').innerHTML = `Which side a paper is on is <strong>our</strong> reading of its abstract. The ${left} papers
-    in our sample that report data or predictions without taking a side, or came before ${y0}, are left out of the picture.
-    The sample is chosen, not every paper written, so the counts describe it, not opinion ·
-    <a href="${url('credits.html')}#papers">every paper</a>`
+// version 2's odds chart, with the chosen paper lit on it (charts/oddslink.js)
+function evidence (data) {
+  const link = oddsLink($('#pvChartOdds'))   // before drawing, so the first draw is lit too
+  drawOdds($('#pvChartOdds'), oddsRows(data))
+  return link
+}
+
+// version 2's cut-off chart, drawn the first time version 2 is shown (so it measures its real width)
+function cutoffs ({ nulls }) {
+  const cutFor = (a, q, good) => nulls.cuts.find(c => c.a_min_au === a && c.q_min_au === q && c.well_determined_only === good)
+  const cutRows = [...new Set(nulls.cuts.map(c => `${c.a_min_au}/${c.q_min_au}`))].map(k => {
+    const [a, q] = k.split('/').map(Number)
+    const good = cutFor(a, q, true), all = cutFor(a, q, false)
+    return good && all && { a, q, good: { n: good.n_objects, oneIn: oneIn(good.p_value) }, all: { n: all.n_objects, oneIn: oneIn(all.p_value) } }
+  }).filter(Boolean).sort((x, y) => x.a - y.a)
+  drawCuts($('#pvChartCuts'), cutRows)
 }
 
 async function main () {
-  const { field_timeline: FIELD, papers: PAPERS, planet_nine_predictions: PRED, debate: DEBATE } =
-    await loadData('field_timeline', 'papers', 'planet_nine_predictions', 'debate')
+  const { field_timeline: FIELD, papers: PAPERS, planet_nine_predictions: PRED, debate: DEBATE,
+    published_odds: published, clustering_null: nulls } =
+    await loadData('field_timeline', 'papers', 'planet_nine_predictions', 'debate', 'published_odds', 'clustering_null')
   const items = debatePapers({ papers: PAPERS.papers, timeline: FIELD, debate: DEBATE })
-  debate({ items, debate: DEBATE, papers: PAPERS.papers })
+  debate({ items, debate: DEBATE })
 
-  // phones get their own layout of the chart (time running down); redraw when the screen crosses over
-  const chart = $('#chartProposals')
-  const draw = () => { if (!$('#proposalsV1').hidden) drawProposals(chart, PRED.orbit_predictions) }
-  window.matchMedia('(max-width: 640px)').addEventListener('change', draw)
-  // two versions of how the proposal changed (2026-11-10): 1 the original charts, unchanged; 2 one paper at a time
-  // (charts/proposals2.js). ?pv=1 or ?pv=2 in the address, else the last one chosen here, else version 2.
-  const PV_KEY = 'p9-proposals-version'
-  let pvStored = null
-  try { pvStored = localStorage.getItem(PV_KEY) } catch {}
-  const pvUrl = new URLSearchParams(location.search).get('pv')
-  let v2 = null
+  // how the proposal changed: one paper at a time (charts/proposals2.js; the original two charts were retired on 2026-11-17)
+  // In version 2 the chosen paper is lit on the odds chart when that chart has a row for the same paper: matched by
+  // DOI, so only Batygin & Brown 2016 and Brown & Batygin 2021 (both of its entries) link; any other paper leaves the
+  // chart as it is. No value on either chart depends on the choice. Version 3's chart (the Evidence Constellation) is
+  // never linked to the choice.
+  const studyByDoi = new Map(published.studies.map(d => [d.doi, d]))
+  let chosen = null, link = null, pvNow = '1'
+  const lightUp = () => {
+    const study = pvNow === '2' && chosen && studyByDoi.get(chosen.doi)
+    link?.set(study ? study.doi : null)
+    $('#pvLinkNote').innerHTML = study ? `Highlighted: <b>${study.label}</b>, the paper chosen above.` : ''
+  }
+  drawProposalsV2($('#chartProposals2'), PRED.orbit_predictions, { onSelect: p => { chosen = p; lightUp() } })
+
+  // three versions of the section (2026-11-17): 1 the dashboard alone; 2 the story in two parts; 3 the same story with
+  // only the odds chart. data-pv lists the versions an element shows in; the dashboard is never touched, so the chosen
+  // paper stays. Version 1 on every load; ?pv=2 or ?pv=3 opens that version.
+  // version 3 on a wide screen: the picture's card runs down to the foot of the right column (style.css), and the spare
+  // height is shared out inside it: half between the distance and mass scales, a quarter above the picture, the
+  // rest above the note at the foot. Measured here, as the right column's height changes with the paper chosen.
+  // --pv-extra in pixels for the card's margins; --pv-extra-u in the picture's own units for the mass scale's shift.
+  const pic = $('#chartProposals2 .pv-pic'), pvSvg = $('#chartProposals2 .pv-svg'), note = $('#chartProposals2 .pv-pic-note')
+  const fitPic = () => {
+    const on = $('#proposals').dataset.pvOn === '3' && matchMedia('(min-width: 901px)').matches
+    if (!on) { pic.style.removeProperty('--pv-extra'); pic.style.removeProperty('--pv-extra-u'); return }
+    const cs = getComputedStyle(pic), ns = getComputedStyle(note)
+    const natural = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth) +
+      pvSvg.getBoundingClientRect().height + note.getBoundingClientRect().height + 2 + parseFloat(ns.marginBottom)   // 2: the note's own top margin (style.css); version 3's is auto
+    // against the right column's foot, not the card's own height (which the margins set here can hold up)
+    const target = $('#chartProposals2 .pv-right').getBoundingClientRect().bottom - pic.getBoundingClientRect().top
+    const extra = Math.max(0, target - natural)
+    const scale = pvSvg.getBoundingClientRect().width / pvSvg.viewBox.baseVal.width
+    pic.style.setProperty('--pv-extra', `${extra.toFixed(1)}px`)
+    pic.style.setProperty('--pv-extra-u', `${(extra / scale).toFixed(1)}px`)
+  }
+  new ResizeObserver(fitPic).observe($('#chartProposals2 .pv-right'))
+  new ResizeObserver(fitPic).observe(pvSvg)
+
+  let oddsDrawn = false, cutsDrawn = false, starsDrawn = false
   const showPv = v => {
-    $('#proposalsV1').hidden = v !== '1'
-    $('#proposalsV2').hidden = v !== '2'
+    document.querySelectorAll('#proposals [data-pv]').forEach(el => { el.hidden = !el.dataset.pv.split(' ').includes(v) })
+    $('#proposals').dataset.pvOn = v   // version-only styles (style.css: version 3's year-only buttons)
+    pvNow = v
+    // each chart drawn the first time its version is shown, so it measures its real width
+    if (v === '2' && !oddsDrawn) { oddsDrawn = true; link = evidence({ published, nulls }) }
+    if (v === '2' && !cutsDrawn) { cutsDrawn = true; cutoffs({ nulls }) }
+    if (v === '3' && !starsDrawn) { starsDrawn = true; drawConstellation($('#pvChartConst'), oddsRows({ published, nulls }), { trials: nulls._n_trials }) }
+    lightUp()   // lit in version 2 only
+    fitPic()
     document.querySelectorAll('.pv-version button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)))
-    if (v === '1') draw()
-    else if (!v2) v2 = drawProposalsV2($('#chartProposals2'), PRED.orbit_predictions)
   }
-  showPv(pvUrl === '1' || pvUrl === '2' ? pvUrl : pvStored === '1' ? '1' : '2')
-  document.querySelector('.pv-version').addEventListener('click', e => {
-    const b = e.target.closest('button[data-v]'); if (!b) return
-    showPv(b.dataset.v)
-    try { localStorage.setItem(PV_KEY, b.dataset.v) } catch {}
-  })
-  // How the proposal changed comes in once, the first time about a third of it is on screen: the papers' marks in a wave
-  // from 2016 on (style.css). Its frame (titles, axes, labels) is there from the start. Readers who ask for less motion
-  // get it all at once.
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
-    chart.classList.add('is-waiting')
-    const io = new IntersectionObserver(es => {
-      if (!es.some(e => e.isIntersecting)) return
-      chart.classList.remove('is-waiting')
-      io.disconnect()
-    }, { threshold: 0.3 })
-    io.observe(chart)
-  }
+  const pvAsked = new URLSearchParams(location.search).get('pv')
+  showPv(pvAsked === '2' || pvAsked === '3' ? pvAsked : '1')
+  $('.pv-version').addEventListener('click', e => { const b = e.target.closest('button[data-v]'); if (b) showPv(b.dataset.v) })
 }
 
 main().catch(showLoadError)

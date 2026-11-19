@@ -1,7 +1,7 @@
 // The Planet Nine debate (search/timeline.html): one mark per paper, revealed year by year from 2014 to 2026, the
 // papers for a planet inside the reader's Planet Nine on the left, the papers against in a faint enclosure on the right
-// (under it on a phone). Two versions of the mark, kept side by side while the team compares them (the toggle on the
-// page): 1 a coloured dot, 2 a thumb, up for and down against. Everything else is the same in both.
+// (under it on a phone). Each paper is a thumb, up for and down against (the coloured-dot version and its toggle were
+// removed on 2026-11-17).
 //
 // Which papers and which side come from papers.json ('stance', our reading of each abstract: supports → for;
 // against and alternative → against; neutral papers stay in the data but are not drawn). The one line on what a
@@ -13,8 +13,6 @@
 //     click mid-transition retargets instead of jumping;
 //   - each group is a sunflower spiral in the order the papers appeared: each keeps its angle, and the spiral
 //     tightens as papers join (inside the planet) or spreads to its room (the cluster);
-//   - each paper's element holds both marks, the dot and the thumb; the version only sets which one shows (style.css,
-//     .is-thumbs), so switching crossfades the marks without touching places, the year or a pinned paper;
 //   - new papers fade and grow in, a beat apart; going back, later papers fade and shrink away and the rest close up.
 // Three named transitions per dot (move, fade, grow) so each interrupts only its own kind.
 
@@ -28,7 +26,7 @@ const W = 640                   // the width the labels' size is set against
 const R = 196                 // the Planet Nine circle
 const R_IN = R - 46           // the spiral never reaches past this
 const SPIRAL = 37             // spacing of the spiral while it has room
-const DOT = 10
+const DOT = 10                // a mark's spacing radius: the hit circle, the halo and the enclosure are set from it
 const THUMB_SIZE = 33         // a thumb's height: a little more than a dot's width, still clear of its neighbours
 const GOLDEN = Math.PI * (3 - Math.sqrt(5))
 const SIDE = { for: 'For Planet Nine', against: 'Against Planet Nine' }
@@ -68,7 +66,7 @@ const CLUSTER_R = 150         // the cluster never grows wider than this
 function spiral (list, out, cx, cy, k) {
   list.forEach((d, i) => out.set(d.id, { cx, cy, a: i * GOLDEN + 0.6, r: k * Math.sqrt(i + 0.5) }))
 }
-// The labels, in their marks' colours, above their groups. The thumb (version 2's mark) is a small filled shape on a
+// The labels, in their marks' colours, above their groups. The thumb (each paper's mark) is a small filled shape on a
 // 24-unit grid: a cuff and a hand, turned over for down, drawn here rather than as an emoji so every browser shows
 // the same one.
 const SPLIT_WORDS = ['FOR PLANET NINE', 'AGAINST PLANET NINE']
@@ -123,10 +121,10 @@ function planetArt (skin) {
 const turn = (a, b) => { const d = ((b - a) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI; return t => a + d * t }
 
 /**
- * Draws the debate into `root` and returns { show(year), marker('dots' | 'thumbs') }. `ui` holds the elements round
+ * Draws the debate into `root` and returns { show(year) }. `ui` holds the elements round
  * the picture: year, headline, countFor, countAgainst, panel.
  */
-export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }) {
+export function drawDebate (root, ui, { items, debate, onYear }) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
   const ms = n => reduce.matches ? 0 : n
   const byId = new Map(items.map(d => [d.id, d]))
@@ -160,9 +158,6 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
   </svg>`
   const svg = d3.select(root).select('.db-svg')
   const layer = svg.select('.db-dots')
-  // which mark the papers wear: a class on the picture, so the marks crossfade in CSS and nothing else is redrawn
-  let markerNow = marker === 'thumbs' ? 'thumbs' : 'dots'
-  svg.classed('is-thumbs', markerNow === 'thumbs')
 
   // a new skin chosen while the page is open: the new drawing fades in over the old, which then goes. Nothing else
   // in the picture is touched, so the dots, the year and any paper being read carry on.
@@ -199,7 +194,7 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
       ? `<ul class="db-new">${fresh.map(d => `<li><button type="button" data-id="${esc(d.id)}" class="is-${d.side}">
           <i aria-hidden="true"></i><span><b>${esc(d.paper.label)}</b><span>${au(esc(d.why))}</span></span></button></li>`).join('')}</ul>`
       : '<p class="db-p-none">No paper in this sample.</p>') +
-      (year === LAST ? '' : `<p class="db-p-hint">Choose a ${markerNow === 'thumbs' ? 'thumb' : 'dot'} to read its paper.</p>`)
+      (year === LAST ? '' : '<p class="db-p-hint">Choose a thumb to read its paper.</p>')
   }
   let shownKey = ''
   function panel () {
@@ -293,14 +288,6 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     if (y === year) return
     render(y, false)
   }
-  // the version: dots or thumbs. Only the class changes; the marks crossfade (style.css) and the panel's hint follows.
-  function setMarker (m) {
-    m = m === 'thumbs' ? 'thumbs' : 'dots'
-    if (m === markerNow) return
-    markerNow = m
-    svg.classed('is-thumbs', m === 'thumbs')
-    if (!hovered && !pinned) { shownKey = ''; panel() }
-  }
 
   function render (y, relayout) {
     const back = year != null && y < year
@@ -334,10 +321,7 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     fresh.append('g').attr('class', 'db-grow').attr('transform', 'scale(0.35)')
       .call(g => g.append('circle').attr('class', 'db-hit').attr('r', DOT + 9))
       .call(g => g.append('circle').attr('class', 'db-halo').attr('r', DOT * 2.1).attr('fill', d => `url(#db-glow-${d.side})`))
-      // a dark ring just outside each dot, so it stands off whatever skin is under it
-      .call(g => g.append('circle').attr('class', 'db-ring-out').attr('r', DOT + 2.5))
-      .call(g => g.append('circle').attr('class', 'db-mark').attr('r', DOT))
-      // version 2's mark: a thumb, up for and down against, centred where the dot is
+      // the mark: a thumb, up for and down against, centred on the paper's place
       .call(g => g.append('g').attr('class', 'db-tmark')
         .append('path').attr('d', THUMB)
         .attr('transform', d => `translate(${-THUMB_SIZE / 2},${-THUMB_SIZE / 2}) scale(${THUMB_SIZE / 24})${d.side === 'against' ? ' rotate(180 12 12)' : ''}`))
@@ -499,6 +483,6 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     for (let i = 0; i < ws.length - 2; i++) ws[i].remove()
   }
 
-  return { show, marker: setMarker }
+  return { show }
 }
 

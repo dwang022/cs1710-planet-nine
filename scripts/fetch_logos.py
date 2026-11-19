@@ -23,6 +23,11 @@ LOGOS = [
     # but NASA's insignia may not be recoloured, so the wordmark is the one made monochrome.
     {"id": "jpl", "commons": "File:Jet Propulsion Laboratory logo.svg", "what": "Jet Propulsion Laboratory logo",
      "shown": "setting/data.html, beside the JPL catalogue section", "mono": True},
+    # Caltech's wordmark (public domain, trademarked on Commons), shown in its own orange in the probability page's
+    # lede, an exception to the monochrome rule asked for on 2026-11-17. Not yet fetched: until it is, the page sets
+    # the word in the orange. Fetch it alone with `python -P scripts/fetch_logos.py caltech`.
+    {"id": "caltech", "commons": "File:Caltech Logo.svg", "what": "California Institute of Technology wordmark",
+     "shown": "insights/probability.html, in the head's lede"},
 ]
 
 SVG = "{http://www.w3.org/2000/svg}"
@@ -203,9 +208,18 @@ def mono(data, title):
 
 
 def main():
+    import sys
     os.makedirs(OUT, exist_ok=True)
+    # with ids on the command line, fetch only those and keep the other entries already in credits.json
+    only = set(sys.argv[1:])
     out = []
-    for L in LOGOS:
+    if only:
+        try:
+            with open(os.path.join(OUT, "credits.json"), encoding="utf-8") as f:
+                out = [e for e in json.load(f)["logos"] if e["id"] not in only]
+        except FileNotFoundError:
+            pass
+    for L in (L for L in LOGOS if not only or L["id"] in only):
         i = info(L["commons"])
         ext = {"image/svg+xml": "svg", "image/png": "png"}.get(i["mime"], "bin")
         req = urllib.request.Request(i["url"], headers={"User-Agent": UA})

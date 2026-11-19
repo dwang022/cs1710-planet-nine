@@ -1,14 +1,15 @@
 // The clustering page's head, and the Evidence part's first picture: the solar
 // system seen from above, the view the distance page already taught. Round the
-// Sun the six orbits that first pointed to Planet Nine draw in one by one, all
-// stretching the same way; last, Planet Nine's predicted orbit fades in,
-// stretching the other way, still a question mark. It foreshadows the part: the
-// steps below test the lean on every trusted object, ask whether luck could make
-// it, and what else might.
+// Sun the six orbits that first suggested Planet Nine draw in one by one, all
+// stretching out the same way; last, Planet Nine's predicted orbit fades in,
+// stretching out the other way, still a question mark. Beside it the same six seen
+// from the side (tilthead.js). It foreshadows the part: the walkthrough below
+// measures which way every reliable orbit stretches out and tilts, the next pages
+// ask whether luck could make it, and what else might.
 //
 // Real orbits (elements from etnos.json and orbits.js), laid flat and drawn to
 // scale (2026-11-16: square-rooted distances had squeezed Planet Nine's oval into
-// what looked like a circle round the Sun, so which way it points was lost). The
+// what looked like a circle round the Sun, so which way it stretches out was lost). The
 // picture is fitted to the orbits themselves, so the Sun sits off-centre, where
 // they are. At this scale the giant planets would be a dot under the Sun, so
 // they are not drawn.

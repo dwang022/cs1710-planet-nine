@@ -7,223 +7,111 @@
 <!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
 <style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>What comes next · The search for Planet Nine</title>
-<meta name="description" content="What could settle the Planet Nine question, and when: the Rubin Observatory's ten-year survey, infrared follow-up, a millimetre-wave search, and the thousands of new distant orbits that will test the pattern." />
+<meta name="description" content="How the Rubin Observatory's ten-year survey searches for Planet Nine, the other searches proposed, when results could come, and how readers of this site answer whether the planet exists." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="future">
 <main>
-  <header class="page-head wrap fv-head">
+  <!-- Rebuilt on 2026-11-18 at the user's request: version 1 (the brightness ruler, what to watch, the schedule, the
+       verdict cards) and the version switch were removed, and version 2 cut down. The page says four things, each with
+       simple flat pictures (charts/futureart.js; a sky map with Rubin's view brightening year by year was tried the same
+       day and cut, asked for): the survey's dates in the head, how Rubin searches, the other searches, and the reader's
+       own answer, kept by a tiny back end (server/poll.mjs) and shown beside everyone else's and beside how the papers we
+       read lean. A timeline chart of Rubin's photos adding up was cut as confusing (no axis for them). -->
+  <header class="page-head wrap">
     <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
-    <!-- two versions of this page kept side by side while the team compares them: 1 the original (everything below in
-         #futureV1 and the beats), 2 a shorter ending (#futureV2). The choice is kept in localStorage
-         (p9-future-version) and ?v=1 or ?v=2 sets it (pages/future.js). -->
-    <div class="fv-tools">
-      <div class="seg" id="futureVersion" role="group" aria-label="Which version of this page">
-        <button type="button" data-v="1" aria-pressed="true">Version 1</button><button type="button" data-v="2" aria-pressed="false">Version 2</button>
-      </div>
-    </div>
     <h1>What <em>comes next</em></h1>
-    <!-- The page in three beats, each with a small drawing (pages/future.js). The start date is sourced in
-         field_timeline.json (rubin-2026); Rubin's depth and end year are surveys.json's; the years between are our estimates,
-         as the schedule below says. -->
-    <ol class="beats" id="futureV1Beats">
-      <li id="beatStart"><span class="beat-y">June 2026</span>
-        <p>Rubin starts photographing the southern sky to magnitude <strong data-n="lsstMag">—</strong>, again and again.</p></li>
-      <li id="beatReach"><span class="beat-y">2028 to 2029</span>
-        <p>Its repeat images should reach most of the planet's predicted brightness<sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">1</a></sup>.</p></li>
-      <li id="beatEnd"><span class="beat-y" data-n="lsstEnd">—</span>
-        <p>The survey ends. By then Planet Nine is found, or close to ruled out.</p></li>
+    <!-- the survey's dates in front (2026-11-18, asked for: the lede wrapped oddly, and a chart of Rubin's photos adding
+         up, with no axis for them, confused): the start and the planned end are surveys.json's; the middle is Batygin et
+         al.'s 2019 review, “Planet Nine – if it exists as described here – is likely to be discovered within a decade”
+         (section 6.1), so 2029. It had been our own estimate, “By our estimate…”, cut as odd (asked for), and the
+         2021 paper it cited gives no time. Cut down the same day (asked for: too wordy, the middle line ran to four
+         rows); set a little smaller here (future.css). -->
+    <ol class="beats">
+      <li><svg class="art" viewBox="0 0 160 120" aria-hidden="true"><use href="#art-observatory"/></svg>
+        <span class="beat-y">June <span data-n="lsstStart">—</span></span><p><span class="k-rubin">Rubin</span>’s ten-year survey of the southern sky begins.</p></li>
+      <li><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg>
+        <span class="beat-y">2029</span><p>Batygin and colleagues expected Planet Nine to be found by then<sup class="cite"><a href="/credits.html#cite-batygin-et-al-2019">1</a></sup>.</p></li>
+      <li><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-tno-2"/></svg>
+        <span class="beat-y" data-n="lsstEnd">—</span><p><span class="k-rubin">Rubin</span>’s survey is planned to end.</p></li>
     </ol>
   </header>
 
-  <div id="futureV1">
-  <!-- the depth gap: every survey's limit on one ruler against the planet's predicted brightness, each
-       labelled with how much of the sky it covers (pages/future.js) -->
-  <section class="part wrap" id="depth">
+  <!-- how Rubin searches: four small drawings, each with one line (charts/futureart.js HOW). Rewritten 2026-11-18, asked
+       for: “a faint dot that shifts a little between photos” repeated the data page and sounded too sure that a dot would
+       be Planet Nine, when most moving dots are asteroids or other distant objects; then the last two items were given to
+       how a dot would be told to be a planet (distance from its yearly loop, size from distance and brightness, then its
+       orbit), asked for as the interesting part. Cut to a sentence each the same day (asked for: too wordy; the share of
+       the sky, the observatory's full name and the step from a planet to Planet Nine went), then to about the same short
+       length, two balanced lines on a laptop, leaving to the drawings what they show (patch by patch, the asteroids, Pluto),
+       asked for: the captions wrapped all over the place. Rubin's name is in its hot
+       pink wherever written (.k-rubin), as its drawings are. -->
+  <section class="part wrap" id="now">
     <div class="sec-head">
-      <h2>The telescope that could settle it</h2>
-      <p>The wide surveys stopped short of the planet's predicted brightness, and the deep ones covered little of
-      the sky. Rubin's ten-year survey is both deep and wide, and photographs each patch again and again, which is
-      what finding a slow-moving dot takes.</p>
+      <h2>How <span class="k-rubin">Rubin</span> searches</h2>
     </div>
-    <div class="card">
-      <h3>How faint each survey can see</h3>
-      <div id="chartDepth"></div>
-    </div>
-  </section>
-
-  <!-- what to watch: the ledger's "next" rows (charts/field.js); one lane, so no key. All four shown together as
-       numbered windows, two by two (one column on narrow screens); style.css #next. -->
-  <section class="part wrap" id="next">
-    <div class="sec-head">
-      <h2>What to watch</h2>
-      <p>Searches running or proposed, and what each could settle.</p>
-    </div>
-    <div class="fl nx-grid" id="nextLedger"></div>
-  </section>
-
-  <!-- when: the start date and the first find are sourced in field_timeline.json (rubin-2026); the later
-       dates are our reading of what the survey's cadence allows, which the section head says. -->
-  <section class="part wrap" id="when">
-    <div class="sec-head">
-      <h2>When could we know?</h2>
-      <p>Dates after 2026 are our estimates.</p>
-    </div>
-    <ol class="when">
-      <li><span class="when-y">June 2026</span><div><b>Rubin's survey begins.</b> By late October it had turned up a probable new dwarf planet, 2026 ED138, the first of what should be tens of thousands of new distant objects.</div></li>
-      <li><span class="when-y">2027</span><div><b>Most of the southern path photographed deeply at least once.</b> One image is not a detection. The planet has to be seen on several nights and linked, and most early candidates will be asteroids or noise.</div></li>
-      <li><span class="when-y">2028 to 2029</span><div><b>The first real verdict.</b> Two or three years of repeat imaging should reach most of the predicted brightness range<sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">1</a></sup>. Either a slow mover turns up, or only the faintest, farthest orbits and the stretch behind the Milky Way are left.</div></li>
-      <li><span class="when-y">meanwhile</span><div><b>Side channels.</b> A few deep images along the infrared candidate's predicted track would confirm or rule it out within a few months. A more sensitive repeat of the millimetre-wave search would look for the planet's own heat.</div></li>
-      <li><span class="when-y" data-n="lsstEnd">—</span><div><b>The survey ends.</b> If nothing has been found, what remains is a planet fainter or farther than any current fit allows, or hidden in the Milky Way. The hypothesis as published would be close to ruled out.</div></li>
+    <ol class="fx-how">
+      <li><figure class="fx-pic" data-art="sky"></figure>
+        <p>Every few nights, <span class="k-rubin">Rubin</span> photographs the southern sky.</p></li>
+      <li><figure class="fx-pic" data-art="difference"></figure>
+        <p>Software flags anything that moved since an earlier photo.</p></li>
+      <li><figure class="fx-pic" data-art="tracks"></figure>
+        <p>The smaller a slow dot’s yearly loop, the farther away it is.</p></li>
+      <li><figure class="fx-pic" data-art="size"></figure>
+        <p>That far out, the dot’s brightness shows whether it is planet-sized.</p></li>
     </ol>
+    <!-- Brown & Batygin 2024 (Pan-STARRS1 search), conclusions: the Vera Rubin Observatory survey “will be sensitive to
+         all but the faintest and most northern predicted positions”. One line on a laptop (it had been Brown & Batygin
+         2021's longer “much of the predicted magnitude range… does not extend as far north”, cut as too wordy). -->
+    <p class="fx-key"><span class="k-rubin">Rubin</span> should be able to see all but the faintest and most northern of Planet Nine’s predicted
+    positions<sup class="cite"><a href="/credits.html#cite-brown-batygin-2024">2</a></sup>.</p>
   </section>
 
-  <!-- what would settle it either way: aurora for the case for, ember for the case against -->
-  <section class="part wrap" id="verdicts">
-    <div class="two-col verdict-cards">
-      <div class="verdict-card is-for">
-        <h3><span class="k-for">What would confirm it</span></h3>
-        <ul>
-          <li>A faint dot seen on several nights, moving the way the predicted orbit says.</li>
-          <li>Found again the next year, which pins down its orbit.</li>
-          <li>Its mass comes last, from how it pulls on the orbits around it.</li>
-        </ul>
-      </div>
-      <div class="verdict-card is-against">
-        <h3><span class="k-against">What would end it</span></h3>
-        <ul>
-          <li>Rubin covers the predicted path to the predicted depth and finds nothing.</li>
-          <li>The new distant orbits it finds point every which way.</li>
-        </ul>
-        <p class="verdict-key">Both together, not one failed search.</p>
-      </div>
+  <!-- the other searches, a drawing each (charts/futureart.js OTHER); a sentence or two each (cut 2026-11-18, asked for:
+       too wordy; “tens of thousands of distant objects”, which had no source, went) -->
+  <section class="part wrap" id="others">
+    <div class="sec-head">
+      <h2>Other searches</h2>
     </div>
+    <ul class="fx-others">
+      <li><figure class="fx-pic" data-art="infrared"></figure><span class="fv-tag">Proposed</span><b>Checking the infrared candidates</b>
+        <p>Two old infrared surveys caught dots that might be the planet’s faint
+        warmth<sup class="cite"><a href="/credits.html#cite-phan-et-al-2025">3</a></sup>. New deep photos could check them.</p></li>
+      <li><figure class="fx-pic" data-art="heat"></figure><span class="fv-tag">Proposed</span><b>Listening for its heat</b>
+        <p>Even a cold planet glows faintly in microwaves, a glow more sensitive telescopes could
+        detect<sup class="cite"><a href="/credits.html#cite-naess-et-al-2021">4</a></sup>.</p></li>
+      <li><figure class="fx-pic" data-art="orbits"></figure><span class="fv-tag is-fact">Under way</span><b>Testing the clustering</b>
+        <p><span class="k-rubin">Rubin</span>’s new distant orbits will show whether the clustering holds up.</p></li>
+    </ul>
   </section>
 
-  <!-- the reader's own verdict: a reflection, not a poll. Nothing is stored or sent and no tallies are shown;
-       pages/future.js marks the chosen answer, enables Submit, then swaps the question for a thank-you in place. -->
+  <!-- the reader's own answer (pages/future.js): three planets, Yes the reader's Planet Nine whole and happy, Maybe half of
+       it, No an empty dotted outline (art.js); Submit sends it to server/poll.mjs, which keeps one answer per browser, and
+       the panel turns to the bars of how everyone has answered. A browser that has answered sees the bars at once. -->
   <section class="part wrap" id="yours">
-    <div class="cq" id="finalQuestion">
-      <div class="cq-ask">
-        <p class="cq-eyebrow">The final question</p>
-        <h2 class="cq-title">Do <span class="cq-you">YOU</span> believe in Planet Nine?</h2>
-        <div class="cq-choices" role="group" aria-label="Do you believe in Planet Nine?">
-          <button type="button" class="cq-btn" data-answer="yes" aria-pressed="false">Yes</button>
-          <button type="button" class="cq-btn" data-answer="no" aria-pressed="false">No</button>
-          <button type="button" class="cq-btn" data-answer="maybe" aria-pressed="false">Maybe</button>
-        </div>
-        <button type="button" class="cq-btn cq-submit" disabled>Submit</button>
-      </div>
-      <div class="cq-thanks" role="status" tabindex="-1">
-        <p class="cq-thanks-title">Thanks for submitting!</p>
-        <p class="cq-thanks-note">Results coming soon.</p>
-      </div>
-    </div>
-  </section>
-  </div>
-
-  <!-- version 2: a shorter ending (pages/future.js). The years are surveys.json's (Rubin's start and planned end) and,
-       between them, our estimate, as V1's schedule says; each milestone is tagged with which it is. -->
-  <div id="futureV2" hidden>
-  <section class="part wrap fv-part" id="fvNext">
-    <!-- no heading of its own: the page title, What comes next, says it (2026-11-10) -->
-    <ol class="fv-time" aria-label="What happens next">
-      <li class="fv-m">
-        <span class="fv-art"><svg class="art" viewBox="0 0 160 120" aria-hidden="true"><use href="#art-observatory"/></svg></span>
-        <span class="fv-y" data-n="lsstStart">—</span><span class="fv-tag is-fact">Under way</span>
-        <h3>The search expands</h3>
-        <p>Rubin begins photographing large stretches of the southern sky, again and again.</p>
-      </li>
-      <li class="fv-m">
-        <span class="fv-art" id="fvRuler"></span>
-        <span class="fv-y">2028–2029</span><span class="fv-tag">Our estimate</span>
-        <h3>More evidence arrives</h3>
-        <p>Repeat images could reveal slow-moving objects and test more of the predicted search space.</p>
-      </li>
-      <li class="fv-m">
-        <span class="fv-art"><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg></span>
-        <span class="fv-y" data-n="lsstEnd">—</span><span class="fv-tag is-plan">Survey’s planned end</span>
-        <h3>A clearer picture</h3>
-        <p>Astronomers should have much stronger evidence to weigh the idea, whichever way it points.</p>
-      </li>
-    </ol>
-  </section>
-
-  <!-- the telescope that could settle it, as in version 1 (the same ruler, pages/future.js drawDepth), with each
-       survey's years (surveys.json), the axis and the band saying what they are, and its labels placed so none overlap -->
-  <section class="part wrap fv-part" id="fvDepth">
-    <div class="sec-head">
-      <h2>The telescope that could settle it</h2>
-      <p>Finding a faint, slow-moving planet takes a telescope that sees faint enough and photographs enough of the sky,
-      again and again. Until now, surveys have had one or the other.</p>
-    </div>
-    <div class="card fv-depth">
-      <h3>How faint each survey can see</h3>
-      <div id="chartDepth2"></div>
-      <p class="fv-depth-key">Each marker is the faintest magnitude one of a survey’s photos reaches; the percentage is the
-      share of the whole sky it photographed, where published. Years are when it ran. The band is the range the models
-      give for the planet<sup class="cite"><a href="/credits.html#cite-brown-batygin-2016">1</a></sup>, not a measurement.</p>
-    </div>
-    <p class="fv-takeaway">Some surveys covered much of the sky but could only detect brighter objects. Others could detect
-    fainter objects but searched smaller areas. Finding Planet Nine requires both sufficient depth and coverage of the right
-    locations.</p>
-  </section>
-
-  <!-- what would settle it: the debate's two colours (the planet's for, ember against), each card with a small drawing
-       of what it describes -->
-  <section class="part wrap fv-part" id="fvSettle">
-    <div class="sec-head"><h2>What would settle the debate?</h2></div>
-    <div class="fv-cards">
-      <div class="fv-card is-for">
-        <h3>What would support Planet Nine?</h3>
-        <svg class="fv-pic" viewBox="0 0 160 70" aria-hidden="true">
-          <rect x="2" y="6" width="44" height="44" rx="6" class="fv-frame"/><rect x="58" y="6" width="44" height="44" rx="6" class="fv-frame"/><rect x="114" y="6" width="44" height="44" rx="6" class="fv-frame"/>
-          <circle cx="18" cy="34" r="4.5" class="fv-dot"/><circle cx="80" cy="28" r="4.5" class="fv-dot"/><circle cx="142" cy="22" r="4.5" class="fv-dot"/>
-          <path d="M18,34 C50,40 70,24 80,28 S130,14 142,22" class="fv-track"/>
-        </svg>
-        <ul>
-          <li>A faint candidate found where the predictions allow.</li>
-          <li>Seen again on several nights, and the next season, moving the same slow way.</li>
-          <li>An orbit worked out from those sightings that fits the hypothesis.</li>
-        </ul>
-      </div>
-      <div class="fv-card is-against">
-        <h3>What would weaken the case?</h3>
-        <svg class="fv-pic" viewBox="0 0 160 70" aria-hidden="true">
-          <rect x="2" y="6" width="58" height="44" rx="6" class="fv-frame is-empty"/>
-          <path d="M96,28 l14,-10 M118,30 l-4,16 M132,24 l16,4 M104,44 l-12,6 M140,46 l10,8" class="fv-arrows"/>
-          <circle cx="96" cy="28" r="3.5" class="fv-dot"/><circle cx="118" cy="30" r="3.5" class="fv-dot"/><circle cx="132" cy="24" r="3.5" class="fv-dot"/><circle cx="104" cy="44" r="3.5" class="fv-dot"/><circle cx="140" cy="46" r="3.5" class="fv-dot"/>
-        </svg>
-        <ul>
-          <li>Searches deep enough to see the predicted planet cover its path and find nothing.</li>
-          <li>The new distant objects, found by the thousand, point every which way instead of lining up.</li>
-        </ul>
-        <p class="fv-key">It would take both, not one empty search.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- the reader's own verdict, by planet: Yes is the reader's own Planet Nine (the shared drawing, in the skin chosen on
-       the intro), No and Maybe two made-up planets (art.js planet-no, planet-maybe). As in version 1, nothing is stored
-       or sent and no tallies are shown; its state is its own. -->
-  <section class="part wrap fv-part" id="fvVote">
-    <div class="cq fv-vote" id="finalQuestion2">
+    <div class="cq fv-vote reveal" id="vote">
       <div class="cq-ask">
         <h2 class="cq-title fv-title">Based on the evidence, do you think Planet Nine exists?</h2>
-        <div class="fv-choices" role="group" aria-label="Do you think Planet Nine exists?">
+        <div class="fv-choices cq-choices" role="group" aria-label="Do you think Planet Nine exists?">
           <button type="button" class="fv-pl" data-answer="yes" aria-pressed="false"><span class="fv-disc"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-yes"/></svg></span><span class="fv-lbl">Yes</span></button>
-          <button type="button" class="fv-pl" data-answer="no" aria-pressed="false"><span class="fv-disc"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-no"/></svg></span><span class="fv-lbl">No</span></button>
           <button type="button" class="fv-pl" data-answer="maybe" aria-pressed="false"><span class="fv-disc"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-maybe"/></svg></span><span class="fv-lbl">Maybe</span></button>
+          <button type="button" class="fv-pl" data-answer="no" aria-pressed="false"><span class="fv-disc"><svg viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-no"/></svg></span><span class="fv-lbl">No</span></button>
         </div>
         <button type="button" class="cq-btn cq-submit" disabled>Submit</button>
       </div>
-      <div class="cq-thanks" role="status" tabindex="-1">
-        <p class="cq-thanks-title">Thanks for submitting!</p>
-        <p class="cq-thanks-note">Results coming soon.</p>
+      <!-- after answering (pages/future.js): for each answer, the readers' share as a bar and, under it, the papers we read
+           that give that answer as a square each (papers.json's stance, our reading of each abstract, sorted as the timeline
+           page's debate counts them: another cause with against); pointing at a square names its paper. Reset withdraws
+           this browser's answer so it can answer again. -->
+      <div class="cq-thanks fx-results" tabindex="-1">
+        <button type="button" class="fx-reset" id="voteReset" aria-label="Reset my answer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8a5 5 0 1 0 1.6-3.7M3 2.5v2.8h2.8"/></svg>Reset</button>
+        <h3 class="fx-res-h">Do you think Planet Nine exists?</h3>
+        <div class="fx-chart" id="voteChart"></div>
+        <div class="fx-res-foot"><p class="fx-res-note" id="voteNote" role="status"></p><span class="fx-res-key" aria-hidden="true"><i></i>one paper we read</span></div>
+        <div class="fx-tip" id="paperTip" aria-hidden="true" hidden></div>
       </div>
     </div>
   </section>
-  </div>
 </main>
 <script type="module" src="/src/pages/future.js"></script>
 </body>

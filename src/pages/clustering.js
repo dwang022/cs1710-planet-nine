@@ -1,100 +1,136 @@
-// Part 2, page 1: the orbits lean the same way, and what could do it.
+// Part 2, page 1: the orbits line up, both ways at once. The head shows the six orbits of 2016 from above (they
+// stretch out the same way) and from the side (they tilt the same way), each view labelled with its clue; one
+// walkthrough then measures both clues side by side with the same method (two dials, charts/dial.js); then what a
+// planet's gravity would do to them (charts/compare.js).
+//
+// Every number on the page is computed here, on load, from etnos.json and the fixed trusted sample.
 
-import * as d3 from 'd3'
 import '../site.js'
 import { loadData, showLoadError } from '../data.js'
-import { makeLean } from '../charts/lean.js'
+import { makeDial, stretchOf, tiltOf } from '../charts/dial.js'
 import { makeCompare } from '../charts/compare.js'
 import { leanHead } from '../charts/leanhead.js'
+import { tiltHead } from '../charts/tilthead.js'
 import { scrolly } from '../scrolly.js'
-import { resultant } from '../stats.js'
-import { PLANET_NINE, angleDiff, semiLatusRectum, isOriginalSix } from '../orbits.js'
-import { selected, withAlignment, STRICT, LOOSE } from '../sample.js'
+import { resultant, spreadOf, skySpread, closestOnSky } from '../stats.js'
+import { PLANET_NINE, angleDiff, isOriginalSix } from '../orbits.js'
+import { selected, STRICT } from '../sample.js'
+import { watchClues } from '../clues.js'
 
 const $ = s => document.querySelector(s)
-const fmt = d3.format(',.0f')
+
+// “stretch out” and “tilt” in the part's red wherever this page writes them: the titles, the cards, the dials'
+// captions and labels, the cartoon's notes (2026-11-17, asked for; clues.js)
+watchClues()
+
 const SEDNA = '90377'
-const NEPTUNE_AU = 30.07   // Neptune's average distance, as in charts/lean.js
 
 async function main () {
   const { etnos } = await loadData('etnos')
-  let story = 'one'
 
   // every step describes the fixed trusted sample, so its quoted numbers never move
-  const current = s => { const objs = withAlignment(selected(etnos, s)); return { objs, stats: resultant(objs.map(o => o.varpi_deg)) } }
+  const objs = selected(etnos, STRICT)
+  const six = objs.filter(isOriginalSix)
+  const lit = new Set(six.map(o => o.id))
+  // each set's middle, and its spread as Batygin and Brown measured it, the probability page's measure, so the two
+  // pages' numbers agree: for where they stretch out, over their closest points on the sky; for the tilt, of the tilts
+  const measure = (list, angleOf, sky) => ({ ...resultant(list.map(angleOf)),
+    spread: sky ? skySpread(list.map(closestOnSky)) : spreadOf(list.map(angleOf)).spread })
+  const stretch = measure(objs, stretchOf, true), tilt = measure(objs, tiltOf, false)
+  const sixStretch = measure(six, stretchOf, true), sixTilt = measure(six, tiltOf, false)
+  const sedna = etnos.find(o => o.id === SEDNA)
 
-  // Scale the orbit view to the perihelion arcs, not the aphelia: the arcs carry the direction.
-  function viewScale (objs) {
-    const reach = objs.map(o => semiLatusRectum(o.a_au, o.e)).sort(d3.ascending)
-    const objects = Math.max(120, (d3.quantile(reach, 0.95) || 140) * 1.18)
-    // wide enough for Planet Nine's closest point too, on the step that shows it
-    return { objects, withP9: Math.max(objects, PLANET_NINE.a_au * (1 - PLANET_NINE.e) * 1.22) }
-  }
-
-  // the key: each mark as it appears on the picture
-  const KEY = {
-    dot: '<svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5" fill="var(--series-1)"/></svg>closest point to the Sun',
-    orbit: '<svg viewBox="0 0 24 14"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--series-1)" stroke-width="2"/></svg>orbit',
-    arrow: '<svg viewBox="0 0 24 14"><path d="M2,7 H18 M14,3 L20,7 L14,11" fill="none" stroke="var(--text-primary)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>average direction',
-    p9: '<svg viewBox="0 0 24 14"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--p9)" stroke-width="2.4"/></svg><span><span class="p9-name" data-no-tint>Planet Nine</span>, predicted</span>',
-  }
-  function drawKey (sc) {
-    const on = ['dot', sc.layout === 'orbits' && 'orbit', sc.mean && 'arrow', sc.p9 && 'p9'].filter(Boolean)
-    $('#leanKey').innerHTML = on.map(k => `<li class="legend-item">${KEY[k]}</li>`).join('')
-  }
-
-  const lean = makeLean($('#chartLean'))
-  function renderLean () {
-    const { objs, stats } = current(STRICT)
-    const sc = viewScale(objs)
-    const halfCount = objs.filter(o => Math.abs(angleDiff(o.varpi_deg, stats.meanDeg)) <= 90).length
-    $('#leanReadout').innerHTML = `<b>${stats.n}</b> objects · seen in more than one year`
-    const only = new Set([SEDNA])
-    const scenes = {
-      one: { only, labels: { sun: true, neptune: true, closest: true } },
-      point: { only, pointer: true, compass: true, labels: { sun: true } },
-      all: { stagger: true, fadeOrbits: true, labels: { sun: true, neptune: true } },
-      half: { half: true, fadeOrbits: true, labels: { half: true } },
-      ring: { layout: 'ring', compass: true },
-      arrow: { layout: 'ring', compass: true, mean: true, labels: { mean: true, rim: true } },
-      p9: { maxAu: sc.withP9, mean: true, p9: true, fadeOrbits: true, labels: { p9: true } },
-    }
-    const scene = { layout: 'orbits', maxAu: sc.objects, focus: SEDNA, halfCount, labels: {}, ...scenes[story] }
-    lean.update(objs, stats, scene)
-    drawKey(scene)
-  }
-
-  // --- numbers quoted in the cards -----------------------------------------------
-  const s = current(STRICT)
-  const half = s.objs.filter(o => Math.abs(angleDiff(o.varpi_deg, s.stats.meanDeg)) <= 90).length
+  // --- numbers quoted in the text ---------------------------------------------------
+  const deg = a => `${Math.round(a)}°`
   const nums = {
-    sednaDeg: etnos.find(o => o.id === SEDNA).varpi_deg.toFixed(0),
-    sednaQ: `${etnos.find(o => o.id === SEDNA).q_au.toFixed(0)} AU`,
-    sednaX: Math.round(etnos.find(o => o.id === SEDNA).q_au / NEPTUNE_AU * 2) / 2,
-    strictN: s.stats.n, strictHalf: half, strictHalfExpect: Math.round(s.stats.n / 2), strictPct: `${Math.round(s.stats.R * 100)}%`,
-    looseExtra: current(LOOSE).stats.n - s.stats.n,
-    p9Mass: Math.round(PLANET_NINE.mass_earths),
+    // the year it was found, from its designation (2003 VB12)
+    sednaFound: (sedna.provisional_desig || '').slice(0, 4),
+    sednaI: deg(sedna.i_deg), sednaTilt: deg(tiltOf(sedna)),
+    strictN: stretch.n, strictSpread: deg(stretch.spread), tiltSpread: deg(tilt.spread),
+    sixSpread: deg(sixStretch.spread), tiltSixSpread: deg(sixTilt.spread),
+    p9Gap: `${Math.round(Math.abs(angleDiff((PLANET_NINE.node_deg + 90) % 360, sixTilt.meanDeg)))}°`,
   }
   document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
 
-  // --- the head: the six orbits that started it, then Planet Nine, to scale ---
+  // --- the head: the six orbits that started it, from above and from the side, then Planet Nine, to scale ---
   leanHead($('#leanHead'), { six: etnos.filter(isOriginalSix) })
-
-  function renderTable (objs) {
-    const rows = objs.slice().sort((a, b) => b.a_au - a.a_au).map(o => `
-      <tr><td>${o.name || o.provisional_desig || o.id}</td>
-      <td class="num">${fmt(o.a_au)}</td><td class="num">${o.q_au.toFixed(1)}</td>
-      <td class="num">${o.i_deg.toFixed(1)}</td><td class="num">${o.varpi_deg.toFixed(1)}</td>
-      <td><span class="tag ${o.alignment === 'anti-aligned' ? 'anti' : 'ali'}">${o.alignment}</span></td>
-      <td>${o.well_determined ? 'more than one' : 'one'}</td></tr>`).join('')
-    $('#dataTable tbody').innerHTML = rows || '<tr><td colspan="7" style="padding:18px;text-align:center">No objects match.</td></tr>'
+  tiltHead($('#tiltHead'), { six: etnos.filter(isOriginalSix) })
+  // the paper's terms hang off the plain words: a leader line by default; ?sci=bubble or ?sci=hover shows the other
+  // two looks tried on 2026-11-17 (a small bubble popping up under the words, or the term only on pointing)
+  const sci = new URLSearchParams(location.search).get('sci')
+  if (['leader', 'bubble', 'hover'].includes(sci)) $('.clu-views').dataset.sci = sci
+  // each drawing is fitted inside its box; --u (its units per screen pixel) keeps the words one size on screen in both
+  for (const el of document.querySelectorAll('.clu-views svg[viewBox]')) {
+    const vb = el.viewBox.baseVal
+    new ResizeObserver(() => {
+      const { width, height } = el.getBoundingClientRect()
+      if (width > 0 && height > 0) el.style.setProperty('--u', Math.max(vb.width / width, vb.height / height).toFixed(3))
+    }).observe(el)
   }
-  renderLean()
-  renderTable(s.objs)
-  scrolly($('#leanStory'), { onStep: (i, step) => { story = step; lean.close(); renderLean() } })
 
-  // --- what a planet would do: no planet beside a planet ---------------------------------
-  makeCompare({ root: $('#compareView') })
+  // --- the walkthrough: two dials, one method --------------------------------------------
+  // Sedna first, both dials open: its whole orbit from above, stretched out to one side (Neptune's orbit, at this
+  // scale, would hide under the Sun), and from the side, tilted out of the planets' plane (2026-11-17, asked for: the first step had been a
+  // close view of Neptune's orbit and Sedna's closest point, with the tilt dial opening on step 3). Then Sedna's two
+  // arrows, each with the other dial stepped back (the tilt arrow comes when the camera tips up from the side and is
+  // measured like the stretch), then every step does the same thing to both: every object's arrow, their middle and their spread, the six lit with their own. Planet Nine comes in one dial at a time: the stretch dial draws the six orbits and its orbit (the tilt
+  // dial quiet), then the tilt dial alone adds its orbit, raised half filled, and its arrow to the compass.
+  const only = new Set([SEDNA])
+  const FAR = 1150                      // AU from the Sun to the dial's edge once Sedna is seen whole (its far end is ~1,010 AU out)
+  const sednaArrow = { view: 'top', au: FAR, only, orbit: true, pointer: true, compass: true, sweep: true }
+  const ring = { layout: 'ring', compass: true, spokes: true }
+  const align = { ...ring, mean: true, spread: true, labels: { mean: true } }
+  const sixScene = (litStats) => ({ ...ring, lit, litStats, mean: true, spread: true, labels: { arrows: true } })
+  const sedSide = { view: 'side', au: 1100, only, plane: true, orbit: true }
+  const sednaTop = { view: 'top', au: 1100, only, orbit: true, nodeLine: true, pointer: true, rightAngle: true }
+  // the stretch dial alone: the compass goes, then the six orbits come, then Planet Nine's
+  const p9Stretch = { view: 'top', au: FAR, only: lit, sixOrbits: true, p9Orbit: true, p9: true, lit, litStats: sixStretch,
+    mean: true, old: false, delays: { six: 0.4, p9: 0.85 }, labels: { p9: true, arrows: true } }
+  const scenes = {
+    stretch: {
+      // the camera off the Sun, on the middle of Sedna's orbit, which fills the dial; Neptune's orbit at the Sun
+      one: { view: 'top', fit: true, only, orbit: true, neptune: true, labels: { sun: true, neptune: true, orbit: true } },
+      stretch: { ...sednaArrow, labels: { sun: true, far: true } },
+      side: sednaArrow, above: sednaArrow, arrow: sednaArrow,
+      all: ring, align, six: sixScene(sixStretch),
+      p9: p9Stretch, p9tilt: p9Stretch,
+    },
+    tilt: {
+      one: { ...sedSide, fit: true, labels: { plane: true, orbit: true } }, stretch: { ...sedSide, fit: true, labels: { plane: true, orbit: true } },
+      // from the side, looking along the hinge: the orbit a tipped line, its angle to the plane
+      side: { ...sedSide, tiltAngle: true, labels: { sun: true, plane: true, orbit: true } },
+      // the camera tips up and the arrow comes: at right angles to the hinge, into the raised half (the lid)
+      above: { ...sednaTop, plane: true, lid: true, labels: { halves: true, hinge: true } },
+      // counted from the right, like the stretch
+      arrow: { ...sednaTop, compass: true, sweep: true, lid: true, labels: { hinge: true } },
+      all: ring, align, six: sixScene(sixTilt), p9: sixScene(sixTilt),
+      // the tilt dial alone: step 8's compass, the alignment's circles and everyone's average stepping out of the way,
+      // then Planet Nine's orbit (drawn small, inside the compass) with its raised half filled, then its arrow
+      p9tilt: { ...ring, lit, litStats: sixTilt, mean: true, old: false, au: 1600, p9Orbit: true, p9Lid: true, p9: true,
+        delays: { p9: 0.4, p9arrow: 1.3 }, labels: { arrows: true, p9: true } },
+    },
+  }
+  const dials = {
+    stretch: { chart: makeDial($('#dialStretch'), { kind: 'stretch' }), stats: stretch },
+    tilt: { chart: makeDial($('#dialTilt'), { kind: 'tilt' }), stats: tilt },
+  }
+  const pair = $('#dialPair')
+  // Sedna's stretch is measured with the tilt dial stepped back, then its tilt with the stretch dial stepped back;
+  // Planet Nine comes in one dial at a time, the dial that does not change stepping back
+  const quiet = { stretch: 'tilt', side: 'stretch', p9: 'tilt', p9tilt: 'stretch' }
+  function render (step) {
+    for (const [kind, d] of Object.entries(dials)) {
+      pair.querySelector(`.dial-panel[data-kind="${kind}"]`).classList.toggle('is-quiet', quiet[step] === kind)
+      d.chart.close()
+      d.chart.update(objs, d.stats, { focus: SEDNA, labels: {}, ...scenes[kind][step] })
+    }
+  }
+  render('one')
+  scrolly($('#clusterStory'), { onStep: (i, step) => render(step) })
+
+  // --- what a planet's gravity would do: no planet beside a planet ---------------------------
+  // it ends on the six orbits of 2016, as the head draws them
+  makeCompare({ root: $('#compareView'), six: etnos.filter(isOriginalSix) })
 }
 
 main().catch(showLoadError)

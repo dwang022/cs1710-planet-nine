@@ -487,7 +487,7 @@
   },
   {
    "doi": "10.3847/2041-8213/ab91a0",
-   "label": "Zderic & Madigan 2020",
+   "label": "Zderic et al. 2020",
    "title": "Apsidal Clustering following the Inclination Instability",
    "authors": [
     "Alexander Zderic",
@@ -505,7 +505,7 @@
    "arxiv": "2004.01198",
    "arxiv_url": "https://arxiv.org/abs/2004.01198",
    "stance": "alternative",
-   "summary": "Shows the inclination instability also produces apsidal clustering, directly mimicking the Planet Nine signal.",
+   "summary": "Shows the inclination instability also produces clustering of the longitude of perihelion, for a while, in idealised simulations; not of the orbital poles.",
    "summary_checked_against_abstract": true,
    "resolved": true
   },

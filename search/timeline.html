@@ -134,6 +134,142 @@
       </aside>
     </div>
   </section>
+
+  <!-- ARCHIVED, A POSSIBLE ADDITION TO THIS PAGE (moved here from insights/probability.html on 2026-11-17, at the user's
+       request). Three pieces that sat under or in the luck walkthrough. Their chart modules are still in the repo
+       (src/charts/cuts.js, src/charts/odds.js), as are their styles (.odds-key and the chart rules in style.css) and
+       their data (public/data/clustering_null.json, public/data/published_odds.json). To restore one, paste its
+       markup into <main> and its code into src/pages/timeline.js.
+
+       1. "Where you draw the line": how our luck test's odds move with the distance cut-off, one row per cut, the
+          objects seen in more than one year against every object.
+
+       <section class="part wrap" id="cuts">
+         <div class="sec-head">
+           <h2>Where you draw the line</h2>
+           <p>Studies count objects past different distances from the Sun (1 AU is the Earth–Sun distance), and the odds change with the cut-off.</p>
+         </div>
+         <ul class="legend odds-key" aria-label="Key">
+           <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="var(--series-1)"/></svg><span>seen in more than one year</span></li>
+           <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="none" stroke="var(--text-secondary)" stroke-width="2"/></svg><span>every object</span></li>
+         </ul>
+         <div class="card"><div id="chartCuts"></div></div>
+       </section>
+
+       2. "What the studies conclude": each published study's odds (from its abstract) beside our own test, on one
+          axis, grouped by whether each allows for where telescopes looked. On a timeline it could be ordered by year.
+
+       <section class="part wrap" id="odds">
+         <div class="sec-head">
+           <h2>What the studies conclude</h2>
+           <p>Telescopes find distant objects only where and when they look, which can make orbits seem to point one way. The studies split over how to allow for that.</p>
+         </div>
+         <ul class="legend odds-key" aria-label="Key">
+           <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--for)"/></svg><span>finds the bunching unlikely to be chance</span></li>
+           <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--series-2)"/></svg><span>finds it consistent with chance</span></li>
+           <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--series-1)"/></svg><span>our test</span></li>
+         </ul>
+         <div class="card"><div id="chartOdds"></div></div>
+       </section>
+
+       The code that drew them (it was in src/pages/probability.js):
+
+       import { drawOdds } from '../charts/odds.js'
+       import { drawCuts } from '../charts/cuts.js'
+       import { oneIn } from '../stats.js'
+       const { clustering_null: nulls, published_odds: published } = await loadData('clustering_null', 'published_odds')
+       const cutFor = (a, q, good) => nulls.cuts.find(c => c.a_min_au === a && c.q_min_au === q && c.well_determined_only === good)
+       const cutRows = [...new Set(nulls.cuts.map(c => `${c.a_min_au}/${c.q_min_au}`))].map(k => {
+         const [a, q] = k.split('/').map(Number)
+         const good = cutFor(a, q, true), all = cutFor(a, q, false)
+         return good && all && { a, q, good: { n: good.n_objects, oneIn: oneIn(good.p_value) }, all: { n: all.n_objects, oneIn: oneIn(all.p_value) } }
+       }).filter(Boolean).sort((x, y) => x.a - y.a)
+       drawCuts($('#chartCuts'), cutRows)
+       const study = d => ({ label: d.label, detail: d.count, side: d.side, ...(d.p ? { oneIn: oneIn(d.p) } : {}) })
+       const sp = cutFor(150, 30, true), lp = cutFor(150, 30, false)
+       drawOdds($('#chartOdds'), [
+         { heading: 'Not allowing for where telescopes looked' },
+         ...published.studies.filter(d => !d.allows_for_looking).map(study),
+         { label: 'Our test', detail: `${sp.n_objects} seen in more than one year`, oneIn: oneIn(sp.p_value), side: 'ours' },
+         { label: 'Our test', detail: `all ${lp.n_objects}, with those seen once`, oneIn: oneIn(lp.p_value), side: 'ours' },
+         { heading: 'Allowing for where telescopes looked' },
+         ...published.studies.filter(d => d.allows_for_looking).map(study),
+       ])
+
+       3. "Modelling each survey" (moved here from insights/probability.html's "Does it hold up?" on 2026-11-17, at the
+          user's request): what each study finds, on a scale of how rarely luck does as well, Brown and Batygin's model
+          of every known object (2019, 2021, in the Planet Nine colour) against the studies that modelled where
+          each survey looked (Shankman et al. 2017, Napier et al. 2021, Bernardinelli et al. 2022, in ember), only
+          figures their papers state. Its numbers are `studies` in public/data/bb2016.json, each with its paper's words
+          (`src`). The step card:
+
+       <div class="step" data-step="studies"><div class="step-card warn">
+         <h3>Modelling each survey</h3>
+         <ul>
+           <li>Studies that model where each survey looked find its objects consistent with
+           luck<sup class="cite"><a href="/credits.html#cite-napier-et-al-2021">1</a>,<a href="/credits.html#cite-shankman-et-al-2017">2</a>,<a href="/credits.html#cite-bernardinelli-et-al-2022">3</a></sup>.</li>
+           <li>Brown and Batygin's model of where any known object could have been found still finds the clustering
+           unlikely<sup class="cite"><a href="/credits.html#cite-brown-batygin-2019">4</a>,<a href="/credits.html#cite-brown-batygin-2021">5</a></sup>.</li>
+         </ul>
+         <p class="step-key">The studies still disagree.</p>
+       </div></div>
+
+          It was drawn by this function, inside makeLuck in src/charts/luck.js (L.full the panel less its margins; fmt and
+          oneIn as there; its styles, .lk-srule, .lk-slabel, .lk-ssub, .lk-sval, .lk-srange, .lk-sdot and .lk-fk, were in
+          src/charts/luck.css), the scale's groups (gStudies, studiesTitle, gStKey, gStAxis, stAxisLbl, gStRows) appended to
+          the chart's svg:
+
+       function drawStudies () {
+         const Rg = L.full
+         const rows = [...data.studies.filter(d => d.side === 'for' && d.objects > 6), ...data.studies.filter(d => d.side === 'against')]
+         const x0 = Rg.x0 - 36, x1 = Rg.x1
+         const above = L.small || x1 - x0 < 560      // names above each row's line where the panel is narrow
+         const labelW = above ? 0 : Math.min(190, (x1 - x0) * 0.34)
+         const xs = d3.scaleLog().domain([1, 1000]).range([x0 + labelW, x1 - (L.small ? 6 : 10)]).clamp(true)
+         studiesTitle.attr('x', Rg.titleX).attr('y', Rg.titleY).attr('text-anchor', 'start').text('What each study finds')
+         // the key: which side allowed for the telescopes how
+         const items = [{ k: 'for', text: 'Brown and Batygin’s model of every known object' },
+           { k: 'against', text: 'models of where each survey looked' }]
+         const ky = Rg.titleY + 22
+         gStKey.selectAll('g').data(items, d => d.k).join(en => {
+           const g = en.append('g'); g.append('circle').attr('r', 4).attr('cy', -4); g.append('text').attr('class', 'lk-note').attr('x', 9); return g
+         }).each(function (d, i) {
+           const g = d3.select(this)
+           g.select('circle').attr('class', `lk-fk is-${d.k}`)
+           g.select('text').text(d.text)
+           g.attr('transform', `translate(${x0 + 4},${ky + i * 18})`)
+         })
+         const top = ky + 2 * 18 + (above ? 36 : 30), bottom = Rg.bottom - 50
+         const step = Math.min(above ? 72 : 84, (bottom - top) / rows.length)
+         gStAxis.attr('transform', `translate(0,${top + step * rows.length - step / 2 + 12})`)
+           .call(d3.axisBottom(xs).tickValues([1, 10, 100, 1000]).tickFormat(d => d === 1 ? 'even' : `1 in ${fmt(d)}`).tickSizeOuter(0))
+         gStAxis.selectAll('text').attr('class', 'axis-label')
+         stAxisLbl.attr('x', (xs.range()[0] + xs.range()[1]) / 2).attr('y', top + step * rows.length - step / 2 + 48)
+           .text('how rarely luck does as well →')
+         gStRows.selectAll('g').data(rows, d => d.label).join(en => {
+           const g = en.append('g')
+           g.append('line').attr('class', 'lk-srule')
+           g.append('text').attr('class', 'lk-slabel'); g.append('text').attr('class', 'lk-ssub')
+           g.append('line').attr('class', 'lk-srange'); g.append('circle').attr('r', 6); g.append('text').attr('class', 'lk-sval halo')
+           return g
+         }).each(function (d, i) {
+           const g = d3.select(this), y = top + step * i
+           const lx = x0, ly = above ? y - 26 : y - 2
+           g.select('.lk-srule').attr('x1', xs.range()[0]).attr('x2', xs.range()[1]).attr('y1', y).attr('y2', y)
+           g.select('.lk-slabel').attr('x', lx).attr('y', ly).text(d.label.replace(/ \(.*\)$/, ''))
+           g.select('.lk-ssub').attr('x', lx).attr('y', ly + 15).text(`${d.objects} objects`)
+           const has = d.p != null, cx = xs(has ? 1 / d.p : 1)
+           g.select('.lk-srange').attr('class', `lk-srange is-${d.side}`).attr('x1', d.p_hi ? xs(1 / d.p_hi) : cx).attr('x2', cx)
+             .attr('y1', y).attr('y2', y).attr('opacity', d.p_hi ? 1 : 0)
+           g.select('circle').attr('cx', cx).attr('cy', y).attr('class', `lk-sdot is-${d.side}${has ? '' : ' is-open'}`)
+           const val = !has ? 'consistent with luck, no single figure'
+             : d.p_hi ? `${Math.round(100 * d.p)}–${Math.round(100 * d.p_hi)}% of the time`
+               : d.p >= 0.1 ? `${Math.round(100 * d.p)}% of the time` : `1 in ${fmt(oneIn(d.p))}`
+           const right = cx > xs.range()[1] - 150
+           g.select('.lk-sval').attr('x', cx + (right ? -12 : 12)).attr('y', y + 5).attr('text-anchor', right ? 'end' : 'start').text(val)
+         })
+       }
+  -->
 </main>
 <script type="module" src="/src/pages/timeline.js"></script>
 </body>

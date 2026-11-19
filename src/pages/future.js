@@ -1,318 +1,186 @@
-// The search, page 3: the depth gap, what to watch, and when we might know.
+// The search, last page (rebuilt 2026-11-18, asked for): what searches are under way and how, when results could
+// come, and how the site's readers answer the question it has been building to.
+//
+//   The head              three beats: the survey's start and planned end (surveys.json) and, between, 2029, when
+//                         Batygin et al.'s 2019 review expected the planet, if it exists, to have been found
+//   How Rubin searches    four small drawings with a line each (charts/futureart.js)
+//   Other searches        three short items with a drawing each.
+//   Your verdict          Yes, Maybe or No, sent to the tiny back end (server/poll.mjs), which keeps one answer per
+//                         browser; then, for each answer, the readers' share as a bar and under it the papers we read that
+//                         give that answer, a square each (papers.json's stance, our reading of each abstract, counted as
+//                         the timeline page's debate counts them); pointing at a square names its paper. A browser that has
+//                         answered sees the chart at once; Reset withdraws its answer so it can answer again. Where no back
+//                         end runs (a static host), the answer is kept on the reader's device and the page says the
+//                         readers' totals are unavailable.
 
-import * as d3 from 'd3'
 import '../site.js'
 import { loadData, showLoadError } from '../data.js'
-import { drawField, PICK } from '../charts/field.js'
-// the site's scroll entrances (.reveal, is-in, --reveal-ease): the ledger's cards below use its easing too
+import { HOW, OTHER } from '../charts/futureart.js'
 import '../scrolly.css'
+import '../charts/future.css'
 
 const $ = s => document.querySelector(s)
-const SKY_SQ_DEG = 41253
-const NARROW = '(max-width: 640px)'
-const skyShare = d => `${Math.max(1, Math.round(100 * d.area_sq_deg / SKY_SQ_DEG))}% of sky`
-const ink = (d, p9) => d.future ? 'var(--series-4)' : d.depth_mag >= p9.min ? '#ece6d8' : 'var(--text-secondary)'
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+const fmt = n => n.toLocaleString('en-US')
 
-/**
- * A brightness ruler: each survey's limit as a marker, labelled with its name, its depth and how much of
- * the sky it covers; the planet's predicted range as a band in its own colour. The key is the band's label
- * and the ruler's two ends, so no caption explains it. Phones get the same ruler standing up.
- */
-function drawDepth (root, surveys, p9, { detail = false } = {}) {
-  if (window.matchMedia(NARROW).matches) return drawDepthTall(root, surveys, p9, { detail })
-  if (detail) return drawDepthDetail(root, surveys, p9)
-  const W = 900, H = 270, M = { left: 40, right: 40 }
-  const svg = d3.select(root).selectAll('svg').data([0]).join('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-    .attr('aria-label', `Brightness ruler from magnitude 19 to 26. Survey limits: ${surveys.map(s => `${s.short} ${s.depth_mag}`).join(', ')}. Planet Nine predicted between ${p9.min} and ${p9.max}.`)
-  svg.selectAll('*').remove()
-  const x = d3.scaleLinear().domain([19, 26.5]).range([M.left, W - M.right])
-  const y = 160
-  svg.append('rect').attr('x', x(p9.min)).attr('width', x(p9.max) - x(p9.min)).attr('y', y - 24).attr('height', 48).attr('rx', 8)
-    .attr('fill', 'var(--p9)').attr('opacity', .18)
-  svg.append('text').attr('class', 'p9-svg').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('y', y + 72).attr('text-anchor', 'middle').attr('font-size', 13).attr('font-weight', 600).attr('fill', 'var(--p9-ink)')
-    .text('Planet Nine’s predicted brightness')
-  svg.append('line').attr('x1', x(19)).attr('x2', x(26.5)).attr('y1', y).attr('y2', y).attr('stroke', 'var(--text-muted)').attr('stroke-width', 1.5)
-  svg.selectAll('text.t').data(d3.range(19, 27)).join('text').attr('class', 't axis-label').attr('x', d => x(d)).attr('y', y + 22).attr('text-anchor', 'middle').text(d => d)
-  svg.selectAll('line.t').data(d3.range(19, 27)).join('line').attr('class', 't').attr('x1', d => x(d)).attr('x2', d => x(d)).attr('y1', y - 5).attr('y2', y + 5).attr('stroke', 'var(--text-muted)')
-  svg.append('text').attr('class', 'axis-label').attr('x', x(19)).attr('y', y + 44).text('brighter ←')
-  svg.append('text').attr('class', 'axis-label').attr('x', x(26.5)).attr('y', y + 44).attr('text-anchor', 'end').text('→ fainter')
-  svg.append('text').attr('class', 'axis-label').attr('x', (x(19) + x(26.5)) / 2).attr('y', y + 44).attr('text-anchor', 'middle').text('magnitude')
-
-  // Four label tiers of two lines (name and depth; share of the sky), so neighbours never collide. A label
-  // near either end hangs inward; two surveys at the same depth hang either side of their shared stem.
-  const rows = surveys.slice().sort((a, b) => a.depth_mag - b.depth_mag)
-  const tier = i => y - 40 - (i % 4) * 30
-  const twin = d => rows.filter(o => o.depth_mag === d.depth_mag)
-  const anchor = d => {
-    const tw = twin(d)
-    if (tw.length > 1) return tw.indexOf(d) === 0 ? 'end' : 'start'
-    return x(d.depth_mag) > W - M.right - 60 ? 'end' : x(d.depth_mag) < M.left + 60 ? 'start' : 'middle'
-  }
-  const lx = d => x(d.depth_mag) + (twin(d).length > 1 ? (anchor(d) === 'end' ? -7 : 7) : 0)
-  // --i: each survey's place left to right, for the chart's entrance (style.css)
-  const g = svg.selectAll('g.s').data(rows).join('g').attr('class', 's').style('--i', (d, i) => i)
-  g.append('line').attr('x1', d => x(d.depth_mag)).attr('x2', d => x(d.depth_mag))
-    .attr('y1', (d, i) => twin(d).length > 1 ? tier(i) - 10 : tier(i) + 20).attr('y2', y)
-    .attr('stroke', d => ink(d, p9)).attr('stroke-width', 2).attr('stroke-dasharray', d => d.future ? '4 3' : null)
-  g.append('circle').attr('cx', d => x(d.depth_mag)).attr('cy', y).attr('r', 5).attr('fill', d => ink(d, p9))
-  const t = g.append('text').attr('class', 'halo').attr('y', (d, i) => tier(i)).attr('text-anchor', anchor)
-    .attr('font-size', 12).attr('font-weight', 600).attr('fill', d => d.future ? 'var(--series-4-ink)' : 'var(--text-primary)')
-  t.append('tspan').attr('x', lx).text(d => `${d.short} ${d.depth_mag}`)
-  // how much of the sky: only where the area is published (OSSOS has none we could verify)
-  t.filter(d => d.area_sq_deg).append('tspan').attr('x', lx).attr('dy', 14).attr('font-weight', 400).attr('fill', 'var(--text-muted)').text(skyShare)
-}
-
-/**
- * Version 2's ruler: the same ruler, band, axis and markers as drawDepth, with each label carrying the survey's
- * years under its name and depth, and the axis and band saying what they are (higher is fainter; the band is an
- * estimated range). The labels are three lines, so they are placed rather than dealt into fixed tiers: each takes
- * the lowest tier where it overlaps no label already there and no other survey's stem passes through it, and its own
- * stem crosses no label below it. Two surveys at the same depth (OSSOS and Rubin) hang either side of one stem.
- */
-function drawDepthDetail (root, surveys, p9) {
-  const W = 900, H = 330, M = { left: 40, right: 40 }
-  const svg = d3.select(root).selectAll('svg').data([0]).join('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-    .attr('aria-label', `Brightness ruler from magnitude 19 to 26, higher numbers fainter. Survey limits: ${surveys.map(s => `${s.short} ${s.depth_mag} (${s.years[0]} to ${s.years[1]})`).join(', ')}. Planet Nine estimated between ${p9.min} and ${p9.max}.`)
-  svg.selectAll('*').remove()
-  const x = d3.scaleLinear().domain([19, 26.5]).range([M.left, W - M.right])
-  const y = 236
-  svg.append('rect').attr('x', x(p9.min)).attr('width', x(p9.max) - x(p9.min)).attr('y', y - 24).attr('height', 48).attr('rx', 8)
-    .attr('fill', 'var(--p9)').attr('opacity', .11)
-  const band = svg.append('text').attr('class', 'p9-svg').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('y', y + 70).attr('text-anchor', 'middle')
-  band.append('tspan').attr('font-size', 13).attr('font-weight', 600).attr('fill', 'var(--p9-ink)').text('Planet Nine’s estimated brightness')
-  band.append('tspan').attr('x', (x(p9.min) + x(p9.max)) / 2).attr('dy', 16).attr('font-size', 12).attr('fill', 'var(--text-muted)').text('a range from the models, not a measured value')
-  svg.append('line').attr('x1', x(19)).attr('x2', x(26.5)).attr('y1', y).attr('y2', y).attr('stroke', 'var(--text-muted)').attr('stroke-width', 1.5)
-  svg.selectAll('text.t').data(d3.range(19, 27)).join('text').attr('class', 't axis-label').attr('x', d => x(d)).attr('y', y + 22).attr('text-anchor', 'middle').text(d => d)
-  svg.selectAll('line.t').data(d3.range(19, 27)).join('line').attr('class', 't').attr('x1', d => x(d)).attr('x2', d => x(d)).attr('y1', y - 5).attr('y2', y + 5).attr('stroke', 'var(--text-muted)')
-  svg.append('text').attr('class', 'axis-label').attr('x', x(19)).attr('y', y + 44).text('brighter ←')
-  svg.append('text').attr('class', 'axis-label').attr('x', x(26.5)).attr('y', y + 44).attr('text-anchor', 'end').text('→ fainter')
-  svg.append('text').attr('class', 'axis-label').attr('x', x(19)).attr('y', y + 60).text('magnitude: the higher the number, the fainter')
-
-  const rows = surveys.slice().sort((a, b) => a.depth_mag - b.depth_mag)
-  const twin = d => rows.filter(o => o.depth_mag === d.depth_mag)
-  const anchor = d => {
-    const tw = twin(d)
-    if (tw.length > 1) return tw.indexOf(d) === 0 ? 'end' : 'start'
-    return x(d.depth_mag) > W - M.right - 70 ? 'end' : x(d.depth_mag) < M.left + 70 ? 'start' : 'middle'
-  }
-  const lx = d => x(d.depth_mag) + (twin(d).length > 1 ? (anchor(d) === 'end' ? -7 : 7) : 0)
-  const g = svg.selectAll('g.s').data(rows).join('g').attr('class', 's').style('--i', (d, i) => i)
-  const t = g.append('text').attr('class', 'halo').attr('text-anchor', anchor)
-    .attr('font-size', 13.5).attr('font-weight', 700).attr('fill', d => d.future ? 'var(--series-4-ink)' : 'var(--text-primary)')
-  t.append('tspan').attr('x', lx).text(d => `${d.short} ${d.depth_mag}`)
-  t.append('tspan').attr('x', lx).attr('dy', 15).attr('font-size', 11).attr('font-weight', 400).attr('fill', 'var(--text-secondary)').attr('fill-opacity', .85)
-    .text(d => d.future ? `${d.years[0]}–${d.years[1]}, planned` : `${d.years[0]}–${d.years[1]}`)
-  // how much of the sky: only where the area is published (OSSOS has none we could verify)
-  t.filter(d => d.area_sq_deg).append('tspan').attr('x', lx).attr('dy', 13).attr('font-size', 11).attr('font-weight', 400).attr('fill', 'var(--text-muted)').text(skyShare)
-
-  // place the labels: measure each, choose which way it hangs off its marker so no other survey's marker stands
-  // under it where it can help (centred first, then to the left, then to the right; twins keep theirs), then the
-  // lowest free tier (see above). Each box keeps a little air either side, so neighbours never touch.
-  const TIER0 = y - 60, STEP = 54, PAD = 8
-  const boxes = rows.map((d, i) => {
-    const w = t.nodes()[i].getBBox().width, sx = x(d.depth_mag), isTwin = twin(d).length > 1
-    const boxFor = a => {
-      const cx = sx + (isTwin ? (a === 'end' ? -7 : 7) : 0)
-      const left = a === 'end' ? cx - w : a === 'start' ? cx : cx - w / 2
-      return { a, cx, left: left - PAD, right: left + w + PAD }
-    }
-    const tries = isTwin ? [anchor(d)] : [...new Set([anchor(d), 'end', 'start'])]
-    const clear = c => c.left >= 0 && c.right <= W && rows.every(o => o.depth_mag === d.depth_mag || x(o.depth_mag) <= c.left || x(o.depth_mag) >= c.right)
-    const pick = tries.map(boxFor).find(clear) || boxFor(anchor(d))
-    return { d, ...pick, sx }
-  })
-  // each label hangs the way chosen
-  t.attr('text-anchor', (d, i) => boxes[i].a).selectAll('tspan').attr('x', function () { return boxes[rows.indexOf(d3.select(this.parentNode).datum())].cx })
-  const placed = []
-  for (const b of boxes) {
-    for (let tier = 0; tier < 6; tier++) {
-      const free = placed.every(o => {
-        const sideBySide = o.right <= b.left || b.right <= o.left
-        if (o.tier === tier && !sideBySide) return false                                   // two labels in one tier
-        const own = Math.abs(o.sx - b.sx) < 0.5                                             // a twin shares the stem
-        if (!own && o.tier > tier && o.sx > b.left && o.sx < b.right) return false         // a higher stem through it
-        if (!own && o.tier < tier && b.sx > o.left && b.sx < o.right) return false         // its stem through a lower label
-        return true
-      })
-      if (free) { b.tier = tier; break }
-    }
-    if (b.tier == null) b.tier = 5
-    placed.push(b)
-  }
-  const top = b => TIER0 - b.tier * STEP - 28                       // the label's first line, three lines above its tier
-  t.attr('y', (d, i) => top(boxes[i]))
-  g.insert('line', 'text').attr('x1', d => x(d.depth_mag)).attr('x2', d => x(d.depth_mag))
-    .attr('y1', (d, i) => twin(d).length > 1 ? top(boxes[i]) - 10 : top(boxes[i]) + 34).attr('y2', y)
-    .attr('stroke', d => ink(d, p9)).attr('stroke-width', 2).attr('stroke-dasharray', d => d.future ? '4 3' : null)
-  g.insert('circle', 'text').attr('cx', d => x(d.depth_mag)).attr('cy', y).attr('r', 5).attr('fill', d => ink(d, p9))
-  // the frame starts just above the highest label, however many tiers the labels needed
-  const highest = d3.min(boxes, b => top(b)) - 16
-  svg.attr('viewBox', `0 ${highest.toFixed(0)} ${W} ${(H - highest).toFixed(0)}`)
-}
-
-/** Phones: the ruler standing up, brighter at the top, each label to the right of its marker, drawn at 1:1. Version 2
-    (detail) adds each survey's years and says what the band and the axis are. */
-function drawDepthTall (root, surveys, p9, { detail = false } = {}) {
-  const W = Math.max(280, Math.round(root.clientWidth || 320)), H = detail ? 600 : 540
-  const AX = 52, LX = AX + 34
-  const svg = d3.select(root).selectAll('svg').data([0]).join('svg').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
-    .attr('aria-label', `Brightness ruler from magnitude 19 to 26. Survey limits: ${surveys.map(s => `${s.short} ${s.depth_mag}`).join(', ')}. Planet Nine predicted between ${p9.min} and ${p9.max}.`)
-  svg.selectAll('*').remove()
-  const y = d3.scaleLinear().domain([19, 26.5]).range([60, H - 34])
-  // the key: the band's colour and what it is
-  svg.append('rect').attr('x', 4).attr('y', 6).attr('width', 16).attr('height', 12).attr('rx', 3).attr('fill', 'var(--p9)').attr('opacity', .35)
-  svg.append('text').attr('class', 'p9-svg').attr('x', 28).attr('y', 16).attr('font-size', 12.5).attr('font-weight', 600).attr('fill', 'var(--p9-ink)').text(detail ? 'Planet Nine’s estimated brightness' : 'Planet Nine’s predicted brightness')
-  if (detail) svg.append('text').attr('x', 28).attr('y', 32).attr('font-size', 11.5).attr('fill', 'var(--text-muted)').text('a range from the models, not a measured value')
-  svg.append('rect').attr('x', AX - 14).attr('width', W - AX + 10).attr('y', y(p9.min)).attr('height', y(p9.max) - y(p9.min)).attr('rx', 8)
-    .attr('fill', 'var(--p9)').attr('opacity', detail ? .09 : .14)
-  svg.append('line').attr('x1', AX).attr('x2', AX).attr('y1', y(19)).attr('y2', y(26.5)).attr('stroke', 'var(--text-muted)').attr('stroke-width', 1.5)
-  const ticks = d3.range(19, 27)
-  svg.selectAll('line.t').data(ticks).join('line').attr('class', 't').attr('x1', AX - 5).attr('x2', AX + 5).attr('y1', d => y(d)).attr('y2', d => y(d)).attr('stroke', 'var(--text-muted)')
-  svg.selectAll('text.t').data(ticks).join('text').attr('class', 't axis-label').attr('font-size', 12).attr('x', AX - 10).attr('y', d => y(d) + 4).attr('text-anchor', 'end').text(d => d)
-  svg.append('text').attr('class', 'axis-label').attr('font-size', 12).attr('x', AX).attr('y', y(19) - 14).attr('text-anchor', 'middle').text('↑ brighter')
-  svg.append('text').attr('class', 'axis-label').attr('font-size', 12).attr('x', AX).attr('y', H - 8).attr('text-anchor', 'middle').text('↓ fainter')
-  svg.append('text').attr('class', 'axis-label').attr('font-size', 12).attr('transform', `translate(12,${(y(19) + y(26.5)) / 2}) rotate(-90)`).attr('text-anchor', 'middle').text(detail ? 'magnitude: higher is fainter' : 'magnitude')
-
-  // labels to the right, pushed apart where markers crowd, each tied to its marker by a thin line
-  const rows = surveys.slice().sort((a, b) => a.depth_mag - b.depth_mag)
-  let prev = -Infinity
-  for (const d of rows) { d.ly = Math.max(y(d.depth_mag) + 4, prev + (detail ? 52 : 32)); prev = d.ly }
-  const g = svg.selectAll('g.s').data(rows).join('g').attr('class', 's').style('--i', (d, i) => i)
-  g.append('path').attr('d', d => `M${AX},${y(d.depth_mag)} L${AX + 14},${y(d.depth_mag)} L${LX - 6},${d.ly - 4}`)
-    .attr('fill', 'none').attr('stroke', d => ink(d, p9)).attr('stroke-width', 1.5).attr('stroke-dasharray', d => d.future ? '4 3' : null)
-  g.append('circle').attr('cx', AX).attr('cy', d => y(d.depth_mag)).attr('r', 5).attr('fill', d => ink(d, p9))
-  const t = g.append('text').attr('class', 'halo').attr('x', LX).attr('y', d => d.ly)
-    .attr('font-size', detail ? 13.5 : 13).attr('font-weight', detail ? 700 : 600).attr('fill', d => d.future ? 'var(--series-4-ink)' : 'var(--text-primary)')
-  t.append('tspan').text(d => `${d.short} ${d.depth_mag}`)
-  if (detail) t.append('tspan').attr('x', LX).attr('dy', 15).attr('font-size', 11).attr('font-weight', 400).attr('fill', 'var(--text-secondary)').attr('fill-opacity', .85).text(d => d.future ? `${d.years[0]}–${d.years[1]}, planned` : `${d.years[0]}–${d.years[1]}`)
-  t.filter(d => d.area_sq_deg).append('tspan').attr('x', LX).attr('dy', detail ? 14 : 15).attr('font-size', detail ? 11 : 12).attr('font-weight', 400).attr('fill', 'var(--text-muted)').text(skyShare)
-}
-
-/** The second beat's drawing: the planet's band on a short ruler, the deepest wide search before Rubin, and Rubin. */
-function miniRuler (p9, wide, rubin) {
-  const x = d3.scaleLinear().domain([19, 26.5]).range([8, 92])
-  const mark = (d, colour, h, dash = '') => `<line x1="${x(d)}" x2="${x(d)}" y1="${60 - h}" y2="60" stroke="${colour}" stroke-width="3"${dash ? ` stroke-dasharray="${dash}"` : ''}/><circle cx="${x(d)}" cy="60" r="4.5" fill="${colour}"/>`
-  return `<svg class="art" viewBox="0 0 100 100" aria-hidden="true">
-    <rect x="${x(p9.min)}" y="47" width="${x(p9.max) - x(p9.min)}" height="26" rx="5" fill="var(--p9)" opacity=".3"/>
-    <line x1="${x(19)}" x2="${x(26.5)}" y1="60" y2="60" stroke="var(--text-muted)" stroke-width="2"/>
-    ${mark(wide, 'var(--text-secondary)', 18)}${mark(rubin, 'var(--series-4)', 32, '4 3')}</svg>`
-}
-
-/**
- * Bring elements in as they reach the screen and reset them once they are well off it, so they come in again from
- * either direction: the ledger's two observers (charts/field.js), the bottom 8% of the screen to enter and 10% past
- * its edges to leave, so an element on the boundary cannot flicker. The look is scrolly.css's .reveal (or, for the
- * chart, style.css); readers who ask for less motion get everything shown.
- */
+/** Scroll entrances (scrolly.css .reveal): readers who ask for less motion get everything shown. */
 function revealOnScroll (els) {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) return
+  if (reduced() || !('IntersectionObserver' in window)) return
   document.documentElement.classList.add('has-reveal')
-  // Put each element in its waiting look at once, with its transition off for that moment: otherwise one already drawn
-  // (the beats, at the top) would start fading out toward it, and come in from part way when it is marked in.
   for (const el of els) el.style.transition = 'none'
   for (const el of els) void getComputedStyle(el).opacity
   for (const el of els) el.style.transition = ''
   const enter = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) e.target.classList.add('is-in') }, { rootMargin: '0px 0px -8% 0px', threshold: 0 })
-  const leave = new IntersectionObserver(es => { for (const e of es) if (!e.isIntersecting) e.target.classList.remove('is-in') }, { rootMargin: '10% 0px 10% 0px', threshold: 0 })
-  // site.js keeps the page hidden until its fonts are in (data-ready); start watching only then, or what is on screen
-  // at load would play its entrance unseen
   const root = document.documentElement
-  const start = () => requestAnimationFrame(() => { for (const el of els) { enter.observe(el); leave.observe(el) } })
+  const start = () => requestAnimationFrame(() => { for (const el of els) enter.observe(el) })
   if (root.hasAttribute('data-ready')) return start()
   const mo = new MutationObserver(() => { if (root.hasAttribute('data-ready')) { mo.disconnect(); start() } })
   mo.observe(root, { attributes: true, attributeFilter: ['data-ready'] })
 }
 
-async function main () {
-  // The entrances: the three beats one after another, left to right; each row of the schedule on its own; the two
-  // verdicts together; the ruler's surveys from brightest to faintest once it is on screen (style.css). Set up before
-  // the data loads, while site.js still keeps the page hidden, so the beats at the top are first painted waiting and
-  // play as the page appears.
-  const beats = [...document.querySelectorAll('.page-head .beats li')]
-  beats.forEach((li, i) => { li.classList.add('reveal'); li.style.setProperty('--reveal-delay', `${i * 170}ms`) })
-  const rows = [...document.querySelectorAll('#when .when li')]
-  const verdicts = $('#verdicts .verdict-cards')
-  const question = $('#finalQuestion')   // its parts follow it in, one after another (style.css)
-  for (const el of [...rows, verdicts, question]) el.classList.add('reveal')
-  revealOnScroll([...beats, ...rows, verdicts, $('#chartDepth'), question, $('#finalQuestion2'), $('#chartDepth2')])   // version 2's question comes in the same way
+// --- your verdict: the question, its back end, and the bars ---------------------------------------------------------
+const API = `${import.meta.env.BASE_URL}api/poll`
+const ORDER = [['yes', 'Yes'], ['maybe', 'Maybe'], ['no', 'No']]
 
-  // The reader's verdict: one answer at a time, changeable until Submit, then a thank-you in the question's place.
-  // Nothing is kept or sent, and no tallies are shown.
-  const submit = question.querySelector('.cq-submit')
-  question.querySelector('.cq-choices').addEventListener('click', e => {
-    const b = e.target.closest('.cq-btn'); if (!b) return
-    question.querySelectorAll('.cq-choices .cq-btn').forEach(x => x.setAttribute('aria-pressed', String(x === b)))
+/** This browser's own random id (the back end keeps only a salted hash of it), made once and kept. */
+function voterId () {
+  let id = null
+  try { id = localStorage.getItem('p9-voter') } catch {}
+  if (!id) {
+    id = (crypto.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`)
+    try { localStorage.setItem('p9-voter', id) } catch {}
+  }
+  return id
+}
+const savedVote = () => { try { return localStorage.getItem('p9-vote') } catch { return null } }
+const saveVote = c => { try { localStorage.setItem('p9-vote', c) } catch {} }
+const forgetVote = () => { try { localStorage.removeItem('p9-vote') } catch {} }
+
+async function call (method, body) {
+  const res = await fetch(API, {
+    method, credentials: 'same-origin',
+    headers: { 'x-voter': voterId(), ...(body ? { 'content-type': 'application/json' } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  if (![200, 201, 409].includes(res.status)) throw new Error(`poll ${res.status}`)
+  return res.json()
+}
+
+/** The papers we read, under the answer each one's stance gives (our reading of each abstract), counted as the timeline
+ *  page's debate counts them: another cause with against, so the colours mean the same on both pages. */
+const ANSWER_OF = { supports: 'yes', neutral: 'maybe', against: 'no', alternative: 'no' }
+const STANCE = { supports: 'For a planet', neutral: 'No side', against: 'Against', alternative: 'Another cause' }
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+/** A paper's summary cut to its first sentence or two, enough to say what it did. */
+function gist (text = '') {
+  let out = ''
+  for (const t of text.match(/[^.!?]+[.!?]+(\s|$)/g) || [text]) { out += t; if (out.length > 70) break }
+  return out.trim()
+}
+
+function setupVote (papers) {
+  const q = $('#vote'), submit = q.querySelector('.cq-submit'), chart = $('#voteChart'), tip = $('#paperTip')
+  const host = q.querySelector('.fx-results')
+  const list = papers.papers, N = list.length
+  let choice = null
+
+  /** For each answer, the readers' share (a bar) and the papers that give it (a square each, so the squares' length is
+   *  the papers' share on the same scale), the reader's own answer marked. */
+  function draw (r, mine) {
+    const total = r ? r.total : 0
+    chart.innerHTML = ORDER.map(([k, name]) => {
+      const g = `fx-g-${k}`
+      const rpc = total ? Math.round(100 * (r.counts[k] || 0) / total) : null
+      const these = list.map((p, i) => ({ p, i })).filter(({ p }) => ANSWER_OF[p.stance] === k)
+      return `<span class="fx-ans ${g}">${name}${k === mine ? '<small>you</small>' : ''}</span>
+        <span class="fx-who">readers</span>
+        <span class="fx-bar ${g}">${rpc != null ? `<span class="fx-fill" style="--w:${rpc}%"></span>` : ''}</span>
+        <span class="fx-pc">${rpc != null ? `${rpc}%` : '—'}</span>
+        <span class="fx-who">papers</span>
+        <span class="fx-units ${g}" style="--n:${N}">${these.map(({ p, i }, j) =>
+          `<button type="button" class="fx-unit" data-i="${i}" style="--j:${j}" aria-label="${esc(p.label)}, ${STANCE[p.stance].toLowerCase()}"></button>`).join('')}</span>
+        <span class="fx-pc is-papers">${Math.round(100 * these.length / N)}%</span>`
+    }).join('<span class="fx-sep" aria-hidden="true"></span>')
+    $('#voteNote').textContent = total ? `${fmt(total)} ${total === 1 ? 'reader has' : 'readers have'} answered` : 'Thanks. The readers’ totals are unavailable right now.'
+  }
+
+  // pointing at (or tapping, or tabbing to) a square names its paper in a small card under it
+  let on = null
+  function showTip (btn) {
+    if (on === btn) return
+    hideTip()
+    const p = list[+btn.dataset.i]
+    tip.innerHTML = `<b>${esc(p.label)}</b><span class="fx-tip-side fx-g-${ANSWER_OF[p.stance]}">${STANCE[p.stance]}</span>${esc(gist(p.summary))}`
+    tip.hidden = false
+    const hb = host.getBoundingClientRect(), bb = btn.getBoundingClientRect(), tw = tip.offsetWidth
+    tip.style.left = `${Math.max(0, Math.min(hb.width - tw, bb.left + bb.width / 2 - hb.left - tw / 2))}px`
+    tip.style.top = `${bb.bottom - hb.top + 8}px`
+    btn.classList.add('is-on'); on = btn
+  }
+  function hideTip () { tip.hidden = true; on?.classList.remove('is-on'); on = null }
+  chart.addEventListener('pointerover', e => { const b = e.target.closest('.fx-unit'); if (b) showTip(b) })
+  chart.addEventListener('pointerout', e => { if (e.target.closest('.fx-unit') && !e.relatedTarget?.closest?.('.fx-unit')) hideTip() })
+  chart.addEventListener('click', e => { const b = e.target.closest('.fx-unit'); if (b) showTip(b) })
+  chart.addEventListener('focusin', e => { const b = e.target.closest('.fx-unit'); if (b) showTip(b) })
+  chart.addEventListener('focusout', hideTip)
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') hideTip() })
+
+  function showResults (r, mine) {
+    draw(r, mine)
+    q.classList.add('is-submitted')
+    q.querySelector('.cq-ask').inert = true
+    requestAnimationFrame(() => q.classList.add('is-drawn'))
+  }
+  /** Back to the question, nothing chosen. */
+  function ask () {
+    choice = null
+    hideTip()
+    q.classList.remove('is-submitted', 'is-drawn')
+    q.querySelector('.cq-ask').inert = false
+    q.querySelectorAll('.fv-pl').forEach(x => x.setAttribute('aria-pressed', 'false'))
+    submit.disabled = true
+    q.querySelector('.fv-pl')?.focus({ preventScroll: true })
+  }
+
+  q.querySelector('.fv-choices').addEventListener('click', e => {
+    const b = e.target.closest('.fv-pl'); if (!b) return
+    choice = b.dataset.answer
+    q.querySelectorAll('.fv-pl').forEach(x => x.setAttribute('aria-pressed', String(x === b)))
     submit.disabled = false
   })
-  submit.addEventListener('click', () => {
-    question.classList.add('is-submitted')
-    question.querySelector('.cq-ask').inert = true
-    question.querySelector('.cq-thanks').focus({ preventScroll: true })
+  submit.addEventListener('click', async () => {
+    if (!choice) return
+    submit.disabled = true
+    saveVote(choice)
+    let r = null
+    try { r = await call('POST', { choice, voter: voterId() }) } catch {}
+    showResults(r, r?.mine || choice)
+    host.focus({ preventScroll: true })
+  })
+  // Reset: this browser's answer withdrawn, so it can answer again (2026-11-18, asked for)
+  $('#voteReset').addEventListener('click', async () => {
+    forgetVote()
+    try { await call('DELETE') } catch {}
+    ask()
   })
 
-  // Version 2's vote, with its own state: one planet at a time, changeable until Submit, then the same thank-you.
-  const q2 = $('#finalQuestion2'), submit2 = q2.querySelector('.cq-submit')
-  q2.querySelector('.fv-choices').addEventListener('click', e => {
-    const b = e.target.closest('.fv-pl'); if (!b) return
-    q2.querySelectorAll('.fv-pl').forEach(x => x.setAttribute('aria-pressed', String(x === b)))
-    submit2.disabled = false
-  })
-  submit2.addEventListener('click', () => {
-    q2.classList.add('is-submitted')
-    q2.querySelector('.cq-ask').inert = true
-    q2.querySelector('.cq-thanks').focus({ preventScroll: true })
-  })
+  // a browser that has answered sees the chart at once
+  const local = savedVote()
+  call('GET').then(r => {
+    if (r.mine) { saveVote(r.mine); showResults(r, r.mine) } else if (local) showResults(r, local)
+  }).catch(() => { if (local) showResults(null, local) })
+}
 
-  // The version switch: ?v=1 or ?v=2, else the last one chosen here, else version 1. Each version keeps its own state
-  // (its answer, its thank-you) while hidden.
-  const KEY = 'p9-future-version'
-  let stored = null
-  try { stored = localStorage.getItem(KEY) } catch {}
-  const fromUrl = new URLSearchParams(location.search).get('v')
-  function showVersion (v) {
-    $('#futureV1').hidden = v !== '1'
-    $('#futureV1Beats').hidden = v !== '1'
-    $('#futureV2').hidden = v !== '2'
-    document.querySelectorAll('#futureVersion button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)))
-  }
-  showVersion(fromUrl === '1' || fromUrl === '2' ? fromUrl : stored === '2' ? '2' : '1')
-  $('#futureVersion').addEventListener('click', e => {
-    const b = e.target.closest('button'); if (!b) return
-    showVersion(b.dataset.v)
-    try { localStorage.setItem(KEY, b.dataset.v) } catch {}
-    document.dispatchEvent(new CustomEvent('p9:future-version'))
-  })
-
-  const { surveys: sv, planet_nine_predictions: PRED, field_timeline: FIELD, papers: PAPERS } = await loadData('surveys', 'planet_nine_predictions', 'field_timeline', 'papers')
-  const SHORT = { ps1: 'Pan-STARRS1', css: 'Catalina', ztf: 'ZTF', des: 'Dark Energy Survey', ossos: 'OSSOS', hsc_ssp: 'Subaru', lsst: 'Rubin' }
-  const optical = sv.surveys.filter(s => s.wavelength === 'optical' && s.depth_mag != null).map(s => ({ ...s, short: SHORT[s.id] || s.name }))
-  const V = PRED.physical_properties.apparent_V_mag
-  const p9 = { min: V.min, max: V.max }
-  const lsst = optical.find(s => s.future)
-  // the deepest survey covering more than half the sky, before Rubin
-  const wide = d3.max(optical.filter(s => !s.future && (s.area_sq_deg ?? 0) > SKY_SQ_DEG / 2), s => s.depth_mag)
-
-  const nums = { lsstMag: lsst?.depth_mag, lsstStart: lsst?.years[0], lsstEnd: lsst?.years[1] }
+async function main () {
+  revealOnScroll([$('#vote')])
+  // the drawings
+  document.querySelectorAll('.fx-pic[data-art]').forEach(el => { el.innerHTML = (HOW[el.dataset.art] || OTHER[el.dataset.art])?.() || '' })
+  const { surveys: sv, papers } = await loadData('surveys', 'papers')
+  const [start, end] = sv.surveys.find(s => s.id === 'lsst').years
+  // the survey's start and planned end
+  const nums = { lsstStart: start, lsstEnd: end }
   document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
-  $('#beatStart').insertAdjacentHTML('afterbegin', '<svg class="art" viewBox="0 0 160 120" aria-hidden="true"><use href="#art-observatory"/></svg>')
-  $('#beatReach').insertAdjacentHTML('afterbegin', miniRuler(p9, wide, lsst.depth_mag))
-  $('#beatEnd').insertAdjacentHTML('afterbegin', '<svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg>')
-
-  const draw = () => {
-    drawDepth($('#chartDepth'), optical, p9)
-    // version 2's copy, drawn while visible (its labels are measured), or when version 2 is first shown
-    if (!$('#futureV2').hidden) drawDepth($('#chartDepth2'), optical, p9, { detail: true })
-  }
-  draw()
-  document.addEventListener('p9:future-version', draw)
-  window.matchMedia(NARROW).addEventListener('change', draw)
-
-  // one lane, so the ledger draws no key; its cards come in by themselves (charts/field.js), their drawings after them
-  drawField($('#nextLedger'), { timeline: FIELD, papers: PAPERS.papers, filter: PICK.next, dated: false, lanes: ['next'] })
-
-  // version 2's middle milestone: the same small ruler as version 1's second beat
-  $('#fvRuler').innerHTML = miniRuler(p9, wide, lsst.depth_mag)
-
+  setupVote(papers)
 }
 
 main().catch(showLoadError)

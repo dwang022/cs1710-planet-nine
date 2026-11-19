@@ -7,3 +7,5 @@ data/raw/
 prototypes/node_modules/
 prototypes/dist/
 __pycache__/
+# the poll's answers and salt (server/poll.mjs)
+server/data/

@@ -56,16 +56,20 @@ const qmark = ({ fill = '#e6f4ef', stroke = '#1b3a32', x = 50, y = 67, size = 48
 
 // --- Planet Nine -----------------------------------------------------------
 
-/** A smile where the question mark would be, in the question mark's colours: two eyes and a curve, edged like its
-    letters (the vote's Yes on the future page). */
-const smile = ({ fill = '#e6f4ef', stroke = '#1b3a32', x = 50, y = 67, size = 48 } = {}) => {
-  const k = size / 48, cx = x, cy = y - 17 * k, n = v => +v.toFixed(2)
-  const mouth = `M${n(cx - 15 * k)},${n(cy + 3 * k)} Q${n(cx)},${n(cy + 21 * k)} ${n(cx + 15 * k)},${n(cy + 3 * k)}`
-  const eye = dx => `<ellipse cx="${n(cx + dx * k)}" cy="${n(cy - 7 * k)}" rx="${n(4.2 * k)}" ry="${n(5.6 * k)}" fill="${fill}" stroke="${stroke}" stroke-width="2.5" paint-order="stroke"/>`
-  return `<g class="p9-smile">${eye(-9)}${eye(9)}
-    <path d="${mouth}" fill="none" stroke="${stroke}" stroke-width="${n(9.5 * k)}" stroke-linecap="round"/>
-    <path d="${mouth}" fill="none" stroke="${fill}" stroke-width="${n(5 * k)}" stroke-linecap="round"/></g>`
+/** A face, minimal (2026-11-18, asked for: sleeker, and clear on every skin): two small dots for eyes and one thin line
+    for the mouth, no brows; the mouth carries the mood (happy a smile, unsure a level line, sad a frown). On a planet the
+    features are near-black with a thin light rim, so they stand out on light skins and dark ones alike; on empty sky
+    they are one light grey. */
+const face = (mood, onPlanet = true) => {
+  const mouth = mood === 'happy' ? 'M41,57 Q50,64.5 59,57' : mood === 'sad' ? 'M41.5,62 Q50,55.5 58.5,62' : 'M42,59.5 L58,59.5'
+  const marks = (fill, grow = 0) => `<circle cx="41" cy="45" r="${3.4 + grow}" fill="${fill}"/><circle cx="59" cy="45" r="${3.4 + grow}" fill="${fill}"/>
+    <path d="${mouth}" fill="none" stroke="${fill}" stroke-width="${2.8 + 2 * grow}" stroke-linecap="round"/>`
+  return onPlanet
+    ? `<g class="face">${marks('#f4f2ec', 1.3)}${marks('#121216')}</g>`
+    : `<g class="face">${marks('#c7c5bc')}</g>`
 }
+/** A circle drawn as a ring of dots: the place a planet would be, empty. */
+const dotted = (stroke = '#8c8b83') => `<circle cx="50" cy="50" r="${R}" fill="none" stroke="${stroke}" stroke-width="3" stroke-dasharray="0.1 7.2" stroke-linecap="round"/>`
 
 /** The planet in a skin (skins.js); the question mark is the constant, left off only where a picture draws on the
     planet's face (the timeline's debate, whose papers sit inside it: question: false). */
@@ -243,40 +247,24 @@ export const ART = {
     </g>${outline('#5aa3ad')}
     <ellipse cx="50" cy="50" rx="6" ry="47" fill="none" stroke="#d9f1f4" stroke-width="2.5" opacity="0.55" transform="rotate(12 50 50)"/>`,
   },
-  // --- two made-up planets for the Future page's vote (version 2): "No" and "Maybe", in the bodies' style, kept
-  // apart from Planet Nine at a glance (no question mark, colours no skin uses) ---
-  // the vote's Yes (future page, version 2): the reader's Planet Nine, its question mark swapped for a smile in the
-  // same two colours at the same spot, so every skin keeps its look
+  // --- the future page's vote: one planet, three ways (2026-11-18, asked for). Yes, the reader's Planet Nine, whole and
+  // happy; Maybe, half of it there and half a dotted outline, unsure; No, only the dotted outline, an empty place, sad.
+  // Whole, half, empty, as the marks on the alternatives page; the faces minimal, two dots and a line.
   'planet-yes': {
-    label: 'Planet Nine smiling, for the answer Yes',
+    label: 'Planet Nine, happy, for the answer Yes',
     defs: id => clip(id),
-    body: (id, o = {}) => planetNineBody(id, { ...o, halo: false, question: false }) + smile(skinFor(o.skin || DEFAULT_SKIN).q),
-  },
-  'planet-no': {
-    label: 'A planet for the answer No: a cracked ember-red world',
-    defs: id => clip(id),
-    body: id => `<g clip-path="url(#${id}-c)">
-      ${disc('#d4552c')}
-      <path d="M18,40 C30,32 44,36 52,30 C60,24 72,28 84,22 L90,34 C76,40 66,36 56,44 C46,52 32,46 20,54 Z" fill="#b8401d" opacity="0.9"/>
-      <path d="M24,68 C36,62 48,70 62,64 C70,60 78,64 86,60 L84,74 C72,78 60,74 48,80 C38,84 28,80 22,78 Z" fill="#b8401d" opacity="0.75"/>
-      <circle cx="36" cy="58" r="5" fill="#a3361a"/><circle cx="63" cy="46" r="3.5" fill="#a3361a"/><circle cx="54" cy="72" r="2.8" fill="#a3361a"/>
-      <path d="M40,24 L46,32 L43,40 M66,52 L72,58" fill="none" stroke="#8c2c13" stroke-width="2" stroke-linecap="round"/>
-      ${shade(0.3)}
-    </g>${outline('#7d2611')}`,
+    body: (id, o = {}) => planetNineBody(id, { ...o, halo: false, question: false }) + face('happy'),
   },
   'planet-maybe': {
-    label: 'A planet for the answer Maybe: a misty blue-violet world',
-    defs: id => clip(id),
-    body: id => `<g clip-path="url(#${id}-c)">
-      ${disc('#4a4db5')}
-      ${band(24, 9, '#6b5fd2', 0.75)}
-      ${band(50, 6, '#3a3c96', 0.8)}
-      ${band(66, 8, '#7d6fe0', 0.5)}
-      <ellipse cx="40" cy="40" rx="22" ry="9" fill="#ffffff" opacity="0.13"/>
-      <ellipse cx="60" cy="62" rx="18" ry="6" fill="#ffffff" opacity="0.09"/>
-      <path d="M30,56 C36,50 46,52 46,58 C46,63 38,64 37,59" fill="none" stroke="#c9c2ff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
-      ${shade(0.32)}
-    </g>${outline('#2b2d7a')}`,
+    label: 'Half of Planet Nine, the other half a dotted outline, unsure, for the answer Maybe',
+    defs: id => clip(id) + `<clipPath id="${id}-l"><rect x="0" y="0" width="50" height="100"/></clipPath><clipPath id="${id}-r"><rect x="50" y="0" width="50" height="100"/></clipPath>`,
+    body: (id, o = {}) => `<g clip-path="url(#${id}-l)">${planetNineBody(id, { ...o, halo: false, question: false })}</g>
+      <g clip-path="url(#${id}-r)">${dotted()}</g>
+      <g clip-path="url(#${id}-l)">${face('unsure')}</g><g clip-path="url(#${id}-r)">${face('unsure', false)}</g>`,
+  },
+  'planet-no': {
+    label: 'An empty dotted outline where a planet would be, sad, for the answer No',
+    body: () => `${dotted()}${face('sad', false)}`,
   },
   neptune: {
     label: 'Neptune',

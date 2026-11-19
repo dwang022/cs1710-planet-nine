@@ -14,8 +14,9 @@ Writes data/processed/observatories.json and the copy in public/data/:
                  positions and objects, the years, which objects it discovered
   objects        one row per object: how many positions and nights, from how
                  many observatories, the dates of its nights (decimal years),
-                 and JPL's formal uncertainty on its far end (sigma_ad, AU) and
-                 average distance (sigma_a), for the arc timeline. The
+                 and JPL's formal uncertainty on its closest distance to the Sun
+                 (sigma_q, AU; the arc timeline's column since 2026-11-16), its
+                 far end (sigma_ad) and average distance (sigma_a). The
                  uncertainties come from the team's raw JPL download
                  (../FinalProject/data/raw, falling back to data/raw), and
                  only where that download's orbit is the one the site draws
@@ -85,7 +86,7 @@ ARC_MATCH = 0.15
 
 
 def jpl_sigmas(etnos):
-    """object id -> (sigma_ad, sigma_a) from the raw JPL query, if it is on this machine.
+    """object id -> {"q": sigma_q, "Q": sigma_ad, "a": sigma_a} from the raw JPL query, if it is on this machine.
 
     The raw query is a later download than the orbits the site draws (etnos.json), and JPL can change an
     orbit between the two. A sigma is kept only when the raw solution covers the same observed arc (within
@@ -109,7 +110,7 @@ def jpl_sigmas(etnos):
                         continue
                     arc, site = num(r.get("data_arc")), o.get("data_arc_days")
                     if arc and site and abs(arc - site) <= ARC_MATCH * site:
-                        out[o["id"]] = (r["sigma_ad"], r["sigma_a"])
+                        out[o["id"]] = {"q": r.get("sigma_q"), "Q": r["sigma_ad"], "a": r["sigma_a"]}
                     else:
                         other.append(f"{o['id']} (raw arc {arc} d, site's {site} d)")
                 if other:
@@ -124,6 +125,11 @@ def num(x):
         return float(x)
     except (TypeError, ValueError):
         return None
+
+
+def sigma_fields(s):
+    """An object's three uncertainties as the output names them (null where there is none)."""
+    return {"sigma_q_au": num(s.get("q")), "sigma_Q_au": num(s.get("Q")), "sigma_a_au": num(s.get("a"))}
 
 
 def decimal_year(y, m, d):
@@ -165,8 +171,7 @@ def main():
         objects[o["id"]] = {
             "n_obs": n, "n_nights": len({round(t, 2) for t in nights}), "n_observatories": len(used),
             "nights": sorted({round(t, 2) for t in nights}),
-            "sigma_Q_au": num(sigmas.get(o["id"], (None, None))[0]),
-            "sigma_a_au": num(sigmas.get(o["id"], (None, None))[1]),
+            **sigma_fields(sigmas.get(o["id"], {})),
         }
         print(f"{desig:>14}: {n:5d} positions from {len(used):2d} observatories")
 
@@ -208,14 +213,15 @@ def refresh_sigmas():
         old = json.load(f)
     sigmas = jpl_sigmas(etnos)
     for oid, rec in old["objects"].items():
-        s = sigmas.get(oid, (None, None))
-        rec["sigma_Q_au"], rec["sigma_a_au"] = num(s[0]), num(s[1])
+        for k in ("sigma_Q_au", "sigma_a_au"):
+            rec.pop(k, None)
+        rec.update(sigma_fields(sigmas.get(oid, {})))
     out = {k: v for k, v in old.items() if k != "_sigma_rule"}
     keys = list(out)
     at = keys.index("_fetched") + 1 if "_fetched" in keys else len(keys)
     out = dict(list(out.items())[:at] + [("_sigma_rule", SIGMA_RULE)] + list(out.items())[at:])
     write(out)
-    print(f"uncertainties for {sum(1 for r in out['objects'].values() if r['sigma_Q_au'] is not None)} "
+    print(f"uncertainties for {sum(1 for r in out['objects'].values() if r['sigma_q_au'] is not None)} "
           f"of {len(out['objects'])} objects")
 
 

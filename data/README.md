@@ -77,6 +77,162 @@ upper bound on how surprising the clustering is. Say so on the page. The
 probability page draws its guided piles from these histograms and quotes these
 p-values, so the pile, the count and the odds agree.
 
+**`luck_extras.json`** — luck tests beyond the one in
+`clustering_null.json`, by `scripts/build_luck_extras.py` (no page reads it since the probability page was rebuilt
+on `bb2016.json` on 2026-11-18; kept as a record of the checks), on the page's sample
+(a > 150, q > 30, more than one opposition), seed 1710. Two arrows per object,
+as on the two Evidence pages: *pointing*, towards its closest point to the Sun
+(varpi), and *tilt*, towards the half of its orbit raised above the planets'
+plane (node + 90°). Each test's statistic is R, the length of the average arrow.
+Checked on 2026-11-17:
+
+| test | n | trials | pointing | tilt | both at once |
+|---|---|---|---|---|---|
+| first seen before 2016 (`then_2016`) | 43 | 200,000 | R 0.338, 1 in 145 | | |
+| random orientations (`random`) | 62 | 1,000,000 | 1 in 49 | R 0.303, 1 in 320 | 1 in 15,000 (65 cases) |
+| found where telescopes looked (`looking`, `src: ours`) | 62 | 200,000 | 1 in 9 | 1 in 112 | 1 in 1,100 |
+
+*First seen* is the date of the MPC's discovery observation (the line marked
+`*` in the cached observations, `data/raw/mpc_obs/`), or the year in the
+provisional designation where none is marked (only 2013 RA109). Today's orbits
+are used, so this is the alignment the 2016 objects show now, not what was
+measured in 2016. *Random orientations* gives each simulated object a random
+closest-point direction and, independently, a random tilt direction, so the
+both-at-once odds are close to the product of the two (1/49 × 1/320). The
+`random` and `looking` entries carry both piles and a two-way grid (`grid.cells`,
+`[pointing bin, tilt bin, count]`, bins of 2.5%) that the page draws.
+
+*Found where telescopes looked* is **our rough allowance**, not a finding. A
+distant object is seen almost only near its closest point to the Sun, so each
+simulated object sits at its closest point on a spot of sky where one of the
+7,119 objects with a > 30 AU in the team's raw JPL download was first seen (its
+heliocentric ecliptic longitude and latitude on its first night, from its orbit,
+moved by up to 5° and 1°), keeping the tilt of one of the real objects; a spot
+farther from the plane than that tilt is drawn again. The spot and the tilt fix
+the orbit's orientation, so both arrows follow. Those spots are uneven: few where
+the Milky Way crosses, and mostly within a few degrees of the plane (half within
+3.3°). It ignores survey depth and distance, and that the Kuiper belt is not
+spread evenly itself. Brown & Batygin (2019) model the surveys and still find
+about 1 in 500; Napier et al. (2021) find the bunching consistent with chance.
+The page says so. Batygin & Brown (2016) combined the same two clues for their
+six objects (0.7% for where they point, 1% for their poles, 0.007% together),
+drawing their random sets from the orbits of all known objects with q > 30 and
+a > 50 AU.
+
+Since 2026-11-17 the probability page no longer reads `luck_extras.json` or
+`clustering_null.json` (it reads `bb2016.json`, below); both stay, with their
+scripts, for the archived charts in `search/timeline.html`.
+
+**`bb2016.json`** — Batygin & Brown (2016)'s luck test reproduced, by
+`scripts/build_bb2016.py` (seed 2016), for the probability page. **The six**:
+Sedna, 2012 VP113, 2004 VN112, 2010 GB174, 2007 TG422, 2013 RF98 (today's orbits
+from `etnos.json`). **Statistic 1**: each orbit's closest point placed on the sky
+(the ecliptic longitude and latitude of its perihelion direction); the spread is
+the root-mean-square angle from each to the normalised average direction, as the
+paper words it. Six: 36.2°. **Statistic 2**, the paper's "RMS spread of the polar
+angles": read as the direction of each projected pole, which is the node less
+90°, so the root-mean-square difference of each node from their circular mean.
+Six: 29.8°. Two other readings (the 3-D angle between poles, and the pole's
+position angle on the sky at perihelion) give about 4% where the paper says 1%;
+this one about 1%. **The allowance**, as theirs: draw six of every object with
+q > 30 AU and a > 50 AU first seen before 2016 (numbered: discovery date in
+`NumberedMPs.txt`; otherwise the year in the provisional designation), 827 in
+the team's JPL download, 100,000 times, as the paper (`published.draws`; the page
+drew a million from round 4 until round 6, 2026-11-17, when readers asked why it
+did not match the paper). The check on multiplying (`joint_check`) runs the same
+draws on, with the same seed, to 1,000,000, so its first 100,000 are `repro`'s:
+at 100,000 so few draws are tight in both clues that their count is left to
+chance (11 in one run, 19 in another). That pool is
+a little larger than theirs, as some objects first seen in 2013–2015 were
+announced after January 2016; pools cut at 2013, 2014 and 2015 (`sensitivity`)
+give products of 0.005% to 0.014%. Checked on 2026-11-17:
+
+| | ours (100,000 draws) | Batygin & Brown 2016 (100,000) |
+|---|---|---|
+| closest points as tight as the six | 0.98% (982) | 0.7% |
+| tilts as tight | 0.92% (919) | 1% |
+| the two multiplied | 0.009%, 1 in 11,000 (the page: less than 1 in 10,000) | 0.007%, 1 in 14,000 ("about 3.8σ") |
+| both in the same draw (`joint_check`, the same draws on to 1,000,000) | 126 of 1,000,000, 1.4 × the 90 the product predicts (9,727 × 9,227 / 1,000,000); 1 in 7,900 | (not tested) |
+
+Why ours is about 0.97% where theirs is 0.7% (audited 2026-11-17, every run on
+1,000,000 draws, so the Monte Carlo error is about ±1% of the share; at the
+paper's 100,000 draws it is about ±4%, so even a perfect repeat would land
+within ±5% of 0.7% only four times in five). The method follows section 2 word
+for word: each closest point placed in ecliptic coordinates; the root-mean-square
+angular distance from each to the average position of the six drawn; six drawn
+at random, without replacement, from "the collection of all objects with q > 30
+AU and a > 50 AU", the six themselves included; "as tightly clustered" read as at
+least as tight; 100,000 draws. Its one open word does not matter: reading "the
+average perihelion position" as the mean of the ecliptic longitudes and latitudes
+rather than the mean direction gives 0.988% against 0.979%. No bug was found: no
+object of the pool lacks a date, and the discovery dates parse correctly (Sedna
+2003-11-14, 2015 TG387 2015-10-13). What cannot be repeated is their catalogue.
+The pool is every object *first seen* before 2016, but 573 of its 827 were first
+seen in 2013–2015 (105, 194, 274), and many of those were likely announced only
+after January 2016, when Batygin and Brown drew theirs (the large surveys of
+those years, OSSOS and DES, published their objects from 2016 on); the download
+has no announcement dates (unverified which), and today's orbits stand in for the
+2016 ones. Bracketing it, a pool certainly public by 2016 (first seen before 2013,
+plus the six; 255 objects) gives 0.83% for the closest points and 0.65% for the
+tilt; ours (827) gives 0.97% and 0.91%; pools cut at 2014 and 2015 give 1.15%
+and 1.30% for the closest points. Their 0.7% lies below every pool and their 1%
+above every pool, so no single faithful pool repeats both, and none was chosen
+to: the page keeps the paper's literal pool (first seen before 2016) and says
+what Batygin and Brown found beside our figure.
+
+**`today`**: the same method on today's objects seen in more than one year
+(`well_determined`), drawn from every object with q > 30 AU and a > 50 AU known
+today (1,589), 100,000 draws each, at nine distances (a above 150, 175, 200, 225,
+250, 275, 300, 350 and 400 AU), each with q > 30 AU and with q > 42 AU (Brown &
+Batygin 2021's choice of orbits clear of Neptune), for the page's line the reader
+drags. Since 2026-11-18 the page quotes the product of the two shares, as
+Batygin and Brown multiplied in 2016 (the relation between the two clues is only
+taken up after today's section); counted in the same draws in brackets: a > 150
+AU (62 objects, the sample the data and clustering pages use) 1 in 49 (1 in 52);
+a > 175 (50) 1 in 75 (1 in 84); a > 200 (42) 1 in 6; a > 250 (33) 1 in 4; a > 300
+(27) 1 in 9; a > 400 (15) 1 in 3; clear of Neptune, a > 150 (21) 1 in 26 (1 in
+28). The two differ by under a tenth at every line. Beyond
+150 AU, 8.4% of draws are at least as tight on the sky and 24% on the tilt;
+beyond 250 AU, 49% on the sky. Each cut keeps its objects' closest points on the
+sky (`points`) and their `middle`. Checked with the site's alignment
+measure on the same draws: a > 250, 36% for where they stretch and 35% for the
+tilt; a > 150, 8% each. The random-direction tests (`uniform_spread`, the six's spread against 1,000,000
+sets of six random directions, 1 in 87; `uniform`, their alignment, 1 in 68) were
+dropped from the file on 2026-11-17: the page makes one kind of draw, from the
+known objects, and a second kind confused readers. The page draws every spread
+as a wedge on a compass round the Sun, but the stretch's number is the paper's
+spread on the sky; for the six the two are 36.8° and 36.2°, and for the 80 draws
+the page shows they differ by under a degree in the middle and within 5° in 9 of
+10 (at most 27°, a draw whose objects lie far from the plane in the same
+direction); 82% of the known objects lie within 20° of the plane.
+**`studies`**: each study's result as its paper states it (no page draws them
+since 2026-11-17; the scale that did is archived in a comment in search/timeline.html)
+(`src`), with how it allowed for where telescopes looked: Brown & Batygin 2019
+0.2% and 2021 0.4%; Shankman et al. 2017 (OSSOS, 8 objects) consistent with a
+uniform distribution, no single figure; Napier et al. 2021 (14 objects, three
+surveys) 17%–94%; Bernardinelli et al. 2022 (DES, 16 objects beyond 150 AU)
+p = 0.88 for the longitude of perihelion. Checked against `papers/`. The page
+(`charts/luck.js`) also draws, from this file, the objects known before 2016 and
+today round two compasses, one dot each, stacked by 10° slice (`pool_2016`,
+`pool_today`, each object at the direction of its far end, the longitude of its
+closest point plus 180°, and of its tilt, the node plus 90°, from `node_deg`, which
+`pool_today` carries since round 5, the draws unchanged; the fullest slice of 2016
+holds 46 and the emptiest 11 by the stretch, 47 and 9 by the tilt), 80 of the draws
+(`repro.examples`) cycling on both compasses with their objects lit in the stacks,
+each draw's tilt spread computed on the page from the same objects, and today's
+objects at each line (from `today[].ids` and `etnos.json`). **`joint_check`**: the counts of `repro`'s draws carried on to 1,000,000 (the
+same seed; `first_draws_are`): 9,727 as tight on the sky, 9,227 on the tilt, 126 in
+both where the product predicts 89.8 (`product_expects_n`), a ratio of 1.4. The
+page shows it as two bars: how often the tilt is as tight among all the draws
+(9,227 of 1,000,000, 0.92%) and among the draws whose closest points are as tight
+(126 of 9,727, 1.3%). The square of the
+first section (every draw placed by its rank on each spread, tightest at the
+corner) uses `repro`'s shares: if the two spreads are unrelated the draws fill it
+evenly and the corner holds their product, 9 of 100,000; its arrangement is an
+illustration, only the shares come from this file. The overall correlation of the
+two spreads across draws is about zero (r = −0.007 in 200,000 draws on the page's
+pool); the relation is in the tight tail only, which is why it is shown as a count.
+
 **`published_odds.json`** — each study's own answer to "how often would chance
 produce this?", quoted from its abstract (`quote`, `src`): 0.007% (Batygin &
 Brown 2016), 0.2% (Brown & Batygin 2019), 99.6% confidence (Brown & Batygin
@@ -130,8 +286,10 @@ of the 90 extreme objects, from the Minor Planet Center's observations API
 is in orbit, and one code marks occultation reports). Each code's place comes
 from the MPC's observatory-code list (longitude and parallax constants,
 converted to geodetic latitude). Per object: positions, nights (as decimal
-years), how many observatories, and JPL's formal uncertainty on its far end
-(`sigma_Q_au`) and average distance (`sigma_a_au`) from the raw JPL query; 17
+years), how many observatories, and JPL's formal uncertainty on its closest
+distance to the Sun (`sigma_q_au`, the data page's arc chart since 2026-11-16),
+its far end (`sigma_Q_au`) and average distance (`sigma_a_au`) from the raw JPL
+query; 17
 objects have none: 16 found in 2025–26, and 2015 DR370. An uncertainty is kept
 only where the raw query's orbit covers the same observed arc as the orbit in
 `etnos.json`, within 15% (`_sigma_rule` in the file). 2015 DR370 is why: the
@@ -142,6 +300,18 @@ uncertainty read 37,000% of the far end. Built by
 `scripts/build_observatories.py`, which caches the raw API answers in
 `data/raw/mpc_obs/`; `--sigmas-only` re-reads just the uncertainties, with no
 network.
+
+Why the arc chart shows the closest point, not the far end (checked on
+2026-11-16 against the same raw query, under the same 15% rule). The far end is
+the least certain part of an orbit: 4 of the 61 reliable orbits with an estimate
+have it uncertain by 10% or more, yet their closest distance is uncertain by
+0.3%, 0.4%, 1% and 11% (2015 OB203, far end 93%), and the direction the orbit
+points (`sigma_om` and `sigma_w` in quadrature, ignoring their covariance; not
+stored) by 0.03° to 3°, and 14° for 2015 OB203. The closest distance's median
+uncertainty is 0.01% for the reliable orbits and 29% for those seen in one year
+only. `sigma_q_au` was added to the file on 2026-11-16 by the same logic as
+`--sigmas-only`, run outside the script; re-running the script with
+`--sigmas-only` gives the same file.
 
 **`planets.json`** — J2000 Keplerian elements plus per-century rates for the
 eight planets and Pluto (JPL/Standish approximate elements, valid 1800–2050),
@@ -194,7 +364,36 @@ disk, is `papers/README.md` (generated by `scripts/build_paper_index.py`;
 **`alternatives.json`** — 8 competing explanations, each with what it explains,
 what its critics say it fails to explain, a status, and links back into
 `papers.json`. Includes "there is no pattern" and "small-number coincidence" as
-first-class options.
+first-class options. Since 2026-11-18 each also carries `fits` (for the two clues
+the Evidence pages teach, that the orbits stretch out and tilt the same way: yes,
+at times, disputed, would fade, not shown, no, or chance, each with one sentence
+and its papers) and `needs` (a tier on a four-step ladder: nothing new, one unseen
+body, much unseen matter, new physics), `issue` (its main problem, the last line of its card) and `gist` (the few words on pointing at it), plus `tiers` and `groups` (ideas the page would show as one; none since luck and where telescopes looked were separated again), the ideas in the page's order, most familiar first. These are
+written by `scripts/tag_alternatives.py`, our reading of the papers with page
+references in its comments; checked against the PDFs on 2026-11-18:
+
+- the planet: stretch out opposite it beyond about 250 AU and tilt its way, for
+  billions of years (Batygin & Brown 2016; the 2019 review, pp. 31–32);
+- the heavy disk (Sefilian & Touma 2019): the stretch, anti-aligned with the disk,
+  but no clustering of the nodes (r = 0.02, p. 10); about 10 Earth masses where
+  they cite at most a few tenths (p. 12);
+- the self-tilting swarm: Madigan et al. 2018 cluster the argument of perihelion,
+  not the stretch; Zderic et al. 2020 (four authors; it had been labelled
+  “Zderic & Madigan 2020”, a different paper) find the stretch clustering in
+  idealised runs, coming and going, and no lasting tilt clustering; about 20 Earth
+  masses;
+- a passing star: none of Morbidelli & Levison 2004, Trujillo & Sheppard 2014 or
+  Pfalzner et al. 2024 measures the stretch or the poles; with nothing to hold it,
+  an alignment fades within a few hundred million years (review, p. 21);
+- modified gravity: Brown & Mathur 2023 put the far ends towards the Galaxy's
+  centre and leave the poles random (p. 48), and note the tension with Cassini
+  (p. 26); Vokrouhlický et al. 2024 found no apsidal alignment in fuller
+  simulations (p. 3);
+- the black hole (Scholtz & Unwin 2020) stands in for the planet as “a new
+  gravitational source”; that it steers the orbits the same way is our reading.
+
+Luck's numbers are not in this file: the page fills them from `bb2016.json`, as
+the probability page does.
 
 ## Sources
 

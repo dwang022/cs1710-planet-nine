@@ -39,7 +39,7 @@ import { url } from '../data.js'
 const fmt = d3.format(',')
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
 const SITE_KM = 5                         // telescopes this close share a dot
-const RUBIN = 'X05'                       // rose everywhere on the site: what comes next
+const RUBIN = 'X05'                       // hot pink everywhere on the site: what comes next
 const km = (a, b) => d3.geoDistance([a.lon, a.lat], [b.lon, b.lat]) * 6371
 
 // The map shows only the band of latitudes between BAND's two (north, south):

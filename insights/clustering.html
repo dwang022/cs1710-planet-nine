@@ -6,134 +6,168 @@
 <meta name="color-scheme" content="dark" />
 <!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
 <style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
-<title>They lean the same way · The search for Planet Nine</title>
-<meta name="description" content="The clue behind Planet Nine: the most distant orbits in the solar system swing closest to the Sun on the same side. See it build up from one orbit, then herd a crowd of orbits with a planet of your own." />
+<title>The orbits line up · The search for Planet Nine</title>
+<meta name="description" content="The clue behind Planet Nine: the most distant orbits in the solar system stretch out the same way and tilt the same way. See both built up from one orbit, then what a planet's gravity would do to them." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="clustering">
 <main>
-  <!-- The Evidence part opens on one picture anyone can read (charts/leanhead.js): the planets' rings,
-       the six orbits that first pointed to Planet Nine drawing in round them, all one way, then Planet Nine
-       on the far side. The scrolly below tests the lean on every trusted object. -->
-  <header class="page-head wrap head-split">
-    <div>
-      <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
-      <h1>The orbits <em>lean the same way</em></h1>
-      <p class="lede">Of the <span data-n="strictN">—</span> distant objects seen in more than one year,
-      <b><span data-n="strictHalf">—</span></b> swing closest to the Sun on the same side.</p>
-      <p class="head-q">What could be steering them?</p>
+  <!-- Both clues on one page (2026-11-17), the two halves of Batygin and Brown's 2016 case: the orbits stretch out the
+       same way (clustering in longitude of perihelion) and tilt the same way (clustering in orbital pole position).
+       Words kept apart on purpose: orbits "stretch out" (towards their far end; "point", which Caltech and Brown use,
+       read as the closest point to some readers and as the far end to others) and "tilt" (towards the side where they
+       rise above the planets' plane); never "lean". The lede names the two kinds of clustering and the two views
+       carry them, numbered 1 and 2 (the numbers come back on the dials and the cartoon), each under its plain words
+       and, quieter, a chip with the paper's term: a fun fact, nothing below depends on it. Which way each view looks
+       is a small tag in its box's corner. The six orbits that first suggested Planet Nine are drawn twice, from
+       above (charts/leanhead.js) and from the side (charts/tilthead.js), in two equal boxes. -->
+  <header class="page-head wrap clu-head">
+    <div class="clu-text">
+      <h1>The orbits <em>line up</em></h1>
+      <p class="lede">The orbits of extreme trans-Neptunian objects show <b class="k-ev">two kinds of clustering</b>, as if
+      something is steering them.</p>
     </div>
-    <figure class="head-fig">
-      <div id="leanHead"></div>
-      <ul class="legend lean-key" aria-label="Key"><li class="legend-item"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--series-1)" stroke-width="2"/></svg><span>the six orbits that first pointed to <span class="p9-name" data-no-tint>Planet Nine</span>, 2016</span></li></ul>
-    </figure>
+    <div class="clu-views" data-sci="leader">
+      <figure class="head-fig clu-view">
+        <figcaption><span class="clu-view-k"><span class="clue-n">1</span>They&nbsp;<span class="clu-term">stretch out<i class="clu-sci">longitude of perihelion <b class="k-ev">clustering</b></i></span>&nbsp;the same way</span></figcaption>
+        <div class="clu-box"><div id="leanHead"></div></div><span class="clu-eye">Seen from above</span>
+      </figure>
+      <figure class="head-fig clu-view">
+        <figcaption><span class="clu-view-k"><span class="clue-n">2</span>They&nbsp;<span class="clu-term">tilt<i class="clu-sci">orbital pole <b class="k-ev">clustering</b></i></span>&nbsp;the same way</span></figcaption>
+        <div class="clu-box"><div id="tiltHead"></div></div><span class="clu-eye">Seen from the side</span>
+      </figure>
+      <ul class="legend lean-key" aria-label="Key"><li class="legend-item"><svg viewBox="0 0 24 14" aria-hidden="true"><path d="M1,12 Q12,0 23,12" fill="none" stroke="var(--series-1)" stroke-width="2"/></svg><span>the six orbits that first suggested <span class="p9-name" data-no-tint>Planet Nine</span>, 2016</span></li></ul>
+    </div>
   </header>
 
-  <!-- "An orbit points somewhere" (three drawings of what an orbit is, charts/orbitintro.js) was cut on 2026-11-16 at the
-       user's request: the scrolly's second step says the same. -->
-
-  <!-- the pattern, built up; pointing at an object lights it up, clicking opens its card. What might steer
-       it is left to the game below, so the reader works out where the planet sits before being told. -->
-  <section class="part story" id="lean">
-    <div class="scrolly wrap wide" id="leanStory">
+  <!-- Both clues measured in one walkthrough (2026-11-17; they had been two walkthroughs one after the other, which
+       taught the same method twice), told as following the astronomers: Sedna first, then how to measure its orbit,
+       then the objects found since, then the six of 2016 and the planet proposed for them. Two dials side by side
+       (charts/dial.js), one for which way each orbit stretches out, one for which way it tilts, both open from the
+       first step, where Sedna's orbit is shown stretched out (from above, whole) and
+       tilted (from the side); then the stretch is measured with the tilt dial stepped back, and the tilt with the
+       stretch dial stepped back (its arrow comes only when the camera tips up, where it runs at right angles to the
+       hinge), then every step after does the same thing to both, so the clues are compared as they are measured. Planet Nine
+       comes in one dial at a time (two steps; one step for both was too much at once), the dial that does not change
+       stepping back, and on the tilt dial only Planet Nine's orbit and its arrow are added to the compass (a side
+       view of the six there changed too much at once). Each step changes the
+       pictures as little as it can. No key or readout over the pictures: each mark is named where it first appears.
+       Every number on the cards is in the part's colour (.k-ev), except distances in AU, which are gold. The sample
+       is the reliable orbits, defined on the data page, so no card says how they were chosen. -->
+  <section class="part story" id="lineup">
+    <div class="scrolly wrap wide dial-story" id="clusterStory">
       <div class="scrolly-graphic">
-        <div class="viz-head"><div id="leanReadout"></div><ul class="legend lean-key" id="leanKey" aria-label="Key"></ul></div>
-        <div class="viz pic" id="chartLean"></div>
+        <div class="dial-pair" id="dialPair">
+          <figure class="dial-panel" data-kind="stretch"><figcaption><span class="clue-n">1</span><span>Which way they stretch out</span></figcaption><div class="viz pic" id="dialStretch"></div></figure>
+          <figure class="dial-panel" data-kind="tilt"><figcaption><span class="clue-n">2</span><span>Which way they tilt</span></figcaption><div class="viz pic" id="dialTilt"></div></figure>
+        </div>
       </div>
       <div class="scrolly-steps">
         <div class="step" data-step="one"><div class="step-card">
-          <div class="step-n">1 / 7</div>
-          <h3>Start with Sedna</h3>
+          <div class="step-n">1 / 10</div>
+          <h3>It began with Sedna</h3>
           <ul>
-            <li>A likely dwarf planet found in 2003, it never comes closer to the Sun than <span class="k-au" data-n="sednaQ">—</span>,
-            <span data-n="sednaX">—</span> times as far out as Neptune.</li>
-            <li>Neptune's pull is too weak out there to have put it on that orbit, so something else did<sup class="cite"><a href="/credits.html#cite-morbidelli-levison-2004">1</a></sup>.</li>
+            <li>Sedna, found in <span data-n="sednaFound">—</span>, is likely a dwarf planet.</li>
+            <li>It stays too far out for Neptune, the farthest known planet, to have shaped its
+            orbit<sup class="cite"><a href="/credits.html#cite-morbidelli-levison-2004">1</a></sup>.</li>
+            <li>Yet astronomers found its orbit stretched and tilted.</li>
           </ul>
-          <p class="step-key">It is one of the six orbits that first pointed to Planet Nine.</p>
         </div></div>
-        <div class="step" data-step="point"><div class="step-card">
-          <div class="step-n">2 / 7</div>
-          <h3>Every orbit points somewhere</h3>
+        <div class="step" data-step="stretch"><div class="step-card">
+          <div class="step-n">2 / 10</div>
+          <h3>Which way it stretches out</h3>
           <ul>
-            <li>A line from the Sun through its closest point gives the direction an orbit points.</li>
-            <li>Sedna's points at <strong><span data-n="sednaDeg">—</span>°</strong>, counted counter-clockwise from the right.</li>
+            <li>Sedna’s orbit stretches out on one side of the Sun.</li>
+            <li>We mark which way with an arrow from the Sun to its far end.</li>
+            <li>The arrow’s angle is counted anticlockwise round the Sun, from 0° on the right.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="side"><div class="step-card">
+          <div class="step-n">3 / 10</div>
+          <h3>Which way it tilts</h3>
+          <ul>
+            <li>The planets all circle the Sun in nearly the same flat plane.</li>
+            <li>Sedna’s orbit is tipped <span class="k-ev" data-n="sednaI">—</span> out of the plane, rising on one side.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="above"><div class="step-card">
+          <div class="step-n">4 / 10</div>
+          <h3>Look down from above</h3>
+          <ul>
+            <li>Seen from above, the orbit crosses the plane along a line through the Sun. It is tipped up about that line
+            like a lid on a hinge.</li>
+            <li>We mark which way it tilts with an arrow from the Sun into the raised half, at a right angle to the hinge.</li>
+          </ul>
+        </div></div>
+        <div class="step" data-step="arrow"><div class="step-card">
+          <div class="step-n">5 / 10</div>
+          <h3>Measure it the same way</h3>
+          <ul>
+            <li>Counted anticlockwise from the right as before, Sedna tilts towards <span class="k-ev" data-n="sednaTilt">—</span>.</li>
           </ul>
         </div></div>
         <div class="step" data-step="all"><div class="step-card">
-          <div class="step-n">3 / 7</div>
-          <h3>Now add the rest</h3>
+          <div class="step-n">6 / 10</div>
+          <h3>Add the rest</h3>
           <ul>
-            <li><span data-n="strictN">—</span> distant objects were seen in more than one year.</li>
-            <li><span data-n="looseExtra">—</span> more were seen in one year only, too briefly to trust.</li>
+            <li>Astronomers have since found many more objects like Sedna.</li>
+            <li>We draw the arrows for all <span class="k-ev" data-n="strictN">—</span> objects with reliable orbits.</li>
           </ul>
         </div></div>
-        <div class="step" data-step="half"><div class="step-card">
-          <div class="step-n">4 / 7</div>
-          <h3>Most of them are on one side</h3>
+        <div class="step" data-step="align"><div class="step-card">
+          <div class="step-n">7 / 10</div>
+          <h3>Measure the spread</h3>
           <ul>
-            <li>Cut the picture in half through the Sun, and <strong><span data-n="strictHalf">—</span> of the
-            <span data-n="strictN">—</span></strong> fall in one half.</li>
+            <li>In each picture we find the middle of the <span class="k-ev" data-n="strictN">—</span> arrows.</li>
+            <li>The <b class="k-ev">spread</b> is the typical angle between an arrow and the middle. The more the arrows point the
+            same way, the smaller it is.</li>
           </ul>
-          <p class="step-key">Random directions would split about <span data-n="strictHalfExpect">—</span> and
-          <span data-n="strictHalfExpect">—</span>.</p>
+          <p class="step-key">Their spread is <span class="k-ev" data-n="strictSpread">—</span> in which way they stretch out and
+          <span class="k-ev" data-n="tiltSpread">—</span> in which way they tilt.</p>
         </div></div>
-        <div class="step" data-step="ring"><div class="step-card">
-          <div class="step-n">5 / 7</div>
-          <h3>Only the direction</h3>
+        <div class="step" data-step="six"><div class="step-card">
+          <div class="step-n">8 / 10</div>
+          <h3>The six that started it</h3>
           <ul>
-            <li>Keep only each object's direction, and every dot slides out to the rim at its angle.</li>
+            <li>In 2016 astronomers knew only six of these orbits.</li>
+            <li>On their own their spread is only <strong><span class="k-ev" data-n="sixSpread">—</span></strong> in which way they
+            stretch out and <span class="k-ev" data-n="tiltSixSpread">—</span> in which way they tilt.</li>
           </ul>
-          <p class="step-key">One side of the rim is crowded, the other sparse.</p>
+          <p class="step-key">What could line them up?</p>
         </div></div>
-        <div class="step" data-step="arrow"><div class="step-card">
-          <div class="step-n">6 / 7</div>
-          <h3>Boil it down to one arrow</h3>
-          <ul>
-            <li>Every dot pulls the arrow toward itself, all equally hard. Pulls from all round cancel; pulls from one side add up.</li>
-            <li>How far the arrow reaches is the <b>alignment</b>: 0% for every which way, 100% for all one way.</li>
-          </ul>
-          <p class="step-key">These orbits are <span data-n="strictPct">—</span> aligned. What could line them up?</p>
-        </div></div>
-        <!-- the bridge to "How a planet would line them up": where the planet is proposed to be -->
+        <!-- Planet Nine in the stretch dial alone: the compass goes, the six orbits come, then Planet Nine's. Steps 9
+             and 10 are a pair, titled alike (2026-11-17, asked for): its orbit against the six's, 1 then 2 -->
         <div class="step" data-step="p9"><div class="step-card">
-          <div class="step-n">7 / 7</div>
-          <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> The proposed explanation</h3>
+          <div class="step-n">9 / 10</div>
+          <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Stretched out the opposite way</h3>
           <ul>
-            <li>In 2016 Batygin and Brown proposed an unseen planet far beyond Neptune<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>,
-            now estimated at about <strong><span data-n="p9Mass">—</span> times Earth's mass</strong><sup class="cite"><a href="/credits.html#cite-brown-batygin-2021">2</a></sup>.</li>
-            <li>Its predicted orbit, <span class="k-p9">this line</span>, points the opposite way from the bunch.</li>
+            <li>To explain the six, astronomers proposed an unseen Planet Nine far beyond Neptune<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>.</li>
+            <li>Planet Nine’s orbit would stretch out roughly the opposite way to the six orbits.</li>
+          </ul>
+        </div></div>
+        <!-- then in the tilt dial alone: the compass as on step 8, with Planet Nine's orbit, its raised half filled,
+             and its tilt arrow beside the six's average -->
+        <div class="step" data-step="p9tilt"><div class="step-card">
+          <div class="step-n">10 / 10</div>
+          <h3><svg class="art" viewBox="0 0 100 100" aria-hidden="true"><use href="#art-planet-nine"/></svg> Tilted the same way</h3>
+          <ul>
+            <li>Planet Nine’s proposed orbit is tilted too.</li>
+            <li>Planet Nine would tilt towards the same side as the six orbits, its arrow within
+            <span class="k-ev" data-n="p9Gap">—</span> of the six orbits’ middle.</li>
           </ul>
         </div></div>
       </div>
     </div>
-    <div class="wrap">
-      <details class="table-view more">
-        <summary>Every number</summary>
-        <div class="table-scroll">
-          <table id="dataTable">
-            <thead><tr>
-              <th>Object</th><th class="num">Average distance (AU)</th><th class="num">Nearest to the Sun (AU)</th>
-              <th class="num">Tilt (°)</th><th class="num">Points toward (°)</th>
-              <th>Vs. predicted planet</th><th>Years seen</th>
-            </tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </details>
-    </div>
   </section>
 
-  <!-- what a planet would do (charts/compare.js): the same make-believe orbits run four billion years with a planet, in a
-       large picture drawn like the head, and without one, in a small inset in its corner. It shows the proposal's prediction
-       without taking a side; the next pages weigh it. Nothing under the picture (2026-11-16): the key, the caption, the
-       closing line and "How the cartoon works" were cut as saying what the picture and its pop-ups already say; the start
-       pop-up calls the orbits made-up, and the cartoon's paper is cited on the intro line.
-       It replaced the herding exhibit, the scrolly's filters and a find-the-planet game, all of which asked too much
-       of a reader to learn anything from. -->
+  <!-- what a planet's gravity would do (charts/compare.js): the same make-believe orbits with a planet, in a large
+       picture drawn like the head, and without one, in a small picture beside it. Three acts, each showing the gravity
+       at work: close passes fling objects out, the planet's repeated nudges turn the rest to stretch out the opposite
+       way, then (seen from the side) tip them to tilt the way it does. It shows the proposal's prediction without
+       taking a side; the next pages weigh it. -->
   <section class="part wrap" id="compare">
     <div class="sec-head">
-      <h2>How a planet would line them up</h2>
-      <p>A planet would throw out the orbits that point its way and turn the rest to point the opposite way<sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup>.</p>
+      <h2>How Planet Nine would cause the <span class="k-ev">clustering</span><sup class="cite"><a href="/credits.html#cite-batygin-brown-2016">1</a></sup></h2>
     </div>
     <div class="pic cmp-pic">
       <div class="cmp-grid" id="compareView"></div>

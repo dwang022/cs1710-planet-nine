@@ -1,7 +1,8 @@
 // Drawings for the alternatives page (insights/alternatives.html): a small mark
-// beside each explanation's name in the scorecard (ROW_ART) and a larger picture
-// in the panel that opens under its row (PANEL_ART), both keyed by the ids in
-// alternatives.json.
+// for each explanation (ROW_ART), keyed by the ids in alternatives.json, drawn
+// round the head, along the walkthrough's lineup and on the closing map
+// (charts/althead.js, charts/weigh.js), and a larger picture of each idea
+// (PANEL_ART) in its card beside the map, the old scorecard's panels kept for it.
 //
 // Pure markup in the site's flat style (src/art.js): flat shapes, same-hue
 // outlines, no glows, no rings round Planet Nine. The distant objects are
@@ -10,14 +11,13 @@
 // everything else is muted. The pictures are cartoons of each idea, not data.
 
 import { skin } from '../skins.js'
+import { spreadOf } from '../stats.js'
 
 const OBJ = 'var(--series-1)', OBJ_INK = 'var(--series-1-ink)'
 const MUTED = '#8c8b83', DIM = '#5a5a64', FAINT = '#34343c', LIGHT = '#c7c5bc'
 const RAD = Math.PI / 180
 const f1 = n => n.toFixed(1)
 
-// The panel pictures are 300 × 170 and clip what runs past the edge.
-const panel = inner => `<svg class="alt-art" viewBox="0 0 300 170" style="overflow:hidden" aria-hidden="true" focusable="false">${inner}</svg>`
 // The row marks are 48 × 48 unless they borrow a sprite body's own box.
 const mark = (inner, vb = '0 0 48 48') => `<svg class="alt-ic" viewBox="${vb}" aria-hidden="true" focusable="false">${inner}</svg>`
 
@@ -36,14 +36,7 @@ function rng (seed) {
   }
 }
 
-/** An orbit seen from above, the Sun at (fx, fy), its closest point `deg` degrees round from +x. */
-function orbit (fx, fy, a, e, deg, attrs) {
-  const c = Math.cos(deg * RAD), s = Math.sin(deg * RAD)
-  const cx = fx - a * e * c, cy = fy - a * e * s
-  return `<ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="${f1(a)}" ry="${f1(a * Math.sqrt(1 - e * e))}" transform="rotate(${f1(deg)} ${f1(cx)} ${f1(cy)})" fill="none" ${attrs}/>`
-}
-
-/** A point on that orbit, `nu` degrees past its closest point. */
+/** A point on an orbit round (fx, fy), its closest point `deg` degrees round from +x, `nu` degrees past it. */
 function onOrbit (fx, fy, a, e, deg, nu) {
   const r = a * (1 - e * e) / (1 + e * Math.cos(nu * RAD))
   return [fx + r * Math.cos((deg + nu) * RAD), fy + r * Math.sin((deg + nu) * RAD)]
@@ -56,7 +49,6 @@ function edgeOn (fx, fy, a, e, deg, thick, attrs) {
   return `<ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="${f1(a)}" ry="${f1(thick)}" transform="rotate(${f1(deg)} ${f1(cx)} ${f1(cy)})" fill="none" ${attrs}/>`
 }
 
-const neptune = (x, y, r = 12) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${DIM}" stroke-width="1" stroke-dasharray="2 3"/>`
 const dot = (x, y, r, fill) => `<circle cx="${f1(x)}" cy="${f1(y)}" r="${r}" fill="${fill}"/>`
 
 /** The black-hole skin's drawing (skins.js), whatever skin the reader chose for Planet Nine. */
@@ -67,6 +59,19 @@ function blackHole (x, y, s, id) {
     <g clip-path="url(#${id})">${bh.paint(id)}</g>
     <circle cx="50" cy="50" r="40" fill="none" stroke="#3a2a10" stroke-width="3"/></svg>`
 }
+
+
+// The panel pictures, in each idea's card on the closing map, are 300 × 170 and clip what runs past the edge.
+const panel = inner => `<svg class="alt-art" viewBox="0 0 300 170" style="overflow:hidden" aria-hidden="true" focusable="false">${inner}</svg>`
+
+/** An orbit seen from above, the Sun at (fx, fy), its closest point `deg` degrees round from +x. */
+function orbit (fx, fy, a, e, deg, attrs) {
+  const c = Math.cos(deg * RAD), s = Math.sin(deg * RAD)
+  const cx = fx - a * e * c, cy = fy - a * e * s
+  return `<ellipse cx="${f1(cx)}" cy="${f1(cy)}" rx="${f1(a)}" ry="${f1(a * Math.sqrt(1 - e * e))}" transform="rotate(${f1(deg)} ${f1(cx)} ${f1(cy)})" fill="none" ${attrs}/>`
+}
+
+const neptune = (x, y, r = 12) => `<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="${DIM}" stroke-width="1" stroke-dasharray="2 3"/>`
 
 // --- the panel pictures --------------------------------------------------------
 
@@ -96,7 +101,7 @@ function steered (who) {
 /**
  * Where telescopes looked: orbits in every direction (dashed), but an object is
  * seen only near its closest point to the Sun, and only inside the patch of sky
- * searched (the wedge). The few found (violet) all lean the same way.
+ * searched (the wedge). The few found (violet) all point the same way.
  */
 function looked () {
   const [fx, fy] = [150, 85]
@@ -161,25 +166,6 @@ function swarm () {
   return panel(out)
 }
 
-/** Another star passing close by, long ago, and the far ends of the orbits pulled toward its path. */
-function star () {
-  const [fx, fy] = [92, 112]
-  const r = rng(8)
-  let out = neptune(fx, fy, 11)
-  for (let i = 0; i < 5; i++) {
-    const aph = -38 + (r() - 0.5) * 18, a = 60 + r() * 12, e = 0.68 + r() * 0.04
-    out += orbit(fx, fy, a, e, aph + 180, `stroke="${OBJ}" stroke-width="1.4"`)
-  }
-  // the star's path, an arrow ahead of it and three strokes behind it
-  out += `<path d="M118,26 L292,52" fill="none" stroke="${MUTED}" stroke-width="1.2" stroke-dasharray="4 4"/>
-    <path d="M284,44 L294,52 L282,56" fill="none" stroke="${MUTED}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-    <g stroke="${LIGHT}" stroke-width="2" stroke-linecap="round" opacity=".7">
-      <path d="M190,30 L212,33"/><path d="M186,40 L210,43.5"/><path d="M192,50 L212,53"/></g>`
-  out += body('sun', 236, 42, 40)
-  out += body('sun', fx, fy, 18)
-  return panel(out)
-}
-
 /** The rules change far out: a grid that stays square near the Sun and bends farther away. */
 function gravity () {
   const [cx, cy] = [150, 85]
@@ -200,35 +186,54 @@ function gravity () {
   return panel(out)
 }
 
+/** Another star passing close by, long ago: it can lift orbits clear of Neptune, but no study shows it lining them
+ *  up, so the orbits here stretch out every way (2026-11-18: they had been drawn pulled towards its path). */
+function star () {
+  const [fx, fy] = [96, 100]
+  const r = rng(8)
+  let out = neptune(fx, fy, 11)
+  for (let i = 0; i < 6; i++) {
+    const deg = i * 60 + 20 + (r() - 0.5) * 30, a = 30 + r() * 12, e = 0.56 + r() * 0.08
+    out += orbit(fx, fy, a, e, deg, `stroke="${OBJ}" stroke-width="1.4" opacity=".85"`)
+  }
+  // the star's path, an arrow ahead of it and three strokes behind it
+  out += `<path d="M118,26 L292,52" fill="none" stroke="${MUTED}" stroke-width="1.2" stroke-dasharray="4 4"/>
+    <path d="M284,44 L294,52 L282,56" fill="none" stroke="${MUTED}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <g stroke="${LIGHT}" stroke-width="2" stroke-linecap="round" opacity=".7">
+      <path d="M190,30 L212,33"/><path d="M186,40 L210,43.5"/><path d="M192,50 L212,53"/></g>`
+  out += body('sun', 236, 42, 40)
+  out += body('sun', fx, fy, 18)
+  return panel(out)
+}
+
 /**
- * Eight small sets of six directions drawn at random, each with the arrow the
- * probability page uses (the average direction). One set lines up by chance.
+ * Eight small sets of six directions drawn at random, each with its middle and its spread as the clustering and
+ * probability pages draw them (a wedge as wide as the spread either side of the middle). One set lines up by chance
+ * (2026-11-18: the arrows had been the combined arrow's length, a measure the site no longer shows).
  */
 function luck () {
   const r = rng(77)
   const lucky = 5
   let out = ''
   for (let k = 0; k < 8; k++) {
-    const cx = 45 + (k % 4) * 70, cy = k < 4 ? 46 : 124, R = 26
-    let angles, L, mx, my
+    const cx = 45 + (k % 4) * 70, cy = k < 4 ? 46 : 124, R = 26, on = k === lucky
+    let degs, mid, spread
     do {
-      const base = r() * 2 * Math.PI
-      angles = Array.from({ length: 6 }, () => k === lucky ? base + (r() - 0.5) * 1.8 : r() * 2 * Math.PI)
-      mx = angles.reduce((s, a) => s + Math.cos(a), 0) / 6
-      my = angles.reduce((s, a) => s + Math.sin(a), 0) / 6
-      L = Math.hypot(mx, my)
-    } while (k !== lucky && L > 0.45)
-    const on = k === lucky
+      const base = r() * 360
+      degs = Array.from({ length: 6 }, () => on ? base + (r() - 0.5) * 70 : r() * 360)
+      ;({ mid, spread } = spreadOf(degs))
+    } while (!on && spread < 80)
+    const s = Math.min(179, spread), p = a => `${f1(cx + R * Math.cos(a * RAD))},${f1(cy + R * Math.sin(a * RAD))}`
+    out += s >= 179
+      ? `<circle cx="${cx}" cy="${cy}" r="${R}" fill="#ffffff" fill-opacity=".05"/>`
+      : `<path d="M${cx},${cy} L${p(mid - s)} A${R},${R} 0 ${2 * s > 180 ? 1 : 0},1 ${p(mid + s)} Z" fill="${on ? OBJ : '#ffffff'}" fill-opacity="${on ? 0.28 : 0.06}"/>`
     out += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${on ? LIGHT : FAINT}" stroke-width="${on ? 1.4 : 1}"/>`
-    out += angles.map(a => dot(cx + R * Math.cos(a), cy + R * Math.sin(a), on ? 2.8 : 2.2, on ? OBJ_INK : MUTED)).join('')
-    const len = R * L, ux = mx / (L || 1), uy = my / (L || 1)
-    const tx = cx + ux * len, ty = cy + uy * len
-    const col = on ? OBJ_INK : MUTED, w = on ? 2.2 : 1.4
+    out += degs.map(a => dot(cx + R * Math.cos(a * RAD), cy + R * Math.sin(a * RAD), on ? 2.8 : 2.2, on ? OBJ_INK : MUTED)).join('')
+    // the middle, a full-length arrow
+    const col = on ? LIGHT : MUTED, w = on ? 2 : 1.3, ux = Math.cos(mid * RAD), uy = Math.sin(mid * RAD)
+    const tx = cx + ux * (R - 3), ty = cy + uy * (R - 3), h = on ? 5 : 3.5, px = -uy, py = ux
     out += `<path d="M${cx},${cy} L${f1(tx)},${f1(ty)}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`
-    if (len > 6) {
-      const h = on ? 5 : 3.5, px = -uy, py = ux
-      out += `<path d="M${f1(tx - ux * h + px * h * 0.7)},${f1(ty - uy * h + py * h * 0.7)} L${f1(tx)},${f1(ty)} L${f1(tx - ux * h - px * h * 0.7)},${f1(ty - uy * h - py * h * 0.7)}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`
-    }
+    out += `<path d="M${f1(tx - ux * h + px * h * 0.7)},${f1(ty - uy * h + py * h * 0.7)} L${f1(tx)},${f1(ty)} L${f1(tx - ux * h - px * h * 0.7)},${f1(ty - uy * h - py * h * 0.7)}" fill="none" stroke="${col}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`
     out += dot(cx, cy, 1.6, on ? LIGHT : DIM)
   }
   return panel(out)

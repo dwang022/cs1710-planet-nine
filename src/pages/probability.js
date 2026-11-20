@@ -94,7 +94,7 @@ async function main () {
     todayN: today.n, todaySpread: deg(today.closest.spread_deg), todayTiltSpread: deg(today.tilt.spread_deg),
     poolTodayN: fmt(bb.pool_today.n),
     todayP: pct(today.closest.p), todayTiltP: pct(today.tilt.p), todayOdds: fmt(oneIn(today.product)), today250N: today250.n,
-    cutMin: fmt(Math.min(...cutOdds)), cutMax: fmt(Math.max(...cutOdds)), q42Odds: fmt(oneIn(q42.both.p)),
+    cutMin: fmt(Math.min(...cutOdds)), cutMax: fmt(Math.max(...cutOdds)), q42Odds: fmt(oneIn(q42.both.p)), q42Au: q42.q_min_au,
   }
   document.querySelectorAll('[data-n]').forEach(el => { el.textContent = nums[el.dataset.n] ?? '—' })
 

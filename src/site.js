@@ -21,7 +21,7 @@ export const PAGES = [
   { id: 'clustering', path: 'insights/clustering.html', group: 'Evidence', title: 'The orbits line up', short: 'Clustering' },
   { id: 'probability', path: 'insights/probability.html', group: 'Evidence', title: 'Could it just be luck?', short: 'Probability' },
   { id: 'alternatives', path: 'insights/alternatives.html', group: 'Evidence', title: 'What else could explain it', short: 'Alternatives' },
-  { id: 'search', path: 'search/how.html', group: 'The search', title: 'Why nobody has found it', short: 'The search' },
+  { id: 'search', path: 'search/how.html', group: 'The search', title: 'Why nobody has found it', short: 'Searches' },
   { id: 'timeline', path: 'search/timeline.html', group: 'The search', title: 'The Planet Nine debate', short: 'Timeline' },
   { id: 'future', path: 'search/future.html', group: 'The search', title: 'What comes next', short: 'Future' },
   // Outside the walkthrough: no group, no Continue leads to it, the nav sets it apart.

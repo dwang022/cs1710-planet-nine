@@ -1412,7 +1412,7 @@ sup.cite a:hover { text-decoration: underline; }
   color: var(--text-primary); line-height: 1.3; opacity: 0; transition: opacity .5s ease; pointer-events: none; }
 .ss.is-pair .ss-title { opacity: 1; transition-delay: .35s; }
 /* the planet being tested: a switch on the left-hand map, from the step that introduces it */
-.ss-bar { left: auto; right: 10px; bottom: 10px; padding: 5px 8px; gap: 8px; opacity: 0; visibility: hidden;
+.ss-bar { left: 50%; right: auto; transform: translateX(-50%); bottom: 10px; padding: 5px 10px; gap: 10px; align-items: center; opacity: 0; visibility: hidden;
   transition: opacity .4s ease, visibility 0s linear .4s; }
 .ss.is-pair .ss-bar { opacity: 1; visibility: visible; transition: opacity .4s ease .4s, visibility 0s linear 0s; }
 .ss-bar .seg { border-color: #ffffff30; }
@@ -1441,14 +1441,21 @@ sup.cite a:hover { text-decoration: underline; }
 .ss-grat path, .ss-grat .near, .ss-grat .far { fill: none; stroke: var(--rule); stroke-width: 1.3; }
 .ss-grat .far { stroke-dasharray: 3 5; }
 .ss-eq { fill: none; stroke: #ffffffb0; stroke-width: 2; opacity: 0; }
-.ss-ecl { fill: none; stroke: #8c8b83; stroke-width: 2.2; opacity: 0; }
-.ss-cap path { fill: #ffffff33; stroke: #ffffffc0; stroke-width: 2; }
-.ss-var { fill: none; stroke: var(--p9); stroke-width: 1.4; stroke-opacity: .5; }
-.ss-core { fill: none; stroke: var(--p9); stroke-width: 2.8; transition: stroke-width .5s ease; }
+/* the line the Sun and planets follow: the Sun's gold, dotted, so it never reads as Planet Nine's path */
+.ss-ecl { fill: none; stroke: var(--sun); stroke-width: 3; stroke-dasharray: .1 9; stroke-linecap: round; opacity: 0; }
+.ss-cap path { fill: #ffffff33; stroke: #ffffff; stroke-width: 3; }
+.ss-cap-lbl { font-size: 26px; font-weight: 600; fill: var(--text-primary); text-anchor: middle; paint-order: stroke; stroke: #0c0c0e; stroke-width: 6px; }
+/* the patch in the Earth drawing and the same patch on the sphere pulse together, so the eye links the two */
+.ss-pulse { animation: ss-pulse 2.4s ease-in-out infinite; }
+@keyframes ss-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .ss-pulse { animation: none; } }
+.ss-var { fill: none; stroke: var(--p9); stroke-width: 1.2; stroke-opacity: .55; }
+.ss-core { fill: none; stroke: var(--p9); stroke-width: 4; }
 .ss.is-mag .ss-core { stroke-width: 1.2; }
 .ss-mag path { fill: none; stroke-width: 22; stroke-linecap: round; }
 .ss-fpath { fill-opacity: .85; stroke: none; cursor: pointer; }
-.ss-fpath.is-active { stroke: var(--ui); stroke-width: 3; }
+.ss-pick { fill: #ffffff14; stroke: var(--ui); stroke-width: 3.5; stroke-linejoin: round; pointer-events: none; }
+.ss-pick.is-rubin { fill: none; stroke: var(--series-4); }
 .ss-fpath:focus-visible { outline: none; stroke: var(--ui); stroke-width: 3; }
 .ss-rubinpath { fill: var(--series-4); fill-opacity: .1; stroke: var(--series-4); stroke-width: 2.5; stroke-dasharray: 8 6; pointer-events: none; }
 .ss-under { fill: none; stroke: #0c0c0e; stroke-width: 17; stroke-linecap: round; }
@@ -1462,9 +1469,54 @@ sup.cite a:hover { text-decoration: underline; }
   paint-order: stroke; stroke: #0c0c0e; stroke-width: 5px; stroke-linejoin: round; }
 .ss-label.is-dim { fill: var(--text-muted); font-weight: 500; }
 .ss-label.is-milky { fill: #dcc48a; }
+.ss-label.is-sun { fill: var(--sun); }
 .ss-label.is-rubin { fill: var(--series-4-ink); }
 .ss-mark { fill: none; stroke: var(--ui); stroke-width: 3.5; pointer-events: none; }
-.ss.can-hover .ss-a svg, .ss.can-hover .ss-b svg { cursor: crosshair; }
+.ss.can-hover .ss-a svg { cursor: crosshair; }
+/* the magnitude panel (charts/skysearch.js): a ruler, the planet's range on it, the limits through it */
+.ss-bar-k { font: 400 .7rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-secondary); }
+.sm-axis line { stroke: var(--text-muted); stroke-width: 2; }
+.sm-axis text { font-size: 24px; fill: var(--text-secondary); text-anchor: middle; font-variant-numeric: tabular-nums; }
+.sm-end { font-size: 22px; fill: var(--text-muted); }
+.sm-band { fill: var(--p9); }
+.sm-tail stop, #sm-tail-g stop { stop-color: var(--p9); }
+.sm-tail, .sm-tail-lbl { opacity: 0; transition: opacity .5s ease; }
+.ss.is-slide .sm-tail, .ss.is-slide .sm-tail-lbl { opacity: 1; }
+.sm-tail-lbl { font-size: 20px; fill: var(--text-muted); }
+.sm-whisk { stroke: var(--ui); stroke-width: 3; stroke-dasharray: 2 6; stroke-linecap: round; pointer-events: none; }
+.sm-name { font-size: 22px; fill: var(--text-secondary); paint-order: stroke; stroke: var(--surface-1); stroke-width: 7px; }
+.sm-where { font-size: 20px; fill: var(--text-muted); }
+.sm-au { fill: var(--au); font-weight: 600; }
+/* the real searches: stops on the ruler, pressable once the handle is there */
+.sm-stop line { stroke: var(--text-muted); stroke-width: 1.5; stroke-dasharray: 3 7; }
+.sm-stop text { font-size: 22px; font-weight: 600; fill: var(--text-secondary); text-anchor: middle; }
+.sm-stop.is-rubin line { stroke: var(--series-4); }
+.sm-stop.is-rubin text { fill: var(--series-4-ink); }
+.sm-stops { opacity: 0; transition: opacity .5s ease; pointer-events: none; }
+.ss.is-slide .sm-stops { opacity: 1; pointer-events: auto; }
+.sm-stop.is-rubin { transition: opacity .5s ease; }
+.ss:not(.is-rubin) .sm-stop.is-rubin { opacity: 0; pointer-events: none; }
+.ss.is-slide .sm-stop { cursor: pointer; }
+.ss.is-slide .sm-stop:hover text { fill: var(--text-primary); }
+.sm-stop:focus-visible { outline: 2px solid var(--ui); outline-offset: 4px; }
+/* the depth searched to: a line the reader drags; it pulses until first moved */
+.sm-handle { opacity: 0; pointer-events: none; cursor: ew-resize; touch-action: none; transition: opacity .5s ease; }
+.ss.is-slide .sm-handle { opacity: 1; pointer-events: auto; }
+.sm-handle line { stroke: var(--ui); stroke-width: 3.5; }
+.sm-handle circle { fill: var(--ui); stroke: var(--surface-0); stroke-width: 3; }
+.sm-grip { fill: none; stroke: var(--surface-0); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.sm-handle:focus-visible { outline: none; }
+.sm-handle:focus-visible circle { stroke: var(--ui); stroke-width: 5; fill: var(--surface-0); }
+.ss.is-slide:not(.was-slid) .sm-handle circle { animation: sm-nudge 1.6s ease-in-out infinite; }
+@keyframes sm-nudge { 50% { r: 18px; } }
+@media (prefers-reduced-motion: reduce) { .ss.is-slide:not(.was-slid) .sm-handle circle { animation: none; } }
+.sm-here { fill: none; stroke: var(--ui); stroke-width: 4; pointer-events: none; }
+.ss-rider { pointer-events: none; }
+.sm-read { font-size: 23px; font-weight: 500; fill: var(--text-secondary); text-anchor: middle; }
+.sm-read.is-2 { font-size: 25px; font-weight: 600; fill: var(--text-primary); }
+.sm-read.is-idle { font-weight: 400; fill: var(--text-muted); }
+.sm-read.is-shallow { fill: var(--series-2-ink); }
+.sm-read.is-none { fill: var(--text-secondary); }
 /* the key's magnitude ramp, drawn with the maps' own scale */
 .mag-key { flex: none; overflow: visible; }
 .mag-key text { font-size: 10px; fill: var(--text-secondary); text-anchor: middle; font-variant-numeric: tabular-nums; }
@@ -2260,7 +2312,6 @@ html.has-reveal .cq:not(.is-in) .cq-ask > :is(.cq-eyebrow, .cq-title, .cq-choice
    round the timeline, so it leads into the sky's story without a gap */
 body[data-page="search"] #searches { padding-block: 36px 32px; }
 body[data-page="search"] #searches .sec-head { margin-bottom: 12px; }
-body[data-page="search"] #searches .fl-legend { margin-bottom: 14px; }
 body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 
 /* the debate's finale (2026-11-10): the range's last year closes on the totals in the middle of the stage, a face over
@@ -2536,18 +2587,15 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 #searches .fl.st { max-width: 1300px; margin-inline: auto; }
 #searches .st-rail-wrap { padding-inline: 0; }
 #searches .st-year { font-size: 1.05rem; }
-#searches .st-kind { font-size: .7rem; }
 #searches .st-mark { gap: 6px; }
+/* one design for every card (2026-11-20): words left, drawing right, no lane icon */
 #searches .st .fr.is-data {
-  --fl-icon: 72px;
-  grid-template-columns: var(--fl-icon) minmax(0, 1fr) minmax(0, 470px);
-  gap: 8px 36px; padding: 32px 40px; min-height: 290px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 470px); grid-template-areas: "body art" "meta art";
+  gap: 8px 48px; padding: 32px 44px; min-height: 290px;
 }
 #searches .st .fr.is-data .fr-body { max-width: 64ch; }
-#searches .st .fr-title { font-size: 1.32rem; margin-bottom: 8px; }
-#searches .st .fr.is-key .fr-title { font-size: 1.7rem; }
-#searches .st .fr-line { font-size: 1.04rem; line-height: 1.55; }
-#searches .st .fr.is-key .fr-line { font-size: 1.1rem; }
+#searches .st .fr-title { font-size: 1.55rem; letter-spacing: -.02em; margin-bottom: 10px; }
+#searches .st .fr-line { font-size: 1.06rem; line-height: 1.55; }
 #searches .st .fr-foot { margin-top: 12px; font-size: .86rem; color: var(--text-secondary); }
 #searches .st .fr-foot a { color: var(--text-secondary); }
 #searches .st .fr.is-data .fr-art, #searches .st .fr.is-key.is-data .fr-art { width: 100%; max-width: 470px; justify-self: center; }
@@ -2560,26 +2608,24 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 #searches .st-prev[aria-disabled="true"]:hover { background: #ffffff0d; border-color: #ffffff4d; }
 #searches .st-count { font-size: .8rem; color: var(--text-secondary); }
 @media (max-width: 1199px) {
-  #searches .st .fr.is-data { grid-template-columns: var(--fl-icon) minmax(0, 1fr) minmax(0, 380px); gap: 8px 28px; padding: 28px 30px; min-height: 260px; }
+  #searches .st .fr.is-data { grid-template-columns: minmax(0, 1fr) minmax(0, 380px); gap: 8px 32px; padding: 28px 32px; min-height: 260px; }
 }
 @media (max-width: 900px) {
   #searches .st .fr.is-data {
-    --fl-icon: 52px; grid-template-columns: var(--fl-icon) minmax(0, 1fr); grid-template-areas: "icon body" "art art" "meta meta";
+    grid-template-columns: minmax(0, 1fr); grid-template-areas: "body" "art" "meta";
     gap: 14px 16px; padding: 22px 20px; min-height: 0;
   }
   #searches .st .fr.is-data .fr-art { max-width: 460px; }
-  #searches .st .fr-title { font-size: 1.18rem; }
-  #searches .st .fr.is-key .fr-title { font-size: 1.36rem; }
-  #searches .st .fr-line, #searches .st .fr.is-key .fr-line { font-size: .98rem; }
+  #searches .st .fr-title { font-size: 1.3rem; }
+  #searches .st .fr-line { font-size: .98rem; }
 }
 @media (max-width: 560px) {
   #searches .st .fr.is-data { padding: 18px 16px; }
   #searches .st-year { font-size: .9rem; }
-  #searches .st-kind { font-size: .58rem; }
   #searches .st-btn { padding: 0 14px; font-size: .9rem; }
 }
 @media (min-width: 1200px) {
-  #searches .st .fr.is-data { grid-template-columns: var(--fl-icon) minmax(0, 1fr) minmax(0, 540px); padding: 28px 36px; }
+  #searches .st .fr.is-data { grid-template-columns: minmax(0, 1fr) minmax(0, 540px); padding: 28px 44px; }
   #searches .st .fr.is-data .fr-art, #searches .st .fr.is-key.is-data .fr-art { max-width: 540px; }
 }
 

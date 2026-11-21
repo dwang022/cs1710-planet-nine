@@ -1,0 +1,154 @@
+/* Spot Planet Nine (charts/blinkhunt.js): a strip with the field's number, the time left and the points, then the
+   photo with its controls on it. The interface is white and grey; a find takes Planet Nine's colour, a miss ember. */
+.bh { max-width: 1120px; margin-inline: auto; }
+.bh-hud { display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 18px; align-items: center; margin-bottom: 10px; color: var(--text-secondary); font-size: .95rem; }
+.bh-hud b { color: var(--text-primary); font-size: 1.35rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bh-reset { display: inline-flex; align-items: center; gap: 6px; font: 600 .85rem var(--font-sans); padding: 6px 12px; border-radius: 999px; cursor: pointer; background: transparent; color: var(--text-secondary); border: 1.5px solid #ffffff40; }
+.bh-reset[hidden] { display: none; }
+.bh-reset:hover { color: var(--text-primary); border-color: var(--ui); }
+.bh-reset svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.bh-timer { height: 8px; border-radius: 4px; background: #ffffff1c; overflow: hidden; }
+.bh-timer i { display: block; height: 100%; background: var(--ui); transform-origin: left center; }
+.bh-timer.is-low i { background: var(--series-2); }
+
+.bh-stage { position: relative; border: 1px solid var(--rule); border-radius: var(--radius); overflow: hidden; background: #070a14; }
+.bh-stage svg { display: block; width: 100%; height: auto; max-height: calc(100vh - var(--bar-h, 72px) - 120px); cursor: crosshair; touch-action: manipulation; }
+.bh-sky { fill: #070a14; }
+.bh-stars circle, .bh-objs circle { fill: #fff; }
+.bh-objs circle { outline: none; }
+.bh-objs circle:focus-visible { stroke: var(--ui); stroke-width: 1.5; stroke-dasharray: 3 3; paint-order: stroke; r: 9px; fill-opacity: .9; }
+.bh.is-over .bh-stage svg { cursor: default; }
+
+.bh-msg { position: absolute; left: 50%; top: 14px; transform: translate(-50%, -6px); display: grid; justify-items: center; gap: 2px; padding: 8px 18px; border-radius: 14px; background: #000000c4; border: 1px solid #ffffff2e; text-align: center; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease; max-width: min(92%, 460px); }
+.bh-msg.is-on { opacity: 1; transform: translate(-50%, 0); }
+.bh-msg b { font-size: 1.2rem; font-weight: 600; color: var(--text-primary); }
+.bh-msg span { font-size: .9rem; color: var(--text-secondary); }
+.bh-msg.is-found b { color: var(--p9-ink, var(--p9)); }
+.bh-msg.is-missed b { color: var(--series-2-ink, var(--series-2)); }
+
+.bh-bar { justify-content: space-between; }
+.bh-nights { display: inline-flex; align-items: center; gap: 6px; }
+.bh-nk { font: 700 .7rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-right: 2px; }
+.bh-pip, .bh-play { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #ffffff45; background: #000000b0; color: var(--text-secondary); font: 600 .85rem var(--font-sans); cursor: pointer; display: grid; place-items: center; padding: 0; }
+.bh-pip.is-on { background: var(--ui); border-color: var(--ui); color: #111; }
+.bh-play::before { content: ''; width: 9px; height: 10px; border-inline: 3px solid currentColor; box-sizing: border-box; }
+.bh-play.is-paused::before { width: 0; height: 0; border: 6px solid transparent; border-left: 10px solid currentColor; border-right: 0; margin-left: 2px; }
+.bh.is-over .bh-bar { visibility: hidden; }
+
+.bh-tag circle { fill: none; stroke: #ffffff8c; stroke-width: 1.5; stroke-dasharray: 3 4; }
+.bh-tag text { fill: var(--text-secondary); font-size: 15px; text-anchor: middle; paint-order: stroke; stroke: #070a14; stroke-width: 5px; }
+.bh-planet { pointer-events: none; }
+.bh-halo, .bh-pop { fill: none; stroke-width: 3; }
+.bh-pop { opacity: 0; transform-box: fill-box; transform-origin: center; }
+.bh-planet :is(.bh-halo, .bh-pop) { stroke: var(--series-2); }
+.bh-creep { stroke: var(--series-2); stroke-width: 3; stroke-linecap: round; opacity: .9; }
+.bh-art { transform-box: fill-box; transform-origin: center; animation: bh-in .45s cubic-bezier(.2, 1.6, .4, 1) both; }
+.bh-planet .bh-pop { animation: bh-pop .9s ease-out 2; }
+@keyframes bh-in { from { transform: scale(0); } to { transform: scale(1); } }
+@keyframes bh-pop { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(3.4); opacity: 0; } }
+
+.bh-over { position: absolute; inset: 0; display: none; place-items: center; background: #070a14b8; }
+.bh.is-over .bh-over { display: grid; }
+.bh-card { display: grid; justify-items: center; gap: 14px; padding: 26px 34px; border-radius: 18px; background: var(--surface-1); border: 1px solid #ffffff2e; text-align: center; }
+.bh-how { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; justify-items: start; font-size: 1.1rem; color: var(--text-primary); }
+.bh-how li { display: flex; align-items: center; gap: 14px; }
+.bh-ic { position: relative; width: 54px; height: 16px; flex: none; }
+.bh-ic::before { content: ''; position: absolute; left: 4px; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+.bh-ic.is-fast::before { animation: bh-fast .62s steps(1) infinite; }
+.bh-ic.is-slow::before { animation: bh-slow .62s steps(1) infinite; }
+@keyframes bh-fast { 0% { transform: translateX(0); } 34% { transform: translateX(19px); } 67% { transform: translateX(38px); } }
+@keyframes bh-slow { 0% { transform: translateX(0); } 34% { transform: translateX(3px); } 67% { transform: translateX(6px); } }
+.bh-go { font: 600 1.05rem var(--font-sans); padding: 12px 26px; border-radius: 999px; border: 0; background: var(--ui); color: #111; cursor: pointer; transition: transform .15s ease; }
+.bh-go:hover { transform: translateY(-1px) scale(1.03); }
+.bh-k { margin: 0; font: 700 .72rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
+.bh-rank { margin: 0; font-size: 2rem; font-weight: 600; color: var(--text-primary); line-height: 1.1; }
+.bh-total { margin: 0; color: var(--text-secondary); }
+.bh-total b { color: var(--text-primary); font-size: 1.3rem; }
+
+@media (max-width: 700px) {
+  .bh-bar { position: static; padding: 8px; background: none; }
+  .bh-card { padding: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bh-art, .bh-planet .bh-pop, .bh-ic::before { animation: none; }
+  .bh-msg, .bh-go { transition: none; }
+}
+
+/* the view through the telescope: the corners fall off, as through an eyepiece */
+.bh-stage::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 62% 70% at 50% 50%, transparent 72%, #000000d8 100%); }
+.bh-msg, .bh-bar, .bh-dial, .bh-over { z-index: 2; }
+.bh-lede { margin: 0; max-width: 30ch; color: var(--text-secondary); font-size: 1rem; }
+
+/* parts two and three: one dial on the picture */
+.bh.is-measure .bh-bar { display: none; }
+.bh.is-measure .bh-timer, .bh.is-over .bh-timer { visibility: hidden; }
+.bh.is-measure .bh-stage svg { cursor: default; }
+.bh-dial { justify-content: center; background: none; border: 0; }
+.bh-dial[hidden] { display: none; }
+.bh-next { padding: 10px 24px; font-size: 1rem; }
+.bh-lane { fill: var(--text-secondary); font-size: 19px; }
+.bh-lane.is-mid { text-anchor: middle; }
+.bh-ghost { fill: #fff; opacity: .22; }
+.bh-live { fill: #fff; }
+.bh-guide { stroke: #ffffff70; stroke-width: 1.5; stroke-dasharray: 4 6; }
+.bh-ring { fill: none; stroke: #ffffff8c; stroke-width: 2; stroke-dasharray: 5 6; }
+.bh.is-match :is(.bh-guide, .bh-ring) { stroke: var(--p9); stroke-dasharray: none; }
+
+/* the discovery card */
+.bh-card.is-end { gap: 12px; padding: 22px 30px; }
+.bh-pair { display: flex; gap: 34px; align-items: end; }
+.bh-pair figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
+.bh-pair figcaption { font-size: .8rem; color: var(--text-muted); }
+.bh-dot { width: 96px; height: 96px; border-radius: 50%; background: radial-gradient(circle, #fff 0 2.5px, transparent 3.5px), #070a14; border: 1px solid #ffffff2e; }
+.bh-facts { display: grid; grid-template-columns: repeat(4, auto); gap: 6px 26px; margin: 0; }
+.bh-facts div { display: grid; justify-items: center; }
+.bh-facts dt { font: 700 .68rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
+.bh-facts dd { margin: 0; font-size: 1.15rem; font-weight: 600; color: var(--text-primary); }
+@media (max-width: 700px) { .bh-facts { grid-template-columns: repeat(2, auto); } .bh-dial { position: static; padding: 8px; background: none; } }
+
+/* the Milky Way's haze behind the last field */
+.bh-haze { fill: #dcc48a; opacity: .1; filter: blur(34px); }
+
+/* the opening scene: an astronomer walks up to a telescope and looks in; the picture then dives into the eyepiece.
+   Flat shapes in the interface's greys; nothing here is data. */
+.bh-scene { position: absolute; inset: 0; z-index: 1; overflow: hidden; transform-origin: var(--eye-x) var(--eye-y); }
+.bh-scene[hidden] { display: none; }
+.bh-scene svg { display: block; width: 100%; height: 100%; }
+.sc-sky { fill: #070a14; }
+.sc-stars circle { fill: #fff; }
+.sc-hill { fill: #171a22; stroke: #2a2e39; stroke-width: 2; }
+.sc-leg { fill: none; stroke: #8b8a84; stroke-width: 6; stroke-linecap: round; }
+.sc-tube { fill: #d9d7cf; stroke: #8b8a84; stroke-width: 3; }
+.sc-tube.is-front { fill: #b9b7af; }
+.sc-tube.is-eye { fill: #8b8a84; }
+.sc-mount { fill: #8b8a84; }
+.sc-scope { cursor: pointer; outline: none; }
+.sc-scope:focus-visible .sc-tube { stroke: var(--ui); }
+.sc-hint { fill: none; stroke: var(--ui); stroke-width: 2; transform-box: fill-box; transform-origin: center; animation: sc-hint 1.6s ease-out infinite; }
+@keyframes sc-hint { 0% { transform: scale(.5); opacity: .9; } 100% { transform: scale(1.7); opacity: 0; } }
+.sc-body { fill: #cfcdc6; }
+.sc-head { fill: #e9e7e1; }
+.sc-limb { fill: none; stroke: #cfcdc6; stroke-width: 7; stroke-linecap: round; }
+.sc-walker { transition: transform 1.7s linear; }
+.sc-lean { transform-box: view-box; transform-origin: 0 0; transition: transform .5s ease; }
+.sc-leg-a, .sc-leg-b { transform-box: view-box; transform-origin: 0 -30px; }
+.bh-scene.is-walk .sc-walker { transform: translateX(var(--walk)); }
+.bh-scene.is-walk:not(.is-look) .sc-leg-a { animation: sc-step .36s ease-in-out infinite alternate; }
+.bh-scene.is-walk:not(.is-look) .sc-leg-b { animation: sc-step .36s ease-in-out infinite alternate-reverse; }
+@keyframes sc-step { from { transform: rotate(-24deg); } to { transform: rotate(24deg); } }
+.bh-scene.is-walk .sc-hint { display: none; }
+.bh-scene.is-look .sc-lean { transform: rotate(16deg); }
+.bh-scene.is-dive { transition: transform .95s cubic-bezier(.6, 0, .9, .4), opacity .5s ease .45s; transform: scale(16); opacity: 0; pointer-events: none; }
+/* the start card sits clear of the scene, top left; it fades as the walk begins */
+.bh-over.is-intro { background: none; place-items: start; padding: 26px 30px; pointer-events: none; }
+.bh-over.is-intro .bh-card { pointer-events: auto; transition: opacity .3s ease; }
+.bh-over.is-gone .bh-card { opacity: 0; pointer-events: none; }
+@media (max-width: 700px) { .bh-over.is-intro { place-items: start center; padding: 12px; } .bh-over.is-intro .bh-card { padding: 14px 16px; gap: 8px; } .bh-how { font-size: .95rem; gap: 4px; } }
+@media (prefers-reduced-motion: reduce) { .sc-hint { animation: none; } }
+
+/* parts two and three: the find beside things the reader knows */
+.bh-lane.is-small { font-size: 15px; fill: var(--text-muted); }
+.bh-lane.is-mine { fill: var(--text-primary); font-weight: 600; }
+.bh-span { stroke: #ffffff66; stroke-width: 1.5; }
+.bh.is-measure .bh-msg { max-width: min(94%, 640px); }
+.bh.is-measure .bh-msg span { font-size: 1rem; color: var(--text-primary); }

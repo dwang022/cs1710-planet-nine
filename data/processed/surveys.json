@@ -279,13 +279,13 @@
    ],
    "years_src": "The ten-year survey began the night of 29 June 2026. [verified: Rubin early-operations update, 10 July 2026, https://www.rubin.community/t/2026-07-10-early-operations-update-start-of-lsst/12280; the end year is derived: start plus ten years]",
    "band": "r",
-   "depth_mag": 24.5,
+   "depth_mag": 24.3,
    "stacked_depth_mag": 27.0,
    "visits_per_field_10yr": 825,
    "visits_src": "LSST Science Requirements Document (Ivezic et al., LPM-17): the design specification for the median number of visits to each field over the ten years, all filters together. [general knowledge, not verified against the document]",
-   "area_sq_deg": 18000,
+   "area_sq_deg": 27100,
    "dec_range": [
-    -75,
+    -90,
     12
    ],
    "ra_ranges": [
@@ -296,14 +296,21 @@
    ],
    "wavelength": "optical",
    "future": true,
-   "p9_relevance": "The decisive test. Over a decade it should either find Planet Nine or exclude nearly all of the remaining parameter space, and it will multiply the known ETNO sample with a characterised, modellable selection function.",
+   "p9_relevance": "Brown, Holman & Batygin 2024: Rubin's survey 'will be sensitive to all but the faintest and most northern predicted positions'. Schwamb et al. 2023 (LSST Solar System Science Collaboration): 'The most probable locations of Planet Nine are within the NES region', and Rubin's own moving-object pipeline only reaches about 100 to 150 AU, so a search for Planet Nine in Rubin's data has to be run separately. Brown & Batygin 2021: the survey plan 'does not extend as far north as the full predicted path'. [verified: read 2026-11-20]",
    "color_hex": "#F08BB4",
-   "footprint_note": "Declination band and RA ranges are our schematic approximation; we did not verify them against the survey's published footprint.",
-   "dec_range_calibrated": [
-    -62.28,
-    -0.72
-   ],
-   "footprint_area_verified": true
+   "footprint_note": "Everything south of declination +12 (the Wide-Fast-Deep area runs from -72 to +12, Schwamb et al. 2023 sec. 4.1.2, baseline v2.0; the dusty-plane and south-pole mini-surveys fill the rest of the southern sky), plus the North Ecliptic Spur: the sky north of that up to ecliptic latitude +10 (survey-strategy.lsst.io/baseline/minis.html, baseline v5.3.0), seen in g, r, i and z only, a median of 155 visits per pointing against about 800 in the main area. Our reading of the published definition as two simple limits, not Rubin's pointing map. [verified: read 2026-11-20]",
+   "footprint_area_verified": true,
+   "depth_src": "Single-image limit r ~ 24.3, as Brown & Batygin 2021 sec. 7 give it for the LSST survey. [verified: arXiv:2108.09868, read 2026-11-20; it was 24.5 from general knowledge]",
+   "area_src": "Rubin survey strategy, baseline v5.3.0: about 19.6k sq deg in the Wide-Fast-Deep area plus 7.5k in the mini-surveys. [verified: survey-strategy.lsst.io/baseline, read 2026-11-20]",
+   "footprint": {
+    "dec_max": 12,
+    "ecl_lat_max": 10
+   },
+   "visits": {
+    "wfd": 800,
+    "nes": 155,
+    "dusty_plane": 190
+   }
   }
  ],
  "galactic_plane_note": "The surviving unsearched parameter space is concentrated where the northern galactic plane crosses the ecliptic, because crowded star fields badly degrade moving-object detection. [verified: Brown & Batygin 2024 abstract]",

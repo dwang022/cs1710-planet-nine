@@ -45,14 +45,14 @@ function paperLink (p) {
   return `<a href="${esc(href)}" rel="noopener">${esc(p.label)}${journal ? ' · ' + esc(journal) : ''}</a>`
 }
 
-function links (e, byDoi, compact) {
+function links (e, byDoi, compact, citations = true) {
   const out = []
   if (e.doi) out.push(paperLink(byDoi.get(e.doi)))
   if (!compact) {
     for (const d of e.also || []) out.push(paperLink(byDoi.get(d)))
     for (const l of e.links || []) out.push(`<a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`)
     const p = e.doi && byDoi.get(e.doi)
-    if (p && p.citations_crossref != null) out.push(`<span>${p.citations_crossref} citations</span>`)
+    if (citations && p && p.citations_crossref != null) out.push(`<span>${p.citations_crossref} citations</span>`)
   } else if (!e.doi) {
     // no paper to link: keep every source (Rubin's start of survey and its first find)
     for (const l of e.links || []) out.push(`<a href="${esc(l.url)}" rel="noopener">${esc(l.label)}</a>`)
@@ -72,19 +72,23 @@ function bar (e) {
 }
 
 /** One row. `from` labels a row that hangs off the data row above it. */
-function row (e, byDoi, from = null, compact = false, lines = !compact) {
+function row (e, byDoi, from = null, compact = false, lines = !compact, opts = {}) {
+  // plain: the search page's cards, all one design: no lane icon, no citation count, no bar repeating the drawing's
+  // share, no larger "key" row (2026-11-20, asked for)
+  const plain = !!opts.plain
+  if (plain) e = { ...e, key: false }
   const lane = LANE[e.lane]
-  const foot = links(e, byDoi, compact)
+  const foot = links(e, byDoi, compact, !plain)
   const art = compact ? (e.key && e.diagram ? diagram(e.diagram, e.id) : '') : (e.diagram ? diagram(e.diagram, e.id) : '')
   return `<article class="fr ${lane.cls}${e.key ? ' is-key' : ''}${from ? ' is-branch' : ''}${art ? '' : ' no-art'}" data-id="${esc(e.id)}" data-kind="${esc(e.kind || '')}">
-    <div class="fr-icon" title="${esc(lane.word)}">${icon(KIND_ICON[e.kind] || lane.icon)}</div>
+    ${plain ? '' : `<div class="fr-icon" title="${esc(lane.word)}">${icon(KIND_ICON[e.kind] || lane.icon)}</div>`}
     <div class="fr-body">
       ${from ? `<div class="fr-from"><span aria-hidden="true">↳</span> ${esc(from)}</div>` : ''}
       <h4 class="fr-title">${au(esc(e.title))}</h4>
       ${lines && e.line ? `<p class="fr-line">${avatars(e)}${au(esc(e.line))}</p>` : ''}
     </div>
     <div class="fr-art">${art}</div>
-    <div class="fr-meta">${compact ? '' : bar(e)}${foot ? `<div class="fr-foot">${foot}</div>` : ''}</div>
+    <div class="fr-meta">${compact || plain ? '' : bar(e)}${foot ? `<div class="fr-foot">${foot}</div>` : ''}</div>
   </article>`
 }
 
@@ -97,8 +101,8 @@ function branchRow (e, compact, lines) {
 
 /** One full milestone as the ledger draws it, its hung for/against row included (the search page's stepper,
     charts/searchsteps.js, shows one at a time). */
-export function milestone (e, byDoi) {
-  return row(e, byDoi) + (e.branch ? branchRow(e, false, true) : '')
+export function milestone (e, byDoi, opts = {}) {
+  return row(e, byDoi, null, false, true, opts) + (e.branch && !opts.plain ? branchRow(e, false, true) : '')
 }
 
 /** The portraits beside the lines: one dim line, the full credits on the credits page. */

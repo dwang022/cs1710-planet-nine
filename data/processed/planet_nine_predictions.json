@@ -47,16 +47,17 @@
      "src": {"mass_earths_range": "abstract", "distance_au_range": "abstract"},
      "note": "One candidate surviving selection and image inspection, out of 13 pairs. Two epochs cannot determine an orbit; the authors call for follow-up. Not a detection."},
     {"ref": "brown_batygin_2024", "label": "Brown & Batygin 2024 (after the searches)", "year": 2024, "doi": "10.3847/1538-3881/ad24e9",
-     "a_au": 500, "mass_earths": 6.6, "aphelion_au": 630, "current_distance_au": 550, "V_mag": 22.0, "e_derived": 0.26,
+     "a_au": 500, "a_au_err": [-120, 170], "mass_earths": 6.6, "mass_earths_err": [-1.7, 2.6], "aphelion_au": 630, "aphelion_au_err": [-170, 290],
+     "current_distance_au": 550, "current_distance_au_err": [-180, 250], "V_mag": 22.0, "V_mag_err": [-1.4, 1.1], "e_derived": 0.26,
      "src": {"a_au": "paper (sec. 6)", "mass_earths": "paper (sec. 6)", "aphelion_au": "paper (sec. 6)", "current_distance_au": "paper (sec. 6)", "V_mag": "paper (sec. 6)", "e_derived": "derived (aphelion / a - 1)"},
-     "note": "Brown, Holman & Batygin's update after ZTF, DES and PS1 ruled out 78% of the 2021 predictions: medians of the reference population still standing. Their quoted uncertainties are not transcribed here (the PDF text garbles them). The other orbital elements 'remain generally unchanged'."}
+     "note": "Brown, Holman & Batygin's update after ZTF, DES and PS1 ruled out 78% of the 2021 predictions: medians of the reference population still standing, with the 15.8 and 84.1 percentiles as the uncertainties (sec. 6, read from the arXiv HTML of arXiv:2401.17977 on 2026-11-20; the PDF text had garbled them). The other orbital elements 'remain generally unchanged'."}
   ],
   "search_exclusions": {
     "_what": "How much of the predicted parameter space has actually been searched. These are the hard numbers for 'why hasn't anyone found it'.",
     "ztf_2022": {"fraction_excluded": 0.56, "depth_V": 20.5, "depth_note": "95% detection efficiency", "doi": "10.3847/1538-3881/ac32dd", "src": "abstract"},
     "ps1_2024_cumulative": {"fraction_excluded": 0.78, "depth_V": 21.5, "depth_note": "50% completion depth, PS1 alone", "combines": ["Pan-STARRS1", "ZTF", "DES"], "doi": "10.3847/1538-3881/ad24e9", "src": "abstract"},
-    "remaining_space": "Faint (V > 21) and concentrated near and in the region where the northern galactic plane crosses the ecliptic.",
-    "src": "Brown & Batygin 2024, abstract"
+    "remaining_space": "Faint (V > 21) and concentrated near and in the region where the northern galactic plane crosses the ecliptic. The discussion adds a smaller region in the poorly covered southern galactic plane and a strip below declination -30, and says Rubin's survey 'will be sensitive to all but the faintest and most northern predicted positions'.",
+    "src": "Brown, Holman & Batygin 2024, abstract and discussion (read 2026-11-20)"
   },
   "physical_properties": {
     "_source": "Linder & Mordasini 2016 (A&A 589:A134) thermal-evolution models, plus the albedo range adopted by Brown & Batygin 2021.",

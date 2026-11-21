@@ -94,7 +94,7 @@ function tilt ({ deg = 54 }) {
 }
 
 /** The predicted planet's orbit, with the fraction a search has ruled out. */
-function search ({ pct = 0, dashed = false, label = 'ruled out' }) {
+function search ({ pct = 0, dashed = false, label = 'ruled out', note = '' }) {
   const [cx, cy, rx, ry] = [120, 62, 100, 40]
   let out = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="${MUTED}" stroke-width="1.4" ${dashed ? 'stroke-dasharray="4 4"' : ''}/>`
   if (pct > 0) {
@@ -107,6 +107,8 @@ function search ({ pct = 0, dashed = false, label = 'ruled out' }) {
     out += `<polyline points="${pts.join(' ')}" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" opacity=".9"/>`
     out += text(cx, cy + 8, `${pct}%`, 26, 'text-anchor="middle" fill="currentColor" font-weight="700"')
     out += text(cx, cy + 24, label, 9, `text-anchor="middle" fill="${MUTED}"`)
+    // what the share is of, where the paper qualifies it, under the ring
+    if (note) out += text(cx, 117, note, 8.5, `text-anchor="middle" fill="${MUTED}"`)
   } else {
     out += text(cx, cy + 4, label, 10, `text-anchor="middle" fill="${MUTED}"`)
   }
@@ -180,20 +182,23 @@ function candidate ({ dashed = false }, seed) {
   return svg(out)
 }
 
-/** A telescope sweeping the sky: how much of the survey is done. */
-function survey ({ progress = 0, dashed = false }) {
-  let out = `<path d="M 26 102 V 62 A 28 28 0 0 1 82 62 V 102 Z" fill="#ffffff08" stroke="${MUTED}" stroke-width="1.2"/>
-    <line x1="54" y1="36" x2="54" y2="62" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>`
-  const filled = Math.round(progress * 32)
-  let k = 0
-  for (let row = 0; row < 4; row++) {
-    for (let col = 0; col < 8; col++, k++) {
-      const x = 106 + col * 17, y = 22 + row * 20
-      out += k < filled
-        ? `<rect x="${x}" y="${y}" width="15" height="18" rx="2" fill="currentColor" opacity=".85"/>`
-        : `<rect x="${x}" y="${y}" width="15" height="18" rx="2" fill="none" stroke="${MUTED}" stroke-width="1" ${dashed ? 'stroke-dasharray="2 2"' : ''}/>`
-    }
+/** A survey that runs for years: the observatory (art.js, from the page's sprite) beside one cell per year, the
+    years already begun filled in Rubin's colour, the first and last year written under the row. `years` is
+    [start, end] from surveys.json. (Until 2026-11-20 a bare dome outline beside a grid of 32 cells, three filled,
+    which readers could not read.) */
+function survey ({ years = [2026, 2036], dashed = false }) {
+  const [start, end] = years, n = Math.max(1, end - start)
+  const begun = Math.max(0, Math.min(n, new Date().getFullYear() - start + 1))
+  const x0 = 98, x1 = 236, gap = 2, w = (x1 - x0 - gap * (n - 1)) / n, y = 50, h = 20
+  let out = `<use href="#art-observatory" x="6" y="30" width="84" height="63"/>`
+  for (let k = 0; k < n; k++) {
+    const x = (x0 + k * (w + gap)).toFixed(1)
+    out += k < begun
+      ? `<rect x="${x}" y="${y}" width="${w.toFixed(1)}" height="${h}" rx="2" fill="var(--fl-next)"/>`
+      : `<rect x="${x}" y="${y}" width="${w.toFixed(1)}" height="${h}" rx="2" fill="none" stroke="${MUTED}" stroke-width="1" ${dashed ? 'stroke-dasharray="2 2"' : ''}/>`
   }
+  out += text(x0, y + h + 14, start, 9, `fill="var(--fl-next-ink)" font-weight="700"`)
+  out += text(x1, y + h + 14, end, 9, `text-anchor="end" fill="${MUTED}"`)
   return svg(out)
 }
 

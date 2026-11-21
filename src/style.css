@@ -1584,8 +1584,6 @@ body[data-page="search"] #searches { overflow-x: clip; }
    that changes with the year, the panel's swap and the strip's fill, all opacity and transform. */
 #debate { --db-for: var(--for); --db-for-ink: var(--for-ink); --db-against: var(--series-2); --db-against-ink: var(--series-2-ink);
   --db-ease: cubic-bezier(.2, .7, .2, 1); }
-.db-tools { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-.db-version button { font-size: .8rem; }
 .db-top { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px 28px; margin-bottom: 18px; }
 .db-year, .db-headline { display: grid; margin: 0; }
 .db-year > .db-w, .db-headline > .db-w { grid-area: 1 / 1; }
@@ -1625,33 +1623,20 @@ body[data-page="search"] #searches { overflow-x: clip; }
 .db-dot { cursor: pointer; outline: none; }
 .db-dot.is-leaving { pointer-events: none; }
 .db-hit { fill: transparent; }
-.db-mark { stroke-width: 2; transform-box: fill-box; transform-origin: center;
-  transition: transform .25s var(--db-ease), opacity .25s ease, stroke .2s ease; }
-.db-dot.is-for .db-mark { fill: var(--db-for); stroke: #f5f7fa; stroke-width: 2.5; }
-.db-dot .db-ring-out { fill: none; stroke: #05070d; stroke-width: 3; stroke-opacity: .85; pointer-events: none; transition: opacity .25s ease; }
-.db-dot.is-against .db-mark { fill: var(--db-against); stroke: var(--surface-1); }
 .db-halo { pointer-events: none; transition: opacity .25s ease; }
-.db-svg.has-on .db-dot:not(.is-on) .db-mark { opacity: .32; }
 .db-svg.has-on .db-dot:not(.is-on) .db-halo { opacity: .25; }
-.db-dot:hover .db-mark, .db-dot.is-on .db-mark { transform: scale(1.35); stroke: var(--ui); opacity: 1; }
-.db-dot:focus-visible .db-mark { transform: scale(1.35); stroke: var(--ui); stroke-width: 3; opacity: 1; }
-/* version 2: each paper a thumb, up for and down against, in its side's colour with a dark edge so it reads on any
-   skin; the same element as the dot, on the same invisible hit circle, so the two marks crossfade (and grow or shrink a
-   little) when the version changes, and hover, selection and focus behave alike */
-.db-tmark { opacity: 0; pointer-events: none; transform-box: fill-box; transform-origin: center; transform: scale(.6);
-  transition: opacity .3s ease, transform .35s var(--db-ease); }
+/* each paper a thumb, up for and down against, in its side's colour with a dark edge so it reads on any skin, on an
+   invisible hit circle */
+.db-tmark { pointer-events: none; transform-box: fill-box; transform-origin: center; transition: transform .35s var(--db-ease); }
 .db-tmark path { paint-order: stroke; stroke: #05070d; stroke-width: 2.6px; stroke-linejoin: round; transition: stroke .2s ease, opacity .25s ease; }
 .db-dot.is-for .db-tmark path { fill: var(--db-for); }
 .db-dot.is-against .db-tmark path { fill: var(--db-against); }
-.db-svg.is-thumbs .db-tmark { opacity: 1; transform: scale(1); }
-.db-svg.is-thumbs .db-dot .db-mark, .db-svg.is-thumbs .db-dot .db-ring-out { opacity: 0 !important; transform: scale(.6); }
-.db-svg.is-thumbs .db-dot:hover .db-tmark, .db-svg.is-thumbs .db-dot.is-on .db-tmark,
-.db-svg.is-thumbs .db-dot:focus-visible .db-tmark { transform: scale(1.25); }
+.db-dot:hover .db-tmark, .db-dot.is-on .db-tmark, .db-dot:focus-visible .db-tmark { transform: scale(1.25); }
 .db-dot:hover .db-tmark path, .db-dot.is-on .db-tmark path { stroke: var(--ui); }
 .db-dot:focus-visible .db-tmark path { stroke: var(--ui); stroke-width: 3.4px; }
 .db-svg.has-on .db-dot:not(.is-on) .db-tmark path { opacity: .32; }
 
-.db-panel { position: sticky; top: calc(var(--bar-h, 56px) + 16px); min-height: 420px; padding: 20px 22px; border-radius: 14px;
+.db-panel { position: sticky; top: calc(var(--bar-h, 56px) + 16px); padding: 20px 22px; border-radius: 14px;
   background: linear-gradient(180deg, #111a33d9, #0a1022e6); border: 1px solid #ffffff1c; box-shadow: 0 10px 40px #00000066;
   -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
   font-size: .92rem; line-height: 1.5; color: var(--text-secondary); }
@@ -1683,6 +1668,59 @@ body[data-page="search"] #searches { overflow-x: clip; }
 .db-new b + span { display: block; font-size: .85rem; }
 .db-panel .db-p-none { color: var(--text-muted); }
 .db-panel .db-p-hint { margin-top: 16px; font-size: .84rem; color: var(--text-muted); }
+/* the panel keeps its size (2026-11-20, asked for: a panel shrunk to its content was not wanted): beside the picture
+   it is as tall as the stage, never under 420px, the same every year, and its contents spread into it. A year's
+   papers share the room between the label and the hint, each card growing (to a limit) and its words centred in it;
+   a paper's sections sit a comfortable step apart, the source at the foot. A year with no paper in the sample holds
+   one line, large, white and centred both ways. The key phrases of a paper's texts (debate.json's 'highlights') and
+   that line's "papers" are in the part's lime, as "The search" in the top bar. */
+.db-panel { display: flex; flex-direction: column; min-height: 420px; }
+@media (min-width: 981px) { .db-panel { align-self: stretch; } }
+.db-panel .db-new { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; gap: 10px; }
+.db-panel .db-new li { flex: 1 1 auto; display: flex; max-height: 220px; }
+.db-panel .db-new button { flex: 1; align-items: center; gap: 14px; padding: 16px 20px; }
+.db-panel .db-new i { margin-top: 0; }
+/* the cards' words in proportion to the cards (2026-11-20, asked for): on a wide screen the name 28px bold, the line
+   23px at 1.45 and the hint 18px in white; below about 1650px all three scale with the screen (the panel does too), so
+   every year still fits the same panel (asked for: scale to fit, never grow the panel) */
+.db-panel .db-new b { font-size: clamp(1.1rem, 1.7vw, 1.75rem); font-weight: 700; line-height: 1.2; margin-bottom: 8px; }
+.db-panel .db-new b + span { font-size: clamp(1rem, 1.35vw, 1.4375rem); line-height: 1.45; }
+/* a year of three papers fits the same panel by giving up air, not type size: tighter cards, gaps and edges */
+@media (min-width: 981px) {
+  .db-panel.is-many { padding-block: 16px; }
+  .db-panel.is-many .db-p-eyebrow { margin-bottom: 8px; }
+  .db-panel.is-many .db-new { gap: 6px; }
+  .db-panel.is-many .db-new button { padding: 8px 18px; }
+  .db-panel.is-many .db-new b { margin-bottom: 5px; }
+  .db-panel.is-many .db-new b + span { line-height: 1.4; }
+  .db-panel.is-many .db-p-hint { margin-top: 10px; }
+}
+.db-panel .db-p-hint { margin-top: 16px; font-size: clamp(.875rem, 1.05vw, 1.125rem); color: var(--text-primary); }
+/* a paper read in the panel (2026-11-20, asked for: as readable as the cards): on a wide screen the title 27px bold,
+   the byline and source 19px, the two texts 22.5px at 1.5, the section labels 16.5px, the side 17px; below about
+   1650px all of it scales with the screen, as the cards do. The panel keeps its size: beside the picture its side and
+   × stay at the top and the paper scrolls under them (.db-body; its size is contained, so it never grows the panel),
+   on a phone the panel under the picture simply grows. The source follows the texts a section's step below. */
+.db-panel.is-paper .db-sec { margin-top: clamp(16px, 2.6vh, 28px); }
+.db-panel.is-paper .db-body > .db-sec:first-child { margin-top: 0; }
+.db-panel.is-paper .db-sec h4 { margin: 0 0 6px; font-size: clamp(.75rem, 1vw, 1.03rem); font-weight: 700; }
+.db-panel.is-paper .db-side { font-size: clamp(.8rem, 1.05vw, 1.0625rem); }
+.db-panel.is-paper .db-side i { width: .72em; height: .72em; }
+.db-panel.is-paper .db-title { font-size: clamp(1.15rem, 1.65vw, 1.6875rem); font-weight: 700; line-height: 1.25; margin-bottom: 8px; }
+.db-panel.is-paper .db-by { font-size: clamp(.95rem, 1.15vw, 1.1875rem); line-height: 1.4; }
+.db-panel.is-paper .db-sec:not(.is-src) h4 + p { font-size: clamp(1rem, 1.37vw, 1.40625rem); line-height: 1.5; }
+.db-panel.is-paper .db-sec.is-src p { font-size: clamp(.95rem, 1.15vw, 1.1875rem); }
+.db-panel.is-paper .db-p-head { flex: none; }
+@media (min-width: 981px) {
+  .db-panel.is-paper .db-body { flex: 1 1 0; min-height: 0; contain: size; overflow-y: auto; overscroll-behavior: contain;
+    margin-right: -10px; padding-right: 10px; scrollbar-width: thin; scrollbar-color: #ffffff38 transparent; }
+  .db-panel.is-paper .db-body.is-more { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+    mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent); }
+}
+.db-panel.is-empty { display: grid; place-items: center; text-align: center; }
+.db-panel .db-p-empty { margin: 0; max-width: 20ch; font-size: clamp(1.25rem, 2vw, 1.65rem); font-weight: 600; line-height: 1.35;
+  color: var(--text-primary); }
+.db-panel .db-hi { font-style: normal; color: var(--part-search); }
 
 /* the year strip: the line fills (scaled, so it costs no layout) to the year shown */
 .db-time { display: flex; align-items: center; gap: 10px; margin-top: 20px; }
@@ -1711,6 +1749,7 @@ body[data-page="search"] #searches { overflow-x: clip; }
 @media (max-width: 980px) {
   .db-grid { grid-template-columns: minmax(0, 1fr); }
   .db-panel { position: static; min-height: 0; }
+  .db-panel.is-empty { min-height: 200px; }
 }
 @media (max-width: 720px) {
   .db-top { grid-template-columns: auto minmax(0, 1fr); }
@@ -1723,7 +1762,7 @@ body[data-page="search"] #searches { overflow-x: clip; }
   .db-m i { width: 4px; height: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .db-w, .db-track i, .db-mark, .db-halo, .db-tmark, .db-tmark path, .db-dot .db-ring-out { transition: none; }
+  .db-w, .db-track i, .db-halo, .db-tmark, .db-tmark path { transition: none; }
   .db-stars .tw { animation: none; }
   .db-panel.is-swap > * { animation: none; }
 }
@@ -1755,14 +1794,6 @@ body[data-page="search"] #searches { overflow-x: clip; }
 .alt-ic-box { flex: none; width: 46px; height: 46px; display: grid; place-items: center; }
 .alt-ic-box svg.alt-ic { width: 100%; height: 100%; display: block; }
 
-/* how the proposal changed (search/timeline.html #proposals, charts/proposals.js, pages/timeline.js): the papers' marks
-   come in once as a wave from 2016 on, each paper's distance and mass together, fading in and sliding 12px from the
-   left, 150ms apart (about 1.7s in all). `translate`, not `transform`, so it adds to the phone rows' own placement.
-   Opacity and translate only; the frame (titles, axes, gridlines, labels) never moves. */
-#chartProposals .pg {
-  transition: opacity .55s ease-out calc(var(--i, 0) * 150ms), translate .6s cubic-bezier(.2, .7, .2, 1) calc(var(--i, 0) * 150ms);
-}
-#chartProposals.is-waiting .pg { opacity: 0; translate: -12px 0; }
 
 /* the final question (search/future.html #yours, pages/future.js): one centred panel. The panel comes in with
    scrolly.css's .reveal and its parts follow, a beat apart. The question and the results share one grid cell, so
@@ -2316,6 +2347,26 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 .db-fly { position: absolute; display: none; margin: 0; transform-origin: 0 0; pointer-events: none; z-index: 5; white-space: nowrap; }
 .db-counts dt { transition: opacity .3s ease; }
 .db-counts.is-away dt { opacity: 0; }
+/* the finale's note: no paper of its own in the last year, small and muted along the stage's foot */
+.db-final-none { position: absolute; left: 16px; right: 16px; bottom: 16px; max-width: none; margin: 0; text-align: center; font-size: .78rem; color: var(--text-muted);
+  opacity: 0; transition: opacity .25s ease; }
+.db-stage.is-final .db-final-none { opacity: 1; transition: opacity .45s ease .75s; }
+/* the finale widens the stage over both columns (2026-11-19; charts/debate.js, widen()): the panel is laid over its
+   column at its own width, under the stage, so the stage slides over it as it fades and it never squeezes; going back
+   (.is-narrowing) it fades in again once the stage has nearly drawn back. The papers' drawing keeps the height it had,
+   so the stage widens without growing taller and nothing under it moves. */
+.db-grid { position: relative; }
+.db-grid:is(.is-wide, .is-narrowing) .db-svg { height: var(--db-svg-h, auto); }
+.db-stage { z-index: 1; }
+.db-panel { transition: opacity .3s ease, visibility 0s; }
+.db-grid.is-wide .db-panel, .db-grid.is-narrowing .db-panel { position: absolute; top: 0; right: 0; width: var(--db-panel-w, auto);
+  height: var(--db-panel-h, auto); }
+.db-grid.is-wide .db-panel { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .25s ease, visibility 0s .25s; }
+.db-grid.is-narrowing .db-panel { transition: opacity .35s ease .4s, visibility 0s; }
+@media (min-width: 981px) {
+  .db-grid.is-wide { grid-template-columns: minmax(0, 1fr) 0px; column-gap: 0; }
+  .db-grid.is-wide .db-final-sides { gap: 0 clamp(60px, 12vw, 200px); }
+}
 @media (max-width: 640px) {
   .db-final { gap: 10px; }
   .db-fl { font-size: .66rem; letter-spacing: .1em; }
@@ -2324,6 +2375,8 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
   .db-face, .db-fl, .db-final-words, .db-final-note, .db-svg, .db-counts dt, .db-final,
   .db-stage.is-final .db-face, .db-stage.is-final .db-fl, .db-stage.is-final .db-final-words,
   .db-stage.is-final .db-final-note, .db-stage.is-final .db-svg { transition: none; }
+  .db-final-none, .db-stage.is-final .db-final-none, .db-panel,
+  .db-grid.is-wide .db-panel, .db-grid.is-narrowing .db-panel { transition: none; }
 }
 
 /* Future, version 2 (2026-11-10): the milestones follow the page title with no heading of their own, so they sit
@@ -2332,9 +2385,7 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 
 /* How the proposal changed, version 2 (2026-11-10, charts/proposals2.js): the picture and the paper row on the left,
    the estimate card and a small overview on the right. Planet Nine's colour for a model, ember for the candidate,
-   distances in gold; the switch as the debate's. */
-.pv-tools { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-.pv-tools .seg button { font-size: .8rem; }
+   distances in gold. */
 .pv { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr); gap: 20px; align-items: start; --pv: var(--p9); --pv-ink: var(--p9-ink); }
 .pv.is-cand { --pv: var(--series-2); --pv-ink: var(--series-2-ink); }
 .pv-left, .pv-right { display: grid; gap: 12px; min-width: 0; }
@@ -2410,9 +2461,6 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 @media (max-width: 520px) {
   .pv-vals { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px 12px; }
   .pv-big { font-size: 1.3rem; }
-  .pv-tools { justify-content: stretch; }
-  .pv-tools .seg { width: 100%; }
-  .pv-tools .seg button { flex: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .pv-text.is-swap { animation: none; }
@@ -2451,6 +2499,54 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 @media (max-width: 900px) { .pv-pick, .pv-pick:is(*) { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); } }
 @media (max-width: 420px) { .pv-pick, .pv-pick:is(*) { grid-template-columns: repeat(2, minmax(0, 1fr)); } .pv-btn, .pv-btn:is(*) { min-height: 60px; padding: 9px 8px; } }
 @media (prefers-reduced-motion: reduce) { .pv-btn, .pv-btn:is(*) { transition: none; } .pv-btn:hover { transform: none; } }
+/* the paper buttons (2026-11-17) show the year alone, a little larger, in shorter buttons. The paper's name stays in
+   the button for screen readers (2016 and 2021 each have two papers), only hidden from view. */
+#proposals .pv-btn { position: relative; gap: 0; min-height: 46px; padding: 8px 10px; }
+#proposals .pv-btn .pv-btn-y { font-size: 1.2rem; line-height: 1.2; }
+/* the distance and mass picture (2026-11-17) on a patch of night sky (the Evidence Constellation's, cut 2026-11-20):
+   its navy, and two sparse tiles of faint stars of a few sizes, drawn in CSS so the picture's markup, data and
+   positions are untouched; tiles of different sizes so no repeat shows. Planet Nine carries a faint blue and gold
+   glow that follows its drawing. Labels keep their dark edge, in the navy. */
+#proposals .pv-pic {
+  border-color: #ffffff14; border-radius: 14px;
+  background:
+    radial-gradient(circle at 23px 41px, #dfe6ffb3 0 .8px, transparent 1.4px),
+    radial-gradient(circle at 97px 12px, #dfe6ff73 0 .6px, transparent 1.1px),
+    radial-gradient(circle at 151px 88px, #dfe6ff8c 0 1px, transparent 1.6px),
+    radial-gradient(circle at 61px 121px, #dfe6ff59 0 .5px, transparent 1px),
+    radial-gradient(circle at 173px 137px, #dfe6ff80 0 .7px, transparent 1.2px),
+    radial-gradient(circle at 44px 174px, #dfe6ff99 0 1.1px, transparent 1.7px),
+    radial-gradient(circle at 139px 63px, #dfe6ff66 0 .6px, transparent 1.1px),
+    radial-gradient(circle at 221px 118px, #dfe6ff80 0 .8px, transparent 1.3px),
+    radial-gradient(circle at 12px 9px, #dfe6ff4d 0 .5px, transparent 1px),
+    radial-gradient(ellipse 80% 75% at 50% 45%, #0d1832 0%, #081024 50%, #04070f 100%);
+  background-size: 190px 150px, 190px 150px, 190px 150px, 190px 150px, 190px 150px,
+    263px 211px, 263px 211px, 263px 211px, 263px 211px, 100% 100%;
+  background-repeat: repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, repeat, no-repeat;
+}
+/* on a wide screen (2026-11-17): the picture's card reaches the foot of the right column. pages/timeline.js
+   measures the spare height (--pv-extra, and --pv-extra-u in the picture's units); half goes between the distance and
+   mass scales, a quarter above the picture, the note keeps to the foot. Eased as the right column changes with the
+   paper. The right column itself is not stretched. */
+@media (min-width: 901px) {
+  #proposals .pv-left { align-self: stretch; grid-template-rows: auto 1fr; }
+  #proposals .pv-pic { display: flex; flex-direction: column; }
+  #proposals .pv-svg { margin-top: calc(var(--pv-extra, 0px) * .25); margin-bottom: calc(var(--pv-extra, 0px) * .5);
+    transition: margin .45s ease; }
+  #proposals .pv-mass { transform: translateY(calc(var(--pv-extra-u, 0px) * .5)); transition: transform .45s ease; }
+  #proposals .pv-pic-note { margin-top: auto; }
+}
+@media (min-width: 901px) and (prefers-reduced-motion: reduce) {
+  #proposals :is(.pv-svg, .pv-mass) { transition: none; }
+}
+#proposals .pv-art { filter: drop-shadow(0 0 9px #7fa8ff4d) drop-shadow(0 0 22px #ffc8782e); }
+#proposals :is(.pv-mlabel, .pv-plabel) { stroke: #081024; }
+#proposals .pv-btn .pv-btn-n { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* How the proposal changed: its heading (2026-11-20, asked for) a few pixels larger than the other sections', its key
+   word in the part's lime, as "The search" in the top bar */
+#proposals .sec-head h2 { font-size: clamp(calc(1.5rem + 2px), calc(3.2vw + 5px), calc(2.1rem + 5px)); font-weight: 700; line-height: 1.2; }
+#proposals .sec-head h2 em { font-style: normal; color: var(--part-search); }
 /* the mass scale's marker is Planet Nine itself (2026-11-10): the same drawing as the distance ruler's, small, centred
    on its value; it takes no stroke or fill from the old dot's rule. On a phone the picture is drawn at about half size,
    so the planet is drawn half again as large and its number lifted clear of it. */
@@ -2475,6 +2571,8 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 .pv-text p { margin: 0; overflow-wrap: anywhere; }
 .pv-text .pv-k { margin-bottom: 3px; font: 700 .62rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
 .pv-desc p:not(.pv-k) { color: var(--text-primary); }
+/* the paper's key phrases in the part's lime (2026-11-20, asked for; charts/proposals2.js, ABOUT) */
+.pv-desc .pv-hi { font-style: normal; color: var(--part-search); }
 .pv-cmp p:not(.pv-k) { color: var(--text-secondary); }
 .pv-src { padding-top: 8px; border-top: 1px solid var(--rule); }
 @container (min-width: 420px) {
@@ -2529,4 +2627,34 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 @media (min-width: 1200px) {
   #searches .st .fr.is-data { grid-template-columns: minmax(0, 1fr) minmax(0, 540px); padding: 28px 44px; }
   #searches .st .fr.is-data .fr-art, #searches .st .fr.is-key.is-data .fr-art { max-width: 540px; }
+}
+
+/* the debate page's head (2026-11-19, charts/debatehead.js): the title and lede on the left, a decorative Planet Nine
+   on the right, the reader's own skin without its question mark, half lit and half in shadow. It sits in the head's own
+   height (the drawing hangs into the padding rather than pushing the debate down). The drawing turns slowly in place; the light
+   swings slowly about the centre, so the line between day and night drifts; the whole floats a few pixels. Decoration
+   only; with reduced motion it holds still. */
+.dh-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: clamp(24px, 4vw, 64px); }
+.dh-art { width: clamp(150px, 17vw, 220px); aspect-ratio: 1; margin-block: -34px -30px; pointer-events: none; }
+.dh-float { width: 100%; height: 100%; animation: dh-float 9s ease-in-out infinite alternate; }
+.dh-svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.dh-spin { transform-box: view-box; transform-origin: 0 0; animation: dh-turn 240s linear infinite; }
+.dh-light { transform-box: view-box; transform-origin: 0 0; animation: dh-swing 46s ease-in-out infinite alternate; }
+.dh-air { animation: dh-breathe 11s ease-in-out infinite alternate; }
+.dh-tw { animation: dh-twinkle var(--d, 4s) ease-in-out var(--dl, 0s) infinite alternate; }
+@keyframes dh-float { from { transform: translateY(-5px); } to { transform: translateY(5px); } }
+@keyframes dh-turn { to { transform: rotate(360deg); } }
+@keyframes dh-swing { from { transform: rotate(-24deg); } to { transform: rotate(20deg); } }
+@keyframes dh-breathe { from { opacity: .8; } to { opacity: 1; } }
+@keyframes dh-twinkle { to { opacity: .06; } }
+@media (max-width: 720px) {
+  .dh-art { width: clamp(84px, 24vw, 120px); margin-block: -10px; }
+}
+@media (max-width: 460px) {
+  .dh-head { grid-template-columns: minmax(0, 1fr); }
+  .dh-art { grid-row: 1; justify-self: end; width: 76px; margin: -4px 0 -18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dh-float, .dh-spin, .dh-light, .dh-air, .dh-tw { animation: none; }
+  .dh-light { transform: rotate(-4deg); }
 }

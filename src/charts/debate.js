@@ -1,7 +1,7 @@
 // The Planet Nine debate (search/timeline.html): one mark per paper, revealed year by year from 2014 to 2026, the
 // papers for a planet inside the reader's Planet Nine on the left, the papers against in a faint enclosure on the right
-// (under it on a phone). Two versions of the mark, kept side by side while the team compares them (the toggle on the
-// page): 1 a coloured dot, 2 a thumb, up for and down against. Everything else is the same in both.
+// (under it on a phone). Each paper is a thumb, up for and down against (the coloured-dot version and its toggle were
+// removed on 2026-11-17).
 //
 // Which papers and which side come from papers.json ('stance', our reading of each abstract: supports → for;
 // against and alternative → against; neutral papers stay in the data but are not drawn). The one line on what a
@@ -13,8 +13,6 @@
 //     click mid-transition retargets instead of jumping;
 //   - each group is a sunflower spiral in the order the papers appeared: each keeps its angle, and the spiral
 //     tightens as papers join (inside the planet) or spreads to its room (the cluster);
-//   - each paper's element holds both marks, the dot and the thumb; the version only sets which one shows (style.css,
-//     .is-thumbs), so switching crossfades the marks without touching places, the year or a pinned paper;
 //   - new papers fade and grow in, a beat apart; going back, later papers fade and shrink away and the rest close up.
 // Three named transitions per dot (move, fade, grow) so each interrupts only its own kind.
 
@@ -28,7 +26,7 @@ const W = 640                   // the width the labels' size is set against
 const R = 196                 // the Planet Nine circle
 const R_IN = R - 46           // the spiral never reaches past this
 const SPIRAL = 37             // spacing of the spiral while it has room
-const DOT = 10
+const DOT = 10                // a mark's spacing radius: the hit circle, the halo and the enclosure are set from it
 const THUMB_SIZE = 33         // a thumb's height: a little more than a dot's width, still clear of its neighbours
 const GOLDEN = Math.PI * (3 - Math.sqrt(5))
 const SIDE = { for: 'For Planet Nine', against: 'Against Planet Nine' }
@@ -45,6 +43,25 @@ function title (t) {
   return s.replace(/<i>/g, ' <i>').replace(/\s+/g, ' ').trim()
 }
 const authors = a => !a?.length ? '' : a.length <= 3 ? a.join(', ') : `${a[0]} et al.`
+// A text cut into segments at its key phrases (debate.json's 'highlights', 2026-11-20): each phrase is found by its
+// exact words, overlaps and phrases not found are dropped, and the segments are written in order, the phrases in the
+// part's lime (style.css, .db-hi). Each segment is escaped and its distances set in gold (au()) on its own.
+function segments (text, phrases = []) {
+  const s = String(text ?? '')
+  const spans = phrases.map(p => [s.indexOf(p), p.length]).filter(([i]) => i >= 0).sort((a, b) => a[0] - b[0])
+  const out = []
+  let at = 0
+  for (const [i, n] of spans) {
+    if (i < at) continue
+    if (i > at) out.push({ text: s.slice(at, i) })
+    out.push({ text: s.slice(i, i + n), hi: true })
+    at = i + n
+  }
+  if (at < s.length) out.push({ text: s.slice(at) })
+  return out
+}
+const rich = (text, phrases) => segments(text, phrases)
+  .map(g => g.hi ? `<em class="db-hi">${au(esc(g.text))}</em>` : au(esc(g.text))).join('')
 
 /** Every paper the picture draws, each with a stable id (its DOI), side, year, finding and why. */
 export function debatePapers ({ papers, timeline, debate }) {
@@ -68,7 +85,7 @@ const CLUSTER_R = 150         // the cluster never grows wider than this
 function spiral (list, out, cx, cy, k) {
   list.forEach((d, i) => out.set(d.id, { cx, cy, a: i * GOLDEN + 0.6, r: k * Math.sqrt(i + 0.5) }))
 }
-// The labels, in their marks' colours, above their groups. The thumb (version 2's mark) is a small filled shape on a
+// The labels, in their marks' colours, above their groups. The thumb (each paper's mark) is a small filled shape on a
 // 24-unit grid: a cuff and a hand, turned over for down, drawn here rather than as an emoji so every browser shows
 // the same one.
 const SPLIT_WORDS = ['FOR PLANET NINE', 'AGAINST PLANET NINE']
@@ -123,10 +140,10 @@ function planetArt (skin) {
 const turn = (a, b) => { const d = ((b - a) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI; return t => a + d * t }
 
 /**
- * Draws the debate into `root` and returns { show(year), marker('dots' | 'thumbs') }. `ui` holds the elements round
+ * Draws the debate into `root` and returns { show(year) }. `ui` holds the elements round
  * the picture: year, headline, countFor, countAgainst, panel.
  */
-export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }) {
+export function drawDebate (root, ui, { items, debate, onYear }) {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
   const ms = n => reduce.matches ? 0 : n
   const byId = new Map(items.map(d => [d.id, d]))
@@ -160,9 +177,6 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
   </svg>`
   const svg = d3.select(root).select('.db-svg')
   const layer = svg.select('.db-dots')
-  // which mark the papers wear: a class on the picture, so the marks crossfade in CSS and nothing else is redrawn
-  let markerNow = marker === 'thumbs' ? 'thumbs' : 'dots'
-  svg.classed('is-thumbs', markerNow === 'thumbs')
 
   // a new skin chosen while the page is open: the new drawing fades in over the old, which then goes. Nothing else
   // in the picture is touched, so the dots, the year and any paper being read carry on.
@@ -179,7 +193,8 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
   })
 
   // --- the panel: one paper (hovered, focused or pinned), or the year's new papers
-  let year = null, pinned = null, hovered = null, leaveTimer = 0
+  let year = null, pinned = null, hovered = null, leaveTimer = 0, quiet = false
+  const lit = d => debate.highlights?.[d.id] || {}   // the key phrases of a paper's two texts
   function paperHTML (d) {
     const p = d.paper
     const href = p.arxiv_url || p.url
@@ -187,19 +202,24 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
         <span class="db-side is-${d.side}" data-no-tint><i aria-hidden="true"></i>${SIDE[d.side]}</span>
         ${pinned === d.id ? '<button class="db-close" type="button" aria-label="Close">×</button>' : ''}
       </div>
-      <h3 class="db-title">${title(p.title)}</h3>
-      <p class="db-by">${esc(authors(p.authors))} · ${d.year}${p.journal ? ` · <span>${esc(p.journal.replace(/&amp;/g, '&'))}</span>` : ''}</p>
-      <h4>Main finding</h4><p>${au(esc(p.summary))}</p>
-      <h4>Why it matters</h4><p>${au(esc(d.why))}</p>
-      <h4>Source</h4><p><a href="${esc(href)}" rel="noopener" target="_blank">${esc(p.label)}${p.journal ? ' · ' + esc(p.journal.replace(/&amp;/g, '&')) : ''}</a></p>`
+      <div class="db-body">
+      <div class="db-sec"><h3 class="db-title">${title(p.title)}</h3>
+      <p class="db-by">${esc(authors(p.authors))} · ${d.year}${p.journal ? ` · <span>${esc(p.journal.replace(/&amp;/g, '&'))}</span>` : ''}</p></div>
+      <div class="db-sec"><h4>Main finding</h4><p>${rich(p.summary, lit(d).summary)}</p></div>
+      <div class="db-sec"><h4>Why it matters</h4><p>${rich(d.why, lit(d).why)}</p></div>
+      <div class="db-sec is-src"><h4>Source</h4><p><a href="${esc(href)}" rel="noopener" target="_blank">${esc(p.label)}${p.journal ? ' · ' + esc(p.journal.replace(/&amp;/g, '&')) : ''}</a></p></div>
+      </div>`
   }
   function yearHTML () {
     const fresh = items.filter(d => d.year === year)
+    // a year with no paper in the sample (2015): one line, centred in the panel (style.css, .db-panel.is-empty); the
+    // last year keeps its own words, the panel being gone then
+    if (!fresh.length && year !== LAST) return '<p class="db-p-empty">No <em class="db-hi">papers</em> in our sample for this year.</p>'
     return `<p class="db-p-eyebrow">New in ${year}</p>` + (fresh.length
       ? `<ul class="db-new">${fresh.map(d => `<li><button type="button" data-id="${esc(d.id)}" class="is-${d.side}">
-          <i aria-hidden="true"></i><span><b>${esc(d.paper.label)}</b><span>${au(esc(d.why))}</span></span></button></li>`).join('')}</ul>`
+          <i aria-hidden="true"></i><span><b>${esc(d.paper.label)}</b><span>${rich(d.why, lit(d).why)}</span></span></button></li>`).join('')}</ul>`
       : '<p class="db-p-none">No paper in this sample.</p>') +
-      (year === LAST ? '' : `<p class="db-p-hint">Choose a ${markerNow === 'thumbs' ? 'thumb' : 'dot'} to read its paper.</p>`)
+      (year === LAST ? '' : '<p class="db-p-hint">Choose a thumb to read its paper.</p>')
   }
   let shownKey = ''
   function panel () {
@@ -210,6 +230,16 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     const el = ui.panel
     el.classList.toggle('is-pinned', !!pinned && id === pinned)
     el.innerHTML = id ? paperHTML(byId.get(id)) : yearHTML()
+    el.classList.toggle('is-empty', !!el.querySelector('.db-p-empty'))
+    el.classList.toggle('is-paper', !!id)
+    // a paper longer than the panel scrolls under its head; its foot fades while there is more below (style.css)
+    const body = el.querySelector('.db-body')
+    if (body) {
+      const more = () => body.classList.toggle('is-more', body.scrollTop + body.clientHeight < body.scrollHeight - 2)
+      body.addEventListener('scroll', more, { passive: true })
+      requestAnimationFrame(more)
+    }
+    el.classList.toggle('is-many', !id && el.querySelectorAll('.db-new li').length >= 3)   // style.css: tighter, to fit
     // a short fade and lift as the content changes, restarted each time
     el.classList.remove('is-swap'); void el.offsetWidth; el.classList.add('is-swap')
     // dots: the one being read is lit, the others dim
@@ -228,7 +258,13 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     if (fromList && id) pinned = id
     hovered = null
     panel()
-    if (refocus && was) layer.selectAll('.db-dot').filter(d => d.id === was).node()?.focus()
+    // closing hands the keyboard back to the paper's thumb, but quietly: a thumb taking focus previews its paper,
+    // which put the paper straight back in the panel instead of the year's list (2026-11-20)
+    if (refocus && was) {
+      quiet = true
+      layer.selectAll('.db-dot').filter(d => d.id === was).node()?.focus({ preventScroll: true })
+      quiet = false
+    }
   }
   function hover (id) {
     clearTimeout(leaveTimer)
@@ -293,14 +329,6 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     if (y === year) return
     render(y, false)
   }
-  // the version: dots or thumbs. Only the class changes; the marks crossfade (style.css) and the panel's hint follows.
-  function setMarker (m) {
-    m = m === 'thumbs' ? 'thumbs' : 'dots'
-    if (m === markerNow) return
-    markerNow = m
-    svg.classed('is-thumbs', m === 'thumbs')
-    if (!hovered && !pinned) { shownKey = ''; panel() }
-  }
 
   function render (y, relayout) {
     const back = year != null && y < year
@@ -334,17 +362,14 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     fresh.append('g').attr('class', 'db-grow').attr('transform', 'scale(0.35)')
       .call(g => g.append('circle').attr('class', 'db-hit').attr('r', DOT + 9))
       .call(g => g.append('circle').attr('class', 'db-halo').attr('r', DOT * 2.1).attr('fill', d => `url(#db-glow-${d.side})`))
-      // a dark ring just outside each dot, so it stands off whatever skin is under it
-      .call(g => g.append('circle').attr('class', 'db-ring-out').attr('r', DOT + 2.5))
-      .call(g => g.append('circle').attr('class', 'db-mark').attr('r', DOT))
-      // version 2's mark: a thumb, up for and down against, centred where the dot is
+      // the mark: a thumb, up for and down against, centred on the paper's place
       .call(g => g.append('g').attr('class', 'db-tmark')
         .append('path').attr('d', THUMB)
         .attr('transform', d => `translate(${-THUMB_SIZE / 2},${-THUMB_SIZE / 2}) scale(${THUMB_SIZE / 24})${d.side === 'against' ? ' rotate(180 12 12)' : ''}`))
     fresh
       .on('pointerenter', (e, d) => { if (e.pointerType === 'mouse') hover(d.id) })
       .on('pointerleave', (e) => { if (e.pointerType === 'mouse') hover(null) })
-      .on('focus', (e, d) => hover(d.id))
+      .on('focus', (e, d) => { if (!quiet) hover(d.id) })
       .on('blur', () => hover(null))
       .on('click', (e, d) => { pin(d.id); e.currentTarget.focus({ preventScroll: true }) })
       .on('keydown', (e, d) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pin(d.id) } })
@@ -434,6 +459,7 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
       </div>
       <p class="db-final-words">The evidence remains divided. The search continues.</p>
       <p class="db-final-note">Papers in our sample, ${items.length ? d3.min(items, d => d.year) : ''}–${through}</p>
+      ${items.some(d => d.year === LAST) ? '' : `<p class="db-final-none">No new papers in our sample for ${LAST}.</p>`}
     </div>`)
   const fin = root.querySelector('.db-final')
   const section = root.closest('section') || root.parentElement
@@ -448,6 +474,38 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     e.fly.setAttribute('aria-hidden', 'true')
     section.append(e.fly)
   }
+  // In the finale the stage widens over both columns and the paper panel fades away under it (2026-11-19, asked for:
+  // the last year has no paper to read); going back, the stage narrows and the panel fades in again. The classes on
+  // the grid set the end layout outright (style.css: .is-wide, .is-narrowing, where the panel is laid over its
+  // column so it never squeezes); the move between is one animation of the grid's columns in pixels, from wherever
+  // they are this frame, so a click mid-way retargets. widen() switches the layout and returns the function that
+  // starts the motion, so the finale can measure the end layout before anything moves.
+  const grid = root.parentElement
+  let gridAnim = null
+  function widen (on) {
+    const cols = () => { const s = getComputedStyle(grid); return [s.gridTemplateColumns, s.columnGap] }
+    const from = cols()
+    gridAnim?.cancel(); gridAnim = null
+    if (on) {
+      grid.style.setProperty('--db-panel-w', `${ui.panel.offsetWidth}px`)
+      grid.style.setProperty('--db-panel-h', `${ui.panel.offsetHeight}px`)
+      grid.style.setProperty('--db-svg-h', `${svg.node().getBoundingClientRect().height}px`)
+    }
+    grid.classList.toggle('is-wide', on)
+    grid.classList.toggle('is-narrowing', !on)
+    const to = cols()
+    const tracks = to[0].split(' ').map(parseFloat)
+    if (!on) grid.style.setProperty('--db-panel-w', `${tracks.length > 1 ? tracks[tracks.length - 1] : grid.clientWidth}px`)
+    return () => {
+      const done = () => { gridAnim = null; if (!on) grid.classList.remove('is-narrowing') }
+      const dur = ms(720)
+      if (!dur || from[0] === to[0] || from[0].split(' ').length !== tracks.length) { done(); return }
+      gridAnim = grid.animate([{ gridTemplateColumns: from[0], columnGap: from[1] }, { gridTemplateColumns: to[0], columnGap: to[1] }],
+        { duration: dur, easing: 'cubic-bezier(.62,0,.3,1)' })
+      gridAnim.onfinish = done
+    }
+  }
+
   let finalNow = false
   function finale (on, n) {
     // going home, the flyers keep the totals they carry; the counts above take over when they land
@@ -460,10 +518,12 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     root.classList.toggle('is-final', on)
     counts.classList.toggle('is-away', on)
     const dur = ms(720)
+    // where each number is now, before the layout changes under it
+    const froms = Object.values(ends).map(e => (e.anim && e.anim.playState === 'running' ? e.fly : on ? e.top : e.mid).getBoundingClientRect())
+    const move = widen(on)
     const sec = section.getBoundingClientRect()
-    for (const e of Object.values(ends)) {
-      const flying = e.anim && e.anim.playState === 'running'
-      const from = (flying ? e.fly : on ? e.top : e.mid).getBoundingClientRect()
+    for (const [i, e] of Object.values(ends).entries()) {
+      const from = froms[i]
       e.anim?.cancel()
       e.top.style.visibility = 'hidden'
       e.mid.style.visibility = 'hidden'
@@ -478,6 +538,7 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
         { duration: dur, easing: 'cubic-bezier(.62,0,.3,1)', fill: 'forwards' })
       e.anim.onfinish = () => { (on ? e.mid : e.top).style.visibility = ''; e.fly.style.display = 'none' }
     }
+    move()
   }
 
   // text that changes with the year: the old line slides out, the new one in (CSS, on .db-swap)
@@ -499,6 +560,6 @@ export function drawDebate (root, ui, { items, debate, onYear, marker = 'dots' }
     for (let i = 0; i < ws.length - 2; i++) ws[i].remove()
   }
 
-  return { show, marker: setMarker }
+  return { show }
 }
 

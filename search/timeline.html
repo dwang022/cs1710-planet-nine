@@ -12,25 +12,21 @@
 </head>
 <body data-page="timeline">
 <main>
-  <header class="page-head wrap">
-    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
-    <h1>The Planet Nine <em>debate</em></h1>
-    <p class="lede">Every paper in our sample that argues for or against a ninth planet, from the first hint in 2014 to the
-    start of the survey that could settle it.</p>
+  <header class="page-head wrap dh-head">
+    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. Beside the words, a decorative Planet
+         Nine half in light and half in shadow, turning slowly (charts/debatehead.js); decoration, not data. -->
+    <div class="dh-text">
+      <h1>The Planet Nine <em>debate</em></h1>
+      <p class="lede">Every paper in our sample that argues for or against a ninth planet, from the first hint in 2014 to the
+      start of the survey that could settle it.</p>
+    </div>
+    <div class="dh-art" id="dhArt" aria-hidden="true"></div>
   </header>
 
-  <!-- the debate (charts/debate.js): one dot per paper in papers.json from 2014 on, for a planet inside the circle,
+  <!-- the debate (charts/debate.js): one thumb per paper (up for, down against) in papers.json from 2014 on, for a planet inside the circle,
        against outside, revealed a year at a time. Sides are papers.json's stances (our reading); neutral papers are left
        out of the picture, not out of the data. Headlines and the lines not in field_timeline.json are in debate.json. -->
   <section class="part wrap" id="debate">
-    <!-- two marks for the same papers, kept side by side while the team decides between them (charts/debate.js):
-         version 1 a coloured dot per paper, version 2 a thumb, up for and down against. One layout for both. The
-         choice is kept in localStorage (p9-debate-marker) and can be set with ?v=1 or ?v=2. -->
-    <div class="db-tools">
-      <div class="seg db-version" role="group" aria-label="How each paper is marked">
-        <button type="button" data-marker="dots" aria-pressed="true">Version 1 · Dots</button><button type="button" data-marker="thumbs" aria-pressed="false">Version 2 · Thumbs</button>
-      </div>
-    </div>
     <div class="db-top">
       <div class="db-year" id="dbYear" aria-live="polite"></div>
       <p class="db-headline" id="dbHeadline" aria-live="polite"></p>
@@ -49,34 +45,24 @@
       <button class="pic-btn db-step" type="button" id="dbNext" aria-label="Next year">→</button>
       <button class="pic-btn db-play" type="button" id="dbPlay">Play</button>
     </nav>
-    <p class="caption" id="dbCaption"></p>
   </section>
 
-  <!-- how the planet itself changed (charts/proposals.js, planet_nine_predictions.json, each value src-tagged).
+  <!-- how the planet itself changed (charts/proposals2.js, planet_nine_predictions.json, each value src-tagged).
        The 2016 founding paper gave only a mass floor and a notional orbit; Brown & Batygin (2021) appears twice,
        as its abstract's headline numbers and as the full fit from its Figure 8, which the rest of the site draws. The 2024
        point is the papers' update after the ZTF, DES and PS1 searches ruled out 78% of the 2021 predictions. -->
   <section class="part wrap" id="proposals">
-    <!-- two versions kept while the team compares them (2026-11-10): 1 the original charts (charts/proposals.js),
-         unchanged; 2 one paper at a time (charts/proposals2.js). Stored as p9-proposals-version, ?pv=1|2. -->
-    <div class="pv-tools">
-      <div class="seg pv-version" role="group" aria-label="Which version of this chart">
-        <button type="button" data-v="1" aria-pressed="false">Version 1 · Original</button><button type="button" data-v="2" aria-pressed="true">Version 2 · Interactive</button>
-      </div>
-    </div>
+    <!-- one paper at a time (charts/proposals2.js). This was version 3 ("Focused") of three the team compared; it became
+         the only one on 2026-11-20, and the switch, version 1's dashboard-only view and version 2's two charts
+         (charts/cuts.js, charts/odds.js, still archived below) went. "Why do scientists disagree?", the studies' odds as
+         the Evidence Constellation under it, was cut the same day (asked for: the page simplified). -->
     <div class="sec-head">
-      <h2>How the proposal changed</h2>
+      <h2>How the proposal <em>changed</em></h2>
       <p>Over the decade the proposed planet has grown lighter and moved closer, and the searches since 2021 have
       pushed it back out a little.</p>
     </div>
-    <div id="proposalsV1" hidden>
-    <div class="card"><div id="chartProposals"></div></div>
-    <p class="caption">As each paper's abstract or figures give them · <a href="/credits.html#papers">sources</a></p>
-    </div>
-    <div id="proposalsV2">
-      <div id="chartProposals2"></div>
-      <p class="caption">As each paper's abstract or figures give them · <a href="/credits.html#papers">sources</a></p>
-    </div>
+    <div id="chartProposals2"></div>
+
   </section>
 
   <!-- ARCHIVED, A POSSIBLE ADDITION TO THIS PAGE (moved here from insights/probability.html on 2026-11-17, at the user's

@@ -4,7 +4,7 @@
 // it is and how it compares with the one before, and a small overview of every paper with the chosen one lit. A row
 // of papers under the picture chooses; two papers in one year are two buttons.
 //
-// Every number is read from planet_nine_predictions.json, as version 1 (charts/proposals.js) reads it: a range only
+// Every number is read from planet_nine_predictions.json, as version 1 (the retired charts/proposals.js) read it: a range only
 // where the paper gives one (its own range, or its value with its published errors), a single value only where it
 // gives one, a floor where it gives a floor. Where a paper gives only a range, the picture puts the planet at the
 // middle of it and says so; the card shows the range alone. Phan et al. 2025 is a candidate sighting, not a model:
@@ -26,17 +26,22 @@ const short = p => p.label.replace('Batygin, Adams, Brown & Becker 2019 (review)
   .replace(' (marginalized posterior)', ', full fit').replace(' (IRAS/AKARI far-IR candidate)', '').replace(' (after the searches)', '')
 const name = p => p.label.replace(/ \d{4}.*$/, '')
 
-// what kind of paper each is, and one or two plain sentences on it (from the notes in planet_nine_predictions.json)
+// what kind of paper each is, one or two plain sentences on it (from the notes in planet_nine_predictions.json), and
+// the one or two phrases in those sentences lit in the part's lime (2026-11-20, asked for): exact words of the sentence,
+// so the wording never changes; a phrase not found is left plain
 const ABOUT = {
-  batygin_brown_2016: ['First proposal', 'The founding paper. It sets a floor on the mass and gives an example orbit to show the idea works, not a fit to the data.'],
-  brown_batygin_2016: ['Ranges from simulations', 'The same authors match many simulated planets to the observed orbits and keep the ones that work, giving wide ranges in both distance and mass.'],
-  millholland_laughlin_2017: ['A different method', 'A separate team asks the objects to move in step with the planet. Its orbit points a different way from Brown and Batygin’s.'],
-  batygin_2019: ['Review', 'A review by the original authors and colleagues, with narrower ranges than the first proposal.'],
-  brown_batygin_2021_abstract: ['Fit to the observed orbits', 'A statistical fit to the observed objects that allows for where telescopes looked. These are the headline numbers from its abstract.'],
-  brown_batygin_2021_posterior: ['Fit to the observed orbits', 'The same 2021 paper’s full fit, read from its figures. The rest of this site uses these numbers.'],
-  brown_batygin_2024: ['Update after the searches', 'After three sky surveys ruled out much of the 2021 range, the middle of the planets still allowed.'],
-  phan_2025: ['Candidate sighting', 'Not a model estimate. One possible faint object in two old infrared surveys. Two sightings cannot give an orbit, so this is its distance now, and it is not a detection.'],
+  batygin_brown_2016: ['First proposal', 'The founding paper. It sets a floor on the mass and gives an example orbit to show the idea works, not a fit to the data.', ['founding paper', 'example orbit']],
+  brown_batygin_2016: ['Ranges from simulations', 'The same authors match many simulated planets to the observed orbits and keep the ones that work, giving wide ranges in both distance and mass.', ['simulated planets', 'wide ranges']],
+  millholland_laughlin_2017: ['A different method', 'A separate team asks the objects to move in step with the planet. Its orbit points a different way from Brown and Batygin’s.', ['move in step with the planet', 'points a different way']],
+  batygin_2019: ['Review', 'A review by the original authors and colleagues, with narrower ranges than the first proposal.', ['narrower ranges']],
+  brown_batygin_2021_abstract: ['Fit to the observed orbits', 'A statistical fit to the observed objects that allows for where telescopes looked. These are the headline numbers from its abstract.', ['statistical fit', 'where telescopes looked']],
+  brown_batygin_2021_posterior: ['Fit to the observed orbits', 'The same 2021 paper’s full fit, read from its figures. The rest of this site uses these numbers.', ['full fit']],
+  brown_batygin_2024: ['Update after the searches', 'After three sky surveys ruled out much of the 2021 range, the middle of the planets still allowed.', ['ruled out much of the 2021 range']],
+  phan_2025: ['Candidate sighting', 'Not a model estimate. One possible faint object in two old infrared surveys. Two sightings cannot give an orbit, so this is its distance now, and it is not a detection.', ['possible faint object', 'not a detection']],
 }
+
+// a sentence, escaped, with its key phrases wrapped for the lime (style.css, .pv-hi)
+const lit = (text, phrases = []) => phrases.reduce((h, ph) => h.replace(esc(ph), `<em class="pv-hi">${esc(ph)}</em>`), esc(text))
 
 /** A paper's numbers: the value it gives (or none), the range it gives (or none), where the picture puts it. */
 function estimate (p) {
@@ -57,7 +62,9 @@ const fmtM = v => (Math.round(v * 10) / 10).toString()
 const distWords = e => e.a != null ? `${fmtA(e.a)} AU` : e.aRange ? `${fmtA(e.aRange[0])}–${fmtA(e.aRange[1])} AU` : 'not given'
 const massWords = e => e.m != null ? `${fmtM(e.m)}` : e.mRange ? `${fmtM(e.mRange[0])}–${fmtM(e.mRange[1])}` : e.mMin != null ? `at least ${fmtM(e.mMin)}` : 'not given'
 
-export function drawProposalsV2 (root, predictions) {
+// onSelect (optional, 2026-11-17): called with the chosen paper's entry from planet_nine_predictions.json each time
+// the choice changes, so the timeline page's version 2 can link it to the odds chart
+export function drawProposalsV2 (root, predictions, { onSelect } = {}) {
   const papers = predictions.map((p, i) => ({ ...p, i, e: estimate(p) })).filter(p => p.e.aAt != null || p.e.mAt != null)
     .sort((a, b) => a.year - b.year || a.i - b.i)
   const start = Math.max(0, papers.findIndex(p => p.is_default))
@@ -66,13 +73,13 @@ export function drawProposalsV2 (root, predictions) {
   root.innerHTML = `
     <div class="pv">
       <div class="pv-left">
-        <div class="pv-pic card">
-          <svg class="pv-svg" viewBox="0 0 640 262" role="img" aria-label="The chosen paper's estimate: its distance from the Sun on a ruler from 0 to 1,050 AU and its mass on a scale from 0 to 21 Earth masses"></svg>
-          <p class="pv-pic-note">Planet size is illustrative. A shaded band is the paper’s range.</p>
-        </div>
         <div class="pv-pick" role="group" aria-label="Choose a paper">
           ${papers.map((p, i) => `<button type="button" class="pv-btn${p.candidate ? ' is-cand' : ''}" data-i="${i}" aria-pressed="false">
             <span class="pv-btn-y">${p.year}</span><span class="pv-btn-n">${esc(short(p).replace(/ \d{4}/, ''))}</span></button>`).join('')}
+        </div>
+        <div class="pv-pic card">
+          <svg class="pv-svg" viewBox="0 0 640 262" role="img" aria-label="The chosen paper's estimate: its distance from the Sun on a ruler from 0 to 1,050 AU and its mass on a scale from 0 to 21 Earth masses"></svg>
+          <p class="pv-pic-note">Planet size is illustrative. A shaded band is the paper’s range.</p>
         </div>
       </div>
       <div class="pv-right">
@@ -109,6 +116,7 @@ export function drawProposalsV2 (root, predictions) {
     <g class="pv-planet"><g class="pv-scale"><g class="pv-art"><svg viewBox="0 0 100 100" width="100" height="100"><use href="#art-planet-nine"/></svg></g>
       <g class="pv-cand"><circle r="26" transform="translate(50,50)"/><circle r="9" transform="translate(50,50)"/></g></g>
       <text class="pv-plabel" y="-10"></text></g>
+    <g class="pv-mass"><!-- the mass scale, as one group so a page can space it (the timeline's version 3); no transform here -->
     <text class="pv-axis-t pv-axis-m" x="${X0}" y="${YM - 40}">Mass, compared with Earth</text>
     <g transform="translate(30,${YM - 20})">${svgMarkup('earth', { size: 40 })}</g>
     <text class="pv-earth" x="50" y="${YM + 36}">Earth = 1</text>
@@ -118,7 +126,7 @@ export function drawProposalsV2 (root, predictions) {
     <rect class="pv-band pv-band-m" y="${YM - 9}" height="18" rx="9"/>
     <path class="pv-open" d="M0,0 L-9,-6 L-9,6 Z"/>
     <g class="pv-mdot" transform="translate(${X0},${YM})"><g class="pv-mdot-s"><svg x="${-MP / 2}" y="${-MP / 2}" width="${MP}" height="${MP}" viewBox="0 0 100 100"><use href="#art-planet-nine"/></svg></g></g>
-    <text class="pv-mlabel" y="${YM - MP / 2 - 7}"></text>`)
+    <text class="pv-mlabel" y="${YM - MP / 2 - 7}"></text></g>`)
   const planet = svg.select('.pv-planet')
 
   // --- the overview: every paper's distance and mass as version 1 draws them, the chosen one lit
@@ -212,10 +220,11 @@ export function drawProposalsV2 (root, predictions) {
         : `Compared with ${esc(short(before))}: distance ${esc(distWords(before.e))} → ${esc(distWords(e))}; mass ${esc(massWords(before.e))} → ${esc(massWords(e))} Earth masses.`
     const text = $('.pv-text')
     // the paper and how it compares, side by side on a wide card, each under a small label; the source under both
-    text.innerHTML = `<div class="pv-desc"><p class="pv-k">This paper</p><p>${esc(ABOUT[p.ref]?.[1] || '')}</p></div>
+    text.innerHTML = `<div class="pv-desc"><p class="pv-k">This paper</p><p>${lit(ABOUT[p.ref]?.[1] || '', ABOUT[p.ref]?.[2])}</p></div>
       <div class="pv-cmp"><p class="pv-k">${cand ? 'How to read it' : 'Change from before'}</p><p>${compare}</p></div>
       <p class="pv-src"><a href="https://doi.org/${esc(p.doi)}" rel="noopener" target="_blank">${esc(p.label)}</a></p>`
     text.classList.remove('is-swap'); void text.offsetWidth; if (prev) text.classList.add('is-swap')
+    onSelect?.(p)
   }
 
   root.querySelector('.pv-pick').addEventListener('click', e => { const b = e.target.closest('.pv-btn'); if (b) select(+b.dataset.i) })

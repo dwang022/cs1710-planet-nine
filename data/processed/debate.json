@@ -5,6 +5,7 @@
   "A paper's year is its year in field_timeline.json when the ledger has it, otherwise its year in papers.json.",
   "'why' is the one line that says what a paper does to the argument. For papers in field_timeline.json it is that file's line (the branch's title when the finders drew a conclusion, else the entry's title); the lines below are for the rest, each a retelling of the abstract-checked 'summary' in papers.json. Tagged ours.",
   "'headlines' are ours: one line per year, naming only papers in the picture that year (and Rubin's start in 2026, from field_timeline.json). They are a reading, not a finding.",
+  "'highlights' are ours (2026-11-20): per paper, the one or two phrases of its 'why' and of its papers.json 'summary' that charts/debate.js sets in the part's lime. Exact words of those texts, which are never changed; a phrase not found is left plain.",
   "The sample is chosen, not a census; counting its dots does not measure opinion."
  ],
  "src": "ours",
@@ -22,7 +23,7 @@
   "2023": "Modified gravity is offered as another way to line up the orbits",
   "2024": "Three-quarters of the predicted planets are ruled out, and a passing star is offered instead",
   "2025": "A possible infrared sighting, and two remote objects whose orbits do not fit the pattern",
-  "2026": "No paper in this sample yet. The Rubin survey, the likeliest to settle the question, begins"
+  "2026": "The Rubin survey, the likeliest to settle the question, begins"
  },
  "why": {
   "10.3847/2041-8205/824/2/L23": "Shows where surveys have already looked along the predicted orbit, and where the planet could still be.",
@@ -34,5 +35,31 @@
   "10.3847/1538-4365/ac3914": "A survey that tracks its own blind spots finds its extreme objects spread evenly, not lined up.",
   "10.3847/1538-3881/acef1e": "Modified gravity could line up the orbits with no ninth planet.",
   "10.1038/s41550-024-02349-x": "A star passing close to the young Sun could have shaped the distant orbits instead."
+ },
+ "highlights": {
+  "10.1088/0004-637X/781/1/4": { "why": ["Nothing Saturn-sized"], "summary": ["finds nothing", "far below this reach"] },
+  "10.1038/nature13156": { "why": ["point the same way"], "summary": ["share an argument of perihelion", "super-Earth as the cause"] },
+  "10.3847/0004-6256/151/2/22": { "why": ["Six aligned orbits"], "summary": ["share an orbital orientation", "anti-aligned orbit"] },
+  "10.3847/2041-8205/824/2/L22": { "why": ["beat in simple ratios"], "summary": ["resonances with an unseen planet"] },
+  "10.3847/2041-8205/824/2/L23": { "why": ["where the planet could still be"], "summary": ["already searched and excluded"] },
+  "10.3847/1538-3881/153/3/91": { "why": ["share simple rhythms"], "summary": ["mean-motion resonances"] },
+  "10.3847/1538-3881/aa7aed": { "why": ["where telescopes happened to look"], "summary": ["selection effect"] },
+  "10.3847/1538-3881/aad042": { "why": ["a distant massive planet"], "summary": ["massive distant perturber"] },
+  "10.3847/1538-3881/aad95c": { "why": ["align themselves"], "summary": ["with no planet involved"] },
+  "10.3847/1538-3881/aaf0fc": { "why": ["massive disk of small bodies"], "summary": ["the same clustering with no planet"] },
+  "10.3847/1538-3881/aaf051": { "why": ["1-in-500 fluke"], "summary": ["modelling known survey biases", "about 1 in 500 by chance"] },
+  "10.1016/j.physrep.2019.01.009": { "why": ["revises the planet"], "summary": ["The definitive review"] },
+  "10.3847/2041-8213/ab91a0": { "why": ["own pull"], "summary": ["also produces clustering"] },
+  "10.1103/PhysRevLett.125.051103": { "why": ["grapefruit-sized black hole"], "summary": ["primordial black hole"] },
+  "10.3847/PSJ/abe53e": { "why": ["no significant clustering"], "summary": ["not statistically significant"] },
+  "10.3847/1538-3881/ac2056": { "why": ["A refined orbit"], "summary": ["significant at 99.6% confidence"] },
+  "10.3847/1538-3881/ac32dd": { "why": ["ruled out by a direct search"], "summary": ["ruling out 56%"] },
+  "10.3847/1538-4365/ac3914": { "why": ["spread evenly, not lined up"], "summary": ["consistent with azimuthal isotropy"] },
+  "10.3847/1538-3881/acef1e": { "why": ["Modified gravity"], "summary": ["an alternative explanation"] },
+  "10.3847/1538-3881/ad24e9": { "why": ["Three-quarters"], "summary": ["78% of the predicted parameter space"] },
+  "10.1038/s41550-024-02349-x": { "why": ["A star passing close to the young Sun"], "summary": ["reproduces the trans-Neptunian populations"] },
+  "10.1017/pasa.2025.10024": { "why": ["If real"], "summary": ["stays a candidate"] },
+  "10.1038/s41550-025-02595-7": { "why": ["farther out"], "summary": ["does not align"] },
+  "10.3847/2041-8213/ae3a75": { "why": ["points away from the cluster"], "summary": ["a challenge to the dynamical evidence"] }
  }
 }

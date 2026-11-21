@@ -191,7 +191,7 @@ Michael E. Brown, Konstantin Batygin (2022). *A Search for Planet Nine using the
 [doi](https://doi.org/10.3847/1538-3881/ac32dd) · [arXiv:2110.13117](https://arxiv.org/abs/2110.13117) · 13 Crossref citations  
 A direct search of the ZTF archive finds no candidate to V = 20.5, ruling out 56% of the predicted Planet Nine parameter space.
 
-**Brown & Batygin 2024 (Pan-STARRS1 search)**  
+**Brown et al. 2024 (Pan-STARRS1 search)**  
 Michael E. Brown, Matthew J. Holman, Konstantin Batygin (2024). *A Pan-STARRS1 Search for Planet Nine*. The Astronomical Journal  
 [doi](https://doi.org/10.3847/1538-3881/ad24e9) · [arXiv:2401.17977](https://arxiv.org/abs/2401.17977) · 8 Crossref citations  
 Rules out the Brown & Batygin (2021) Planet Nine to a 50% completion depth of V = 21.5. With ZTF and DES, 78% of the predicted parameter space is now excluded; what remains is faint and near where the northern galactic plane crosses the ecliptic.

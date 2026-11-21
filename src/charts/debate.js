@@ -1,7 +1,14 @@
 // The Planet Nine debate (search/timeline.html): one mark per paper, revealed year by year from 2014 to 2026, the
 // papers for a planet inside the reader's Planet Nine on the left, the papers against in a faint enclosure on the right
-// (under it on a phone). Each paper is a thumb, up for and down against (the coloured-dot version and its toggle were
-// removed on 2026-11-17).
+// (under it on a phone). Each paper is a small sheet of paper in its side's colour (thumbs, up for and down against,
+// until 2026-11-21; the coloured-dot version and its toggle were removed on 2026-11-17).
+//
+// The planet carries the balance (2026-11-21, asked for): it is drawn whole only for the share of papers so far that
+// are for, from its left, and the rest of it is a dotted outline, as the Maybe planet of the future page's vote. A
+// paper for fills it back out, a paper against knocks a sliver off its right side, towards the papers against. It is
+// the share of papers in our sample, not a measure of who is right, and never falls to nothing (the first is for).
+// Played forward a year at a time, each new paper flies up from its year on the strip under the picture and lands in
+// its place, and the counts and the planet change as it lands.
 //
 // Which papers and which side come from papers.json ('stance', our reading of each abstract: supports → for;
 // against and alternative → against; neutral papers stay in the data but are not drawn). The one line on what a
@@ -27,7 +34,9 @@ const R = 196                 // the Planet Nine circle
 const R_IN = R - 46           // the spiral never reaches past this
 const SPIRAL = 37             // spacing of the spiral while it has room
 const DOT = 10                // a mark's spacing radius: the hit circle, the halo and the enclosure are set from it
-const THUMB_SIZE = 33         // a thumb's height: a little more than a dot's width, still clear of its neighbours
+const SHEET_SIZE = 30         // a sheet's height: a little more than a dot's width, still clear of its neighbours
+const FLY = 700               // a paper's flight from the strip to its place, in ms
+const GAP = 440               // between one paper's take-off and the next
 const GOLDEN = Math.PI * (3 - Math.sqrt(5))
 const SIDE = { for: 'For Planet Nine', against: 'Against Planet Nine' }
 
@@ -60,8 +69,31 @@ function segments (text, phrases = []) {
   if (at < s.length) out.push({ text: s.slice(at) })
   return out
 }
+// a paper's line ends in a full stop wherever it is written (the ledger's lines have none, debate.json's do)
+const sentence = t => { const s = String(t ?? '').trim(); return !s || /[.!?]$/.test(s) ? s : s + '.' }
 const rich = (text, phrases) => segments(text, phrases)
   .map(g => g.hi ? `<em class="db-hi">${au(esc(g.text))}</em>` : au(esc(g.text))).join('')
+
+/** The static list of every paper (2026-11-21, asked for: a version to read once the animation is done), opened from
+    the finale: a line down the middle with each year on it, the papers for to its left and against to its right (one
+    column on a phone), each a sheet in its side's colour, its name linking to the paper and its one line on what it does
+    to the argument, the key phrases lit as in the panel. Years with no paper in the sample are left out. */
+export function allPapersHTML (items, debate) {
+  const years = [...new Set(items.map(d => d.year))].sort((a, b) => a - b)
+  const sheet = `<svg class="db-all-sheet" viewBox="0 0 24 24" aria-hidden="true"><path class="db-sheet" d="${SHEET}"/><path class="db-fold" d="${SHEET_FOLD}"/><path class="db-lines" d="${SHEET_LINES}"/></svg>`
+  const card = d => `<li class="db-all-p is-${d.side}">${sheet}<div>
+      <a class="db-all-name" href="${esc(d.paper.arxiv_url || d.paper.url)}" rel="noopener" target="_blank">${esc(d.paper.label)}</a>
+      <p>${rich(sentence(d.why), debate.highlights?.[d.id]?.why)}</p>
+      <span class="db-all-side" data-no-tint>${SIDE[d.side]}</span></div></li>`
+  const side = (y, s) => items.filter(d => d.year === y && d.side === s)
+  return `<div class="db-all-head"><h3>Every paper, ${years[0]}–${years[years.length - 1]}</h3>
+      <button class="pic-btn db-all-close" type="button">Close</button></div>
+    <div class="db-all-sides" aria-hidden="true" data-no-tint><span class="is-for">FOR PLANET NINE</span><span class="is-against">AGAINST PLANET NINE</span></div>
+    <ol class="db-all-years">${years.map(y => `<li class="db-all-y">
+      <ul class="db-all-col is-for">${side(y, 'for').map(card).join('')}</ul>
+      <span class="db-all-yr">${y}</span>
+      <ul class="db-all-col is-against">${side(y, 'against').map(card).join('')}</ul></li>`).join('')}</ol>`
+}
 
 /** Every paper the picture draws, each with a stable id (its DOI), side, year, finding and why. */
 export function debatePapers ({ papers, timeline, debate }) {
@@ -85,11 +117,22 @@ const CLUSTER_R = 150         // the cluster never grows wider than this
 function spiral (list, out, cx, cy, k) {
   list.forEach((d, i) => out.set(d.id, { cx, cy, a: i * GOLDEN + 0.6, r: k * Math.sqrt(i + 0.5) }))
 }
-// The labels, in their marks' colours, above their groups. The thumb (each paper's mark) is a small filled shape on a
-// 24-unit grid: a cuff and a hand, turned over for down, drawn here rather than as an emoji so every browser shows
-// the same one.
+// The labels, in their marks' colours, above their groups. The sheet (each paper's mark) is on a 24-unit grid: a page
+// with its top corner folded and three lines of text, the same for both sides; its colour and its place say which.
 const SPLIT_WORDS = ['FOR PLANET NINE', 'AGAINST PLANET NINE']
-const THUMB = 'M2 10h4v11H2z M8 21h9.2c.9 0 1.7-.6 1.9-1.5l1.8-7A2 2 0 0 0 19 10h-5.2l.9-4.3a1.8 1.8 0 0 0-3.3-1.3L8 10z'
+const SHEET = 'M5 2h10.5L20 6.5V22H5z'
+const SHEET_FOLD = 'M15.5 2v4.5H20'
+const SHEET_LINES = 'M8.2 11h8.6M8.2 14.5h8.6M8.2 18h5.6'
+// The planet's whole part, from its left edge to x (about its centre), holds the share s of its disc: the edge solved
+// from the area of a circle left of a vertical line. Whole is the full width and its halo too.
+const edgeFor = s => {
+  if (s >= 0.999) return R + 40
+  const left = x => (R * R * Math.acos(-x / R) + x * Math.sqrt(R * R - x * x)) / (Math.PI * R * R)
+  let lo = -R, hi = R
+  for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (left(m) < s) lo = m; else hi = m }
+  return (lo + hi) / 2
+}
+const shareOf = list => { const f = list.filter(d => d.side === 'for').length; return list.length ? f / list.length : 1 }
 const LABEL_GAP = 26          // from the top of a group (the planet, the cluster's enclosure) to its label
 // the cluster's enclosure: a faint rounded region round the papers against, its half-size following the cluster
 const ENCL_PAD = 34, ENCL_MIN = 96
@@ -163,20 +206,101 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
         <stop offset="0" ${s('#05070d', 0.42)}/><stop offset=".7" ${s('#05070d', 0.5)}/><stop offset="1" ${s('#05070d', 0.62)}/></radialGradient>
       <radialGradient id="db-glow-for"><stop offset=".35" ${s('var(--p9)', 0.45)}/><stop offset="1" ${s('var(--p9)', 0)}/></radialGradient>
       <radialGradient id="db-glow-against"><stop offset=".35" ${s('var(--series-2)', 0.3)}/><stop offset="1" ${s('var(--series-2)', 0)}/></radialGradient>
+      <clipPath id="db-whole"><rect class="db-cut is-whole" x="${-R - 40}" y="${-R - 40}" height="${2 * R + 80}" width="${2 * R + 80}"/></clipPath>
+      <clipPath id="db-gone"><rect class="db-cut is-gone" x="${R + 40}" y="${-R - 40}" height="${2 * R + 80}" width="0"/></clipPath>
     </defs>
     <g class="db-planet" aria-hidden="true">
-      <circle r="${R + 34}" fill="url(#db-halo)"/>
-      <g class="db-art">${planetArt(currentSkin())}</g>
-      <circle r="${R}" fill="url(#db-veil)"/>
-      <circle class="db-rim" r="${R - 0.75}"/>
+      <g clip-path="url(#db-whole)">
+        <circle r="${R + 34}" fill="url(#db-halo)"/>
+        <g class="db-art">${planetArt(currentSkin())}</g>
+        <circle r="${R}" fill="url(#db-veil)"/>
+        <circle class="db-rim" r="${R - 0.75}"/>
+      </g>
+      <g clip-path="url(#db-gone)"><circle class="db-ghost" r="${R - 1}"/></g>
+      <line class="db-seam" x1="${R + 40}" x2="${R + 40}" y1="0" y2="0"/>
+      <g class="db-chips"></g>
       <text class="db-label is-for" y="${-R + 30}">FOR PLANET NINE</text>
     </g>
     <text class="db-label is-against" aria-hidden="true">AGAINST PLANET NINE</text>
     <rect class="db-encl" rx="30" aria-hidden="true"/>
+    <g class="db-fx" aria-hidden="true"></g>
     <g class="db-dots"></g>
   </svg>`
   const svg = d3.select(root).select('.db-svg')
   const layer = svg.select('.db-dots')
+  const fx = svg.select('.db-fx'), chips = svg.select('.db-chips')
+
+  // --- the planet's whole part: its edge, eased by one named transition on the whole part's rect (each step a tween
+  // of the edge, so a new year or a click interrupts it wherever it is). The cut is a seam, a chord across the planet at
+  // the edge, lit only while it moves: in the planet's colour as a paper for fills the planet out, in ember as a paper
+  // against breaks a sliver off.
+  const cutWhole = svg.select('.db-cut.is-whole'), cutGone = svg.select('.db-cut.is-gone'), seam = svg.select('.db-seam')
+  let edgeNow = R + 40
+  function setEdge (x) {
+    edgeNow = x
+    cutWhole.attr('width', (x + R + 40).toFixed(2))
+    cutGone.attr('x', x.toFixed(2)).attr('width', Math.max(0, R + 40 - x).toFixed(2))
+    const h = Math.sqrt(Math.max(0, R * R - x * x))
+    seam.attr('x1', x.toFixed(2)).attr('x2', x.toFixed(2)).attr('y1', (-h).toFixed(2)).attr('y2', h.toFixed(2))
+  }
+  // from a whole planet the edge starts at the disc's right side, not its halo's, so no time is spent off the planet
+  const edgeTween = to => () => { const i = d3.interpolateNumber(to < R ? Math.min(edgeNow, R) : edgeNow, to); return t => setEdge(i(t)) }
+  function lightSeam (gain, dur) {
+    seam.attr('class', `db-seam is-${gain ? 'gain' : 'loss'}`).interrupt('seam').style('opacity', 1)
+      .transition('seam').delay(dur).duration(700).ease(d3.easeCubicIn).style('opacity', 0)
+  }
+  // a paper against lands: shards break off along the seam as it moves in and drift a little way towards the paper
+  // that broke them off, turning and fading (the planet's own coordinates, about its centre)
+  const shard = () => {
+    const n = 3 + Math.floor(Math.random() * 2), r = 5 + Math.random() * 5
+    return 'M' + d3.range(n).map(i => { const a = i / n * 2 * Math.PI + Math.random() * 0.8; const k = r * (0.6 + Math.random() * 0.5); return `${(k * Math.cos(a)).toFixed(2)},${(k * Math.sin(a)).toFixed(2)}` }).join('L') + 'Z'
+  }
+  function chip (from, to, toward) {
+    if (reduce.matches || to >= from) return
+    const x0 = Math.max(to, -R), x1 = Math.min(from, R)
+    const pc = planetAt(), aim = [toward[0] - pc[0], toward[1] - pc[1]]
+    for (let i = 0; i < 9; i++) {
+      const x = x0 + (0.55 + 0.45 * Math.random()) * (x1 - x0), h = Math.sqrt(Math.max(0, R * R - x * x))
+      const y = (Math.random() * 2 - 1) * h * 0.85
+      const go = 0.3 + Math.random() * 0.3, wob = (Math.random() * 2 - 1) * 50
+      const tx = x + (aim[0] - x) * go, ty = y + (aim[1] - y) * go + wob
+      const r0 = Math.random() * 360, r1 = r0 + (Math.random() < 0.5 ? -1 : 1) * (120 + Math.random() * 160)
+      chips.append('path').attr('class', 'db-chip').attr('d', shard())
+        .attr('transform', `translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${r0.toFixed(0)})`)
+        .transition().delay(i * 25).duration(1300 + Math.random() * 500).ease(d3.easeCubicOut)
+        .attrTween('transform', () => {
+          const ix = d3.interpolateNumber(x, tx), iy = d3.interpolateNumber(y, ty), ir = d3.interpolateNumber(r0, r1)
+          return t => `translate(${ix(t).toFixed(1)},${iy(t).toFixed(1)}) rotate(${ir(t).toFixed(0)}) scale(${(1 - 0.5 * t).toFixed(2)})`
+        })
+        .style('opacity', 0)
+        .remove()
+    }
+  }
+  // a paper lands: a thin ring in its side's colour spreads from its place
+  function ripple (d, p) {
+    if (reduce.matches) return
+    fx.append('circle').attr('class', `db-ripple is-${d.side}`).attr('r', 10).attr('transform', at(xy(p)))
+      .transition().duration(700).ease(d3.easeCubicOut).attr('r', 36).style('stroke-width', 0.5).style('opacity', 0).remove()
+  }
+  // a paper in flight: a quadratic curve from the strip, rising above both ends, and a short fading trail behind it
+  const bez = ([x0, y0], [cx, cy], [x1, y1]) => t => { const u = 1 - t; return [u * u * x0 + 2 * u * t * cx + t * t * x1, u * u * y0 + 2 * u * t * cy + t * t * y1] }
+  const TRAIL = 0.24
+  let trails = 0
+  // where a paper takes off: its year's marks on the strip, in the picture's units (below the stage, so it rises in
+  // from the stage's foot under its year; one under the panel comes in at the stage's right, a paper for left of the
+  // papers against)
+  function launch (d, g) {
+    const el = ui.strip?.querySelector(`button[data-year="${d.year}"] .db-m.is-${d.side}`)
+    const ctm = svg.node().getScreenCTM()
+    if (!el || !ctm) return null
+    const r = el.getBoundingClientRect()
+    const pt = new DOMPoint(r.left + r.width / 2, r.top + r.height / 2).matrixTransform(ctm.inverse())
+    // a paper for never crosses the papers against: side by side it rises from left of them, stacked on a phone from
+    // the left edge (and swings up that side, see the flight)
+    const sideBySide = g.cluster[1] === g.planet[1]
+    const x = d.side !== 'for' ? pt.x : sideBySide ? Math.min(pt.x, (g.planet[0] + g.cluster[0]) / 2) : 30
+    return [Math.max(30, Math.min(g.w - 30, x)), Math.max(pt.y, g.h + 30)]
+  }
 
   // a new skin chosen while the page is open: the new drawing fades in over the old, which then goes. Nothing else
   // in the picture is touched, so the dots, the year and any paper being read carry on.
@@ -206,7 +330,7 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
       <div class="db-sec"><h3 class="db-title">${title(p.title)}</h3>
       <p class="db-by">${esc(authors(p.authors))} · ${d.year}${p.journal ? ` · <span>${esc(p.journal.replace(/&amp;/g, '&'))}</span>` : ''}</p></div>
       <div class="db-sec"><h4>Main finding</h4><p>${rich(p.summary, lit(d).summary)}</p></div>
-      <div class="db-sec"><h4>Why it matters</h4><p>${rich(d.why, lit(d).why)}</p></div>
+      <div class="db-sec"><h4>Why it matters</h4><p>${rich(sentence(d.why), lit(d).why)}</p></div>
       <div class="db-sec is-src"><h4>Source</h4><p><a href="${esc(href)}" rel="noopener" target="_blank">${esc(p.label)}${p.journal ? ' · ' + esc(p.journal.replace(/&amp;/g, '&')) : ''}</a></p></div>
       </div>`
   }
@@ -217,9 +341,9 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
     if (!fresh.length && year !== LAST) return '<p class="db-p-empty">No <em class="db-hi">papers</em> in our sample for this year.</p>'
     return `<p class="db-p-eyebrow">New in ${year}</p>` + (fresh.length
       ? `<ul class="db-new">${fresh.map(d => `<li><button type="button" data-id="${esc(d.id)}" class="is-${d.side}">
-          <i aria-hidden="true"></i><span><b>${esc(d.paper.label)}</b><span>${rich(d.why, lit(d).why)}</span></span></button></li>`).join('')}</ul>`
+          <i aria-hidden="true"></i><span><b>${esc(d.paper.label)}</b><span>${rich(sentence(d.why), lit(d).why)}</span></span></button></li>`).join('')}</ul>`
       : '<p class="db-p-none">No paper in this sample.</p>') +
-      (year === LAST ? '' : '<p class="db-p-hint">Choose a thumb to read its paper.</p>')
+      (year === LAST ? '' : '<p class="db-p-hint">Choose a paper to read it.</p>')
   }
   let shownKey = ''
   function panel () {
@@ -258,7 +382,7 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
     if (fromList && id) pinned = id
     hovered = null
     panel()
-    // closing hands the keyboard back to the paper's thumb, but quietly: a thumb taking focus previews its paper,
+    // closing hands the keyboard back to the paper's sheet, but quietly: a sheet taking focus previews its paper,
     // which put the paper straight back in the panel instead of the year's list (2026-11-20)
     if (refocus && was) {
       quiet = true
@@ -330,8 +454,22 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
     render(y, false)
   }
 
+  // the counts above the picture, eased to n papers for and against
+  function tallyTo (n) {
+    animateValue(ui.countFor, n.for, (v, done) => { ui.countFor.textContent = done ? n.for : Math.round(v) })
+    animateValue(ui.countAgainst, n.against, (v, done) => { ui.countAgainst.textContent = done ? n.against : Math.round(v) })
+  }
+
   function render (y, relayout) {
-    const back = year != null && y < year
+    const first = year == null
+    const back = !first && y < year
+    // one year forward: the new papers fly in from the strip (never on the first draw, which is off screen, on a jump
+    // of several years, which would fly a dozen one by one, into the finale, which hides them, or with reduced motion)
+    const flying = !first && y === year + 1 && y !== LAST && !relayout && !reduce.matches
+    // a new year or a layout change cuts short any flight still going: its trail goes (a cut tween never reaches its
+    // end, where the trail would have been cleared) and the paper carries on to its place along a gentle curve
+    fx.selectAll('.db-trail').interrupt().transition().duration(ms(180)).style('opacity', 0).remove()
+      .on('end', function () { const id = this.getAttribute('stroke')?.match(/#([^)]+)/)?.[1]; if (id) svg.select(`#${id}`).remove() })
     year = y
     const g = geometry()
     const pivotNow = relayout && geo ? planetAt() : null
@@ -355,17 +493,20 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
       .each(function (d) {
         const p = place.get(d.id)
         const out = g.cluster ? p.r * 1.3 + 16 : p.r + 26
-        this.__xy = xy({ ...p, a: p.a + (d.side === 'for' ? 0.25 : -0.12), r: d.side === 'for' ? p.r * 0.55 : out })
+        this.__xy = (flying && launch(d, g)) || xy({ ...p, a: p.a + (d.side === 'for' ? 0.25 : -0.12), r: d.side === 'for' ? p.r * 0.55 : out })
+        this.__fly = flying
         this.setAttribute('transform', at(this.__xy))
       })
       .style('opacity', 0)
     fresh.append('g').attr('class', 'db-grow').attr('transform', 'scale(0.35)')
       .call(g => g.append('circle').attr('class', 'db-hit').attr('r', DOT + 9))
       .call(g => g.append('circle').attr('class', 'db-halo').attr('r', DOT * 2.1).attr('fill', d => `url(#db-glow-${d.side})`))
-      // the mark: a thumb, up for and down against, centred on the paper's place
+      // the mark: a sheet of paper, centred on the paper's place
       .call(g => g.append('g').attr('class', 'db-tmark')
-        .append('path').attr('d', THUMB)
-        .attr('transform', d => `translate(${-THUMB_SIZE / 2},${-THUMB_SIZE / 2}) scale(${THUMB_SIZE / 24})${d.side === 'against' ? ' rotate(180 12 12)' : ''}`))
+        .append('g').attr('transform', `translate(${-SHEET_SIZE / 2},${-SHEET_SIZE / 2}) scale(${SHEET_SIZE / 24})`)
+        .call(g => g.append('path').attr('class', 'db-sheet').attr('d', SHEET))
+        .call(g => g.append('path').attr('class', 'db-fold').attr('d', SHEET_FOLD))
+        .call(g => g.append('path').attr('class', 'db-lines').attr('d', SHEET_LINES)))
     fresh
       .on('pointerenter', (e, d) => { if (e.pointerType === 'mouse') hover(d.id) })
       .on('pointerleave', (e) => { if (e.pointerType === 'mouse') hover(null) })
@@ -383,7 +524,7 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
     returning.classed('is-leaving', false).attr('tabindex', 0).attr('aria-hidden', null)
     // the ones staying close up first when papers leave, and make room as papers arrive
     const settle = back ? 160 : 0
-    const arrive = i => (back ? 0 : 260) + i * 90
+    const arrive = i => flying ? 200 + i * GAP : (back ? 0 : 260) + i * 90
 
     // Each dot eases from where it is this frame, turning the short way about a pivot while its distance from it
     // eases, so it moves along an arc. Within a layout the pivot is the centre of the dot's group (the planet, the
@@ -402,10 +543,39 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
     }
     all.transition('move')
       .delay(d => relayout ? 0 : newIds.has(d.id) ? ms(arrive(newIds.get(d.id))) : ms(settle))
-      .duration(d => ms(relayout ? 820 : newIds.has(d.id) ? 640 : 720))
+      .duration(d => ms(relayout ? 820 : newIds.has(d.id) ? (flying ? FLY : 640) : 720))
       .ease(d3.easeCubicInOut)
       .attrTween('transform', function (d) {
         const node = this, to = place.get(d.id)
+        // a paper in flight: up from the strip along a curve that rises above both ends, turning a little as it goes
+        // a flight cut short (a new year clicked before it landed): on to its place along a gentle curve, no trail
+        if (this.__fly && !newIds.has(d.id)) {
+          const p0 = node.__xy, p1 = xy(to)
+          const curve = bez(p0, [(p0[0] + p1[0]) / 2, Math.min(p0[1], p1[1]) - 60], p1)
+          return t => { node.__xy = curve(t); if (t >= 1) node.__fly = false; return at(node.__xy) }
+        }
+        if (this.__fly && newIds.has(d.id)) {
+          const p0 = node.__xy, p1 = xy(to)
+          // stacked on a phone, a paper for swings up the left side, clear of the papers against below the planet
+          const cx = g.cluster[1] === g.planet[1] || d.side !== 'for' ? (p0[0] + p1[0]) / 2 + (p1[0] < p0[0] ? 40 : -40) : 0
+          const curve = bez(p0, [cx, Math.min(p0[1], p1[1]) - 140], p1)
+          const spin = d.side === 'for' ? -1 : 1
+          // the trail fades from nothing at its tail to the paper's colour at the paper: a gradient of its own, laid
+          // along the trail each frame
+          const gid = `db-trail-${++trails}`
+          const grad = svg.select('defs').append('linearGradient').attr('id', gid).attr('gradientUnits', 'userSpaceOnUse')
+          grad.append('stop').attr('offset', 0).attr('class', `db-trail-stop is-${d.side}`).style('stop-opacity', 0)
+          grad.append('stop').attr('offset', 1).attr('class', `db-trail-stop is-${d.side}`).style('stop-opacity', 0.85)
+          const trail = fx.append('path').attr('class', 'db-trail').attr('stroke', `url(#${gid})`)
+          return t => {
+            node.__xy = curve(t)
+            const t0 = Math.max(0, t - TRAIL), tail = curve(t0)
+            trail.attr('d', 'M' + d3.range(9).map(k => curve(t0 + (t - t0) * k / 8).map(v => v.toFixed(1)).join(',')).join('L'))
+            grad.attr('x1', tail[0]).attr('y1', tail[1]).attr('x2', node.__xy[0]).attr('y2', node.__xy[1])
+            if (t >= 1) { node.__fly = false; trail.transition().duration(260).style('opacity', 0).remove().on('end', () => grad.remove()) }
+            return `${at(node.__xy)} rotate(${(spin * 35 * (1 - t) * (1 - t)).toFixed(1)})`
+          }
+        }
         const p0 = pivotFrom || [to.cx, to.cy], p1 = relayout ? g.planet : [to.cx, to.cy]
         const A = polar(node.__xy, p0), B = polar(xy(to), p1)
         const ia = turn(A.a, B.a), ir = d3.interpolateNumber(A.r, B.r)
@@ -420,10 +590,45 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
     const appear = fresh.merge(returning)
     appear.transition('fade')
       .delay(d => ms(newIds.has(d.id) ? arrive(newIds.get(d.id)) : 0))
-      .duration(ms(560)).ease(d3.easeCubicOut).style('opacity', 1)
+      .duration(ms(flying ? 220 : 560)).ease(d3.easeCubicOut).style('opacity', 1)
+    // in flight a paper is a little smaller and grows to its size as it lands
     appear.select('.db-grow').transition('grow')
-      .delay(d => ms(newIds.has(d.id) ? arrive(newIds.get(d.id)) : 0))
+      .delay(d => ms(newIds.has(d.id) ? arrive(newIds.get(d.id)) + (flying ? FLY * 0.55 : 0) : 0))
       .duration(ms(620)).ease(d3.easeBackOut.overshoot(0.9)).attr('transform', 'scale(1)')
+    if (flying) fresh.select('.db-grow').attr('transform', 'scale(0.7)')
+
+    // The counts and the planet. Flying, each paper's landing steps them on: one chained step per paper, so a new
+    // year, a click or a layout change interrupts what is left. Otherwise they ease straight to the year's numbers.
+    const tally = list => ({ for: list.filter(d => d.side === 'for').length, against: list.filter(d => d.side === 'against').length })
+    if (!relayout) {
+      cutWhole.interrupt('edge')
+      const before = shown.filter(d => !newIds.has(d.id))
+      const landing = fresh.data()
+      if (flying && landing.length) {
+        tallyTo(tally(before))
+        let t = null, prevEnd = 0
+        landing.forEach((d, i) => {
+          const so = before.concat(landing.slice(0, i + 1))
+          // a paper for fills the planet out smoothly; a paper against snaps a sliver off
+          const gain = d.side === 'for'
+          const land = arrive(i) + FLY, dur = Math.min(gain ? 560 : 360, GAP - 20)
+          t = (t ? t.transition() : cutWhole.transition('edge')).delay(land - prevEnd).duration(dur)
+            .ease(gain ? d3.easeCubicInOut : d3.easeExpOut)
+            .tween('edge', edgeTween(edgeFor(shareOf(so))))
+            .on('start', () => {
+              tallyTo(tally(so)); ripple(d, place.get(d.id))
+              const to = edgeFor(shareOf(so))
+              if (Math.abs(to - edgeNow) > 0.5 && to < R + 40) lightSeam(gain, dur)
+              if (!gain) chip(edgeNow, to, xy(place.get(d.id)))
+            })
+          prevEnd = land + dur
+        })
+      } else {
+        tallyTo(tally(shown))
+        cutWhole.transition('edge').delay(ms(back ? settle : 0)).duration(ms(first ? 0 : 620)).ease(d3.easeCubicInOut)
+          .tween('edge', edgeTween(edgeFor(shareOf(shown))))
+      }
+    }
 
     // the paper being read, gone from the picture: back to the year (a layout change keeps it)
     const visible = new Set(shown.map(d => d.id))
@@ -435,8 +640,6 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
     words(ui.headline, debate.headlines[y] || '')
     if (ui.year.textContent !== String(y)) words(ui.year, String(y))
     const count = s => shown.filter(d => d.side === s).length
-    animateValue(ui.countFor, count('for'), (v, done) => { ui.countFor.textContent = done ? count('for') : Math.round(v) })
-    animateValue(ui.countAgainst, count('against'), (v, done) => { ui.countAgainst.textContent = done ? count('against') : Math.round(v) })
     finale(y === LAST, { for: count('for'), against: count('against') })
     onYear?.(y)
   }
@@ -459,6 +662,7 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
       </div>
       <p class="db-final-words">The evidence remains divided. The search continues.</p>
       <p class="db-final-note">Papers in our sample, ${items.length ? d3.min(items, d => d.year) : ''}–${through}</p>
+      <button class="pic-btn db-all-btn" type="button" aria-controls="dbAll" aria-expanded="false" tabindex="-1">All papers</button>
       ${items.some(d => d.year === LAST) ? '' : `<p class="db-final-none">No new papers in our sample for ${LAST}.</p>`}
     </div>`)
   const fin = root.querySelector('.db-final')
@@ -514,7 +718,8 @@ export function drawDebate (root, ui, { items, debate, onYear }) {
     finalNow = on
     fin.setAttribute('aria-hidden', String(!on))
     if (on) fin.setAttribute('aria-label', `Through ${through}: ${n.for} papers for Planet Nine, ${n.against} against. The evidence remains divided. The search continues.`)
-    fin.setAttribute('role', on ? 'img' : 'presentation')
+    fin.setAttribute('role', on ? 'group' : 'presentation')
+    fin.querySelector('.db-all-btn').tabIndex = on ? 0 : -1
     root.classList.toggle('is-final', on)
     counts.classList.toggle('is-away', on)
     const dur = ms(720)

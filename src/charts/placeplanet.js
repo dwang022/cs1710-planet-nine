@@ -103,7 +103,7 @@ export function scorePlanet (planet, observedMeanVarpi, model) {
     key: 'Could still be hiding',
     score: b.hidden,
     detail: `magnitude ${b.brightest.toFixed(1)} to ${b.faintest.toFixed(1)} along its orbit; searches reached ${model.limitV}`,
-    cite: 'brown-batygin-2024',
+    cite: 'brown-et-al-2024',
   })
 
   return { total: Math.round(100 * d3.mean(terms, t => t.score)), terms, brightness: b }

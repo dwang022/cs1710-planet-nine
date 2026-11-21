@@ -23,7 +23,7 @@
     <div class="dh-art" id="dhArt" aria-hidden="true"></div>
   </header>
 
-  <!-- the debate (charts/debate.js): one thumb per paper (up for, down against) in papers.json from 2014 on, for a planet inside the circle,
+  <!-- the debate (charts/debate.js): one sheet per paper in papers.json from 2014 on, for a planet inside the circle,
        against outside, revealed a year at a time. Sides are papers.json's stances (our reading); neutral papers are left
        out of the picture, not out of the data. Headlines and the lines not in field_timeline.json are in debate.json. -->
   <section class="part wrap" id="debate">
@@ -45,6 +45,10 @@
       <button class="pic-btn db-step" type="button" id="dbNext" aria-label="Next year">→</button>
       <button class="pic-btn db-play" type="button" id="dbPlay">Play</button>
     </nav>
+    <!-- shown at the last year, when the strip is the summary of the whole debate: the headline of the year pointed at -->
+    <p class="db-sum" id="dbSum" aria-live="polite">Point at a year to read its headline.</p>
+    <!-- every paper as a static list, opened from the finale's “All papers” button (charts/debate.js, allPapersHTML) -->
+    <div class="db-all" id="dbAll" hidden></div>
   </section>
 
   <!-- how the planet itself changed (charts/proposals2.js, planet_nine_predictions.json, each value src-tagged).
@@ -57,7 +61,7 @@
          (charts/cuts.js, charts/odds.js, still archived below) went. "Why do scientists disagree?", the studies' odds as
          the Evidence Constellation under it, was cut the same day (asked for: the page simplified). -->
     <div class="sec-head">
-      <h2>How the proposal <em>changed</em></h2>
+      <h2>How the proposed planet <em>has changed</em></h2>
       <p>Over the decade the proposed planet has grown lighter and moved closer, and the searches since 2021 have
       pushed it back out a little.</p>
     </div>

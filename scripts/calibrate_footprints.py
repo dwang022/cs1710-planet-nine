@@ -53,6 +53,10 @@ def main():
     for s in doc["surveys"]:
         if not s.get("dec_range") or not s.get("ra_ranges"):
             continue
+        if s.get("footprint"):
+            # Rubin: drawn from its published definition (a declination limit and an
+            # ecliptic-latitude limit), whose area already matches; nothing to squeeze.
+            continue
         area = s.get("area_sq_deg")
         before = solid_angle(s["dec_range"], s["ra_ranges"])
         if not area:

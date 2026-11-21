@@ -1,6 +1,9 @@
 // The searches so far, one at a time: a row of markers along a line, one per
 // milestone (several may share a year), and under it the chosen milestone as
-// the ledger draws it (charts/field.js), with Previous and Next beneath.
+// the ledger draws it (charts/field.js), with Previous and Next beneath. Every
+// card is one design (2026-11-20, asked for): a title, a line or two, a drawing
+// and the paper; no lane icon, no kind under the year, no citation count, and a
+// candidate's reading folded into its own card instead of hung beneath.
 //
 // Every card is in the page at once, stacked in one grid cell so one can fade
 // into the next; only the chosen one is visible, the rest are inert. The stage
@@ -12,8 +15,6 @@
 import { milestone, credits } from './field.js'
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
-// what each milestone was, under its year
-const KIND = { search: 'Search', limit: 'Limit', candidate: 'Candidate', survey: 'Survey' }
 
 export function drawSearchSteps (root, { timeline, papers, filter }) {
   const byDoi = new Map(papers.map(p => [p.doi, p]))
@@ -32,12 +33,11 @@ export function drawSearchSteps (root, { timeline, papers, filter }) {
             aria-selected="false" tabindex="-1" aria-label="${e.year}, ${esc(e.title)}">
             <span class="st-dot" aria-hidden="true"></span>
             <span class="st-year">${e.year}</span>
-            ${KIND[e.kind] ? `<span class="st-kind">${KIND[e.kind]}</span>` : ''}
           </button></li>`).join('')}
       </ol>
     </div>
     <div class="st-stage">
-      ${entries.map((e, i) => `<div class="st-card" role="tabpanel" id="${id('card', i)}" aria-labelledby="${id('tab', i)}">${milestone(e, byDoi)}</div>`).join('')}
+      ${entries.map((e, i) => `<div class="st-card" role="tabpanel" id="${id('card', i)}" aria-labelledby="${id('tab', i)}">${milestone(e, byDoi, { plain: true })}</div>`).join('')}
     </div>
     <div class="st-nav">
       <button type="button" class="st-btn st-prev"><span aria-hidden="true">←</span> Previous</button>

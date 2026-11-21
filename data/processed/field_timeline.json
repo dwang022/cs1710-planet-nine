@@ -72,8 +72,8 @@
    "lane": "data",
    "kind": "limit",
    "doi": "10.1088/0004-637X/781/1/4",
-   "title": "Nothing Saturn-sized lies within 28,000 AU, so any hidden planet is small and cold",
-   "line": "WISE's infrared sweep of the whole sky rules out big, warm companions to the Sun. A few Earth masses, far out and faint, is what is left to look for.",
+   "title": "Nothing as big as Saturn lies within 28,000 AU",
+   "line": "NASA's WISE telescope swept the whole sky in infrared and found no large, warm companion to the Sun. What is left to look for is a planet a few times Earth's mass, cold and faint.",
    "diagram": {
     "type": "limit",
     "au": "28,000 AU"
@@ -338,15 +338,16 @@
    "lane": "data",
    "kind": "search",
    "doi": "10.3847/1538-4357/ac2307",
-   "title": "A search for the planet's own heat finds nothing, and removes a tenth of the possibilities",
-   "line": "The Atacama Cosmology Telescope scanned 18,000 square degrees at millimetre wavelengths, where a cold planet glows faintly. Ten weak candidates, none convincing.",
+   "title": "A search for the planet's own heat finds nothing",
+   "line": "The Atacama Cosmology Telescope scanned almost half the sky at millimetre wavelengths, where a cold planet glows faintly. Ten weak candidates turned up, none convincing.",
    "excluded": {
     "pct": 17,
     "text": "ruled out for a 5 Earth-mass planet (9% for 10)"
    },
    "diagram": {
     "type": "search",
-    "pct": 17
+    "pct": 17,
+    "note": "for a planet of 5 Earth masses"
    }
   },
   {
@@ -356,8 +357,8 @@
    "lane": "data",
    "kind": "search",
    "doi": "10.3847/1538-3881/ac32dd",
-   "title": "Half of the predicted planets are ruled out by a direct search",
-   "line": "The planet's own proponents comb the Zwicky Transient Facility archive to magnitude 20.5 and find no candidate.",
+   "title": "A direct search rules out half of the predicted planets",
+   "line": "Brown and Batygin comb the Zwicky Transient Facility's archive of photos for a slow-moving dot and find no candidate.",
    "excluded": {
     "pct": 56,
     "text": "of the predicted planets ruled out"
@@ -376,14 +377,15 @@
    "key": true,
    "doi": "10.3847/1538-3881/ad24e9",
    "title": "Three-quarters of the predicted planets are now ruled out",
-   "line": "Pan-STARRS1 finds nothing to magnitude 21.5. What is left is faint and near the Milky Way's plane, the hardest place to search.",
+   "line": "Nothing turns up in the Pan-STARRS1 photos either, which reach fainter. What is left is faint and near the Milky Way, the hardest place to search.",
    "excluded": {
     "pct": 78,
     "text": "of the predicted planets ruled out, with ZTF and DES"
    },
    "diagram": {
     "type": "search",
-    "pct": 78
+    "pct": 78,
+    "note": "with ZTF and the Dark Energy Survey"
    }
   },
   {
@@ -393,8 +395,8 @@
    "lane": "data",
    "kind": "candidate",
    "doi": "10.1017/pasa.2025.10024",
-   "title": "One infrared source moved the way Planet Nine would, a possible first sighting",
-   "line": "It turned up in a comparison of the IRAS and AKARI sky surveys, 23 years apart. Two detections cannot fix an orbit.",
+   "title": "One faint source may have moved the way Planet Nine would",
+   "line": "Two infrared surveys of the whole sky, IRAS in 1983 and AKARI in 2006, each recorded a source the other did not, a short way apart. If it is one object, it is a planet of 7 to 17 Earth masses, 500 to 700 AU out. Two sightings cannot fix an orbit, so it stays a candidate until a telescope finds it again.",
    "branch": {
     "side": "for",
     "from": "What it would mean",
@@ -499,7 +501,10 @@
    ],
    "diagram": {
     "type": "survey",
-    "progress": 0.1
+    "years": [
+     2026,
+     2036
+    ]
    }
   },
   {

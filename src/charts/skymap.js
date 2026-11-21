@@ -68,12 +68,31 @@ export const depthColour = d3.scaleLinear()
  */
 export function footprintDec (s) { return s.dec_range_calibrated || s.dec_range }
 
+/** Equatorial [RA, Dec] in degrees -> ecliptic latitude in degrees. */
+export function eclipticLatitude (raDeg, decDeg) {
+  const ra = raDeg * D, dec = decDeg * D
+  return Math.asin(Math.sin(dec) * Math.cos(OBLIQUITY) - Math.cos(dec) * Math.sin(OBLIQUITY) * Math.sin(ra)) / D
+}
+
+/**
+ * The northern edge of a survey's area at one right ascension. A band's is its upper declination. Rubin's follows
+ * its published definition (surveys.json, `footprint`): everything south of a declination, and north of that the
+ * North Ecliptic Spur, up to an ecliptic latitude; the edge is whichever is farther north.
+ */
+export function footprintTop (s, raDeg) {
+  const hi = footprintDec(s)[1]
+  if (!s.footprint) return hi
+  let a = -30, b = 60   // ecliptic latitude grows with declination over this range, so halve to the limit
+  for (let k = 0; k < 24; k++) { const m = (a + b) / 2; if (eclipticLatitude(raDeg, m) < s.footprint.ecl_lat_max) a = m; else b = m }
+  return Math.max(s.footprint.dec_max, a)
+}
+
 /** Does this survey's depth shading apply at this point? */
 function covers (s, raDeg, decDeg) {
   if (!s.ra_ranges || !footprintDec(s)) return false
   if (s.footprint_area_verified === false) return false
-  const [d0, d1] = footprintDec(s)
-  if (decDeg < d0 || decDeg > d1) return false
+  const [d0] = footprintDec(s)
+  if (decDeg < d0 || decDeg > footprintTop(s, raDeg)) return false
   return s.ra_ranges.some(([r0, r1]) => raDeg >= r0 && raDeg <= r1)
 }
 

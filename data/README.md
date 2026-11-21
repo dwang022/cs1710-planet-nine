@@ -256,7 +256,22 @@ visible directly.
 
 **`surveys.json`** — 9 surveys with footprint, depth, years, and a note on what
 each one does or does not rule out. Footprints are declination bands plus RA
-ranges: a schematic of ragged real boundaries. Rubin's years (2026 to 2036,
+ranges: a schematic of ragged real boundaries. Rubin's area is the exception
+(checked 2026-11-20): it follows the survey's published definition, everything
+south of declination +12 plus the North Ecliptic Spur, the sky north of that up
+to ecliptic latitude +10 (`footprint`; Schwamb et al. 2023, arXiv:2303.02355,
+sec. 4.1; survey-strategy.lsst.io, baseline v5.3.0). Those two limits enclose
+27,170 square degrees against the published 19.6k + 7.5k. The spur gets a median
+of 155 visits per pointing in g, r, i and z, against about 800 in the main area
+(`visits`). Its single-photo depth is r ~ 24.3 (Brown & Batygin 2021, sec. 7).
+Against the best-fit path this means the whole stretch too faint for the
+searches so far lies inside Rubin's area; the 11% of the orbit (by time) outside
+it is near the closest point, where the planet would be bright. The earlier band
+(declination -62 to -1, squeezed to 18,000 square degrees) left most of the
+faint stretch outside, which was wrong. Schwamb et al. also note that Rubin's
+own moving-object pipeline only links objects out to about 100 to 150 AU, so a
+Planet Nine search in Rubin's data is a separate effort; the site does not say
+this yet (the paper is not in papers.json). Rubin's years (2026 to 2036,
 `years_src`) follow its survey's start on the night of 29 June 2026; the How and
 Future pages read them from here.
 
@@ -438,7 +453,8 @@ the probability page does.
 - **All survey footprints** in `surveys.json`. The declination bands and RA
   ranges are our schematic approximations, not published boundaries. Fine for a
   map, not for any completeness claim.
-- **PS1/CSS/ZTF/HSC/LSST areas and depths**, taken from general knowledge.
+- **PS1/CSS/ZTF/HSC areas and depths**, taken from general knowledge. Rubin's
+  were checked on 2026-11-20 (below).
 - **Physical properties tagged `ours`** — radius, temperature and the "best"
   albedo for a 6.2 M⊕ planet are our interpolations of the Linder & Mordasini
   grid, which is published only at 5/10/20/50 M⊕ and 280/700/1120 AU. The one

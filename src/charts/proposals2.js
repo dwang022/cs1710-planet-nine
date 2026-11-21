@@ -34,7 +34,7 @@ const ABOUT = {
   batygin_2019: ['Review', 'A review by the original authors and colleagues, with narrower ranges than the first proposal.'],
   brown_batygin_2021_abstract: ['Fit to the observed orbits', 'A statistical fit to the observed objects that allows for where telescopes looked. These are the headline numbers from its abstract.'],
   brown_batygin_2021_posterior: ['Fit to the observed orbits', 'The same 2021 paper’s full fit, read from its figures. The rest of this site uses these numbers.'],
-  brown_batygin_2024: ['Update after the searches', 'After three sky surveys ruled out much of the 2021 range, the middle of the planets still allowed. Its published uncertainties are not shown here.'],
+  brown_batygin_2024: ['Update after the searches', 'After three sky surveys ruled out much of the 2021 range, the middle of the planets still allowed.'],
   phan_2025: ['Candidate sighting', 'Not a model estimate. One possible faint object in two old infrared surveys. Two sightings cannot give an orbit, so this is its distance now, and it is not a detection.'],
 }
 

@@ -40,7 +40,7 @@ async function main () {
   const items = weighItems(ALTS)
   const cites = makeCites(PAPERS.papers)
   const said = s => `${auTint(esc(fill(s.text)))}${cites.html(s.cite)}`
-  const row = (label, s, cls = '') => `<dt class="${cls}">${label}</dt><dd>${s.v ? `<b class="wg-v is-${s.v}">${VERDICT[s.v]}</b> ` : ''}${said(s)}</dd>`
+  const row = (label, s, cls = '') => `<dt class="${cls}">${label}</dt><dd>${s.v ? `<b class="wg-v is-${s.v}">${VERDICT[s.v]}.</b> ` : ''}${said(s)}</dd>`
   const title = it => it.id === 'planet_nine' ? 'Planet Nine' : it.short
   const n = items.length + 1
   // first, how to read the figure, nothing dimmed (2026-11-18, asked for)

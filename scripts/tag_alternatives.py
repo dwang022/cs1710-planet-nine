@@ -139,7 +139,7 @@ ISSUES = {
     "stellar_flyby": say("With nothing to hold it in place, any pattern would fade within a few hundred million years.", REVIEW),
     "self_gravitating_disk": say("The ring would need about 10 Earth masses, but estimates allow only a few tenths.", SEFILIAN),
     # Zderic et al. 2020 p1 (O(20 Earth masses)), p3-4 (the mode disperses and recurs); Sefilian & Touma 2019 p12
-    "inclination_instability": say("The swarm would need about 20 Earth masses far out, much more than estimates allow. "
+    "inclination_instability": say("The swarm would need the mass of about twenty Earths, much more than estimates allow. "
                                    "Simulations also showed that the clustering did not last.", ZDERIC, SEFILIAN),
     # Brown & Mathur 2023 p26 ("in tension with the Cassini bound"); Vokrouhlicky et al. 2024 p10 (the ephemerides)
     "modified_gravity": say("If gravity changed far from the Sun, the planets would move slightly differently too. Precise "

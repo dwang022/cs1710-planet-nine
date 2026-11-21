@@ -60,7 +60,6 @@ svg.wg { display: block; width: 100%; height: auto; overflow: visible; }
 .wg-step .wg-dl dd { margin: 0; color: var(--text-secondary); }
 .wg-step .wg-v { color: var(--text-primary); font-weight: 700; }
 .wg-step .wg-v.is-no, .wg-step .wg-v.is-fades { color: var(--series-2-ink); }
-.wg-step .wg-v.is-unshown, .wg-step .wg-v.is-times, .wg-step .wg-v.is-disputed { color: var(--text-secondary); }
 .wg-step .wg-dl dt.is-issue + dd { color: var(--text-primary); }
 
 @media (max-width: 640px) {

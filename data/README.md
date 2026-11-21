@@ -343,7 +343,7 @@ paper in `papers.json` from 2014 to 2026, its side from `stance` (supports → f
 and alternative → against; neutral papers are not drawn but stay in `papers.json`). Holds our
 one-line headline per year and the "why it matters" line for papers `field_timeline.json`
 does not retell (the rest come from its titles), each a retelling of the abstract-checked
-summary. Tagged `ours`.
+summary. Tagged `ours`. Its `highlights` (ours, 2026-11-20) name, per DOI, the one or two phrases of each paper's `why` and of its papers.json `summary` that the page sets in the part's lime: presentation only, exact words of those texts, which are not changed.
 
 **`field_timeline.json`** — the rows of the ledger on the part 3 pages (the search,
 alternatives, timeline and future pages each show a subset): which of the

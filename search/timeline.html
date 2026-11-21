@@ -12,11 +12,15 @@
 </head>
 <body data-page="timeline">
 <main>
-  <header class="page-head wrap">
-    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. -->
-    <h1>The Planet Nine <em>debate</em></h1>
-    <p class="lede">Every paper in our sample that argues for or against a ninth planet, from the first hint in 2014 to the
-    start of the survey that could settle it.</p>
+  <header class="page-head wrap dh-head">
+    <!-- No part/page eyebrow here on purpose: the nav says where the reader is. Beside the words, a decorative Planet
+         Nine half in light and half in shadow, turning slowly (charts/debatehead.js); decoration, not data. -->
+    <div class="dh-text">
+      <h1>The Planet Nine <em>debate</em></h1>
+      <p class="lede">Every paper in our sample that argues for or against a ninth planet, from the first hint in 2014 to the
+      start of the survey that could settle it.</p>
+    </div>
+    <div class="dh-art" id="dhArt" aria-hidden="true"></div>
   </header>
 
   <!-- the debate (charts/debate.js): one thumb per paper (up for, down against) in papers.json from 2014 on, for a planet inside the circle,
@@ -48,91 +52,17 @@
        as its abstract's headline numbers and as the full fit from its Figure 8, which the rest of the site draws. The 2024
        point is the papers' update after the ZTF, DES and PS1 searches ruled out 78% of the 2021 predictions. -->
   <section class="part wrap" id="proposals">
-    <!-- two versions kept while the team compares them (2026-11-17): 1 the dashboard alone, exactly as before; 2 a story
-         in two parts, the same dashboard (one element, never redrawn, so the chosen paper stays) as part 1 and the
-         probability page's two charts as part 2, ending on a takeaway; 3 (focused) the same story with only "What the
-         studies conclude" in part 2 and its own heading (no takeaway box, 2026-11-17). data-pv lists the versions an element shows
-         in (shared elements are drawn once, so the chosen paper and the chart's highlight carry over). Version 1 on every load; ?pv=2 opens version 2. -->
-    <div class="pv-tools">
-      <div class="seg pv-version" role="group" aria-label="Which version of this section">
-        <button type="button" data-v="1" aria-pressed="true">Version 1 · Original</button><button type="button" data-v="2" aria-pressed="false">Version 2 · Expanded</button><button type="button" data-v="3" aria-pressed="false">Version 3 · Focused</button>
-      </div>
-    </div>
+    <!-- one paper at a time (charts/proposals2.js). This was version 3 ("Focused") of three the team compared; it became
+         the only one on 2026-11-20, and the switch, version 1's dashboard-only view and version 2's two charts
+         (charts/cuts.js, charts/odds.js, still archived below) went. "Why do scientists disagree?", the studies' odds as
+         the Evidence Constellation under it, was cut the same day (asked for: the page simplified). -->
     <div class="sec-head">
-      <h2>How the proposal changed</h2>
-      <p data-pv="1 3">Over the decade the proposed planet has grown lighter and moved closer, and the searches since 2021 have
+      <h2>How the proposal <em>changed</em></h2>
+      <p>Over the decade the proposed planet has grown lighter and moved closer, and the searches since 2021 have
       pushed it back out a little.</p>
-      <p data-pv="2" hidden>Over time, scientists have revised what Planet Nine might look like. But the debate isn’t just
-      about its size and distance — it’s also about how convincing the orbital evidence really is.</p>
-    </div>
-    <div class="pv-part-head" data-pv="2" hidden>
-      <p class="pv-part-k">Part 1 · The prediction</p>
-      <h3>What kind of planet are scientists looking for?</h3>
-      <p>Explore how estimates of Planet Nine’s distance and mass have changed as researchers refined their models.</p>
     </div>
     <div id="chartProposals2"></div>
 
-    <!-- version 2, part 2: the probability page's "Where you draw the line" and "What the studies conclude", their keys
-         and charts as on insights/probability.html, drawn by the same functions (charts/cuts.js, charts/odds.js) from
-         the same rows (pages/timeline.js builds them as pages/probability.js does). Their titles are a level down here,
-         under the part's heading. The paper chosen in part 1 is lit on the odds chart when it is the same paper
-         (charts/oddslink.js, matched by DOI). -->
-    <div class="pv-part" id="proposalsEvidence" data-pv="2 3" hidden>
-      <div class="pv-part-head" data-pv="2">
-        <p class="pv-part-k">Part 2 · The evidence</p>
-        <h3>How convincing is the evidence?</h3>
-        <p>The significance of the unusual orbital patterns depends on which distant objects are studied and how
-        researchers account for where telescopes looked.</p>
-      </div>
-      <!-- version 3's heading over the odds chart (2026-11-17: no part labels; version 1's intro, no part 1 heading) -->
-      <div class="pv-part-head" data-pv="3" hidden>
-        <h3>Why do scientists disagree?</h3>
-        <p>Different studies disagree on whether Planet Nine’s orbital evidence could occur by chance, especially after
-        accounting for where telescopes searched.</p>
-      </div>
-      <div class="pv-chart" id="pvCuts" data-pv="2">
-        <div class="pv-chart-head">
-          <h4>Where you draw the line</h4>
-          <p>Studies count objects past different distances from the Sun (1 AU is the Earth–Sun distance), and the odds change with the cut-off.</p>
-        </div>
-        <ul class="legend odds-key" aria-label="Key">
-          <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="var(--series-1)"/></svg><span>seen in more than one year</span></li>
-          <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="5.5" fill="none" stroke="var(--text-secondary)" stroke-width="2"/></svg><span>every object</span></li>
-        </ul>
-        <div class="card"><div id="pvChartCuts"></div></div>
-      </div>
-      <div class="pv-chart" id="pvOdds" data-pv="2">
-        <!-- the chart's own title and line, and the highlighted paper's name: version 2 only (version 3 goes straight
-             from its heading to the key, 2026-11-17) -->
-        <div class="pv-chart-head" data-pv="2">
-          <h4>What the studies conclude</h4>
-          <p>Telescopes find distant objects only where and when they look, which can make orbits seem to lean. The studies split over how to allow for that.</p>
-        </div>
-        <ul class="legend odds-key" aria-label="Key">
-          <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--for)"/></svg><span>finds the lean unlikely to be chance</span></li>
-          <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--series-2)"/></svg><span>finds it consistent with chance</span></li>
-          <li class="legend-item"><svg viewBox="0 0 14 14" aria-hidden="true"><circle cx="7" cy="7" r="6" fill="var(--series-1)"/></svg><span>our test, above</span></li>
-        </ul>
-        <!-- written by pages/timeline.js when the paper chosen in part 1 has a row here; empty otherwise -->
-        <p class="pv-link-note" id="pvLinkNote" aria-live="polite" data-pv="2"></p>
-        <div class="card"><div id="pvChartOdds"></div></div>
-      </div>
-      <!-- version 3 (2026-11-17): the same results as the odds chart above, drawn as the Evidence Constellation
-           (charts/constellation.js), with its own compact key -->
-      <div class="pv-chart" id="pvConst" data-pv="3" hidden>
-        <ul class="legend odds-key ec-key" aria-label="Key">
-          <li class="legend-item"><svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0,-10 C2.2,-2.2 2.2,-2.2 10,0 C2.2,2.2 2.2,2.2 0,10 C-2.2,2.2 -2.2,2.2 -10,0 C-2.2,-2.2 -2.2,-2.2 0,-10 Z" fill="var(--for)"/></svg><span>finds the lean unlikely to be chance</span></li>
-          <li class="legend-item"><svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0,-9 C2,-2 2,-2 9,0 C2,2 2,2 0,9 C-2,2 -2,2 -9,0 C-2,-2 -2,-2 0,-9 Z" fill="none" stroke="var(--series-2)" stroke-width="2"/></svg><span>finds it consistent with chance</span></li>
-          <li class="legend-item"><svg viewBox="-12 -12 24 24" aria-hidden="true"><path d="M0,-10 C2.2,-2.2 2.2,-2.2 10,0 C2.2,2.2 2.2,2.2 0,10 C-2.2,2.2 -2.2,2.2 -10,0 C-2.2,-2.2 -2.2,-2.2 0,-10 Z" fill="var(--series-1)"/></svg><span>our test</span></li>
-        </ul>
-        <div id="pvChartConst"></div>
-      </div>
-      <aside class="pv-takeaway" data-pv="2">
-        <p class="pv-takeaway-k">The prediction has evolved, but the evidence remains contested.</p>
-        <p>Researchers have refined Planet Nine’s proposed properties while continuing to debate whether the observed
-        orbital patterns require another planet.</p>
-      </aside>
-    </div>
   </section>
 
   <!-- ARCHIVED, A POSSIBLE ADDITION TO THIS PAGE (moved here from insights/probability.html on 2026-11-17, at the user's

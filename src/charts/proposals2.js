@@ -26,17 +26,22 @@ const short = p => p.label.replace('Batygin, Adams, Brown & Becker 2019 (review)
   .replace(' (marginalized posterior)', ', full fit').replace(' (IRAS/AKARI far-IR candidate)', '').replace(' (after the searches)', '')
 const name = p => p.label.replace(/ \d{4}.*$/, '')
 
-// what kind of paper each is, and one or two plain sentences on it (from the notes in planet_nine_predictions.json)
+// what kind of paper each is, one or two plain sentences on it (from the notes in planet_nine_predictions.json), and
+// the one or two phrases in those sentences lit in the part's lime (2026-11-20, asked for): exact words of the sentence,
+// so the wording never changes; a phrase not found is left plain
 const ABOUT = {
-  batygin_brown_2016: ['First proposal', 'The founding paper. It sets a floor on the mass and gives an example orbit to show the idea works, not a fit to the data.'],
-  brown_batygin_2016: ['Ranges from simulations', 'The same authors match many simulated planets to the observed orbits and keep the ones that work, giving wide ranges in both distance and mass.'],
-  millholland_laughlin_2017: ['A different method', 'A separate team asks the objects to move in step with the planet. Its orbit points a different way from Brown and Batygin’s.'],
-  batygin_2019: ['Review', 'A review by the original authors and colleagues, with narrower ranges than the first proposal.'],
-  brown_batygin_2021_abstract: ['Fit to the observed orbits', 'A statistical fit to the observed objects that allows for where telescopes looked. These are the headline numbers from its abstract.'],
-  brown_batygin_2021_posterior: ['Fit to the observed orbits', 'The same 2021 paper’s full fit, read from its figures. The rest of this site uses these numbers.'],
-  brown_batygin_2024: ['Update after the searches', 'After three sky surveys ruled out much of the 2021 range, the middle of the planets still allowed. Its published uncertainties are not shown here.'],
-  phan_2025: ['Candidate sighting', 'Not a model estimate. One possible faint object in two old infrared surveys. Two sightings cannot give an orbit, so this is its distance now, and it is not a detection.'],
+  batygin_brown_2016: ['First proposal', 'The founding paper. It sets a floor on the mass and gives an example orbit to show the idea works, not a fit to the data.', ['founding paper', 'example orbit']],
+  brown_batygin_2016: ['Ranges from simulations', 'The same authors match many simulated planets to the observed orbits and keep the ones that work, giving wide ranges in both distance and mass.', ['simulated planets', 'wide ranges']],
+  millholland_laughlin_2017: ['A different method', 'A separate team asks the objects to move in step with the planet. Its orbit points a different way from Brown and Batygin’s.', ['move in step with the planet', 'points a different way']],
+  batygin_2019: ['Review', 'A review by the original authors and colleagues, with narrower ranges than the first proposal.', ['narrower ranges']],
+  brown_batygin_2021_abstract: ['Fit to the observed orbits', 'A statistical fit to the observed objects that allows for where telescopes looked. These are the headline numbers from its abstract.', ['statistical fit', 'where telescopes looked']],
+  brown_batygin_2021_posterior: ['Fit to the observed orbits', 'The same 2021 paper’s full fit, read from its figures. The rest of this site uses these numbers.', ['full fit']],
+  brown_batygin_2024: ['Update after the searches', 'After three sky surveys ruled out much of the 2021 range, the middle of the planets still allowed. Its published uncertainties are not shown here.', ['ruled out much of the 2021 range']],
+  phan_2025: ['Candidate sighting', 'Not a model estimate. One possible faint object in two old infrared surveys. Two sightings cannot give an orbit, so this is its distance now, and it is not a detection.', ['possible faint object', 'not a detection']],
 }
+
+// a sentence, escaped, with its key phrases wrapped for the lime (style.css, .pv-hi)
+const lit = (text, phrases = []) => phrases.reduce((h, ph) => h.replace(esc(ph), `<em class="pv-hi">${esc(ph)}</em>`), esc(text))
 
 /** A paper's numbers: the value it gives (or none), the range it gives (or none), where the picture puts it. */
 function estimate (p) {
@@ -215,7 +220,7 @@ export function drawProposalsV2 (root, predictions, { onSelect } = {}) {
         : `Compared with ${esc(short(before))}: distance ${esc(distWords(before.e))} → ${esc(distWords(e))}; mass ${esc(massWords(before.e))} → ${esc(massWords(e))} Earth masses.`
     const text = $('.pv-text')
     // the paper and how it compares, side by side on a wide card, each under a small label; the source under both
-    text.innerHTML = `<div class="pv-desc"><p class="pv-k">This paper</p><p>${esc(ABOUT[p.ref]?.[1] || '')}</p></div>
+    text.innerHTML = `<div class="pv-desc"><p class="pv-k">This paper</p><p>${lit(ABOUT[p.ref]?.[1] || '', ABOUT[p.ref]?.[2])}</p></div>
       <div class="pv-cmp"><p class="pv-k">${cand ? 'How to read it' : 'Change from before'}</p><p>${compare}</p></div>
       <p class="pv-src"><a href="https://doi.org/${esc(p.doi)}" rel="noopener" target="_blank">${esc(p.label)}</a></p>`
     text.classList.remove('is-swap'); void text.offsetWidth; if (prev) text.classList.add('is-swap')

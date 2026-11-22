@@ -11,7 +11,9 @@
 //                         the timeline page's debate counts them); pointing at a square names its paper. A browser that has
 //                         answered sees the chart at once; Reset withdraws its answer so it can answer again. Where no back
 //                         end runs (a static host), the answer is kept on the reader's device and the page says the
-//                         readers' totals are unavailable.
+//                         readers' totals are unavailable. On GitHub Pages the answers go to a Google Sheet instead,
+//                         through a small Apps Script (server/google-sheet-poll.gs), when the build is given its address
+//                         (VITE_POLL_URL; .github/workflows/pages.yml reads it from the repository's POLL_URL variable).
 
 import '../site.js'
 import { loadData, showLoadError } from '../data.js'
@@ -40,6 +42,7 @@ function revealOnScroll (els) {
 
 // --- your verdict: the question, its back end, and the bars ---------------------------------------------------------
 const API = `${import.meta.env.BASE_URL}api/poll`
+const SHEET = import.meta.env.VITE_POLL_URL || ''
 const ORDER = [['yes', 'Yes'], ['maybe', 'Maybe'], ['no', 'No']]
 
 /** This browser's own random id (the back end keeps only a salted hash of it), made once and kept. */
@@ -57,6 +60,7 @@ const saveVote = c => { try { localStorage.setItem('p9-vote', c) } catch {} }
 const forgetVote = () => { try { localStorage.removeItem('p9-vote') } catch {} }
 
 async function call (method, body) {
+  if (SHEET) return callSheet(method, body)
   const res = await fetch(API, {
     method, credentials: 'same-origin',
     headers: { 'x-voter': voterId(), ...(body ? { 'content-type': 'application/json' } : {}) },
@@ -64,6 +68,20 @@ async function call (method, body) {
   })
   if (![200, 201, 409].includes(res.status)) throw new Error(`poll ${res.status}`)
   return res.json()
+}
+
+/** The same three calls to the Google Sheet's Apps Script, which answers with the same shape. Its web app takes no custom
+ *  headers or DELETE, so the browser's id rides in the query or the body, and posts are plain text (no preflight). */
+async function callSheet (method, body) {
+  const voter = voterId()
+  const res = method === 'GET'
+    ? await fetch(`${SHEET}?voter=${encodeURIComponent(voter)}`)
+    : await fetch(SHEET, { method: 'POST', headers: { 'content-type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(method === 'DELETE' ? { action: 'reset', voter } : { action: 'vote', voter, choice: body.choice }) })
+  if (!res.ok) throw new Error(`poll ${res.status}`)
+  const r = await res.json()
+  if (r.error) throw new Error(`poll ${r.error}`)
+  return r
 }
 
 /** The papers we read, under the answer each one's stance gives (our reading of each abstract), counted as the timeline

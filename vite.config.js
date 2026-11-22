@@ -26,7 +26,10 @@ const poll = {
   configurePreviewServer (server) { server.middlewares.use(pollMiddleware()) },
 }
 
+// GitHub Pages serves the site under the repository's name (.github/workflows/pages.yml sets BASE_PATH); everywhere
+// else it sits at the root. site.js and data.js send links and data through import.meta.env.BASE_URL.
 export default defineConfig({
+  base: process.env.BASE_PATH || '/',
   plugins: [poll],
   server: { port: 5173, open: true },
   build: {

@@ -262,11 +262,13 @@ function watchName () {
 function fixLinks () {
   const base = (import.meta.env.BASE_URL || '/')
   if (base === '/') return
+  // the nav and footer already build their links with url(), so those carry the base and are left alone
+  const fix = v => v.startsWith(base) ? v : url(v)
   document.querySelectorAll('a[href^="/"]:not([href^="//"])').forEach(a => {
-    a.setAttribute('href', url(a.getAttribute('href')))
+    a.setAttribute('href', fix(a.getAttribute('href')))
   })
   document.querySelectorAll('img[src^="/"]:not([src^="//"])').forEach(a => {
-    a.setAttribute('src', url(a.getAttribute('src')))
+    a.setAttribute('src', fix(a.getAttribute('src')))
   })
 }
 

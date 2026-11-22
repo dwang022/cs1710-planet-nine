@@ -64,7 +64,7 @@ def say(text, *cite):
 
 
 ZTF = "10.3847/1538-3881/ac32dd"        # Brown et al. 2022, the ZTF search
-PS1 = "10.3847/1538-3881/ad24e9"        # Brown & Batygin 2024, the Pan-STARRS1 search
+PS1 = "10.3847/1538-3881/ad24e9"        # Brown, Holman & Batygin 2024, the Pan-STARRS1 search
 
 # The cards' text, each naming what it is about (no "it" or "their" without a clear noun just before; 2026-11-18,
 # asked for): how the idea deals with the stretch and with the tilt (`fits`), and its main problem (`issue`). `gist` is

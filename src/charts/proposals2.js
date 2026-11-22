@@ -9,7 +9,8 @@
 // gives one, a floor where it gives a floor. Where a paper gives only a range, the picture puts the planet at the
 // middle of it and says so; the card shows the range alone. Phan et al. 2025 is a candidate sighting, not a model:
 // it is drawn in ember, its distance is where the object would be now (not an average), and it is never compared as
-// a revision. The planet's drawn size is illustrative (it grows a little with mass), not a radius.
+// a revision. The planet's drawn size is illustrative (it grows a little with mass), not a radius; the page no longer
+// says so (the note was cut on 2026-11-21, asked for).
 
 import * as d3 from 'd3'
 import { svgMarkup } from '../art.js'
@@ -79,7 +80,6 @@ export function drawProposalsV2 (root, predictions, { onSelect } = {}) {
         </div>
         <div class="pv-pic card">
           <svg class="pv-svg" viewBox="0 0 640 262" role="img" aria-label="The chosen paper's estimate: its distance from the Sun on a ruler from 0 to 1,050 AU and its mass on a scale from 0 to 21 Earth masses"></svg>
-          <p class="pv-pic-note">Planet size is illustrative. A shaded band is the paper’s range.</p>
         </div>
       </div>
       <div class="pv-right">

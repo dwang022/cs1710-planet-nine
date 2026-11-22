@@ -1625,16 +1625,31 @@ body[data-page="search"] #searches { overflow-x: clip; }
 .db-hit { fill: transparent; }
 .db-halo { pointer-events: none; transition: opacity .25s ease; }
 .db-svg.has-on .db-dot:not(.is-on) .db-halo { opacity: .25; }
-/* each paper a thumb, up for and down against, in its side's colour with a dark edge so it reads on any skin, on an
-   invisible hit circle */
-.db-tmark { pointer-events: none; transform-box: fill-box; transform-origin: center; transition: transform .35s var(--db-ease); }
-.db-tmark path { paint-order: stroke; stroke: #05070d; stroke-width: 2.6px; stroke-linejoin: round; transition: stroke .2s ease, opacity .25s ease; }
-.db-dot.is-for .db-tmark path { fill: var(--db-for); }
-.db-dot.is-against .db-tmark path { fill: var(--db-against); }
+/* each paper a sheet of paper (thumbs until 2026-11-21), in its side's colour with a dark edge so it reads on any skin,
+   its folded corner and lines of text dark, on an invisible hit circle */
+.db-tmark { pointer-events: none; transform-box: fill-box; transform-origin: center; transition: transform .35s var(--db-ease), opacity .25s ease; }
+.db-sheet { paint-order: stroke; stroke: #05070d; stroke-width: 2.4px; stroke-linejoin: round; transition: stroke .2s ease; }
+.db-fold { fill: #05070d; fill-opacity: .3; stroke: #05070d; stroke-opacity: .55; stroke-width: 1.1px; stroke-linejoin: round; }
+.db-lines { fill: none; stroke: #05070d; stroke-opacity: .55; stroke-width: 1.5px; stroke-linecap: round; }
+.db-dot.is-for .db-sheet { fill: var(--db-for); }
+.db-dot.is-against .db-sheet { fill: var(--db-against); }
 .db-dot:hover .db-tmark, .db-dot.is-on .db-tmark, .db-dot:focus-visible .db-tmark { transform: scale(1.25); }
-.db-dot:hover .db-tmark path, .db-dot.is-on .db-tmark path { stroke: var(--ui); }
-.db-dot:focus-visible .db-tmark path { stroke: var(--ui); stroke-width: 3.4px; }
-.db-svg.has-on .db-dot:not(.is-on) .db-tmark path { opacity: .32; }
+.db-dot:hover .db-sheet, .db-dot.is-on .db-sheet { stroke: var(--ui); }
+.db-dot:focus-visible .db-sheet { stroke: var(--ui); stroke-width: 3.2px; }
+.db-svg.has-on .db-dot:not(.is-on) .db-tmark { opacity: .32; }
+/* the planet's lost share: a dotted outline, as the Maybe planet of the future page's vote; specks break off it as a
+   paper against lands, and a ring spreads from each paper landing (charts/debate.js) */
+.db-ghost { fill: #ffffff05; stroke: #8c8b83; stroke-width: 3.5; stroke-dasharray: 0.1 9.5; stroke-linecap: round; }
+.db-chip { fill: var(--p9); stroke: #05070d; stroke-width: .8; stroke-linejoin: round; pointer-events: none; }
+.db-seam { stroke-width: 3; stroke-linecap: round; opacity: 0; pointer-events: none; }
+.db-seam.is-gain { stroke: var(--p9); filter: drop-shadow(0 0 6px var(--p9)); }
+.db-seam.is-loss { stroke: var(--db-against); filter: drop-shadow(0 0 6px var(--db-against)); }
+.db-trail { fill: none; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+.db-trail-stop.is-for { stop-color: var(--db-for); }
+.db-trail-stop.is-against { stop-color: var(--db-against); }
+.db-ripple { fill: none; stroke-width: 2.5; opacity: .85; pointer-events: none; }
+.db-ripple.is-for { stroke: var(--db-for); }
+.db-ripple.is-against { stroke: var(--db-against); }
 
 .db-panel { position: sticky; top: calc(var(--bar-h, 56px) + 16px); padding: 20px 22px; border-radius: 14px;
   background: linear-gradient(180deg, #111a33d9, #0a1022e6); border: 1px solid #ffffff1c; box-shadow: 0 10px 40px #00000066;
@@ -1742,9 +1757,76 @@ body[data-page="search"] #searches { overflow-x: clip; }
 .db-years button:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; border-radius: 6px; }
 .db-m { display: flex; gap: 2px; align-self: end; }
 .db-m.is-against { align-self: start; }
-.db-m i { width: 5px; height: 5px; border-radius: 50%; }
+.db-m i { width: 5px; height: 5px; border-radius: 50%; transition: width .5s var(--db-ease), height .5s var(--db-ease), border-radius .5s var(--db-ease); }
 .db-m.is-for i { background: var(--db-for); }
 .db-m.is-against i { background: var(--db-against); }
+/* the summary of the whole debate, at the last year (2026-11-21, asked for; pages/timeline.js): each year's papers in a
+   column, for stacked up from the line and against down from it, a small sheet each, and the headline of the year
+   pointed at under the strip */
+.db-years button { transition: grid-template-rows .6s var(--db-ease); }
+/* playing, held while the reader is on a paper (pages/timeline.js): the line pulses, so the wait is seen as a wait */
+.db-track i.is-held { animation: db-held 1.2s ease-in-out infinite alternate; }
+@keyframes db-held { to { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .db-track i.is-held { animation: none; opacity: .5; } }
+.db-time.is-summary .db-years button { grid-template-rows: calc(var(--db-stack, 1) * 13px) auto calc(var(--db-stack, 1) * 13px); }
+.db-time.is-summary .db-m.is-for { flex-direction: column-reverse; }
+.db-time.is-summary .db-m.is-against { flex-direction: column; }
+.db-time.is-summary .db-m i { width: 16px; height: 11px; border-radius: 2px; }
+.db-sum { margin: 0; max-width: none; max-height: 0; overflow: hidden; opacity: 0; text-align: center; font-size: clamp(.95rem, 1.3vw, 1.1rem); line-height: 1.45;
+  color: var(--text-secondary); transition: max-height .5s var(--db-ease), opacity .35s ease, margin .5s var(--db-ease); }
+.db-sum b { margin-right: .4em; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.db-time.is-summary + .db-sum { max-height: 5em; margin-top: 14px; opacity: 1; transition-delay: .2s; }
+/* every paper as a static list (2026-11-21, asked for; charts/debate.js, allPapersHTML), opened from the finale's
+   button: a line down the middle with the years on it, the papers for to its left (set against the line) and against to
+   its right, each a sheet in its side's colour, its name and its one line; one column on a phone */
+.db-all-btn { margin-top: 6px; pointer-events: auto; opacity: 0; transition: opacity .25s ease; }
+.db-stage.is-final .db-all-btn { opacity: 1; transition: opacity .45s ease .75s; }
+#debate .db-all-btn { height: 46px; padding: 0 28px; border-radius: 11px; background: #000000b0; border: 1px solid #ffffff60; color: var(--ui);
+  font-size: 1.05rem; font-weight: 600; cursor: pointer; }   /* 38px and the base size until 2026-11-21: larger, asked for */
+#debate .db-all-btn:hover { border-color: #ffffffb0; background: #000000e0; }
+#debate .db-all-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
+.db-all { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rule); scroll-margin-top: calc(var(--bar-h, 56px) + 16px); }
+.db-all:not([hidden]) { animation: db-swap .4s var(--db-ease) both; }
+.db-all-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.db-all-head h3 { margin: 0; font-size: clamp(1.2rem, 2vw, 1.5rem); color: var(--text-primary); }
+#debate .db-all-close { height: 34px; padding: 0 14px; border-radius: 8px; background: transparent; border: 1px solid #ffffff38; color: var(--ui);
+  font-weight: 600; cursor: pointer; }
+#debate .db-all-close:hover { border-color: #ffffff80; }
+.db-all-sides { display: grid; grid-template-columns: minmax(0, 1fr) 76px minmax(0, 1fr); margin-bottom: 8px;
+  font: 700 .74rem var(--font-mono); letter-spacing: .14em; }
+.db-all-sides .is-for { grid-column: 1; text-align: right; padding-right: 18px; color: var(--db-for-ink); }
+.db-all-sides .is-against { grid-column: 3; padding-left: 18px; color: var(--db-against-ink); }
+.db-all-years { position: relative; list-style: none; margin: 0; padding: 0; }
+.db-all-years::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; margin-left: -1px; background: var(--rule); }
+.db-all-y { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 76px minmax(0, 1fr); align-items: start; padding: 14px 0; }
+.db-all-yr { grid-column: 2; grid-row: 1; justify-self: center; position: relative; padding: 3px 8px; border-radius: 6px; background: var(--surface-0);
+  border: 1px solid var(--rule); font-weight: 700; font-size: .92rem; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.db-all-col { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.db-all-col.is-for { grid-column: 1; grid-row: 1; padding-right: 18px; }
+.db-all-col.is-against { grid-column: 3; grid-row: 1; padding-left: 18px; }
+.db-all-p { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 10px; background: #ffffff06; border: 1px solid #ffffff14; }
+.db-all-col.is-for .db-all-p { flex-direction: row-reverse; text-align: right; border-right: 3px solid var(--db-for); }
+.db-all-col.is-against .db-all-p { border-left: 3px solid var(--db-against); }
+.db-all-sheet { flex: none; width: 26px; height: 26px; margin-top: 1px; }
+.db-all-p.is-for .db-sheet { fill: var(--db-for); }
+.db-all-p.is-against .db-sheet { fill: var(--db-against); }
+.db-all-name { display: block; font-weight: 700; font-size: 1rem; color: var(--text-primary); text-decoration: none; }
+.db-all-name:hover { text-decoration: underline; }
+.db-all-p p { margin: 3px 0 0; font-size: .95rem; line-height: 1.45; color: var(--text-secondary); max-width: none; }
+.db-all-p .db-hi { font-style: normal; color: var(--part-search); }
+.db-all-side { display: none; }
+@media (max-width: 720px) {
+  .db-all-sides { display: none; }
+  .db-all-years::before { left: 14px; }
+  .db-all-y { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 12px 0 12px 0; }
+  .db-all-yr { grid-column: 1; grid-row: auto; justify-self: start; order: -1; }
+  .db-all-col.is-for, .db-all-col.is-against { grid-column: 1; grid-row: auto; padding: 0 0 0 30px; }
+  .db-all-col.is-for .db-all-p { flex-direction: row; text-align: left; border-right: 1px solid #ffffff14; border-left: 3px solid var(--db-for); }
+  .db-all-side { display: block; margin-top: 6px; font: 700 .66rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; }
+  .db-all-p.is-for .db-all-side { color: var(--db-for-ink); }
+  .db-all-p.is-against .db-all-side { color: var(--db-against-ink); }
+}
+@media (prefers-reduced-motion: reduce) { .db-all:not([hidden]) { animation: none; } .db-all-btn, .db-stage.is-final .db-all-btn { transition: none; } }
 
 @media (max-width: 980px) {
   .db-grid { grid-template-columns: minmax(0, 1fr); }
@@ -1760,9 +1842,11 @@ body[data-page="search"] #searches { overflow-x: clip; }
   .db-years .db-long { display: none; }
   .db-years .db-short { display: block; padding: 3px 3px; font-size: .8rem; }
   .db-m i { width: 4px; height: 4px; }
+  .db-time.is-summary .db-m i { width: 10px; height: 8px; }
+  .db-time.is-summary .db-years button { grid-template-rows: calc(var(--db-stack, 1) * 10px) auto calc(var(--db-stack, 1) * 10px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .db-w, .db-track i, .db-halo, .db-tmark, .db-tmark path { transition: none; }
+  .db-w, .db-track i, .db-halo, .db-tmark, .db-sheet, .db-m i, .db-years button, .db-sum { transition: none; }
   .db-stars .tw { animation: none; }
   .db-panel.is-swap > * { animation: none; }
 }
@@ -2383,7 +2467,7 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
    close under it, without the section rule */
 #futureV2 > #fvNext { padding-top: 4px; border-top: 0; }
 
-/* How the proposal changed, version 2 (2026-11-10, charts/proposals2.js): the picture and the paper row on the left,
+/* How the proposed planet has changed, version 2 (2026-11-10, charts/proposals2.js): the picture and the paper row on the left,
    the estimate card and a small overview on the right. Planet Nine's colour for a model, ember for the candidate,
    distances in gold. */
 .pv { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr); gap: 20px; align-items: start; --pv: var(--p9); --pv-ink: var(--p9-ink); }
@@ -2391,7 +2475,6 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 .pv-left, .pv-right { display: grid; gap: 12px; min-width: 0; }
 .pv-pic { padding: 14px 16px 10px; }
 .pv-svg { display: block; width: 100%; height: auto; overflow: visible; }
-.pv-pic-note { margin: 2px 0 0; font-size: .74rem; color: var(--text-muted); }
 .pv-axis-t { font: 700 11px var(--font-mono); letter-spacing: .1em; text-transform: uppercase; fill: var(--text-muted); }
 .pv-axis { stroke: var(--text-muted); stroke-width: 1.5; }
 .pv-tick { stroke: var(--text-muted); }
@@ -2429,7 +2512,7 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 .pv-big.is-floor::before { content: '≥ '; color: var(--text-secondary); }
 .pv-unit { font-size: .8rem; color: var(--text-secondary); }
 .pv-sub { display: block; margin-top: 3px; font-size: .76rem; line-height: 1.35; color: var(--text-muted); }
-.pv-text p { margin: 0 0 6px; font-size: .86rem; line-height: 1.45; }
+.pv-text p { margin: 0 0 6px; font-size: .95rem; line-height: 1.5; }   /* .86rem until 2026-11-21: a little larger, asked for */
 .pv-desc { color: var(--text-primary); }
 .pv-cmp { color: var(--text-secondary); }
 .pv-src { font-size: .78rem !important; }
@@ -2477,7 +2560,7 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 }
 @media (max-width: 640px) { .pv-ot { font-size: 10.5px; } .pv-oy, .pv-ox { font-size: 11px; } }
 
-/* How the proposal changed, version 2: the paper buttons made plainly clickable (2026-11-10). A grid under the
+/* How the proposed planet has changed, version 2: the paper buttons made plainly clickable (2026-11-10). A grid under the
    picture (four by two on a wide screen, two or three across below), the year large and white over the paper's name,
    brighter borders, a lift on hover, a clear focus ring; the chosen one in the planet's colour (ember for the
    candidate), as the picture marks it. */
@@ -2526,7 +2609,7 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 }
 /* on a wide screen (2026-11-17): the picture's card reaches the foot of the right column. pages/timeline.js
    measures the spare height (--pv-extra, and --pv-extra-u in the picture's units); half goes between the distance and
-   mass scales, a quarter above the picture, the note keeps to the foot. Eased as the right column changes with the
+   mass scales, a quarter above the picture, the rest under it. Eased as the right column changes with the
    paper. The right column itself is not stretched. */
 @media (min-width: 901px) {
   #proposals .pv-left { align-self: stretch; grid-template-rows: auto 1fr; }
@@ -2534,7 +2617,6 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
   #proposals .pv-svg { margin-top: calc(var(--pv-extra, 0px) * .25); margin-bottom: calc(var(--pv-extra, 0px) * .5);
     transition: margin .45s ease; }
   #proposals .pv-mass { transform: translateY(calc(var(--pv-extra-u, 0px) * .5)); transition: transform .45s ease; }
-  #proposals .pv-pic-note { margin-top: auto; }
 }
 @media (min-width: 901px) and (prefers-reduced-motion: reduce) {
   #proposals :is(.pv-svg, .pv-mass) { transition: none; }
@@ -2543,7 +2625,7 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 #proposals :is(.pv-mlabel, .pv-plabel) { stroke: #081024; }
 #proposals .pv-btn .pv-btn-n { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-/* How the proposal changed: its heading (2026-11-20, asked for) a few pixels larger than the other sections', its key
+/* How the proposed planet has changed: its heading (2026-11-20, asked for) a few pixels larger than the other sections', its key
    word in the part's lime, as "The search" in the top bar */
 #proposals .sec-head h2 { font-size: clamp(calc(1.5rem + 2px), calc(3.2vw + 5px), calc(2.1rem + 5px)); font-weight: 700; line-height: 1.2; }
 #proposals .sec-head h2 em { font-style: normal; color: var(--part-search); }
@@ -2557,7 +2639,7 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
 }
 @media (max-width: 640px) { .pv-axis-m { transform: translateY(-14px); } }
 
-/* How the proposal changed, version 2: the estimate card made compact (2026-11-10). Even 14/16px padding, tighter
+/* How the proposed planet has changed, version 2: the estimate card made compact (2026-11-10). Even 14/16px padding, tighter
    gaps; the paper and the comparison side by side under small labels on a card wide enough, stacked below that; the
    source on its own line at the foot. The card is as tall as its content. */
 .pv-right { align-content: start; }

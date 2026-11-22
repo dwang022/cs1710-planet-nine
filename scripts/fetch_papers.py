@@ -67,7 +67,7 @@ PAPERS = [
   "815 TNOs from six years of DES with a published bias model. Primarily a catalogue paper, but it reports that its 16 extreme objects (a > 150 AU, q > 30 AU) are consistent with azimuthal isotropy."),
  ("10.3847/1538-3881/ac32dd", "against", "Brown et al. 2022 (ZTF search)",
   "A direct search of the ZTF archive finds no candidate to V = 20.5, ruling out 56% of the predicted Planet Nine parameter space."),
- ("10.3847/1538-3881/ad24e9", "against", "Brown & Batygin 2024 (Pan-STARRS1 search)",
+ ("10.3847/1538-3881/ad24e9", "against", "Brown et al. 2024 (Pan-STARRS1 search)",
   "Rules out the Brown & Batygin (2021) Planet Nine to a 50% completion depth of V = 21.5. With ZTF and DES, 78% of the predicted parameter space is now excluded; what remains is faint and near where the northern galactic plane crosses the ecliptic."),
  ("10.1017/pasa.2025.10024", "supports", "Phan et al. 2025 (IRAS/AKARI)",
   "One far-infrared candidate from two all-sky surveys 23 years apart, implying 500-700 AU and 7-17 Earth masses. Two detections cannot fix an orbit, so this stays a candidate until followed up."),

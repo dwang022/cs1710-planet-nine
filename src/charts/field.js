@@ -1,22 +1,10 @@
-// The argument over Planet Nine as a ledger: one full-width row per paper,
-// year by year, the year riding in a gutter on the left.
+// The ledger's rows: one paper or event as a card with a title, a line, a small drawing (fieldart.js) and links to the
+// paper. The search page's step-through of the searches (searchsteps.js) draws each card with `milestone`, and
+// `credits` writes the line crediting the portraits.
 //
-// Each row is one claim: a title that says what the paper means for the
-// search, one line of context, a small drawing of the point, and a link. The
-// lane is said three ways at once: colour, a large icon, and placement
-// (arguments for a planet are boxes shifted left, arguments against one
-// shifted right, data and searches centred with centred text). When a data
-// row's authors draw a conclusion, it hangs a for/against row of its own
-// beneath the data row, joined by a connector and labelled as their reading.
-//
-// Used on several pages, each showing the subset it needs:
-//   filter    keeps only the entries it returns true for (a hung row follows its data row)
-//   compact   title, icon and year only; drawings only on key papers (the timeline page)
-//   lines     with compact, keep each row's line (the case against, on the alternatives page)
-//   future    include the "what comes next" group (the future page shows nothing else)
-//
-// Content comes from field_timeline.json; titles, journals, citation counts
-// and links come from papers.json by DOI, so the two files cannot disagree.
+// Content comes from field_timeline.json; titles, journals and links come from papers.json by DOI, so the two files
+// cannot disagree. Also exported: `au`, which colours every distance in AU in a piece of HTML, and `PICK`, the entries
+// the search page picks out.
 
 import '../field.css'
 import { diagram, icon } from './fieldart.js'
@@ -111,66 +99,6 @@ export function credits (entries) {
   for (const e of entries) for (const p of e.photos || []) if (p.src) licences.add(p.license)
   if (!licences.size) return ''
   return `<p class="fl-credits">Portrait · ${[...licences].map(esc).join(', ')} · <a href="${url('credits.html')}#photos">credits</a></p>`
-}
-
-export function legend (lanes = ['for', 'against', 'data', 'next'], { key = true } = {}) {
-  const items = {
-    for: ['is-for', 'planet', 'For a planet'],
-    against: ['is-against', 'noplanet', 'Against a planet'],
-    data: ['is-data', 'object', 'Data and searches'],
-    next: ['is-next', 'next', 'What comes next'],
-  }
-  return lanes.map(l => items[l]).map(([cls, ic, word]) => `<div class="legend-item ${cls}"><span class="fr-icon">${icon(ic)}</span>${word}</div>`).join('') +
-    (key ? '<div class="legend-item is-muted">Larger rows: key papers</div>' : '')
-}
-
-export function drawField (root, { timeline, papers, legend: legendEl, filter = () => true, compact = false, lines = !compact, future = true, dated = true, lanes }) {
-  root.__field?.destroy()
-  const byDoi = new Map(papers.map(p => [p.doi, p]))
-  const kept = timeline.entries.filter(filter)
-  const datedEntries = dated ? kept.filter(e => e.lane !== 'next').sort((a, b) => a.year - b.year || a.order - b.order) : []
-  const futureEntries = future ? kept.filter(e => e.lane === 'next').sort((a, b) => a.order - b.order) : []
-
-  const years = []
-  for (const e of datedEntries) {
-    const y = years[years.length - 1]
-    if (y && y.year === e.year) y.entries.push(e)
-    else years.push({ year: e.year, entries: [e] })
-  }
-
-  const group = (label, entries, cls = '') => `
-    <div class="fy ${cls}">
-      <div class="fy-year"><span>${label}</span></div>
-      <div class="fy-rows">${entries.map(e => row(e, byDoi, null, compact, lines) + (e.branch ? branchRow(e, compact, lines) : '')).join('')}</div>
-    </div>`
-
-  root.classList.toggle('is-compact', compact)
-  root.classList.toggle('has-lines', compact && lines)
-  root.innerHTML = years.map(y => group(y.year, y.entries)).join('') +
-    (futureEntries.length ? group('Next', futureEntries, 'fy-next') : '') +
-    (lines ? credits(kept) : '')
-  // "Larger rows" only when a larger (key) row is drawn
-  const hasKey = [...datedEntries, ...futureEntries].some(e => e.key)
-  if (legendEl) legendEl.innerHTML = legend(lanes || ['for', 'against', 'data', ...(futureEntries.length ? ['next'] : [])], { key: hasKey })
-
-  // --- entrance: each row comes in from its own side; a hung row follows its data row
-  const rows = [...root.querySelectorAll('.fr')]
-  let enter = null, leave = null
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (!reduce && 'IntersectionObserver' in window) {
-    document.documentElement.classList.add('has-reveal')
-    enter = new IntersectionObserver(es => {
-      for (const e of es) if (e.isIntersecting) e.target.classList.add('is-in')
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0 })
-    leave = new IntersectionObserver(es => {
-      for (const e of es) if (!e.isIntersecting) e.target.classList.remove('is-in')
-    }, { rootMargin: '10% 0px 10% 0px', threshold: 0 })
-    rows.forEach(r => { enter.observe(r); leave.observe(r) })
-  } else {
-    rows.forEach(r => r.classList.add('is-in'))
-  }
-
-  root.__field = { destroy () { enter?.disconnect(); leave?.disconnect() } }
 }
 
 /** Entry pickers for the part 3 pages. */

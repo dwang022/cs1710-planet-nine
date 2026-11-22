@@ -9,18 +9,6 @@ const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
 export const EASE = d3.easeCubicOut
 export const duration = () => reduce.matches ? 0 : 500
 
-/** Odds span 1 in 2 to 1 in 100,000: ease them in log space so every step looks even. */
-export const interpolateLog = (a, b) => {
-  const la = Math.log(a), lb = Math.log(b)
-  return t => Math.exp(la + (lb - la) * t)
-}
-
-/** Angles take the short way round: 350° → 10° passes through 0°, not 180°. */
-export const interpolateAngle = (a, b) => {
-  const d = ((b - a) % 360 + 540) % 360 - 180
-  return t => a + d * t
-}
-
 /**
  * Ease the number shown in `el` toward `to`. It starts from whatever is on
  * screen this frame, so dragging a slider retargets the running tween instead

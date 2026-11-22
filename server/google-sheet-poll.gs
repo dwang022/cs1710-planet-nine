@@ -1,3 +1,4 @@
+/** @OnlyCurrentDoc */
 // The future page's question on GitHub Pages, which cannot run server/poll.mjs: the answers go to a Google Sheet through
 // this Apps Script, deployed as a web app. It answers the page with the same shape as poll.mjs,
 // { question, counts: { yes, maybe, no }, total, mine }, and keeps one answer per browser in the same way: the page's

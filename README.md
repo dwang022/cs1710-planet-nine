@@ -1,106 +1,113 @@
 # The search for Planet Nine
 
-CS 1710 final project — Daniel Wang, Gabriel Gonzalez, Russell Rui Luo.
+CS 1710 final project by Daniel Wang, Gabriel Gonzalez and Russell Rui Luo.
 
-A nine-page, data-grounded walkthrough of the case for a ninth planet: the
-setting, the insight that a few dozen distant orbits lean the same way, and the
-search that has not yet found it. Every chart is built from real telescope
-catalogues; the only synthesised data is the explicitly labelled random-universe
-simulation and two cartoon exhibits that say so on the page.
+A guided, interactive walkthrough of the case for a ninth planet beyond Neptune: what the clue is, how strong it is,
+what else could explain it, and how astronomers are searching. Every chart is built from real telescope catalogues
+and published papers. The only simulated pictures are labelled as such on the page.
+
+- **Website:** https://dwang022.github.io/cs1710-planet-nine/
+- **Screencast:** _add the video link here_
 
 ## Run it
 
-```bash
-npm install
-npm run dev        # http://localhost:5173
-```
+You need [Node.js](https://nodejs.org/) 20.19 or newer (22.12+ recommended).
 
 ```bash
-npm run build      # static bundle into dist/
-npm run preview    # serve the built bundle on :4173
+npm install
+npm run dev        # http://localhost:5173, reloads as you edit
+npm run build      # the static site, into dist/
+npm run preview    # serve dist/ on http://localhost:4173
+npm run serve      # serve dist/ and the vote's back end together on http://localhost:8080
 ```
+
+The site is static apart from one question on the last page ("Do you think Planet Nine exists?"):
+
+- Locally, `npm run dev` and `npm run preview` store the answers with a small Node back end, `server/poll.mjs`.
+- On GitHub Pages the answers go to a Google Sheet through a small Apps Script, `server/google-sheet-poll.gs`. Its setup
+  steps are at the top of that file.
+
+**Deploying.** Every push to `main` builds the site and publishes it to GitHub Pages (`.github/workflows/pages.yml`).
+The workflow reads the Apps Script's address from the repository variable `POLL_URL`.
+
+**Rebuilding the data** is optional, since the processed data is committed. To rebuild it from the original
+catalogues, run `./scripts/fetch_all.sh`. It needs network access and Python 3 (standard library only).
+
+## Libraries
+
+**The website**
+- [D3](https://d3js.org/) 7.9: every chart and drawing
+- [Vite](https://vite.dev/) 7: dev server and build
+- [topojson-client](https://github.com/topojson/topojson-client) 3.1 and
+  [world-atlas](https://github.com/topojson/world-atlas) 2.0: the world map of observatories on the data page
+- [Fontsource](https://fontsource.org/): Space Grotesk and Space Mono, bundled so every device draws the same letters
+
+**The Python scripts** use the standard library, with these exceptions:
+- [Pillow](https://python-pillow.org/): the four image fetchers (`fetch_portraits.py`, `fetch_tracking_images.py`,
+  `fetch_telescope_photos.py`, `fetch_game_sequences.py`)
+- [fontTools](https://github.com/fonttools/fonttools): `build_glyphs.py`
+- pandas, NumPy and Matplotlib: the exploration plots in `scripts/exploration/`
+
+Everything else is our own code: the charts, the drawings of the planets and observatories, the orbital mechanics (checked
+against JPL Horizons) and the statistics.
+
+## Data
+
+| Where | What |
+|---|---|
+| [`data/DATA_DICTIONARY.md`](data/DATA_DICTIONARY.md) | Every dataset: what it is, how it is built, which page uses it, and what each field means |
+| [`data/README.md`](data/README.md) | How each dataset was built and checked, errors found and fixed, and what remains unverified |
+| [`data/SOURCES.md`](data/SOURCES.md) | Every source: catalogues, papers, images |
+| `data/processed/` | Every processed dataset |
+| `public/data/` | Copies of the datasets the site loads |
+| [`papers/README.md`](papers/README.md) | Index of the papers we read (the PDFs are not committed) |
+
+The main sources:
+- The [JPL Small-Body Database](https://ssd.jpl.nasa.gov/tools/sbdb_query.html) and the
+  [Minor Planet Center](https://www.minorplanetcenter.net/) catalogues of distant objects
+- The Minor Planet Center's observation records
+- The published papers on Planet Nine and its alternatives, from 2014 to 2026
+
+The raw catalogue downloads (about 80 MB) are not committed. `./scripts/fetch_all.sh` downloads them into `data/raw/`.
 
 ## The pages
 
-An intro screen (the title, a telescope aimed at Planet Nine, shooting stars, a
-Start button, three part buttons, and a carousel for what the planet is made
-of), then three parts, with a credits page outside the walkthrough:
+Ten pages in three parts, plus a credits page:
 
-| Part | Page | What it holds | Data |
+| Part | Page | Module | What it shows |
 |---|---|---|---|
-| 1 · Background | `setting/planets.html` | Nine planets → eight → nine?: three beats, the lineup, Pluto's reclassification, the IAU's three requirements with drawings, scored on familiar objects | `planets.json` |
-| | `setting/distance.html` | How far 322 to 599 AU is: a to-scale AU ruler, then a zoom-out over a map of the solar system seen from above, from the rocky planets to the farthest orbit (the extreme objects where they are, each orbit drawn on hover and all of them on one card; Planet Nine's predicted orbit) | `etnos.json`, `planets.json`, `planet_nine_predictions.json`, `positions.json` |
-| | `setting/data.html` | A telescope finding an arc, with the page's numbers; a world map of every observatory that measured the extreme objects (a card per site, the one nearest you); three drawings from pictures to orbits; a tracking game on real discovery frames; Pluto, Sedna and 2015 BP519 in small blink players; every known body beyond Neptune narrowed to the 90, the 62 seen in more than one season, and the 6 that started it; how long each was watched and how well that pins its orbit | `observatories.json`, `positions.json`, `etnos.json`, `telescopes/credits.json`, `game/game.json`, `tracking/credits.json` |
-| 2 · Evidence | `insights/clustering.html` | The orbits lean the same way, built up from one orbit to a compass arrow; filters for which objects count; the herding exhibit: place a planet and watch random orbits sort themselves | `etnos.json` |
-| | `insights/probability.html` | Could it be luck: 4,000 fake solar systems; the sample-dependence catch; the streetlight exhibit (where telescopes looked); every paper's odds on one axis | `etnos.json`, `clustering_null.json` |
-| | `insights/alternatives.html` | Eight explanations against four tests; the case against, paper by paper | `alternatives.json`, `papers.json`, `field_timeline.json` |
-| 3 · The search | `search/how.html` | Sky map of coverage and depth with Planet Nine's predicted path; the searches so far and what each ruled out; put a planet out there and score it | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json`, `planet_nine_predictions.json`, `field_timeline.json`, `papers.json` |
-| | `search/timeline.html` | Ten years of argument in a compact ledger; how the proposed planet changed | `field_timeline.json`, `papers.json`, `planet_nine_predictions.json` |
-| | `search/future.html` | Survey depths vs predicted brightness; what to watch; when we might know; what would confirm or end it | `surveys.json`, `planet_nine_predictions.json`, `field_timeline.json` |
+| | `index.html` | `src/pages/intro.js` | Title, Start, and a choice of what Planet Nine looks like, used on every page |
+| Background | `setting/planets.html` | `planets.js` | Nine planets, then eight, then maybe nine: how Pluto lost its place and what a planet is |
+| | `setting/distance.html` | `distance.js` | How far out Planet Nine would be, zooming out over the solar system |
+| | `setting/data.html` | `data.js` | Where the data comes from: the observatories, how a moving dot becomes an orbit, a tracking game on real photographs, and the catalogue narrowed to the objects that matter |
+| Evidence | `insights/clustering.html` | `clustering.js` | The clue: the most distant orbits stretch out and tilt the same way, and how a planet could cause it |
+| | `insights/probability.html` | `probability.js` | Could it be luck? The 2016 test rebuilt with 100,000 random samples, then rerun on today's orbits |
+| | `insights/alternatives.html` | `alternatives.js` | Planet Nine and seven other explanations, compared side by side |
+| The search | `search/how.html` | `search.js` | The searches so far, where telescopes have looked, and a game to spot the planet |
+| | `search/timeline.html` | `timeline.js` | The debate year by year, and how the proposed planet has changed |
+| | `search/future.html` | `future.js` | The Rubin Observatory's survey, other searches, and the reader's vote |
+| | `credits.html` | `credits.js` | Every paper, dataset, image and library credited |
 
-The Planet Nine drawing comes in seven skins (ice giant, rock world,
-ocean world, iron world, primordial black hole, cheese, nine-ball). The reader
-picks one on the intro screen; every page draws the planet that way, and
-everything that stands for it, down to the words "Planet Nine", takes that
-skin's colour.
-
-How the site is written and coloured (plain science communication, one
-meaning per accent, Planet Nine in the skin's colour, no rings or glows) is
-set out in `CLAUDE.md`, along with how to verify a change.
-
-## The thing worth demoing
-
-On the probability page, switch off **"Only objects seen in more than one
-season"** (the papers' own rule). The sample jumps from 62 objects to 90, the
-alignment collapses from 0.25 to 0.08, and the verdict flips from *"Suggestive"*
-(about 1 in 49) to *"Looks like luck"* (about 1 in 2). Raise the distance cut to
-the classic 250 AU and even the trusted sample looks like luck. The conclusion depends on a choice the
-analyst makes, which is the honest state of this field. Then run the streetlight
-exhibit beneath it to see how uneven sky coverage alone can bunch what a survey
-finds.
-
-## Accuracy
-
-- Orbital maths verified against **JPL Horizons** on four real objects:
-  agreement 2.5″–4.5″.
-- The live p-value uses the Rayleigh test, checked against a 200,000-trial
-  Monte Carlo at every sample cut: agreement within 5%.
-- Brightness model reproduces its Linder & Mordasini (2016) anchor exactly, and
-  independently lands Batygin & Brown's 2016 orbit at V = 22.4, inside their
-  published 22 < V < 25.
-- Every paper summary was checked against the paper's own abstract; the ledger
-  rows retell those summaries and link to the paper.
-- The discovery photographs and the IAU's mark are Wikimedia Commons files
-  with their licences read from the Commons API (`public/tracking/credits.json`,
-  `public/logos/credits.json`); the credits page lists them.
-- The herding and streetlight exhibits are cartoons of a mechanism, labelled
-  as such on the page; nothing in them is presented as a measurement.
-
-Full provenance in [`data/SOURCES.md`](data/SOURCES.md); corrections and
-remaining unverified claims in [`data/README.md`](data/README.md).
-
-## Layout
-
-See [`CLAUDE.md`](CLAUDE.md) for the full map and the conventions. In short:
+## Code layout
 
 ```
-index.html, setting/, insights/, search/   the ten pages (one Vite entry each); credits.html outside the walkthrough
-src/site.js        shared chrome: sprite, skin, nav, footer; PAGES is the page list
-src/pages/         one module per page
-src/charts/        one module per visualisation; rulesart.js draws the three requirements
-src/art.js         the hand-drawn bodies; src/skins.js the Planet Nine skins
-src/sample.js      which extreme objects count (shared between the insight pages)
-public/data/       the processed datasets the pages fetch
-public/art/        the drawings as SVG/PNG, with a contact sheet (node scripts/export_art.mjs)
-public/tracking/   the real discovery frames (python -P scripts/fetch_tracking_images.py)
-public/field/      portraits for the ledger (python -P scripts/fetch_portraits.py)
-public/logos/      the IAU's mark with its credit (python -P scripts/fetch_logos.py)
-data/, scripts/    the datasets and the Python pipeline that builds them
-papers/            index of every paper read (PDFs gitignored)
-docs/              the sketches PDF and exploration figures
-prototypes/        the week-9 coordinated-view prototypes (separate app)
+index.html, setting/, insights/, search/, credits.html   one HTML file per page
+src/
+  site.js, site.css    shared chrome: top bar, footer, page head; PAGES is the list of pages
+  style.css            colours, type and the shared components
+  pages/               one module per page
+  charts/              one module per chart or drawing (each file starts with a comment saying what it draws)
+  art.js, skins.js     the hand-drawn bodies, and the seven looks for Planet Nine
+  orbits.js, stats.js  orbital geometry and circular statistics
+  data.js              loads public/data/*.json
+public/                data, images and credits the site serves
+data/                  processed datasets and their documentation
+scripts/               the Python pipeline that fetches and builds the data; scripts/exploration/ holds early plots
+server/                the vote's back ends (Node locally, Google Apps Script on GitHub Pages)
+docs/                  the design sketches and exploration figures
+prototypes/            the week-9 prototypes (a separate app)
+.github/workflows/     the GitHub Pages deploy
 ```
 
-Rebuild the datasets from source with `./scripts/fetch_all.sh`. The raw
-catalogue downloads also live in the team's analysis folder beside this repo
-(`../FinalProject/data/raw`), which `scripts/build_catalogue_samples.py` reads.
+[`CLAUDE.md`](CLAUDE.md) holds the detailed design notes: every page section by section, and the writing, colour and
+type conventions.

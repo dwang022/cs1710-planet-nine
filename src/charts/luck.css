@@ -21,8 +21,7 @@ svg.lk { width: 100%; height: 100%; }
 .lk .lk-wedge.is-draw { fill: var(--text-primary); fill-opacity: .07; stroke: var(--text-secondary); stroke-opacity: .55; }
 /* the set's middle, a solid arrow; on the first step named, and each orbit's angle from it a faint arc */
 .lk .lk-mid { stroke: var(--text-primary); stroke-width: 2.2; }
-.lk .lk-midlbl { font-size: 13px; font-weight: 600; fill: var(--text-primary); }
-.lk .lk-xarc { fill: none; stroke: var(--text-primary); stroke-width: 1.6; stroke-opacity: .55; }
+
 .lk .lk-sq-tex { pointer-events: none; }
 /* the spread, in the part's red (2026-11-17, asked for) */
 .lk .lk-wlbl { font-size: 12.5px; font-weight: 700; fill: var(--part); }
@@ -38,13 +37,11 @@ svg.lk { width: 100%; height: 100%; }
 .lk .lk-obs { stroke: var(--series-1-ink); stroke-width: 1.5; }
 .lk .lk-obs-dot { fill: var(--series-1-ink); stroke: var(--surface-1); stroke-width: 1.5; }
 .lk .lk-obs-lbl { font-size: 14.5px; font-weight: 600; fill: var(--series-1-ink); }
-.lk .lk-pilelbl { font-size: 14px; font-weight: 600; fill: var(--text-secondary); }
 
 /* the known objects, one dot each, in their stacks; a sample's objects lit */
 .lk .lk-pdot { fill: var(--text-muted); fill-opacity: .8; }
 .lk .lk-pdot.is-picked { fill: var(--text-primary); fill-opacity: 1; }
 .lk .lk-pool-key circle { fill: var(--text-muted); }
-.lk .lk-pnote { font-size: 13px; font-weight: 600; fill: var(--text-secondary); }
 
 /* the clues' numbers, in red rings as on the clustering page; the compasses' titles carry them */
 .lk .lk-cn { fill: none; stroke: var(--part); stroke-width: 1.5; }
@@ -120,7 +117,7 @@ svg.lk-linetool { width: 100%; height: auto; display: block; touch-action: pan-y
 .lk .lk-lshade { fill: var(--series-1); fill-opacity: .07; }
 .lk .lk-lline { stroke: var(--text-muted); stroke-opacity: .5; stroke-width: 1.2; stroke-dasharray: 3 4; }
 .lk .lk-lline.is-on { stroke: var(--text-primary); stroke-opacity: 1; stroke-width: 2; stroke-dasharray: none; }
-.lk .lk-lau { font-size: 13px; font-weight: 600; fill: var(--au); }
+
 .lk .lk-ldot { fill: var(--text-muted); fill-opacity: .5; stroke: var(--surface-1); stroke-width: 1; }
 .lk .lk-ldot.is-in { fill: var(--series-1); fill-opacity: 1; }
 .lk .lk-lcount { font-size: 13.5px; font-weight: 600; fill: var(--series-1-ink); }

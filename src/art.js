@@ -415,10 +415,3 @@ export function sprite (names = NAMES, { skin = DEFAULT_SKIN } = {}) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true" focusable="false"><defs>` +
     names.map(n => symbolMarkup(n, { skin })).join('') + '</defs></svg>'
 }
-
-/** Inline use of a sprite symbol in HTML, sized by CSS (defaults to the .art class). */
-export function inline (name, { cls = 'art', title } = {}) {
-  const [bw, bh] = box(name)
-  const t = title ? `<title>${title}</title>` : ''
-  return `<svg class="${cls}" viewBox="0 0 ${bw} ${bh}" aria-hidden="${title ? 'false' : 'true'}" role="${title ? 'img' : 'presentation'}">${t}<use href="#art-${name}"/></svg>`
-}

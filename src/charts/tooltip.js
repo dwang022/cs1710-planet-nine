@@ -1,3 +1,6 @@
+// One shared tooltip for the charts that show a few words on pointing (the distance map, the planets lineup, the
+// catalogue, the arcs chart): a single element made on first use, placed beside the pointer and kept on screen.
+
 let el = null
 
 function node () {
@@ -10,6 +13,7 @@ function node () {
   return el
 }
 
+/** Show `html` beside the pointer of `event`, flipped to the other side near the window's edge. */
 export function showTip (event, html) {
   const t = node()
   t.innerHTML = html

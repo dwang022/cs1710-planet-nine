@@ -3,7 +3,7 @@
 // and the three parts as words under it.
 
 import { PAGES, GROUPS, currentSkin, setSkin } from '../site.js'
-import { svgMarkup, OBSERVATORY } from '../art.js'
+import { OBSERVATORY } from '../art.js'
 import { SKINS, SKIN_IDS } from '../skins.js'
 import { url } from '../data.js'
 import { meteors } from '../meteors.js'

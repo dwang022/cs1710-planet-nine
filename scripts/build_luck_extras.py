@@ -44,7 +44,7 @@ looking     The same, with a rough allowance, ours, for where telescopes looked.
             & Batygin 2019, Napier et al. 2021) disagree on how much the bias
             matters. 200,000 simulated solar systems.
 
-Writes data/processed/luck_extras.json and the copy in public/data/. Stdlib only:
+Writes data/processed/luck_extras.json (no page loads it, so there is no copy in public/data/). Stdlib only:
 python -P scripts/build_luck_extras.py (about two minutes)
 """
 import json, math, os, random
@@ -54,7 +54,7 @@ ETNOS = os.path.join(ROOT, "data", "processed", "etnos.json")
 MPC_CACHE = os.path.join(ROOT, "data", "raw", "mpc_obs")
 RAW_DIRS = [os.path.join(os.path.dirname(ROOT), "FinalProject", "data", "raw"), os.path.join(ROOT, "data", "raw")]
 JPL_FILE = "jpl_sbdb_a_gt30_asteroids.json"
-OUTS = [os.path.join(ROOT, "data", "processed", "luck_extras.json"), os.path.join(ROOT, "public", "data", "luck_extras.json")]
+OUTS = [os.path.join(ROOT, "data", "processed", "luck_extras.json")]
 
 SEED = 1710
 TRIALS_THEN, TRIALS_RANDOM, TRIALS_LOOKING = 200_000, 1_000_000, 200_000

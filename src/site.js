@@ -272,9 +272,6 @@ function fixLinks () {
   })
 }
 
-/** Skin name and blurb, for pages that mention the reader's choice. */
-export const skinInfo = () => ({ id: currentSkin(), ...skinFor(currentSkin()) })
-
 stars()
 injectSprite()
 // a skin chosen in another tab follows the reader into this one

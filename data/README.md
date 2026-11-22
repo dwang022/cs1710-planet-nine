@@ -1,24 +1,17 @@
 # Planet Nine — data
 
-Everything the site's pages need. Run `./scripts/fetch_all.sh` to rebuild
-from source (network required, Python 3 stdlib only, no pip installs).
+Notes on every dataset: how it was built, what was checked against what, and what remains unverified. For each
+file's fields, see [`DATA_DICTIONARY.md`](DATA_DICTIONARY.md), which also says which page loads which file. Every
+source is listed in [`SOURCES.md`](SOURCES.md).
+
+Run `./scripts/fetch_all.sh` to rebuild from source (network required; Python 3 standard library only).
 
 ```
-data/raw/         untouched downloads
-data/processed/   what the site actually loads
+data/raw/         untouched downloads (gitignored, about 80 MB; fetch_all.sh saves them here)
+data/processed/   every processed dataset
+public/data/      copies of the ones the site loads
 scripts/          fetch + build
 ```
-
-## Which dataset feeds which sketch
-
-| Sketch | Files |
-|---|---|
-| **DW1** — What is the evidence for Planet Nine | `etnos.json`, `tnos.csv`, `planets.json`, `clustering_null.json` |
-| **DW5** — Sky view: where do telescopes look | `surveys.json`, `p9_sky_track.json`, `etno_perihelion_sky.json` |
-| **RL3** — How likely everything just lines up | `clustering_null.json`, `etnos.json`, `surveys.json` (the bias argument) |
-| **"Put the planet anywhere"** + physical properties | `planet_nine_predictions.json`, `planets.json`, `etnos.json` |
-| **RL5** — Who supports it, for and against | `field_timeline.json`, `papers.json` |
-| **GG8** — What else could explain the evidence | `alternatives.json`, `papers.json`, `clustering_null.json` |
 
 ## Processed files
 
@@ -26,8 +19,8 @@ scripts/          fetch + build
 query row with all 46 fields, the MPC distant-object record, and its line in
 the MPC numbered-object list), plus row counts and the JPL query itself. Built
 by `scripts/build_catalogue_samples.py` from the raw downloads in
-`../FinalProject/data/raw` (falling back to `data/raw/`). Shown on the
-distance page so readers see what the stored data actually looks like.
+`../FinalProject/data/raw` (falling back to `data/raw/`). No page shows it any longer; it is kept as a
+record of what the raw catalogues look like.
 
 **`tnos.csv`** — 8,079 small bodies with semi-major axis > 30 AU. JPL orbital
 elements joined to the Minor Planet Center's independent solution for the same

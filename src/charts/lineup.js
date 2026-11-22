@@ -11,7 +11,6 @@ import { PLANET_ART } from '../art.js'
 const W = 1000, H = 440
 const SUN = { x: 8, y: 240, r: 120 }
 const T = 650
-const RAD = Math.PI / 180
 
 // Slot order, drawn size and a vertical stagger so the labels never collide.
 const SLOTS = [

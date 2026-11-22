@@ -189,9 +189,6 @@
 section.part { padding-block: 48px; border-top: 1px solid var(--rule); }
 section.part:first-of-type { border-top: 0; }
 .sec-head h2 { margin-bottom: 10px; }
-.two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
-.two-col > * { min-width: 0; }
-@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
 
 /* --- the intro screen ----------------------------------------------------- */
 

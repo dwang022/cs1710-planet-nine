@@ -28,5 +28,3 @@ export function setHover (id) {
     painting = false
   }
 }
-
-export const hoveredId = () => current

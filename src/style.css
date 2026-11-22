@@ -160,31 +160,16 @@ main > section:last-child { padding-bottom: 28px; }   /* the footer follows clos
   border-block: 1px solid var(--rule);
   padding: 14px 0 18px; margin-bottom: 28px;
 }
-.controls-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
-.controls-head .eyebrow { margin: 0; }
 
 /* Each filter spans three shared rows (name / control / description) via
    subgrid, so names, controls and descriptions line up across columns. */
-.filter-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  column-gap: 32px; row-gap: 8px;
-}
+
 .filter { display: grid; grid-row: span 3; grid-template-rows: subgrid; }
 .filter > input[type="range"], .filter > .toggle { align-self: center; }
 .filter .toggle { min-height: 22px; padding: 0; justify-self: start; }
 .filter .toggle .state { font-size: 0.8rem; color: var(--text-muted); }
 .filter .toggle input:checked ~ .state::before { content: "On"; }
 .filter .toggle input:not(:checked) ~ .state::before { content: "Off"; }
-.filter-desc { margin: 0; font-size: 0.78rem; line-height: 1.5; color: var(--text-muted); }
-
-/* Filter titles read as headings for their control; values pick up the accent.
-   Scoped to .filter so Section 05's .ctrl labels keep the shared small style. */
-.filter .filter-name {
-  font-size: 0.82rem; font-weight: 700; line-height: 1.3;
-  letter-spacing: 0.08em; color: var(--text-primary);
-}
-.filter .filter-name b { color: var(--text-primary); font-weight: 700; white-space: nowrap; }
-.filter .filter-name b.k-au { color: var(--au); }
 
 /* Quiet hover / focus feedback: a soft accent halo, no movement. */
 .filter input[type="range"]::-webkit-slider-runnable-track { transition: background .15s ease; }
@@ -197,12 +182,12 @@ main > section:last-child { padding-bottom: 28px; }   /* the footer follows clos
 .filter .toggle:hover .state { color: var(--text-secondary); }
 
 .ctrl { display: flex; flex-direction: column; gap: 5px; min-width: 190px; }
-.ctrl label, .filter-name {
+.ctrl label {
   font: 600 0.7rem/1 var(--font-mono); letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--text-muted);
   display: flex; justify-content: space-between; gap: 12px;
 }
-.ctrl label b, .filter-name b { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
+.ctrl label b { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
 
 input[type="range"] {
   -webkit-appearance: none; appearance: none;
@@ -238,13 +223,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var
 .toggle input:checked + .box::after { transform: translateX(15px); background: #fff; }
 .toggle input:focus-visible + .box { outline: 2px solid var(--ui); outline-offset: 2px; }
 
-.btn-reset {
-  background: transparent; border: 1px solid var(--rule);
-  color: var(--text-secondary); border-radius: 8px; padding: 8px 14px;
-  font: inherit; font-size: 0.82rem; cursor: pointer; min-height: 40px;
-}
-.btn-reset:hover { border-color: var(--text-muted); color: var(--text-primary); }
-
 /* --- cards & charts ------------------------------------------------------ */
 
 .card {
@@ -255,10 +233,6 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var
 }
 .card h3 { margin-bottom: 4px; }
 .card .sub { font-size: 0.83rem; color: var(--text-muted); margin-bottom: 18px; max-width: 60ch; }
-
-.grid-2 { display: grid; grid-template-columns: 1.35fr 1fr; gap: 22px; align-items: start; }
-.grid-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
-.grid-stats.auto { grid-template-columns: repeat(auto-fit, minmax(176px, 1fr)); }
 
 svg { display: block; width: 100%; height: auto; overflow: visible; }
 /* Wide columns would scale square charts taller than the screen; cap the height
@@ -290,8 +264,6 @@ svg text { font-family: var(--font-sans); }
 
 .legend { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 14px; }
 .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: var(--text-secondary); }
-.legend-swatch { width: 11px; height: 11px; border-radius: 3px; flex: none; }
-.legend-swatch.ring { border-radius: 50%; background: none; border: 2px solid; }
 
 /* --- tooltip ------------------------------------------------------------- */
 
@@ -311,15 +283,6 @@ svg text { font-family: var(--font-sans); }
 
 /* --- table view (so nothing is encoded in colour alone) ------------------ */
 
-details.table-view { margin-top: 20px; }
-details.table-view summary {
-  cursor: pointer; font-size: 0.85rem; color: var(--text-secondary);
-  padding: 9px 0; list-style: none; display: flex; align-items: center; gap: 8px;
-}
-details.table-view summary::-webkit-details-marker { display: none; }
-details.table-view summary::before { content: "▸"; color: var(--text-muted); transition: transform .15s; }
-details.table-view[open] summary::before { transform: rotate(90deg); }
-.table-scroll { max-height: 420px; overflow: auto; border: 1px solid var(--rule); border-radius: 10px; }
 table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
 thead th {
   position: sticky; top: 0; background: var(--surface-2); text-align: left;
@@ -340,20 +303,12 @@ td.num, th.num { text-align: right; }
   padding: 14px 18px; border-radius: 0 10px 10px 0; margin: 22px 0;
 }
 .note p { margin: 0; font-size: 0.9rem; }
-.note .note-k {
-  font: 600 0.68rem/1 var(--font-mono); letter-spacing: 0.1em;
-  text-transform: uppercase; color: var(--series-2-ink); margin-bottom: 7px;
-}
 
 /* --- responsive ---------------------------------------------------------- */
 
 @media (max-width: 900px) {
-  .grid-2 { grid-template-columns: 1fr; }
-  .grid-stats { grid-template-columns: repeat(2, 1fr); }
+
   .ctrl { min-width: 140px; flex: 1 1 140px; }
-}
-@media (max-width: 560px) {
-  .grid-stats { grid-template-columns: 1fr 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -505,24 +460,11 @@ text[data-planet="Pluto"][data-planet] { fill: var(--c-pluto); } text[data-plane
 .chip[aria-pressed="true"] { background: #ffffff0f; border-color: var(--text-muted); color: var(--text-primary); }
 .chip .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
 
-/* build-your-planet controls */
-.build-controls { display: grid; gap: 15px; margin-bottom: 20px; }
-.build-controls .ctrl { min-width: 0; }
-
 /* score readout */
-.score-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
-.score-head .num { font-size: 2.6rem; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
-.score-head .of { color: var(--text-muted); font-size: .85rem; }
-.score-term { padding: 11px 0; border-top: 1px solid var(--rule); }
-.score-term .st-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; font-size: .86rem; }
-.score-term .st-bar { height: 6px; border-radius: 3px; background: var(--surface-3); margin-top: 7px; overflow: hidden; }
-.score-term .st-bar i { display: block; height: 100%; border-radius: 3px; }
-.score-term .st-detail { font-size: .78rem; color: var(--text-muted); margin-top: 6px; }
-.score-term .st-cite { font-size: .72rem; color: var(--text-muted); font-family: var(--font-mono); }
 
-@media (max-width: 1199px) { .filter-grid { grid-template-columns: repeat(2, 1fr); row-gap: 8px; } .filter:nth-child(n+3) { margin-top: 16px; } }
+@media (max-width: 1199px) {  .filter:nth-child(n+3) { margin-top: 16px; } }
 @media (max-width: 767px) {
-  .filter-grid { grid-template-columns: 1fr; }
+
   .filter:nth-child(n+2) { margin-top: 12px; }
 }
 
@@ -536,8 +478,6 @@ text[data-planet="Pluto"][data-planet] { fill: var(--c-pluto); } text[data-plane
 
 section.story { padding-bottom: 24px; }
 .wrap.wide { max-width: 1480px; }
-
-.scroll-hint { font-size: .85rem; color: var(--text-muted); margin-top: 14px; }
 
 .scrolly {
   display: grid; grid-template-columns: minmax(300px, 400px) minmax(0, 1fr);
@@ -608,8 +548,7 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 /* Rubin's name in its hot pink, as its drawings and labels are (the future page; asked for 2026-11-18) */
 .k-rubin { color: var(--series-4-ink); }
 
-/* controls on a picture (the streetlight, the herd, the orbit views): one dark bar along an edge,
-   in the style of the data page's game */
+/* controls on a picture: one dark bar along an edge, in the style of the data page's game */
 .pic { position: relative; }
 .pic-bar {
   position: absolute; left: 10px; right: 10px; bottom: 10px; display: flex; flex-wrap: wrap; align-items: center;
@@ -628,16 +567,9 @@ svg tspan.au { fill: var(--au); font-variant-numeric: tabular-nums; }
 .pic-btn.primary { background: var(--ui); border-color: var(--ui); color: var(--surface-0); }
 .pic-btn.primary:hover { filter: brightness(1.1); }
 
-.odds-key { margin: 0 0 14px; gap: 8px 22px; }
-.odds-key .legend-item { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; }
-.odds-key svg { width: 20px; height: 12px; flex: none; }
-.odds-heading { font: 600 11.5px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; fill: var(--text-muted); }
-
 /* the probability page: three small compasses in the head, the streetlight beside its readout */
 .pic-time { padding: 5px 9px; border-radius: 7px; background: #00000080; color: #fff; font: 600 .74rem/1.2 var(--font-mono); letter-spacing: .04em; }
 .pic-note { position: absolute; top: 12px; left: 14px; pointer-events: none; }
-.pic-note .herd-verdict { margin: 0; padding: 6px 10px; border-radius: 8px; background: #000000b8; }
-.link-btn { background: none; border: 0; padding: 0; font: inherit; color: var(--text-primary); text-decoration: underline; cursor: pointer; }
 
 /* the clustering page's head: the solar system from above, the distant orbits drawing in, then Planet Nine */
 .lean-head { max-height: 62vh; margin-inline: auto; overflow: visible; }   /* Planet Nine's name may ride just past the edge */
@@ -852,15 +784,8 @@ svg .k-clue { fill: var(--part); }
   .cmp-pop p { font-size: .92rem; }
 }
 
-
-/* the herd: the picture full width, its controls along the foot of the panel */
-@media (max-width: 900px) {
-  .pic-note { top: 8px; left: 8px; }
-}
-@media (max-width: 900px) {
-}
 .k-nep { color: #aab0c4; font-weight: 600; }
-.k-obj { color: #c4b5fd; font-weight: 600; }
+
 /* the three counts on the planets page, one colour each wherever they appear */
 .k-nine { color: var(--c-nine); font-weight: 600; }
 .k-eight { color: var(--c-eight); font-weight: 600; }
@@ -873,7 +798,6 @@ svg .k-clue { fill: var(--part); }
 }
 .k-warn { color: #ffa07a; font-weight: 600; }
 .k-lsst { color: var(--series-4); font-weight: 600; }
-
 
 details.more > summary { font-size: .95rem; }
 
@@ -908,9 +832,6 @@ details.more > summary { font-size: .95rem; }
   .step-card { padding: 18px; }
   .step-card h3 { font-size: 1.12rem; }
   .step-card p { font-size: .95rem; }
-}
-
-@media (max-width: 760px) {
 }
 
 /* the speech bubble beside Pluto when it is reclassified (charts/lineup.js) */
@@ -989,15 +910,6 @@ section.part.flush { border-top: 0; padding-top: 4px; }
 @media (max-width: 839px) {
   .hero-row { position: static; width: auto; height: auto; overflow: visible; clip-path: none; white-space: normal; padding: 10px var(--gutter) 18px; }
 }
-
-/* buttons */
-.btn-game {
-  background: transparent; border: 1px solid var(--rule); color: var(--text-primary); border-radius: 9px;
-  padding: 9px 16px; font: inherit; font-size: .9rem; font-weight: 600; cursor: pointer; min-height: 40px;
-}
-.btn-game:hover { border-color: var(--text-muted); }
-.btn-game.primary { background: var(--ui); border-color: var(--ui); color: var(--surface-0); }
-.btn-game.primary:hover { filter: brightness(1.08); }
 
 /* the telescope map */
 .scope-map { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 16px 12px; }
@@ -1270,8 +1182,6 @@ figure.blink figcaption { padding: 8px 12px 10px; font-size: .84rem; line-height
 .cat-orbit { fill: none; stroke: var(--series-1); stroke-opacity: .32; stroke-width: 1; }
 .cat-orbit.hot { stroke: var(--series-1-ink); stroke-opacity: 1; stroke-width: 2; }
 
-/* watched longer, known better */
-.lead-key { color: var(--text-primary); font-weight: 600; font-size: 1.12rem; border-left: 3px solid var(--text-muted); padding-left: 12px; }
 /* a citation: a small superscript number that goes to the paper on the credits page */
 sup.cite { font-size: .68em; line-height: 0; margin-left: 1px; }
 sup.cite a { color: var(--text-secondary); text-decoration: none; padding: 0 1px; }
@@ -1311,43 +1221,14 @@ sup.cite a:hover { text-decoration: underline; }
 .arc-row.hot .span, .arc-row.hot .nights { stroke: #ffffff; stroke-opacity: 1; }
 /* each uncertainty takes its own colour and weight, dim grey to bright ember (charts/arcs.js sets them inline) */
 
-/* --- exhibits with their own controls (charts/herd.js, charts/bias.js) ---- */
-.herd-verdict { margin: 16px 0 0; font-size: 1.02rem; color: var(--text-secondary); }
-.herd-verdict b { color: var(--text-primary); }
-/* the clustering page's drawn selection, with a way to clear it */
-.sel-chip { display: inline-flex; align-items: center; gap: 10px; background: #ffffff0d; border: 1px solid var(--text-muted); border-radius: 999px; padding: 6px 14px; font-size: .82rem; color: var(--text-secondary); }
-.sel-chip button { background: none; border: 0; color: var(--text-primary); cursor: pointer; font: inherit; padding: 0; }
-.exhibit { display: grid; grid-template-columns: minmax(260px, 340px) minmax(0, 1fr); gap: 24px; align-items: start; }
-.exhibit .viz-static { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px; }
-.exhibit .viz-static svg { width: 100%; height: auto; max-height: 78vh; }
-.herd-ctrl { display: grid; gap: 18px; }
-.herd-ctrl .ctrl { gap: 8px; }
-.herd-ctrl .ctrl label, .herd-ctrl .filter-name { font-size: .78rem; letter-spacing: .06em; text-transform: none; color: var(--text-primary); font-weight: 600; }
-.herd-ctrl .ctrl label b { color: var(--text-primary); }
-.herd-ctrl .filter-desc { margin: 0; font-size: .78rem; color: var(--text-muted); }
-.herd-ctrl .seg { align-self: start; flex-wrap: wrap; }
-.herd-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
-.btn-primary {
-  background: var(--ui); color: var(--surface-0); border: 0; border-radius: 9px; padding: 10px 16px;
-  font: inherit; font-weight: 600; font-size: .9rem; cursor: pointer; min-height: 40px;
-}
-.btn-primary:hover { filter: brightness(.92); }
-#herdResult .note, #biasResult p { margin: 16px 0 0; }
-@media (max-width: 900px) { .exhibit { grid-template-columns: 1fr; } }
-
 /* controls inside a story card: one column, tighter */
 .step-card .controls { border: 0; padding: 0; margin: 12px 0 0; }
-.step-card .controls-head { margin-bottom: 8px; }
-.step-card .filter-grid { grid-template-columns: 1fr; row-gap: 6px; }
+
 .step-card .filter { margin-top: 10px !important; }
-.step-card .filter-desc { display: none; }
-.step-card .filter .filter-name { justify-content: flex-start; gap: 8px; }
-.step-card .filter .filter-name b { margin-left: auto; }
 
 /* ---- search pages ---- */
 /* search/how.html, search/timeline.html and search/future.html (pages/search.js, timeline.js, future.js). */
-/* the sky map's depth key: the two ends named either side of the ramp */
-.depth-ramp { width: 110px; height: 11px; border-radius: 3px; border: 1px solid var(--rule); flex: none; }
+
 /* a line swatch, for keys of orbits and paths */
 .legend-line { width: 18px; height: 3px; border-radius: 2px; flex: none; }
 /* the photographed sky (#sky): a narrower card column, the map drawn at its own shape (no letterbox) and centred
@@ -1383,7 +1264,7 @@ sup.cite a:hover { text-decoration: underline; }
 #skyStory .viz-head { min-height: 3.6rem; align-items: flex-end; }
 #skyStory .viz-head .legend { gap: 8px 20px; align-content: flex-end; }
 #skyStory .legend-item { font-size: .9rem; }
-#skyStory .legend-swatch { width: 12px; height: 12px; }
+
 #skyStory .legend-item.is-new { animation: sky-key-in .5s var(--reveal-ease) both; }
 @keyframes sky-key-in { from { opacity: 0; transform: translateY(4px); } }
 /* the photographed sky's picture (charts/skysearch.js). Two cells side by side: in the first stage the observatory
@@ -1411,28 +1292,17 @@ sup.cite a:hover { text-decoration: underline; }
 .ss-title { position: absolute; top: 10px; left: 14px; right: 14px; z-index: 1; margin: 0; font-size: .92rem; font-weight: 600;
   color: var(--text-primary); line-height: 1.3; opacity: 0; transition: opacity .5s ease; pointer-events: none; }
 .ss.is-pair .ss-title { opacity: 1; transition-delay: .35s; }
-/* the planet being tested: a switch on the left-hand map, from the step that introduces it */
-.ss-bar { left: 50%; right: auto; transform: translateX(-50%); bottom: 10px; padding: 5px 10px; gap: 10px; align-items: center; opacity: 0; visibility: hidden;
-  transition: opacity .4s ease, visibility 0s linear .4s; }
-.ss.is-pair .ss-bar { opacity: 1; visibility: visible; transition: opacity .4s ease .4s, visibility 0s linear 0s; }
-.ss-bar .seg { border-color: #ffffff30; }
-.ss-bar .seg button { min-height: 28px; padding: 3px 10px; font-size: .8rem; }
-.ss-bar .seg button[aria-pressed="true"] { background: var(--ui); color: var(--surface-0); font-weight: 600; }
+
 /* what is under the pointer on the path, on both maps at once */
-.ss-read { grid-column: 1 / -1; grid-row: 2; margin: 0; min-height: 1.5em; display: flex; flex-wrap: wrap; gap: 4px 18px;
-  font-size: .9rem; color: var(--text-secondary); }
-.ss-read b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.ss-read .is-deep { color: var(--text-primary); font-weight: 700; }
-.ss-read .is-shallow { color: var(--series-2-ink); font-weight: 700; }
-.ss-read .is-none { color: var(--text-muted); font-weight: 700; }
+
 .ss .pick-card { z-index: 3; }
 
 /* the observatory on Earth */
-.ss-sky-above { fill: #ffffff07; }
+
 .ss-sky-circle { fill: none; stroke: #ffffff38; stroke-width: 1.5; stroke-dasharray: 4 8; }
 .ss-beam { fill: #ffffff1c; }
 .ss-patch-arc { fill: none; stroke: #ffffff; stroke-width: 7; stroke-linecap: round; }
-.ss-horizon { stroke: var(--text-muted); stroke-width: 1.5; stroke-dasharray: 6 6; }
+
 .ss-note { font-size: 30px; fill: var(--text-secondary); }
 .ss-note.is-strong { fill: var(--text-primary); font-weight: 600; }
 
@@ -1440,7 +1310,7 @@ sup.cite a:hover { text-decoration: underline; }
 .ss-outline { fill: #0c0c0e; stroke: var(--text-muted); stroke-width: 1.5; stroke-opacity: .6; }
 .ss-grat path, .ss-grat .near, .ss-grat .far { fill: none; stroke: var(--rule); stroke-width: 1.3; }
 .ss-grat .far { stroke-dasharray: 3 5; }
-.ss-eq { fill: none; stroke: #ffffffb0; stroke-width: 2; opacity: 0; }
+
 /* the line the Sun and planets follow: the Sun's gold, dotted, so it never reads as Planet Nine's path */
 .ss-ecl { fill: none; stroke: var(--sun); stroke-width: 3; stroke-dasharray: .1 9; stroke-linecap: round; opacity: 0; }
 .ss-cap path { fill: #ffffff33; stroke: #ffffff; stroke-width: 3; }
@@ -1452,7 +1322,7 @@ sup.cite a:hover { text-decoration: underline; }
 .ss-var { fill: none; stroke: var(--p9); stroke-width: 1.2; stroke-opacity: .55; }
 .ss-core { fill: none; stroke: var(--p9); stroke-width: 4; }
 .ss.is-mag .ss-core { stroke-width: 1.2; }
-.ss-mag path { fill: none; stroke-width: 22; stroke-linecap: round; }
+
 .ss-fpath { fill-opacity: .85; stroke: none; cursor: pointer; }
 .ss-pick { fill: #ffffff14; stroke: var(--ui); stroke-width: 3.5; stroke-linejoin: round; pointer-events: none; }
 .ss-pick.is-rubin { fill: none; stroke: var(--series-4); }
@@ -1464,7 +1334,7 @@ sup.cite a:hover { text-decoration: underline; }
 .ss-galband { fill: #dcc48a; fill-opacity: .13; }
 .ss-galplane { fill: none; stroke: #dcc48a; stroke-opacity: .4; stroke-width: 1.4; }
 .ss-buried { fill: none; stroke: #dcc48a; stroke-opacity: .35; stroke-width: 26; stroke-linecap: round; }
-.ss-track, .ss-mag, .ss-fp, .ss-verdict, .ss-gal, .ss-rubin, .ss-cap, .ss-rsegs { opacity: 0; }
+.ss-track, .ss-fp, .ss-verdict, .ss-gal, .ss-rubin, .ss-cap, .ss-rsegs { opacity: 0; }
 .ss-label { font-size: 24px; font-weight: 600; fill: var(--text-secondary); text-anchor: middle; opacity: 0; pointer-events: none;
   paint-order: stroke; stroke: #0c0c0e; stroke-width: 5px; stroke-linejoin: round; }
 .ss-label.is-dim { fill: var(--text-muted); font-weight: 500; }
@@ -1474,7 +1344,7 @@ sup.cite a:hover { text-decoration: underline; }
 .ss-mark { fill: none; stroke: var(--ui); stroke-width: 3.5; pointer-events: none; }
 .ss.can-hover .ss-a svg { cursor: crosshair; }
 /* the magnitude panel (charts/skysearch.js): a ruler, the planet's range on it, the limits through it */
-.ss-bar-k { font: 400 .7rem/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-secondary); }
+
 .sm-axis line { stroke: var(--text-muted); stroke-width: 2; }
 .sm-axis text { font-size: 24px; fill: var(--text-secondary); text-anchor: middle; font-variant-numeric: tabular-nums; }
 .sm-end { font-size: 22px; fill: var(--text-muted); }
@@ -1520,8 +1390,7 @@ sup.cite a:hover { text-decoration: underline; }
 /* the key's magnitude ramp, drawn with the maps' own scale */
 .mag-key { flex: none; overflow: visible; }
 .mag-key text { font-size: 10px; fill: var(--text-secondary); text-anchor: middle; font-variant-numeric: tabular-nums; }
-.mag-ends { color: var(--text-muted); font-size: .82rem; }
-.k-deep { color: var(--text-primary); }
+
 .k-milky { color: #e6d3a1; }
 /* the marks the reader can click: an outline on hover (footprints only on the explore step, where the card says
    they can be clicked) and on keyboard focus */
@@ -1549,31 +1418,6 @@ sup.cite a:hover { text-decoration: underline; }
 
 /* put a planet out there: the section's question, brighter and larger than the paragraph under it */
 .sec-head p.sec-q { font-size: 1.22rem; font-weight: 600; line-height: 1.35; color: var(--text-primary); margin-bottom: 8px; }
-/* put a planet out there: the picture in a panel with its dials on it (like the herd), the score beside it */
-.place-stage { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr); gap: 22px; align-items: start; }
-.place-pic { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 12px 12px 132px; }
-.place-pic svg { display: block; width: 100%; height: auto; max-height: min(62vh, 600px); }
-.place-legend { margin: 0 0 4px; gap: 6px 20px; }
-.place-bar { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 18px; align-items: end; }
-.pic-bar .place-dial { display: flex; flex-direction: column; align-items: stretch; gap: 3px; }
-.place-dial-k { display: flex; justify-content: space-between; gap: 8px; }
-.pic-bar .place-dial b { min-width: 0; }
-.pic-bar .place-dial b.k-au { color: var(--au); }
-.pic-bar .place-dial input[type=range] { width: 100%; }
-.place-presets { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.place-presets .pic-btn { padding: 0 9px; font-size: .78rem; }
-.place-read { display: grid; gap: 14px; }
-.place-score { padding: 18px 20px; }
-.place-props { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
-.place-props .stat { padding: 12px 14px; }
-.place-props .stat .v { font-size: 1.35rem; }
-@media (max-width: 900px) {
-  .place-stage { grid-template-columns: minmax(0, 1fr); }
-  .place-pic { padding-bottom: 12px; }
-  .place-pic .pic-bar { position: static; margin-top: 8px; }
-  .place-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-@media (max-width: 480px) { .place-bar { grid-template-columns: minmax(0, 1fr); } }
 
 /* ledger rows slide in from the side; off screen, that offset must not widen the page on a phone */
 body[data-page="search"] #searches { overflow-x: clip; }
@@ -1609,7 +1453,7 @@ body[data-page="search"] #searches { overflow-x: clip; }
 .db-stars .tw { animation: db-twinkle var(--d, 4s) ease-in-out var(--dl, 0s) infinite alternate; }
 @keyframes db-twinkle { to { opacity: .08; } }
 .db-svg { position: relative; display: block; width: 100%; height: auto; max-height: min(78vh, 680px); margin: 0 auto; overflow: visible; }
-.db-planet, .db-orbit { pointer-events: none; }
+.db-planet { pointer-events: none; }
 .db-rim { fill: none; stroke: var(--p9); stroke-opacity: .5; stroke-width: 1.5; }
 .db-label { font: 700 12px var(--font-mono); letter-spacing: .14em; text-anchor: middle; dominant-baseline: middle; }
 .db-label.is-for { fill: var(--db-for-ink); paint-order: stroke; stroke: #05070d; stroke-width: 5px; stroke-linejoin: round; }   /* edged, so it reads on any skin's drawing */
@@ -1860,13 +1704,12 @@ body[data-page="search"] #searches { overflow-x: clip; }
   .ss-earth, .ss-a, .ss-b { grid-column: 1; }
   .ss-earth { grid-row: 1; }
   .ss-a, .ss-b { grid-row: 2; }
-  .ss-read { grid-row: 3; font-size: .8rem; gap: 2px 12px; }
+
   .ss-panel { padding: 4px; }
   .ss.is-solo .ss-a { transform: translateY(calc(-50% - var(--ss-gap) / 2)); }
   .ss.is-pair .ss-a { transform: translateY(calc(-100% - var(--ss-gap))); }
   .ss-title { font-size: .74rem; top: 5px; left: 8px; }
-  .ss-bar { bottom: 6px; right: 6px; padding: 3px 5px; }
-  .ss-bar .seg button { min-height: 24px; padding: 2px 7px; font-size: .72rem; }
+
   .ss-label, .ss-note { font-size: 34px; }
   .ss .pick-card { position: static; margin-top: 6px; }
 }
@@ -1878,7 +1721,6 @@ body[data-page="search"] #searches { overflow-x: clip; }
 .alt-ic-box { flex: none; width: 46px; height: 46px; display: grid; place-items: center; }
 .alt-ic-box svg.alt-ic { width: 100%; height: 100%; display: block; }
 
-
 /* the final question (search/future.html #yours, pages/future.js): one centred panel. The panel comes in with
    scrolly.css's .reveal and its parts follow, a beat apart. The question and the results share one grid cell, so
    submitting swaps them in place. */
@@ -1887,9 +1729,9 @@ body[data-page="search"] #searches { overflow-x: clip; }
   background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius);
 }
 .cq-ask, .cq-thanks { grid-area: 1 / 1; }
-.cq-eyebrow { margin: 0 auto 14px; font: 700 .74rem/1 var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: var(--text-muted); }
+
 .cq-title { margin: 0 0 28px; font-size: clamp(2rem, 4.4vw, 3rem); line-height: 1.12; letter-spacing: -.02em; }
-.cq-you { color: var(--p9-ink); }
+
 .cq-choices { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
 .cq-btn {
   min-width: 140px; min-height: 48px; padding: 0 22px; border-radius: 12px; cursor: pointer;
@@ -1908,8 +1750,7 @@ body[data-page="search"] #searches { overflow-x: clip; }
 /* submitted: the question steps out, the thank-you takes its place, centred in the same cell */
 .cq-thanks { align-self: center; visibility: hidden; opacity: 0; transform: translate3d(0, 6px, 0); }
 .cq-thanks:focus { outline: none; }
-.cq-thanks-title { margin: 0 0 8px; max-width: none; font-size: clamp(1.5rem, 3.2vw, 2.1rem); font-weight: 700; line-height: 1.2; color: var(--text-primary); }
-.cq-thanks-note { margin: 0; max-width: none; font-size: 1.1rem; font-weight: 600; color: var(--text-muted); }
+
 .cq.is-submitted .cq-ask { visibility: hidden; opacity: 0; transition: opacity .3s ease, visibility 0s linear .3s; }
 .cq.is-submitted .cq-thanks { visibility: visible; opacity: 1; transform: none; transition: opacity .4s ease .2s, transform .5s var(--reveal-ease, ease) .2s; }
 /* the parts follow the panel in: eyebrow, title, buttons, Submit, a beat apart (and reset with it) */
@@ -1917,252 +1758,20 @@ html.has-reveal .cq-ask > :is(.cq-eyebrow, .cq-title, .cq-choices, .cq-submit) {
   transition: opacity .6s var(--reveal-ease) var(--cq-d), transform .65s var(--reveal-ease) var(--cq-d);
 }
 html.has-reveal .cq:not(.is-in) .cq-ask > :is(.cq-eyebrow, .cq-title, .cq-choices, .cq-submit) { opacity: 0; transform: translate3d(0, 12px, 0); }
-.cq-eyebrow { --cq-d: .15s; } .cq-title { --cq-d: .27s; } .cq-choices { --cq-d: .39s; } .cq-submit { --cq-d: .51s; }
+ .cq-title { --cq-d: .27s; } .cq-choices { --cq-d: .39s; } .cq-submit { --cq-d: .51s; }
 @media (max-width: 560px) {
   .cq { padding: 34px 18px 28px; }
   .cq-choices .cq-btn { min-width: 0; flex: 1 1 0; padding: 0 10px; }
 }
 
-/* the activity's two versions (search/how.html, #build): the switch above the heading */
-.build-tools { display: flex; justify-content: flex-end; margin-bottom: 10px; }
-.build-tools .seg button { font-size: .8rem; }
-
-/* Hide Planet Nine (charts/hideplanet.js): the reader's planet and its dials on the left; on the right the sky map,
-   the magnitude ruler, the three results, the two buttons and the verdict. Only opacity and transform animate. */
-.hp { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 24px; align-items: start; }
-.hp-left { background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 18px 20px; }
-.hp-k { font: 700 .72rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin: 0 0 6px; }
-.hp-planet { display: grid; place-items: center; margin: -8px auto 4px; max-width: 250px; }
-.hp-planet svg { width: 100%; height: auto; overflow: visible; }
-.hp-scale { transform-box: view-box; transition: transform .45s var(--reveal-ease, ease); }
-.hp-veil { fill: #05070d; transition: opacity .45s ease; }
-.hp-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 0 0 14px; }
-.hp-facts dt { font: 700 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); }
-.hp-facts dd { margin: 2px 0 0; font-size: .95rem; color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.hp-facts .is-mag dd b { font-size: 1.25rem; }
-.hp-mag-word { color: var(--text-secondary); font-size: .85rem; }
-.hp-dials { display: grid; gap: 12px; }
-.hp-dial { display: grid; gap: 4px; font-size: .86rem; color: var(--text-secondary); }
-.hp-dial-k { display: flex; justify-content: space-between; gap: 10px; }
-.hp-dial b { color: var(--text-primary); font-weight: 600; font-variant-numeric: tabular-nums; }
-.hp-dial input { width: 100%; }
-.hp-note { margin: 14px 0 0; font-size: .8rem; line-height: 1.5; color: var(--text-muted); }
-
-.hp-right { display: grid; gap: 12px; min-width: 0; }
-.hp-key { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin: 0; font-size: .84rem; }
-.hp-key .legend-item { display: inline-flex; align-items: center; gap: 8px; }
-.hp-map { position: relative; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); padding: 8px; }
-.hp-map > svg { display: block; width: 100%; height: auto; cursor: crosshair; touch-action: none; }
-.hp-map > svg:focus { outline: none; }
-.hp-map > svg.is-kb:focus { outline: 2px solid var(--ui); outline-offset: 2px; border-radius: 6px; }
-.hp-map-note { position: absolute; left: 14px; bottom: 10px; margin: 0; font-size: .78rem; color: var(--text-muted);
-  transition: opacity .4s ease; pointer-events: none; }
-.hp-map-note.is-gone { opacity: 0; }
-.hp-oval { fill: #0c0c0e; }
-.hp-oval-edge { fill: none; stroke: var(--text-muted); stroke-opacity: .6; stroke-width: 1.5; }
-.hp-fp path { fill-opacity: .6; }
-.hp-gal { fill: #dcc48a; fill-opacity: .13; }
-.hp-grat path { fill: none; stroke: #ffffff12; stroke-width: 1.2; }
-.hp-rubin { fill: none; stroke: var(--series-4); stroke-width: 1.8; stroke-opacity: .85; stroke-dasharray: 8 6; }
-.hp-var { fill: none; stroke: var(--p9); stroke-width: 1.2; stroke-opacity: .4; }
-.hp-path { fill: none; stroke: var(--p9); stroke-width: 2.6; }
-.hp-you { pointer-events: none; }
-.hp-you-glow { fill: var(--p9); fill-opacity: .25; }
-.hp-you-dot { fill: var(--p9); stroke: #05070d; stroke-width: 3; transition: fill .3s ease; }
-.hp-you.is-seen .hp-you-dot { fill: var(--series-2); }
-.hp-you.is-seen .hp-you-glow { fill: var(--series-2); }
-.hp-you.is-none .hp-you-dot { fill: var(--text-muted); }
-
-.hp-ruler svg { display: block; width: 100%; height: auto; overflow: visible; }
-.hp-r-axis { stroke: var(--rule); stroke-width: 2; }
-.hp-r-tick { stroke: var(--text-muted); stroke-width: 1; }
-.hp-r-n { font-size: 11px; fill: var(--text-muted); text-anchor: middle; font-variant-numeric: tabular-nums; }
-.hp-r-end { font-size: 11px; fill: var(--text-muted); }
-.hp-r-search, .hp-r-photo, .hp-r-rubin, .hp-r-you { transition: transform .45s var(--reveal-ease, ease), opacity .3s ease; }
-.hp-r-search line { stroke: #ffffff; stroke-dasharray: 3 3; stroke-width: 1.5; }
-.hp-r-search text, .hp-r-photo text { font-size: 11px; fill: var(--text-secondary); }
-.hp-r-photo line { stroke: #ffffff; stroke-width: 2.5; }
-.hp-r-rubin line { stroke: var(--series-4); stroke-width: 2.5; }
-.hp-r-rubin text { font-size: 11px; fill: var(--series-4-ink); }
-.hp-r-you circle { fill: var(--p9); stroke: #05070d; stroke-width: 2.5; transition: fill .3s ease; }
-.hp-r-you.is-seen circle { fill: var(--series-2); }
-
-.hp-results { display: grid; gap: 0; border-top: 1px solid var(--rule); }
-.hp-row { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--rule);
-  font-size: .9rem; color: var(--text-secondary); }
-.hp-row-k { font: 700 .7rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); padding-top: 3px; }
-.hp-row b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.hp-status { font-weight: 700; }
-.hp-status.is-seen { color: var(--series-2-ink); }
-.hp-status.is-hidden { color: var(--p9-ink); }
-.hp-status.is-none { color: var(--text-secondary); }
-.k-ok { color: var(--text-primary); font-weight: 600; }
-.hp-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-.hp-actions .pic-btn { height: 38px; padding: 0 16px; }
-.hp-verdict { border: 1px solid var(--rule); border-left: 4px solid var(--text-muted); border-radius: 10px; padding: 14px 16px;
-  background: var(--surface-2); font-size: .92rem; line-height: 1.5; color: var(--text-secondary); transition: opacity .3s ease; }
-.hp-verdict p { margin: 0 0 6px; }
-.hp-verdict p:last-child { margin-bottom: 0; }
-.hp-verdict.is-seen { border-left-color: var(--series-2); }
-.hp-verdict.is-hidden { border-left-color: var(--p9); }
-.hp-verdict.is-stale { opacity: .45; }
-.hp-verdict.is-in { animation: hp-in .4s var(--reveal-ease, ease) both; }
-@keyframes hp-in { from { opacity: 0; transform: translate3d(0, 6px, 0); } }
-.hp-v-head { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
-.hp-verdict.is-seen .hp-v-head { color: var(--series-2-ink); }
-.hp-verdict.is-hidden .hp-v-head { color: var(--p9-ink); }
-.hp-v-next { color: var(--text-muted); font-size: .86rem; }
-
-.hp-orbit { margin-top: 20px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-1); }
-.hp-orbit summary { cursor: pointer; padding: 14px 18px; font-weight: 600; color: var(--text-primary); }
-.hp-orbit-in { display: grid; grid-template-columns: minmax(200px, 280px) minmax(0, 1fr); gap: 24px; padding: 4px 18px 18px; align-items: start; }
-.hp-dir { width: 100%; height: auto; }
-.hp-d-ring { fill: none; stroke: var(--rule); stroke-width: 1.5; }
-.hp-d-fit { fill: var(--p9); fill-opacity: .14; }
-.hp-d-obj { fill: var(--series-1); stroke: #05070d; stroke-width: 1.5; }
-.hp-d-mean { stroke: var(--series-1); stroke-width: 3; }
-.hp-d-opp { stroke: var(--text-muted); stroke-width: 1.5; stroke-dasharray: 4 4; }
-.hp-d-sun { fill: var(--sun); }
-.hp-d-you line { stroke: var(--p9); stroke-width: 3; }
-.hp-d-you circle { fill: var(--p9); stroke: #05070d; stroke-width: 2; }
-.hp-d-t { font-size: 11px; fill: var(--series-1-ink); text-anchor: middle; }
-.hp-checks { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; font-size: .86rem; color: var(--text-secondary); }
-.hp-checks li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; }
-.hp-checks li.is-in b { color: var(--text-primary); }
-.hp-checks li.is-out b { color: var(--series-2-ink); }
-.hp-checks .hp-checks-src { display: block; color: var(--text-muted); font-size: .8rem; margin-top: 4px; }
-
-@media (max-width: 900px) {
-  .hp, .hp-orbit-in { grid-template-columns: minmax(0, 1fr); }
-  .hp-planet { max-width: 170px; }
-  .hp-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
-  /* the ruler is drawn at about half size on a phone, so its words are set larger; the map's hint sits under it */
-  .hp-r-n, .hp-r-end, .hp-r-search text, .hp-r-photo text, .hp-r-rubin text { font-size: 19px; }
-  .hp-ruler svg { overflow: visible; margin-top: 14px; }
-  .hp-map-note { position: static; margin: 4px 2px 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hp-scale, .hp-veil, .hp-r-search, .hp-r-photo, .hp-r-rubin, .hp-r-you, .hp-map-note { transition: none; }
-  .hp-verdict.is-in { animation: none; }
-}
-
-/* Hide Planet Nine as one screen (2026-11-09). The map's height follows the screen's (clamped), the right column is
-   exactly as wide as that 2:1 map, and the pair of columns is centred, so the planet and its dials, the map, the ruler,
-   the three results and the buttons all fit in a laptop's view once the heading is at the top. A screen too short
-   for that scrolls as usual; nothing is hidden. The verdict opens as a card on the map. */
-#buildV2 { --hp-map-h: clamp(220px, calc(100vh - var(--bar-h) - 400px), 380px); }
-#buildV2 .sec-head { margin-bottom: 14px; }
-#buildV2 .sec-head h2 { margin-bottom: 4px; }
-#buildV2 .sec-head .sec-q { margin-bottom: 4px; }
-#buildV2 .sec-head p { margin-top: 0; margin-bottom: 0; }
-#build .build-tools { margin-bottom: 0; }
-#buildV2 .hp { grid-template-columns: minmax(250px, 320px) minmax(0, calc(var(--hp-map-h) * 1.957 + 18px));
-  justify-content: center; gap: 22px; }
-#buildV2 .hp-left { padding: 12px 16px; }
-#buildV2 .hp-k { margin-bottom: 0; }
-#buildV2 .hp-planet { max-width: 150px; margin: -4px auto 0; }
-#buildV2 .hp-facts { gap: 6px 14px; margin-bottom: 10px; }
-#buildV2 .hp-facts dd { font-size: .9rem; }
-#buildV2 .hp-facts .is-mag dd b { font-size: 1.15rem; }
-#buildV2 .hp-dials { gap: 8px; }
-#buildV2 .hp-dial { gap: 2px; font-size: .82rem; }
-#buildV2 .hp-note { margin-top: 10px; font-size: .76rem; line-height: 1.45; }
-#buildV2 .hp-right { gap: 8px; }
-#buildV2 .hp-key { gap: 4px 14px; font-size: .8rem; }
-#buildV2 .hp-map { padding: 4px; }
-#buildV2 .hp-map > svg { height: var(--hp-map-h); width: 100%; }
-/* the ruler right under the map, its words set for its smaller size */
-#buildV2 .hp-ruler { margin-top: -2px; }
-#buildV2 .hp-ruler svg { max-height: 66px; }
-#buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 13px; }
-#buildV2 .hp-results { font-size: .86rem; }
-#buildV2 .hp-row { grid-template-columns: 150px minmax(0, 1fr); gap: 10px; padding: 5px 0; font-size: .86rem; }
-#buildV2 .hp-row-k { font-size: .64rem; padding-top: 2px; }
-#buildV2 .hp-status { font-size: .95rem; }
-#buildV2 .hp-actions .pic-btn { height: 34px; }
-/* the verdict on the map: a card in its top corner, closed with its button or Escape */
-#buildV2 .hp-verdict { position: absolute; top: 10px; right: 10px; z-index: 2; width: min(340px, calc(100% - 20px));
-  padding: 12px 34px 12px 14px; font-size: .84rem; box-shadow: 0 10px 30px #00000080; background: #15151aee; }
-#buildV2 .hp-verdict .pick-close { position: absolute; top: 6px; right: 6px; }
-#buildV2 .hp-v-head { font-size: .96rem; }
-/* the notes, folded under the game */
-.hp-notes { margin-top: 12px; }
-.hp-notes summary { cursor: pointer; font-size: .86rem; color: var(--text-secondary); }
-.hp-notes .caption { margin-top: 8px; }
-#buildV2 .hp-orbit { margin-top: 12px; }
-#buildV2 .hp-orbit summary { padding: 10px 16px; }
-@media (max-width: 900px) {
-  #buildV2 .hp { grid-template-columns: minmax(0, 1fr); }
-  #buildV2 .hp-map > svg { height: auto; }
-  #buildV2 .hp-planet { max-width: 130px; }
-  #buildV2 .hp-row { grid-template-columns: minmax(0, 1fr); gap: 0; }
-  #buildV2 .hp-verdict { position: static; width: auto; margin-top: 6px; }
-  #buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 19px; }
-  #buildV2 .hp-ruler svg { max-height: none; }
-}
 /* the version switch on the heading's line (top right) rather than a row of its own, for both versions; a phone keeps
    it on its own row. Version 2's left column a little more compact, so it ends with the right one. */
 @media (min-width: 901px) {
   #build { position: relative; }
-  #build > .build-tools { position: absolute; top: 48px; right: var(--gutter); z-index: 1; }
-  #build .sec-head h2 { padding-right: 260px; }
-  #buildV2 { --hp-map-h: clamp(220px, calc(100vh - var(--bar-h) - 390px), 380px); }
-  #buildV2 .hp-planet { max-width: 128px; margin-top: -8px; margin-bottom: -4px; }
-  #buildV2 .hp-row { padding: 3px 0; }
-}
-/* version 2, tightened further: the key on one line, the two buttons beside the three results */
-@media (min-width: 901px) {
-  #buildV2 { --hp-map-h: clamp(220px, calc(100vh - var(--bar-h) - 420px), 380px); }
-  #buildV2 .hp-key { flex-wrap: nowrap; gap: 4px 12px; font-size: .76rem; white-space: nowrap; overflow: hidden; }
-  #buildV2 .hp-key .legend-item { gap: 6px; }
-  #buildV2 .hp-key .mag-key { width: 110px !important; height: 22px !important; }
-  #buildV2 .hp-right { grid-template-columns: minmax(0, 1fr) auto; column-gap: 16px; }
-  #buildV2 .hp-key, #buildV2 .hp-map, #buildV2 .hp-ruler { grid-column: 1 / -1; }
-  #buildV2 .hp-results { grid-column: 1; }
-  #buildV2 .hp-actions { grid-column: 2; flex-direction: column; justify-content: center; gap: 8px; }
-  #buildV2 .hp-actions .pic-btn { width: 100%; }
-  #buildV2 .hp-ruler svg { max-height: 58px; }
-}
-@media (min-width: 901px) {
-  /* the right column takes the free width (the map's oval keeps its 2:1 shape, centred in its panel), so the results
-     stay one line each */
-  #buildV2 .hp { grid-template-columns: minmax(250px, 320px) minmax(0, 860px); }
-}
-@media (min-width: 901px) { #buildV2 .hp-row { grid-template-columns: 172px minmax(0, 1fr); } }
-@media (min-width: 901px) { #buildV2 .hp-row { grid-template-columns: 200px minmax(0, 1fr); } }
 
-/* Hide Planet Nine across the content width (2026-11-09): the dashboard spans the page's margins like its heading,
-   about a quarter for the planet and its dials and the rest for the sky; the key sits in the map panel's top-left
-   corner beside the oval, so its row's height goes to the map, which grows taller and so wider (still 2:1, scaled
-   uniformly, centred in its panel); the cap is raised so a large screen's map fills its column. The ruler runs the
-   column's width. A phone keeps the stacked layout, the key above the map. */
-@media (min-width: 901px) {
-  #buildV2 { --hp-map-h: clamp(240px, calc(100vh - var(--bar-h) - 380px), 560px); }
-  #buildV2 .hp { grid-template-columns: minmax(280px, min(25%, 380px)) minmax(0, 1fr); justify-content: stretch; gap: 24px; }
-  #buildV2 .hp-right { grid-template-columns: minmax(0, 1fr) auto; }
-  #buildV2 .hp-map { padding: 6px; }
-  #buildV2 .hp-key { position: absolute; top: 10px; left: 12px; z-index: 1; display: grid; gap: 4px; padding: 6px 8px;
-    border-radius: 8px; background: #0f0f11cc; white-space: nowrap; overflow: visible; font-size: .74rem; }
-  #buildV2 .hp-map > svg { height: var(--hp-map-h); }
-  #buildV2 .hp-ruler svg { max-height: none; width: 100%; height: auto; }
-  #buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 14px; }
-  #buildV2 .hp-planet { max-width: 140px; }
+  #build .sec-head h2 { padding-right: 260px; }
+
 }
-@media (min-width: 901px) {
-  /* the ruler runs the column but no wider than a comfortable line, its words a steady size */
-  #buildV2 .hp-ruler { max-width: 1100px; width: 100%; justify-self: center; }
-  #buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 15px; }
-}
-@media (min-width: 901px) {
-  /* the key as one thin line along the map panel's foot, over the oval's southernmost tip, where nothing is drawn; the
-     hint in the empty top-left corner */
-  #buildV2 .hp-key { top: auto; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; flex-wrap: nowrap;
-    align-items: center; gap: 4px 14px; padding: 3px 10px; }
-  #buildV2 .hp-key .mag-key { margin-top: 6px; }
-  #buildV2 .hp-map-note { top: 10px; bottom: auto; left: 14px; }
-}
-/* the key is only a legend: clicks pass through it to the map, so the oval's southern tip under it can still be chosen */
-#buildV2 .hp-key { pointer-events: none; }
 
 /* ---- the future page (search/future.html, pages/future.js; rebuilt 2026-11-18): the question; the rest is in
    charts/future.css ---- */
@@ -2208,110 +1817,7 @@ html.has-reveal .cq:not(.is-in) .cq-ask > :is(.cq-eyebrow, .cq-title, .cq-choice
 .ss-fpath { fill-opacity: 1; }
 .ss-core-edge { fill: none; stroke: #05070d; stroke-width: 5.5; stroke-opacity: .7; }
 .ss.is-mag .ss-core-edge { stroke-width: 3; }
-.hp-oval { fill: var(--sky-empty); }
-.hp-fp path { fill-opacity: 1; }
-.hp-grat path { stroke: #ffffff17; }
-.hp-path-edge { fill: none; stroke: #05070d; stroke-width: 6; stroke-opacity: .7; }
-.hp-path { stroke-width: 3; }
 
-/* the game's planet (2026-11-10): the same drawing in the reader's skin, a little brighter and crisper here than
-   elsewhere, so its surface, its craters and its shading all read against the dark panel; only this panel */
-#buildV2 .hp-planet svg { filter: brightness(1.18) contrast(1.12) saturate(1.12); }
-
-/* Hide Planet Nine's result (2026-11-10): read as a conclusion and the two measurements behind it, not a table. The
-   verdict is the largest thing under the map, in its status colour (ember: it would have been seen; the planet's
-   colour: not ruled out; grey: no data), with one muted sentence; under it the two numbers, each with a small capital
-   label and a muted line; the primary button beside. Grouping by space, not by rules or boxes. */
-#buildV2 .hp-out { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-  grid-template-areas: "main main act" "m m act"; gap: 10px 28px; align-items: start; margin-top: 4px; }
-.hp-out-main { grid-area: main; }
-.hp-out-metrics { grid-area: m; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 28px; }
-#buildV2 .hp-out .hp-actions { grid-area: act; display: flex; flex-direction: column; gap: 8px; align-self: center; }
-.hp-out p { margin: 0; }
-.hp-res-k { font: 700 .66rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 2px !important; }
-.hp-res-verdict { font-size: clamp(1.35rem, 2.1vw, 1.7rem); font-weight: 700; line-height: 1.15; letter-spacing: -.01em; color: var(--text-primary);
-  transition: color .3s ease; }
-.hp-out[data-key="seen"] .hp-res-verdict { color: var(--series-2-ink); }
-.hp-out[data-key="hidden"] .hp-res-verdict { color: var(--p9-ink); }
-.hp-out[data-key="none"] .hp-res-verdict { color: var(--text-secondary); }
-.hp-res-why { margin-top: 4px !important; font-size: .86rem; line-height: 1.45; color: var(--text-muted); max-width: 90ch; }
-.hp-metric-v { font-size: 1.45rem; font-weight: 700; line-height: 1.1; color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.hp-metric-u { margin-left: 4px; font-size: .78rem; font-weight: 600; color: var(--text-muted); }
-.hp-metric-d { margin-top: 2px !important; font-size: .8rem; line-height: 1.4; color: var(--text-muted); }
-#buildV2 .hp-out .hp-actions .pic-btn { height: 38px; padding: 0 18px; width: 100%; }
-#buildV2 .hp-out .hp-secondary { background: transparent; border-color: #ffffff30; color: var(--text-secondary); }
-#buildV2 .hp-out .hp-secondary:hover { border-color: #ffffff70; color: var(--text-primary); }
-@media (max-width: 900px) {
-  #buildV2 .hp-out { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "m" "act"; }
-  .hp-out-metrics { gap: 8px 16px; }
-  #buildV2 .hp-out .hp-actions { flex-direction: row; }
-  #buildV2 .hp-out .hp-actions .pic-btn { flex: 1 1 0; }
-  .hp-metric-v { font-size: 1.25rem; }
-}
-@media (min-width: 901px) {
-  /* the result's two rows take a little more room than the old table, so the map gives a little back */
-  #buildV2 { --hp-map-h: clamp(240px, calc(100vh - var(--bar-h) - 420px), 560px); }
-  #buildV2 .hp-out { gap: 6px 28px; margin-top: 0; }
-  .hp-res-verdict { font-size: clamp(1.3rem, 1.75vw, 1.6rem); }
-}
-@media (min-width: 901px) {
-  #buildV2 { --hp-map-h: clamp(240px, calc(100vh - var(--bar-h) - 432px), 560px); }
-  /* the key never runs past its panel: it wraps to a second line, centred, if the panel is too narrow */
-  #buildV2 .hp-key { flex-wrap: wrap; justify-content: center; max-width: calc(100% - 24px); white-space: normal; }
-}
-@media (min-width: 901px) { #buildV2 .hp-key { width: max-content; } }
-@media (min-width: 901px) {
-  /* the key on one line at a laptop's width too, so it covers no more of the map's southern edge than one line */
-  #buildV2 .hp-key { font-size: .68rem; gap: 4px 10px; }
-}
-@media (max-width: 900px) {
-  /* the ruler's box is 1000 wide, drawn at about a third of that on a phone: its words set to read at about 12px */
-  #buildV2 .hp-r-n, #buildV2 .hp-r-end, #buildV2 .hp-r-search text, #buildV2 .hp-r-photo text, #buildV2 .hp-r-rubin text { font-size: 30px; }
-  #buildV2 .hp-ruler { margin-top: 18px; }
-}
-/* the ruler's two ends in words under it, on a phone only (in the drawing they would sit on the end numbers) */
-.hp-ruler-ends { display: none; }
-@media (min-width: 901px) {
-  /* one line of key at a laptop's width: the ramp's numbers already say which way is deeper */
-  #buildV2 .hp-key .mag-ends { display: none; }
-}
-@media (max-width: 900px) {
-  #buildV2 .hp-r-end { display: none; }
-  #buildV2 .hp-ruler-ends { display: flex; justify-content: space-between; margin: 2px 0 0; font-size: .74rem; color: var(--text-muted); }
-  /* "photos here" on a row of its own above the others, clear of "searches find half" and Rubin */
-  #buildV2 .hp-r-photo text { transform: translateY(-32px); }
-  #buildV2 .hp-ruler { margin-top: 40px; }
-}
-
-/* Hide Planet Nine: one quiet button, Reset planet, beside the result (no test, no popup: the verdict is live) */
-@media (min-width: 901px) { #buildV2 .hp-out .hp-actions { align-self: start; margin-top: 18px; } }
-
-/* Hide Planet Nine's "Move Me Around!" (2026-11-10): small bold words just above the planet's marker, pulsing gently
-   between 0.45 and 1 over a 2.8s cycle, a soft glow in the planet's colour behind a white line with a dark edge;
-   gone, with a fade, once the planet is first moved. Readers who ask for less motion get it steady. */
-.hp-hint { pointer-events: none; transition: opacity .6s ease; }
-.hp-hint.is-gone { opacity: 0; }
-.hp-hint text { text-anchor: middle; font-size: 22px; font-weight: 700; letter-spacing: .01em; }
-.hp-hint-glow { fill: none; stroke: var(--p9); stroke-width: 9px; stroke-opacity: .28; stroke-linejoin: round; }
-.hp-hint-t { fill: #ffffff; stroke: #05070d; stroke-width: 4px; paint-order: stroke; stroke-linejoin: round; }
-.hp-hint:not(.is-gone) text { animation: hp-hint-pulse 1.4s ease-in-out infinite alternate; }
-@keyframes hp-hint-pulse { from { opacity: 1; } to { opacity: .45; } }
-@media (max-width: 900px) { .hp-hint text { font-size: 34px; } }
-@media (prefers-reduced-motion: reduce) { .hp-hint:not(.is-gone) text { animation: none; } .hp-hint { transition: none; } }
-
-/* Hide Planet Nine's map labels (2026-11-10), in the photographed sky's colours: the Milky Way in its sand, Rubin in its
-   pink, the predicted path in the planet's colour with a short leader, and "Your Planet Nine" small and grey under the
-   marker. All with a dark edge for the sky behind, none taking the pointer; their size is set in pixels by the game. */
-.hp-labels, .hp-lbl { pointer-events: none; }
-.hp-lbl { text-anchor: middle; font-weight: 600; paint-order: stroke; stroke: #05070d; stroke-linejoin: round; }
-.hp-lbl.is-milky { fill: #dcc48a; }
-.hp-lbl.is-rubin { fill: var(--series-4-ink); }
-.hp-lbl.is-path { fill: var(--p9-ink); }
-.hp-lbl-lead { stroke: var(--p9); stroke-opacity: .7; }
-.hp-lbl-you { fill: var(--text-secondary); font-weight: 600; }
-/* a map label the marker has come over steps back until the marker moves on */
-.hp-labels .hp-lbl { transition: opacity .3s ease; }
-.hp-labels .hp-lbl.is-near { opacity: .12; }
 /* the Timeline debate's playback controls (2026-11-10): three buttons of one height and one radius, centred on the year
    strip; the arrows dark with a thin border and a larger, brighter glyph, Play/Pause the primary action in white */
 #debate .db-time .pic-btn { height: 38px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center;
@@ -2323,74 +1829,6 @@ html.has-reveal .cq:not(.is-in) .cq-ask > :is(.cq-eyebrow, .cq-title, .cq-choice
   font-size: .88rem; font-weight: 700; }
 #debate .db-play:hover { filter: brightness(.92); }
 #debate .db-time .pic-btn:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
-
-/* the game's map marker is the reader's own Planet Nine (2026-11-10): its drawing over a soft glow whose colour still
-   says the outcome, a thin dark ring so it stands off the blue; sizes set in pixels by the game */
-.hp-you-edge { fill: none; stroke: #05070d; stroke-opacity: .85; }
-.hp-you-glow { fill-opacity: .3; }
-.hp-you-art { pointer-events: none; }
-
-/* Hide Planet Nine: "How is brightness calculated?" folded under the dials (2026-11-10). The panel's own greys and
-   rounded rule; the distance letter in the AU gold, as every distance on the site; the live comparison white. */
-.hp-calc { margin-top: 12px; border: 1px solid var(--rule); border-radius: var(--radius); background: var(--surface-0); }
-.hp-calc summary { cursor: pointer; padding: 8px 12px; font-size: .84rem; font-weight: 600; color: var(--text-secondary); border-radius: var(--radius); }
-.hp-calc summary:hover, .hp-calc[open] summary { color: var(--text-primary); }
-.hp-calc summary:focus-visible { outline: 2px solid var(--ui, #fff); outline-offset: 2px; }
-.hp-calc-in { padding: 2px 12px 12px; display: grid; gap: 10px; }
-.hp-calc-f { margin: 0; text-align: center; font-size: 1.15rem; color: var(--text-primary); letter-spacing: .02em; }
-.hp-calc-f sup { font-size: .62em; }
-.hp-calc i { font-style: italic; font-family: Georgia, 'Times New Roman', serif; }
-.hp-calc i.is-d { color: var(--au); }
-.hp-calc-terms { margin: 0; display: grid; gap: 2px; font-size: .78rem; color: var(--text-secondary); }
-.hp-calc-terms div { display: grid; grid-template-columns: 1.4em minmax(0, 1fr); gap: 6px; }
-.hp-calc-terms dt { color: var(--text-primary); text-align: center; }
-.hp-calc-terms dd { margin: 0; }
-.hp-calc-live { border-top: 1px solid var(--rule); padding-top: 10px; }
-.hp-calc-x { margin: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 6px; font-size: .8rem; color: var(--text-secondary); }
-.hp-calc-x > b { font-size: 1.2rem; color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.hp-calc-mag { margin-left: auto; white-space: nowrap; }
-.hp-calc-mag b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
-.hp-calc-why { margin: 6px 0 0; font-size: .8rem; line-height: 1.45; color: var(--text-primary); }
-.hp-calc-note { margin: 0; font-size: .74rem; line-height: 1.45; color: var(--text-muted); }
-.hp-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-@media (prefers-reduced-motion: reduce) { .hp-calc summary { transition: none; } }
-.hp-calc-x { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; }
-.hp-calc-x > span:first-of-type { line-height: 1.25; }
-.hp-calc-mag { grid-column: 1 / -1; margin: 2px 0 0; }
-/* the brightness section, shortened (2026-11-10): formula, one line of terms, the live numbers on one row, one rule */
-.hp-calc-in { gap: 6px; padding: 0 12px 10px; }
-.hp-calc-f { font-size: 1.05rem; }
-.hp-calc-terms { margin: 0; text-align: center; font-size: .76rem; color: var(--text-secondary); }
-.hp-calc-terms i { color: var(--text-primary); }
-.hp-calc-terms i.is-d { color: var(--au); }
-.hp-calc-live { padding-top: 6px; }
-.hp-calc-x { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; }
-.hp-calc-x > b { font-size: 1.05rem; }
-.hp-calc-mag { margin: 0 0 0 auto; }
-.hp-calc-note { color: var(--text-secondary); }
-.hp-calc-terms { display: block; }
-.hp-calc-x { flex-wrap: nowrap; white-space: nowrap; }
-.hp-calc-x { flex-wrap: wrap; font-size: .76rem; }
-.hp-calc-x > span { white-space: nowrap; }
-
-/* Hide Planet Nine, the result as one quiet panel (2026-11-10): the verdict and its sentence, a thin rule, then the
-   two numbers in two aligned columns. Reset moved to the planet card's top-right corner, beside its heading. */
-#buildV2 .hp-out { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "m"; gap: 0;
-  margin-top: 6px; padding: 12px 16px; background: var(--surface-1); border: 1px solid var(--rule); border-radius: var(--radius); }
-#buildV2 .hp-out-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 24px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--rule); }
-#buildV2 .hp-res-why { color: var(--text-secondary); }
-.hp-left-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
-.hp-left-head .hp-k { margin: 0; }
-.hp-reset { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 9px 0 7px; font: 600 .76rem var(--font-sans);
-  color: var(--text-secondary); background: transparent; border: 1px solid #ffffff30; border-radius: 999px; cursor: pointer; }
-.hp-reset:hover { color: var(--text-primary); border-color: #ffffff70; }
-.hp-reset:focus-visible { outline: 2px solid var(--ui); outline-offset: 2px; }
-.hp-reset svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
-.hp-reset:active svg { transform: rotate(-60deg); transition: transform .2s; }
-@media (prefers-reduced-motion: reduce) { .hp-reset:active svg { transform: none; transition: none; } }
-@media (max-width: 520px) { #buildV2 .hp-out-metrics { gap: 6px 14px; } }
-/* the panel's padding and the reset's row cost about 30px; the map gives them back so the game still fits one screen */
-@media (min-width: 901px) { #buildV2 { --hp-map-h: clamp(240px, calc(100vh - var(--bar-h) - 452px), 560px); } }
 
 /* the searches so far opens the search page (2026-11-10, moved before the photographed sky): a little less air
    round the timeline, so it leads into the sky's story without a gap */
@@ -2462,10 +1900,6 @@ body[data-page="search"] #searches .st-rail-wrap { margin-bottom: 14px; }
   .db-final-none, .db-stage.is-final .db-final-none, .db-panel,
   .db-grid.is-wide .db-panel, .db-grid.is-narrowing .db-panel { transition: none; }
 }
-
-/* Future, version 2 (2026-11-10): the milestones follow the page title with no heading of their own, so they sit
-   close under it, without the section rule */
-#futureV2 > #fvNext { padding-top: 4px; border-top: 0; }
 
 /* How the proposed planet has changed, version 2 (2026-11-10, charts/proposals2.js): the picture and the paper row on the left,
    the estimate card and a small overview on the right. Planet Nine's colour for a model, ember for the candidate,

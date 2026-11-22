@@ -1,10 +1,10 @@
-import './scrolly.css'
-
 // Scrollytelling: a pinned graphic beside a column of short step cards.
 //
 // The step whose card crosses the middle of the viewport is the active one.
 // Each section supplies its own onStep, which redraws the pinned graphic for
 // that step, so scrolling back up replays the story in reverse for free.
+
+import './scrolly.css'
 
 export function scrolly (root, { onStep, line }) {
   const steps = [...root.querySelectorAll('.step')]

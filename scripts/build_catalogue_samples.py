@@ -4,7 +4,7 @@ so the site can show what the data actually looks like where it is stored.
 
 Reads the raw downloads the team keeps in the FinalProject folder beside this
 repo (../FinalProject/data/raw), falling back to this repo's data/raw. Writes
-data/processed/catalogue_samples.json (and the copy in public/data/) with:
+data/processed/catalogue_samples.json (no page loads it, so there is no copy in public/data/) with:
 
   jpl        Sedna's row from the JPL Small-Body Database query, as field: value
   mpc        Sedna's record from the Minor Planet Center distant-object file
@@ -22,7 +22,7 @@ CANDIDATES = [
     os.path.join(os.path.dirname(ROOT), "FinalProject", "data", "raw"),
     os.path.join(ROOT, "data", "raw"),
 ]
-OUTS = [os.path.join(ROOT, "data", "processed", "catalogue_samples.json"), os.path.join(ROOT, "public", "data", "catalogue_samples.json")]
+OUTS = [os.path.join(ROOT, "data", "processed", "catalogue_samples.json")]
 
 JPL_FILES = ["jpl_sbdb_a_gt30_asteroids.json", "jpl_sbdb_a_gt30.json"]
 MPC_FILES = ["distant_extended.json", "mpc_distant_extended.json"]
@@ -87,7 +87,7 @@ def main():
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(out, f, indent=1, ensure_ascii=False)
             f.write("\n")
-    print(f"wrote {len(OUTS)} copies of catalogue_samples.json: JPL {len(rows)} rows x {len(fields)} fields, MPC {len(mpc)} rows, numbered {n_numbered} lines")
+    print(f"wrote catalogue_samples.json: JPL {len(rows)} rows x {len(fields)} fields, MPC {len(mpc)} rows, numbered {n_numbered} lines")
 
 
 main()

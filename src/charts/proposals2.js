@@ -25,7 +25,6 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 const short = p => p.label.replace('Batygin, Adams, Brown & Becker 2019 (review)', 'Batygin et al. 2019')
   .replace(' (observational constraints)', '').replace(' (headline values)', ', abstract')
   .replace(' (marginalized posterior)', ', full fit').replace(' (IRAS/AKARI far-IR candidate)', '').replace(' (after the searches)', '')
-const name = p => p.label.replace(/ \d{4}.*$/, '')
 
 // what kind of paper each is, one or two plain sentences on it (from the notes in planet_nine_predictions.json), and
 // the one or two phrases in those sentences lit in the part's lime (2026-11-20, asked for): exact words of the sentence,

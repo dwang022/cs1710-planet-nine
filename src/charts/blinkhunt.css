@@ -61,7 +61,7 @@
 .bh-go { font: 600 1.05rem var(--font-sans); padding: 12px 26px; border-radius: 999px; border: 0; background: var(--ui); color: #111; cursor: pointer; transition: transform .15s ease; }
 .bh-go:hover { transform: translateY(-1px) scale(1.03); }
 .bh-k { margin: 0; font: 700 .72rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--text-muted); }
-.bh-rank { margin: 0; font-size: 2rem; font-weight: 600; color: var(--text-primary); line-height: 1.1; }
+
 .bh-total { margin: 0; color: var(--text-secondary); }
 .bh-total b { color: var(--text-primary); font-size: 1.3rem; }
 
@@ -90,8 +90,7 @@
 .bh-lane.is-mid { text-anchor: middle; }
 .bh-ghost { fill: #fff; opacity: .22; }
 .bh-live { fill: #fff; }
-.bh-guide { stroke: #ffffff70; stroke-width: 1.5; stroke-dasharray: 4 6; }
-.bh-ring { fill: none; stroke: #ffffff8c; stroke-width: 2; stroke-dasharray: 5 6; }
+
 .bh.is-match :is(.bh-guide, .bh-ring) { stroke: var(--p9); stroke-dasharray: none; }
 
 /* the discovery card */

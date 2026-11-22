@@ -51,7 +51,6 @@ const T = () => reduce.matches ? 0 : 650
 // Lighter is a bigger number, that is, fainter.
 export const MAG_DOMAIN = SKY_MAG_DOMAIN
 export const magColour = skyMagColour
-const MILKY = '#dcc48a'
 
 // --- the sphere, before it is unrolled: the same orientation as the oval (RA 180 in the middle, RA growing to the
 // left, as the sky is seen from inside), so the morph moves every point straight to its place on the map

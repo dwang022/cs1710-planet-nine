@@ -5,8 +5,8 @@
 import * as d3 from 'd3'
 import '../site.js'
 import { loadData, showLoadError, url } from '../data.js'
-import { deepestAt, DEEP_MAG, skyThumb } from '../charts/skymap.js'
-import { drawSkySearch, STEPS, magColour, MAG_DOMAIN, OBLIQUITY_DEG } from '../charts/skysearch.js'
+import { DEEP_MAG, skyThumb } from '../charts/skymap.js'
+import { drawSkySearch, STEPS, magColour, MAG_DOMAIN } from '../charts/skysearch.js'
 import { PICK } from '../charts/field.js'
 import { drawSearchSteps } from '../charts/searchsteps.js'
 import { brightnessModel } from '../charts/placeplanet.js'
@@ -14,8 +14,6 @@ import { drawBlinkHunt } from '../charts/blinkhunt.js'
 import { scrolly, scrollyProgress } from '../scrolly.js'
 
 const $ = s => document.querySelector(s)
-const WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']
-const word = n => WORDS[n] ?? String(n)
 /** A superscript citation to the paper's entry on the credits page. */
 const cite = (slug, n) => `<sup class="cite"><a href="${url('credits.html#cite-' + slug)}">${n}</a></sup>`
 

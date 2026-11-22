@@ -21,31 +21,6 @@ export function positionAt (a, e, iDeg, nodeDeg, argperiDeg, nuDeg) {
   ]
 }
 
-/** Sample a full orbit as an array of [x, y, z], for drawing the ellipse. */
-export function orbitPath (a, e, iDeg, nodeDeg, argperiDeg, steps = 180) {
-  const pts = []
-  for (let k = 0; k <= steps; k++) {
-    pts.push(positionAt(a, e, iDeg, nodeDeg, argperiDeg, (k / steps) * 360))
-  }
-  return pts
-}
-
-/**
- * Sample only part of an orbit, between two true anomalies.
- *
- * Drawing nu = -90 to +90 gives the arc around perihelion: the half of the
- * orbit that actually carries the directional information. The rest of the
- * ellipse sweeps out to hundreds of AU and, at the scale needed to contain it,
- * crushes every perihelion into a dot at the centre.
- */
-export function orbitArc (a, e, iDeg, nodeDeg, argperiDeg, nu0 = -90, nu1 = 90, steps = 90) {
-  const pts = []
-  for (let k = 0; k <= steps; k++) {
-    pts.push(positionAt(a, e, iDeg, nodeDeg, argperiDeg, nu0 + (k / steps) * (nu1 - nu0)))
-  }
-  return pts
-}
-
 /** True anomaly (degrees) from mean anomaly (degrees), solving Kepler's equation by Newton's method. */
 export function trueAnomaly (mDeg, e) {
   const M = (((mDeg % 360) + 360) % 360) * RAD
@@ -91,14 +66,6 @@ export function planetAt (p, jd) {
   const at = k => p[k] + (p.rates?.[k] ?? 0) * T
   const a = at('a'), e = at('e'), varpi = at('varpi')
   return { name: p.name, a, e, varpi, nu: trueAnomaly(at('L') - varpi, e) }
-}
-
-/** Radius at true anomaly +/-90, the semi-latus rectum - how far the arc reaches. */
-export function semiLatusRectum (a, e) { return a * (1 - e * e) }
-
-/** The perihelion point - the end of the orbit that the clustering is about. */
-export function perihelionPoint (o) {
-  return positionAt(o.a_au, o.e, o.i_deg, o.node_deg, o.argperi_deg, 0)
 }
 
 /**

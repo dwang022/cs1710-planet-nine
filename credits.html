@@ -7,73 +7,100 @@
 <!-- Dark (--surface-0) from the first paint, hidden until site.js has drawn the page; shown anyway after 3s if scripts fail. -->
 <style>html{background:#0f0f11}html:not([data-ready]) body{visibility:hidden;animation:p9-show 0s 3s forwards}@keyframes p9-show{to{visibility:visible}}</style>
 <title>Credits · The search for Planet Nine</title>
-<meta name="description" content="Who made The search for Planet Nine, and where its data, photographs and drawings come from." />
+<meta name="description" content="Who made The search for Planet Nine, and where its data, papers, photographs and drawings come from." />
 <link rel="icon" href="/art/svg/planet-nine.svg" type="image/svg+xml" />
 </head>
 <body data-page="credits">
 <!--
   Outside the walkthrough: PAGES marks it aside, so no Continue button leads
   here and the nav sets it apart. It holds everything the footer used to say.
+  The lists of papers and photographs are filled in by src/pages/credits.js.
 -->
 <main>
   <header class="page-head wrap">
     <h1>Credits</h1>
-    <p class="lede">Who made this, and where everything on it comes from.</p>
+    <p class="lede">Who made this site, and where its data, papers, photographs and drawings come from.</p>
+    <nav class="cr-jump" aria-label="On this page">
+      <a href="#data">Data</a><a href="#papers">Papers</a><a href="#photos">Photographs and logos</a><a href="#made">Drawings and code</a>
+    </nav>
   </header>
 
   <section class="part wrap" id="who">
-    <div class="credits-two">
-      <div>
-        <h2>Made by</h2>
-        <p>Daniel Wang, Gabriel Gonzalez and Russell Rui Luo, for CS 1710 at Harvard, autumn 2026.
-        Source on <a href="https://github.com/dwang022/cs1710-planet-nine">GitHub</a>.</p>
-      </div>
-      <div>
-        <h2>One caution</h2>
-        <p>Planet Nine has never been seen. Everything on this site describes an inference from the orbits of
-        other objects, not an observation.</p>
-      </div>
+    <div class="sec-head">
+      <h2>Made by</h2>
+      <p>A final project for CS 1710 at Harvard, fall 2026. The code is on
+      <a href="https://github.com/dwang022/cs1710-planet-nine">GitHub</a>.</p>
     </div>
+    <ul class="cr-people">
+      <li><b>Daniel Wang</b><a href="mailto:danielwang@g.harvard.edu">danielwang@g.harvard.edu</a></li>
+      <li><b>Russell Rui Luo</b><a href="mailto:rluo@g.harvard.edu">rluo@g.harvard.edu</a></li>
+      <li><b>Gabriel (Gabe) Gonzalez</b><a href="mailto:ggonzalez@g.harvard.edu">ggonzalez@g.harvard.edu</a></li>
+    </ul>
+    <p class="cr-note"><strong>Planet Nine has never been seen.</strong> Everything on this site about it is inferred
+    from the orbits of other objects, not observed.</p>
   </section>
 
   <section class="part wrap" id="data">
-    <h2>Data</h2>
-    <p>Fetched in October 2026. Every number on the site is computed from these files on load or carries a tag
-    naming its source.</p>
-    <ul class="credits-list">
-      <li><span><b>JPL Small-Body Database</b><br>Orbits of every known body more than 30 times farther from the Sun than Earth, from the Query API.</span>
-        <span class="muted"><a href="https://ssd.jpl.nasa.gov/tools/sbdb_query.html">ssd.jpl.nasa.gov</a></span></li>
-      <li><span><b>Minor Planet Center</b><br>The independent orbit catalogue used to cross-check JPL, the discovery records of numbered minor planets, every reported position of the 90 extreme objects, and the list of observatory codes that places each telescope.</span>
-        <span class="muted"><a href="https://www.minorplanetcenter.net/data">minorplanetcenter.net</a></span></li>
-      <li><span><b>JPL planetary elements and Horizons</b><br>The planets' own orbits; Horizons verified our geometry and gave Voyager 1's position.</span>
-        <span class="muted"><a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html">ssd.jpl.nasa.gov/planets</a></span></li>
-      <li><span><b>Natural Earth</b><br>The coastlines of the telescope map, through the world-atlas package. Public domain.</span>
-        <span class="muted"><a href="https://www.naturalearthdata.com/">naturalearthdata.com</a></span></li>
-      <li><span><b>Crossref and arXiv</b><br>Titles, dates and abstracts of the papers; every claim about a paper was checked against its abstract.</span>
-        <span class="muted"><a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/papers/README.md">papers/README.md</a></span></li>
+    <div class="sec-head">
+      <h2>Data</h2>
+      <p>Downloaded in October 2026. Every number on the site is either computed from these files when the page loads
+      or tagged with where it came from.</p>
+    </div>
+    <ul class="cr-sources">
+      <li><b>JPL Small-Body Database</b>
+        <span>The orbit of every known object whose average distance from the Sun is more than 30 times Earth’s.</span>
+        <a href="https://ssd.jpl.nasa.gov/tools/sbdb_query.html">ssd.jpl.nasa.gov</a></li>
+      <li><b>Minor Planet Center</b>
+        <span>A second orbit catalogue to check JPL’s against, the discovery records of numbered objects, every reported position of the
+        90 extreme objects and the codes that place each observatory on the map.</span>
+        <a href="https://www.minorplanetcenter.net/data">minorplanetcenter.net</a></li>
+      <li><b>JPL planetary elements and Horizons</b>
+        <span>The planets’ orbits. Horizons also checked our orbit calculations and gave Voyager 1’s position.</span>
+        <a href="https://ssd.jpl.nasa.gov/planets/approx_pos.html">ssd.jpl.nasa.gov/planets</a></li>
+      <li><b>Natural Earth</b>
+        <span>The coastlines and borders on the observatory map, through the world-atlas package. Public domain.</span>
+        <a href="https://www.naturalearthdata.com/">naturalearthdata.com</a></li>
+      <li><b>Crossref and arXiv</b>
+        <span>The titles, dates and abstracts of the papers. Every claim about a paper was checked against its abstract.</span>
+        <a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/papers/README.md">papers/README.md</a></li>
     </ul>
-    <p style="margin-top:14px">The full list of sources, with the exact queries, is in
+    <p class="cr-more">The full list of sources, with the exact queries, is in
     <a href="https://github.com/dwang022/cs1710-planet-nine/blob/main/data/SOURCES.md">data/SOURCES.md</a>.</p>
   </section>
 
   <section class="part wrap" id="papers">
-    <h2>Papers</h2>
-    <p>Every paper the site draws on. A small raised number in the text leads here.</p>
-    <ol class="credits-list" id="paperList"></ol>
+    <div class="sec-head">
+      <h2>Papers</h2>
+      <p>Every paper the site draws on, oldest first. The small raised numbers in the text link here.</p>
+    </div>
+    <div class="cr-years" id="paperList"></div>
   </section>
 
   <section class="part wrap" id="photos">
-    <h2>Photographs and logos</h2>
-    <p>The photographs are from Wikimedia Commons, their credit and licence read from the Commons API, not typed,
-    except Keystone College's telescope, used under fair use for this class project. The game's exposures are public data from the NSF NOIRLab Astro Data Archive and the Canadian Astronomy Data
-    Centre, credited as each archive asks. A logo identifies its organisation and implies no endorsement.</p>
-    <ul class="credits-list" id="photoCredits"></ul>
+    <div class="sec-head">
+      <h2>Photographs and logos</h2>
+      <p>The photographs come from Wikimedia Commons, with each credit and licence taken from Commons itself. The one
+      exception is Keystone College’s telescope, used under fair use for this class project. The game’s photos are
+      public data from the NSF NOIRLab Astro Data Archive and the Canadian Astronomy Data Centre, credited as each
+      archive asks. A logo only identifies its organisation and implies no endorsement.</p>
+    </div>
+    <div id="photoCredits"></div>
   </section>
 
   <section class="part wrap" id="made">
-    <h2>Drawings and code</h2>
-    <p>The planets, the telescope and every Planet Nine are our own drawings, written as SVG. The charts are built
-    with d3 and the site with Vite. The planetary chart takes its look from the one in Outer Wilds.</p>
+    <div class="sec-head">
+      <h2>Drawings and code</h2>
+    </div>
+    <ul class="cr-sources">
+      <li><b>Drawings</b>
+        <span>The planets, the observatories and every version of Planet Nine are our own drawings, made in SVG.
+        The look of the planet chart is borrowed from the one in the game Outer Wilds.</span></li>
+      <li><b>Code</b>
+        <span>The charts are made with d3 and the site is built with Vite.</span>
+        <a href="https://github.com/dwang022/cs1710-planet-nine">github.com/dwang022</a></li>
+      <li><b>Type</b>
+        <span>Space Grotesk and Space Mono, both open-source typefaces under the SIL Open Font License.</span></li>
+    </ul>
   </section>
 </main>
 <script type="module" src="/src/pages/credits.js"></script>
